@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp"
+      rel="stylesheet"
+    />
+    <title>Job Dashboard – SIMP Project</title>
+    <style>
+      body {
+        font-family: "Segoe UI", Roboto, Arial, sans-serif;
+        background: linear-gradient(135deg, #f8fafc, #e0e7ff);
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+      }
+      .container {
+        display: flex;
+        width: 100%;
+      }
+      /* Sidebar */
+      aside {
+        width: 250px;
+        background: #1f2937;
+        color: #fff;
+        min-height: 100vh;
+        padding: 20px 0;
+      }
+      .logo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 30px;
+      }
+      .logo img {
+        width: 40px;
+        margin-right: 10px;
+      }
+      .sidebar a {
+        display: flex;
+        align-items: center;
+        padding: 14px 20px;
+        text-decoration: none;
+        color: #cbd5e1;
+        transition: background 0.2s;
+      }
+      .sidebar a:hover,
+      .sidebar a.active {
+        background: #374151;
+        color: #fff;
+      }
+      .sidebar span {
+        margin-right: 10px;
+      }
+
+      /* Main */
+      main {
+        flex: 1;
+        padding: 40px;
+      }
+      h1 {
+        margin-bottom: 20px;
+        color: #1f2937;
+      }
+      section.card {
+        background: #fff;
+        padding: 30px;
+        border-radius: 16px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        margin-bottom: 30px;
+        animation: fadeIn 0.6s ease;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .hidden {
+        display: none;
+      }
+
+      /* Form */
+      form input,
+      form textarea,
+      form select,
+      form button {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 16px;
+        border: 1px solid #d1d5db;
+        border-radius: 12px;
+        font-size: 1rem;
+        background: #f9fafb;
+        transition: border 0.2s, box-shadow 0.2s;
+      }
+      form input:focus,
+      form textarea:focus,
+      form select:focus {
+        border-color: #6366f1;
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        outline: none;
+        background: #ffffff;
+      }
+      form button {
+        background: #6366f1;
+        color: #fff;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        transition: background 0.3s;
+      }
+      form button:hover {
+        background: #4f46e5;
+      }
+
+      /* Table */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 16px;
+      }
+      table th,
+      table td {
+        padding: 14px;
+        border: 1px solid #e5e7eb;
+        text-align: left;
+        font-size: 0.95rem;
+      }
+      table th {
+        background: #f1f5f9;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <!-- Sidebar -->
+      <aside>
+        <div class="logo">
+          <img src="images/logo.png" />
+          <h2>SIMP Project</h2>
+        </div>
+        <div class="sidebar">
+          <a href="#" class="active" id="nav-create">
+            <span class="material-icons-sharp"> add_circle </span>
+            <h3>Create Post</h3>
+          </a>
+          <a href="#" id="nav-view">
+            <span class="material-icons-sharp"> list_alt </span>
+            <h3>View My Posts</h3>
+          </a>
+          <a href="#" id="logout-btn">
+            <span class="material-icons-sharp"> logout </span>
+            <h3>Logout</h3>
+          </a>
+        </div>
+      </aside>
+
+      <!-- Main -->
+      <main>
+        <!-- Create Post -->
+        <section class="card" id="create-post">
+          <h1>Create a Job Post</h1>
+          <form id="jobForm">
+            <input
+              type="text"
+              id="job_title"
+              placeholder="Job Title"
+              required
+            />
+            <textarea
+              id="job_description"
+              placeholder="Job Description"
+            ></textarea>
+            <input
+              type="number"
+              id="job_difficulty"
+              placeholder="Job Difficulty (number)"
+              required
+            />
+            <input type="text" id="job_category" placeholder="Category" />
+            <input
+              type="text"
+              id="job_location"
+              placeholder="Location"
+              required
+            />
+            <input type="date" id="job_date" required />
+            <input type="time" id="job_time" required />
+            <input
+              type="number"
+              id="job_duration"
+              placeholder="Duration (hours)"
+              required
+            />
+            <input
+              type="number"
+              id="job_pay"
+              step="0.01"
+              placeholder="Job Pay"
+              required
+            />
+            <input type="file" id="job_picture" accept="image/*" />
+            <button type="submit">Post Job</button>
+          </form>
+        </section>
+
+        <!-- View My Posts -->
+        <section class="card hidden" id="view-posts">
+          <h1>My Job Posts</h1>
+          <table>
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Date</th>
+                <th>Pay</th>
+                <th>Difficulty</th>
+              </tr>
+            </thead>
+            <tbody id="postsTable"></tbody>
+          </table>
+        </section>
+      </main>
+    </div>
+
+    <script src="../../general_files/index.js"></script>
+    <script type="module" src="../../general_files/session.js"></script>
+    <script type="module">
+      import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+      const SUPABASE_URL = "https://gxydxmobwrccqagltlci.supabase.co";
+      const SUPABASE_ANON_KEY =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd4eWR4bW9id3JjY3FhZ2x0bGNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUxNDMzOTMsImV4cCI6MjA3MDcxOTM5M30.Zk2xUlmlPGbe-7rDsqC486Js9LGFMMOp-fytNZSwzBs";
+      const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+      const navCreate = document.getElementById("nav-create");
+      const navView = document.getElementById("nav-view");
+      const sectionCreate = document.getElementById("create-post");
+      const sectionView = document.getElementById("view-posts");
+      const postsTable = document.getElementById("postsTable");
+      const form = document.getElementById("jobForm");
+
+      // Toggle sections
+      navCreate.addEventListener("click", (e) => {
+        e.preventDefault();
+        navCreate.classList.add("active");
+        navView.classList.remove("active");
+        sectionCreate.classList.remove("hidden");
+        sectionView.classList.add("hidden");
+      });
+
+      navView.addEventListener("click", async (e) => {
+        e.preventDefault();
+        navView.classList.add("active");
+        navCreate.classList.remove("active");
+        sectionView.classList.remove("hidden");
+        sectionCreate.classList.add("hidden");
+
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        if (!user) return;
+        const { data, error } = await supabase
+          .from("job")
+          .select("job_title, job_date, job_pay, job_difficulty")
+          .eq("posted_by", user.id);
+
+        postsTable.innerHTML = "";
+        if (data) {
+          data.forEach((job) => {
+            const row = `<tr>
+          <td>${job.job_title}</td>
+          <td>${job.job_date}</td>
+          <td>$${job.job_pay}</td>
+          <td>${job.job_difficulty}</td>
+        </tr>`;
+            postsTable.innerHTML += row;
+          });
+        }
+      });
+
+      // 🔹 Handle Job Form Submission
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        if (!user) {
+          alert("You must be logged in to post a job.");
+          return;
+        }
+
+        // Upload job picture (if provided)
+        let pictureUrl = null;
+        const fileInput = document.getElementById("job_picture");
+        if (fileInput.files.length > 0) {
+          const file = fileInput.files[0];
+          const fileExt = file.name.split(".").pop();
+          const filePath = `${user.id}/${Date.now()}.${fileExt}`;
+
+          const { error: uploadError } = await supabase.storage
+            .from("jobs")
+            .upload(filePath, file);
+
+          if (uploadError) {
+            alert("Error uploading picture: " + uploadError.message);
+            return;
+          }
+
+          const { data: publicUrlData } = supabase.storage
+            .from("jobs")
+            .getPublicUrl(filePath);
+          pictureUrl = publicUrlData.publicUrl;
+        }
+
+        function generateJobCode() {
+          // 4 random uppercase letters
+          const letters = Array.from({ length: 4 }, () =>
+            String.fromCharCode(65 + Math.floor(Math.random() * 26))
+          ).join("");
+
+          // 4 random digits (padded with leading zeros if needed)
+          const numbers = String(Math.floor(Math.random() * 10000)).padStart(
+            4,
+            "0"
+          );
+
+          return `${letters}-${numbers}`;
+        }
+
+        const job_code = generateJobCode();
+        console.log("Generated Job Code:", job_code);
+        // Prepare job data
+        const jobData = {
+          job_code: job_code, // ✅ correct column
+          job_title: document.getElementById("job_title").value,
+          job_description: document.getElementById("job_description").value,
+          job_difficulty: parseInt(
+            document.getElementById("job_difficulty").value
+          ),
+          job_category: document.getElementById("job_category").value,
+          job_location: document.getElementById("job_location").value,
+          job_date: document.getElementById("job_date").value,
+          job_time: document.getElementById("job_time").value,
+          job_duration: parseInt(document.getElementById("job_duration").value),
+          job_pay: parseFloat(document.getElementById("job_pay").value),
+          job_picture_url: pictureUrl,
+          posted_by: user.id,
+        };
+
+        // 🔹 Insert into job table
+        const { error } = await supabase.from("job").insert([jobData]);
+
+        if (error) {
+          console.error(error);
+          alert("Error posting job: " + error.message);
+        } else {
+          alert("Job posted successfully!");
+          form.reset();
+        }
+      });
+    </script>
+  </body>
+</html>

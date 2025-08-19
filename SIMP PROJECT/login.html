@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Login – SIMP Project</title>
+    <style>
+      body {
+        font-family: system-ui, Arial, sans-serif;
+        max-width: 480px;
+        margin: 50px auto;
+        padding: 0 16px;
+      }
+      h2 {
+        margin-bottom: 20px;
+      }
+      input,
+      select {
+        width: 100%;
+        padding: 10px;
+        margin: 8px 0;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+      }
+      button {
+        width: 100%;
+        padding: 10px;
+        border: none;
+        border-radius: 8px;
+        background-color: #4f46e5;
+        color: white;
+        cursor: pointer;
+        margin-top: 12px;
+      }
+      button:hover {
+        background-color: #3730a3;
+      }
+    </style>
+
+    <script type="module">
+      import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+      const SUPABASE_URL = "https://gxydxmobwrccqagltlci.supabase.co";
+      const SUPABASE_ANON_KEY =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd4eWR4bW9id3JjY3FhZ2x0bGNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUxNDMzOTMsImV4cCI6MjA3MDcxOTM5M30.Zk2xUlmlPGbe-7rDsqC486Js9LGFMMOp-fytNZSwzBs";
+      const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+      // Paths
+      const INSTALLER_UPLOAD =
+        "../pages/installer_pages/html_files/upload.html";
+      const INSTALLER_DASH =
+        "../pages/installer_pages/html_files/dashboard.html";
+      const INSTALLER_REVIEW =
+        "../pages/installer_pages/html_files/review.html";
+      const CUSTOMER_DASH = "../pages/customer_pages/html_files/dashboard.html";
+
+      async function getInstallerStatus(userId) {
+        const { data, error } = await supabase
+          .from("installer")
+          .select("status")
+          .eq("id", userId)
+          .maybeSingle();
+
+        if (error) throw error;
+        return data ? data.status : null;
+      }
+
+      async function isCustomer(userId) {
+        const { data, error } = await supabase
+          .from("customer")
+          .select("id")
+          .eq("id", userId)
+          .maybeSingle();
+
+        if (error) throw error;
+        return !!data;
+      }
+
+      window.login = async () => {
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value;
+        const role = document.getElementById("role").value;
+
+        try {
+          // 1) Auth sign-in
+          const { data: signInData, error: signInError } =
+            await supabase.auth.signInWithPassword({ email, password });
+          if (signInError) throw signInError;
+
+          const userId = signInData.user.id;
+
+          if (role === "installer") {
+            const statusRaw = await getInstallerStatus(userId);
+            if (statusRaw !== null) {
+              const status = String(statusRaw).toLowerCase();
+              if (status === "verified") {
+                window.location.href = INSTALLER_DASH;
+              } else if (status === "pending review" || status === "pending") {
+                window.location.href = INSTALLER_REVIEW;
+              } else {
+                window.location.href = INSTALLER_UPLOAD;
+              }
+            } else {
+              alert(
+                "No installer profile found. Please register as installer."
+              );
+            }
+          } else if (role === "customer") {
+            const customer = await isCustomer(userId);
+            if (customer) {
+              window.location.href = CUSTOMER_DASH;
+            } else {
+              alert("No customer profile found. Please register as customer.");
+            }
+          }
+        } catch (err) {
+          alert("Error: " + (err.message || "Login failed"));
+          console.error(err);
+        }
+      };
+    </script>
+  </head>
+
+  <body>
+    <h2>Login – SIMP Project</h2>
+    <input type="email" id="email" placeholder="Email" required /><br />
+    <input
+      type="password"
+      id="password"
+      placeholder="Password"
+      required
+    /><br />
+
+    <!-- Role Selector -->
+    <select id="role" required>
+      <option value="" disabled selected>Select Role</option>
+      <option value="customer">Customer</option>
+      <option value="installer">Installer</option>
+    </select>
+
+    <button onclick="login()">Login</button>
+    <p>Don't have an account? <a href="signup.html">Sign Up</a></p>
+  </body>
+</html>

@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>SIMP Project – Sign Up</title>
+    <style>
+      body {
+        font-family: system-ui, Arial, sans-serif;
+        max-width: 720px;
+        margin: 40px auto;
+        padding: 0 16px;
+      }
+      h2 {
+        margin-bottom: 8px;
+      }
+      .progress-wrap {
+        margin: 16px 0 24px;
+        background: #eee;
+        border-radius: 999px;
+        overflow: hidden;
+        height: 10px;
+      }
+      .progress-bar {
+        height: 100%;
+        width: 0%;
+        background: #4f46e5;
+        transition: width 300ms ease;
+      }
+      .form-step {
+        display: none;
+        animation: fade 200ms ease;
+      }
+      .form-step.active {
+        display: block;
+      }
+      .form-step.skipped {
+        display: none !important;
+      }
+      .row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+      .row-1 {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+      label {
+        font-size: 14px;
+        color: #333;
+        display: block;
+        margin-top: 8px;
+      }
+      input,
+      select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+      }
+      .actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 16px;
+      }
+      button {
+        padding: 10px 16px;
+        border: 0;
+        border-radius: 10px;
+        cursor: pointer;
+      }
+      .btn-secondary {
+        background: #e5e7eb;
+      }
+      .btn-primary {
+        background: #4f46e5;
+        color: white;
+      }
+      .hint {
+        font-size: 12px;
+        color: #6b7280;
+        margin-top: 2px;
+      }
+      .hidden {
+        display: none;
+      }
+      .role-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        margin-top: 8px;
+      }
+      .role-card {
+        border: 1px solid #d1d5db;
+        border-radius: 12px;
+        padding: 16px;
+        text-align: center;
+        cursor: pointer;
+        user-select: none;
+      }
+      .role-card.active {
+        outline: 2px solid #4f46e5;
+      }
+      @keyframes fade {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      /* Modal styles */
+      #emailConfirmModal {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
+      #emailConfirmModal .modal-content {
+        background: white;
+        padding: 24px;
+        border-radius: 12px;
+        text-align: center;
+        max-width: 400px;
+      }
+      #emailConfirmModal h3 {
+        margin-bottom: 12px;
+      }
+      #emailConfirmModal p {
+        margin-bottom: 20px;
+        font-size: 14px;
+        color: #444;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>SIMP Project – Sign Up</h2>
+    <div class="progress-wrap">
+      <div id="progressBar" class="progress-bar"></div>
+    </div>
+
+    <!-- STEP 1: Role Identification -->
+    <section class="form-step active" data-step="0" id="roleStep">
+      <h3>Step 1 – Role Identification</h3>
+      <div class="role-grid">
+        <div class="role-card" data-role="customer">Customer</div>
+        <div class="role-card" data-role="installer">Installer</div>
+      </div>
+      <div class="hint">
+        Choose how you’ll use SIMP. This controls which details we ask for.
+      </div>
+      <div class="actions">
+        <button id="nextRole" class="btn-primary" disabled>Next</button>
+      </div>
+    </section>
+
+    <!-- STEP 2: Personal Info -->
+    <section class="form-step" data-step="1" id="personalStep">
+      <h3>Step 2 – Personal Info</h3>
+      <div class="row">
+        <div>
+          <label>Full Name <input id="name" type="text" required /></label>
+        </div>
+        <div>
+          <label>Birthdate <input id="birthdate" type="date" required /></label>
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label>Age <input id="age" type="number" readonly /></label>
+        </div>
+        <div>
+          <label>Phone <input id="phone" type="tel" required /></label>
+        </div>
+      </div>
+      <div class="row-1">
+        <label>Email <input id="email" type="email" required /></label>
+      </div>
+      <div class="row-1">
+        <label
+          >Password <input id="password" type="password" minlength="6" required
+        /></label>
+      </div>
+
+      <div class="actions">
+        <button id="back1" class="btn-secondary">Back</button>
+        <button id="next1" class="btn-primary">Next</button>
+        <button id="signUpNow" class="btn-primary hidden">Sign Up</button>
+      </div>
+    </section>
+
+    <!-- STEP 3: Professional Details (Installer only) -->
+    <section class="form-step" data-step="2" id="proStep">
+      <h3>Step 3 – Professional Info</h3>
+      <div class="row">
+        <div>
+          <label>Profession <input id="profession" type="text" /></label>
+        </div>
+        <div>
+          <label
+            >Highest Qualification
+            <select id="highestQualification">
+              <option value="">Select…</option>
+              <option>High School</option>
+              <option>Vocational/Technical</option>
+              <option>Associate Degree</option>
+              <option>Bachelor’s</option>
+              <option>Master’s</option>
+              <option>Doctorate</option>
+              <option>Other</option>
+            </select>
+          </label>
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label
+            >Employment Status
+            <select id="employmentStatus">
+              <option value="">Select…</option>
+              <option value="Employed">Employed</option>
+              <option value="Self-Employed">Self-Employed</option>
+              <option value="Unemployed">Unemployed</option>
+              <option value="Student">Student</option>
+            </select>
+          </label>
+        </div>
+        <div id="employerWrap" class="hidden">
+          <label>Company <input id="employer" type="text" /></label>
+        </div>
+      </div>
+      <div class="row-1">
+        <label
+          >Main Income Source <input id="mainIncomeSource" type="text"
+        /></label>
+      </div>
+      <div class="actions">
+        <button id="back2" class="btn-secondary">Back</button
+        ><button id="next2" class="btn-primary">Next</button>
+      </div>
+    </section>
+
+    <!-- STEP 4: Bank Details (Installer only) -->
+    <section class="form-step" data-step="3" id="bankStep">
+      <h3>Step 4 – Bank Details</h3>
+      <div class="row">
+        <div>
+          <label>Bank Name <input id="bankName" type="text" /></label>
+        </div>
+        <div>
+          <label>Account Holder <input id="accountHolder" type="text" /></label>
+        </div>
+      </div>
+      <div class="row-1">
+        <label>Account Number <input id="accountNumber" type="text" /></label>
+      </div>
+      <div class="actions">
+        <button id="back3" class="btn-secondary">Back</button
+        ><button id="signUpBtn" class="btn-primary">Sign Up</button>
+      </div>
+    </section>
+
+    <!-- NEW: login link -->
+    <div class="auth-footer">
+      Already have an account?
+      <a href="login.html">Log in here</a>
+    </div>
+
+    <!-- Email Confirmation Modal -->
+    <div id="emailConfirmModal">
+      <div class="modal-content">
+        <h3>Confirm Your Email</h3>
+        <p>
+          We've sent a confirmation link to your email. Please check your inbox
+          and click the link to activate your account.
+        </p>
+        <button id="goToEmailBtn" class="btn-primary">Go to My Email</button>
+      </div>
+    </div>
+
+    <script type="module">
+      import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+      const SUPABASE_URL = "https://gxydxmobwrccqagltlci.supabase.co";
+      const SUPABASE_ANON_KEY =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd4eWR4bW9id3JjY3FhZ2x0bGNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUxNDMzOTMsImV4cCI6MjA3MDcxOTM5M30.Zk2xUlmlPGbe-7rDsqC486Js9LGFMMOp-fytNZSwzBs";
+      const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+      // -------------------- Wizard core --------------------
+      let selectedRole = null; // 'customer' | 'installer'
+
+      const stepsAll = Array.from(document.querySelectorAll(".form-step"));
+      const progressBar = document.getElementById("progressBar");
+
+      function visibleSteps() {
+        return stepsAll.filter((s) => !s.classList.contains("skipped"));
+      }
+      function currentIndex() {
+        return visibleSteps().findIndex((s) => s.classList.contains("active"));
+      }
+      function showStepByIndex(i) {
+        const vis = visibleSteps();
+        vis.forEach((s, idx) => s.classList.toggle("active", idx === i));
+        const max = Math.max(vis.length - 1, 1);
+        progressBar.style.width = Math.round((i / max) * 100) + "%";
+      }
+      function goNext() {
+        const vis = visibleSteps();
+        const i = currentIndex();
+        if (i < vis.length - 1 && validateStep(vis[i])) showStepByIndex(i + 1);
+      }
+      function goBack() {
+        const i = currentIndex();
+        if (i > 0) showStepByIndex(i - 1);
+      }
+
+      // -------------------- Role selection UI --------------------
+      const roleCards = document.querySelectorAll(".role-card");
+      const nextRoleBtn = document.getElementById("nextRole");
+
+      roleCards.forEach((card) => {
+        card.addEventListener("click", () => {
+          roleCards.forEach((c) => c.classList.remove("active"));
+          card.classList.add("active");
+          selectedRole = card.dataset.role; // 'customer' | 'installer'
+          nextRoleBtn.disabled = false;
+        });
+      });
+
+      nextRoleBtn.addEventListener("click", () => {
+        if (!selectedRole) {
+          alert("Please select a role.");
+          return;
+        }
+
+        const pro = document.getElementById("proStep");
+        const bank = document.getElementById("bankStep");
+        const next1 = document.getElementById("next1");
+        const signUpNow = document.getElementById("signUpNow");
+
+        const installerFlow = selectedRole === "installer";
+
+        pro.classList.toggle("skipped", !installerFlow);
+        bank.classList.toggle("skipped", !installerFlow);
+
+        next1.classList.toggle("hidden", !installerFlow);
+        signUpNow.classList.toggle("hidden", installerFlow);
+
+        showStepByIndex(1);
+      });
+
+      document.getElementById("back1").addEventListener("click", goBack);
+      document.getElementById("next1").addEventListener("click", goNext);
+      document.getElementById("next2").addEventListener("click", goNext);
+      document.getElementById("back2").addEventListener("click", goBack);
+      document.getElementById("back3").addEventListener("click", goBack);
+
+      // Employment toggle (installer only)
+      const employmentStatus = document.getElementById("employmentStatus");
+      const employerWrap = document.getElementById("employerWrap");
+      employmentStatus.addEventListener("change", () => {
+        employerWrap.classList.toggle(
+          "hidden",
+          employmentStatus.value !== "Employed"
+        );
+      });
+
+      // Age auto-calc
+      const birthEl = document.getElementById("birthdate");
+      const ageEl = document.getElementById("age");
+      birthEl.addEventListener("change", () => {
+        const b = new Date(birthEl.value),
+          today = new Date();
+        let age = today.getFullYear() - b.getFullYear();
+        if (
+          today.getMonth() < b.getMonth() ||
+          (today.getMonth() === b.getMonth() && today.getDate() < b.getDate())
+        )
+          age--;
+        ageEl.value = age >= 0 ? age : "";
+      });
+
+      // -------------------- Validation --------------------
+      function requiredInputsIn(sectionEl) {
+        return sectionEl.querySelectorAll("input[required], select[required]");
+      }
+      function validateStep(sectionEl) {
+        if (sectionEl.classList.contains("skipped")) return true;
+
+        const fields = requiredInputsIn(sectionEl);
+        for (const el of fields) {
+          if (!el.value) {
+            el.reportValidity?.();
+            el.focus();
+            return false;
+          }
+        }
+
+        if (sectionEl.id === "personalStep") {
+          const pw = document.getElementById("password").value.trim();
+          if (pw.length < 6) {
+            alert("Password must be at least 6 characters");
+            return false;
+          }
+        }
+
+        if (sectionEl.id === "proStep") {
+          const status = document.getElementById("employmentStatus").value;
+          const employer = (
+            document.getElementById("employer").value || ""
+          ).trim();
+          if (!status) {
+            alert("Select employment status");
+            return false;
+          }
+          if (status === "Employed" && !employer) {
+            alert("Enter company");
+            return false;
+          }
+        }
+
+        return true;
+      }
+
+      // -------------------- Sign Up (role-based insert) --------------------
+      async function signUpFlow(isInstallerFlow) {
+        // Personal fields
+        const name = document.getElementById("name").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value;
+        const birthdate = document.getElementById("birthdate").value;
+        const age = Number(document.getElementById("age").value || 0);
+        const phone = document.getElementById("phone").value.trim();
+
+        // Installer-only fields
+        const profession = document.getElementById("profession").value.trim();
+        const highestQualification = document.getElementById(
+          "highestQualification"
+        ).value;
+        const employment = document.getElementById("employmentStatus").value;
+        const employer = document.getElementById("employer").value.trim();
+        const mainIncomeSource = document
+          .getElementById("mainIncomeSource")
+          .value.trim();
+        const bankName = document.getElementById("bankName").value.trim();
+        const accountNumber = document
+          .getElementById("accountNumber")
+          .value.trim();
+        const accountHolder = document
+          .getElementById("accountHolder")
+          .value.trim();
+
+        try {
+          // 1) Auth sign-up (store role in user_metadata)
+          const { data: authData, error: authError } =
+            await supabase.auth.signUp({
+              email,
+              password,
+              options: { data: { role: selectedRole, name, phone } },
+            });
+          if (authError) throw authError;
+          const userId = authData.user.id;
+
+          // 2) Determine table by role (only two choices now)
+          const table = selectedRole === "installer" ? "installer" : "customer";
+
+          // 3) Build row payload
+          const base = {
+            id: userId,
+            email,
+            name,
+            birthdate,
+            age,
+            phone,
+            createdAt: new Date().toISOString(),
+          };
+
+          const payload = isInstallerFlow
+            ? {
+                ...base,
+                status: "Not Verified",
+                profession,
+                highestQualification,
+                employmentStatus: employment || null,
+                employer: employment === "Employed" ? employer || null : null,
+                mainIncomeSource: mainIncomeSource || null,
+                bankName: bankName || null,
+                accountNumber: accountNumber || null,
+                accountHolder: accountHolder || null,
+              }
+            : base;
+
+          // 4) Insert into the role-specific table
+          const { error: insertError } = await supabase
+            .from(table)
+            .insert([payload]);
+          if (insertError) throw insertError;
+
+          // Show email confirmation modal
+          document.getElementById("emailConfirmModal").style.display = "flex";
+          const emailProvider = email.split("@")[1].toLowerCase();
+          let providerUrl = "https://mail.google.com";
+          if (emailProvider.includes("yahoo"))
+            providerUrl = "https://mail.yahoo.com";
+          else if (
+            emailProvider.includes("outlook") ||
+            emailProvider.includes("hotmail") ||
+            emailProvider.includes("live")
+          )
+            providerUrl = "https://outlook.live.com/mail";
+          else if (emailProvider.includes("icloud"))
+            providerUrl = "https://www.icloud.com/mail";
+          document.getElementById("goToEmailBtn").onclick = () => {
+            window.open(providerUrl, "_blank");
+          };
+        } catch (err) {
+          console.error(err);
+          alert("Error: " + (err.message || "Failed to sign up"));
+        }
+      }
+
+      // Customer: sign up from Personal step
+      document
+        .getElementById("signUpNow")
+        .addEventListener("click", async () => {
+          const ok = validateStep(document.getElementById("personalStep"));
+          if (!ok) return;
+          await signUpFlow(false);
+        });
+
+      // Installer: sign up from Bank step
+      document
+        .getElementById("signUpBtn")
+        .addEventListener("click", async () => {
+          const ok = validateStep(document.getElementById("bankStep"));
+          if (!ok) return;
+          await signUpFlow(true);
+        });
+
+      // Initialize
+      showStepByIndex(0);
+    </script>
+  </body>
+</html>
