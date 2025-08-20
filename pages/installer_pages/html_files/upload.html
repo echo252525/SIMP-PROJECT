@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Upload Documents – SIMP Project</title>
+    <style>
+      body {
+        font-family: system-ui, Arial, sans-serif;
+        max-width: 720px;
+        margin: 40px auto;
+        padding: 0 16px;
+      }
+      h2 {
+        margin-bottom: 16px;
+      }
+      label {
+        display: block;
+        margin-top: 12px;
+        font-size: 14px;
+      }
+      input {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+      }
+      .actions {
+        margin-top: 20px;
+        display: flex;
+        gap: 10px;
+      }
+      button {
+        padding: 10px 16px;
+        border: 0;
+        border-radius: 10px;
+        cursor: pointer;
+      }
+      .btn-primary {
+        background: #4f46e5;
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Upload Your Documents (For Admin Review)</h2>
+
+    <label
+      >NBI Clearance
+      <input id="nbi" type="file" accept="application/pdf,image/*" required />
+    </label>
+    <label
+      >Police Clearance
+      <input
+        id="police"
+        type="file"
+        accept="application/pdf,image/*"
+        required
+      />
+    </label>
+    <label
+      >Resume
+      <input id="resume" type="file" accept="application/pdf" required />
+    </label>
+    <label
+      >Portfolio
+      <input
+        id="portfolio"
+        type="file"
+        accept="application/pdf,image/*"
+        required
+      />
+    </label>
+    <label
+      >Certificates / Awards / Diploma
+      <input
+        id="certificates"
+        type="file"
+        accept="application/pdf,image/*"
+        multiple
+      />
+    </label>
+    <label
+      >Transcript of Records (TOR)
+      <input id="tor" type="file" accept="application/pdf,image/*" required />
+    </label>
+
+    <div class="actions">
+      <button id="uploadBtn" class="btn-primary">Upload Documents</button>
+    </div>
+
+    <script type="module">
+      import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+      const SUPABASE_URL = "https://gxydxmobwrccqagltlci.supabase.co";
+      const SUPABASE_ANON_KEY =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd4eWR4bW9id3JjY3FhZ2x0bGNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUxNDMzOTMsImV4cCI6MjA3MDcxOTM5M30.Zk2xUlmlPGbe-7rDsqC486Js9LGFMMOp-fytNZSwzBs";
+
+      const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+      function sanitizeFileName(fileName) {
+        return fileName.replace(/\s/g, "_").replace(/[()]/g, "");
+      }
+
+      document.addEventListener("DOMContentLoaded", async () => {
+        // Require logged-in user
+        const {
+          data: { user },
+          error: userError,
+        } = await supabase.auth.getUser();
+
+        if (userError || !user) {
+          alert("You must be logged in to upload documents.");
+          // this file is in pages/installer_pages/, so go 2 levels up to login.html
+          window.location.href = "../../../login.html";
+          return;
+        }
+
+        const uploadBtn = document.getElementById("uploadBtn");
+        uploadBtn.addEventListener("click", async () => {
+          const files = {
+            nbi: document.getElementById("nbi").files[0],
+            police: document.getElementById("police").files[0],
+            resume: document.getElementById("resume").files[0],
+            portfolio: document.getElementById("portfolio").files[0],
+            certificates: document.getElementById("certificates").files,
+            tor: document.getElementById("tor").files[0],
+          };
+
+          if (
+            !files.nbi ||
+            !files.police ||
+            !files.resume ||
+            !files.portfolio ||
+            !files.tor
+          ) {
+            alert("Please select all required files!");
+            return;
+          }
+
+          try {
+            const userFolder = `${user.id}/`;
+
+            async function uploadFile(file, subfolder = "") {
+              const safeName = sanitizeFileName(file.name);
+              const filePath = `${userFolder}${subfolder}${safeName}`;
+              const { data, error } = await supabase.storage
+                .from("documents_review")
+                .upload(filePath, file, { upsert: true });
+              if (error) throw error;
+              return data.path; // returns "<userId>/<subfolder>/<name>"
+            }
+
+            const nbiPath = await uploadFile(files.nbi);
+            const policePath = await uploadFile(files.police);
+            const resumePath = await uploadFile(files.resume);
+            const portfolioPath = await uploadFile(files.portfolio);
+            const torPath = await uploadFile(files.tor);
+
+            const certificatePaths = [];
+            for (let i = 0; i < files.certificates.length; i++) {
+              const p = await uploadFile(
+                files.certificates[i],
+                "certificates/"
+              );
+              certificatePaths.push(p);
+            }
+
+            // Save a DB record referencing uploaded paths
+            const { error: insertError } = await supabase
+              .from("installer_documents")
+              .insert([
+                {
+                  installer_id: user.id,
+                  nbi: nbiPath,
+                  police: policePath,
+                  resume: resumePath,
+                  portfolio: portfolioPath,
+                  certificates: certificatePaths, // array (jsonb) column in DB
+                  tor: torPath,
+                  uploaded_at: new Date().toISOString(),
+                },
+              ]);
+            if (insertError) throw insertError;
+
+            // Optional but recommended: set status to Pending Review so your login logic can branch cleanly
+            const { error: statusErr } = await supabase
+              .from("installer")
+              .update({ status: "Pending Review" })
+              .eq("id", user.id);
+            if (statusErr) {
+              // Not fatal; just log it so you can fix any RLS issues later
+              console.warn("Status update warning:", statusErr);
+            }
+
+            // Go to the “under review” page (same folder)
+            window.location.href = "review.html";
+          } catch (err) {
+            console.error("Error uploading documents:", err);
+            alert("Error uploading files: " + (err.message || "Unknown error"));
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
