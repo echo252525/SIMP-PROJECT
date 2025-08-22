@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../css_files/sideBar.css" />
     <link
       href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp"
       rel="stylesheet"
@@ -10,271 +11,14 @@
     <title>Jobs</title>
 
     <style>
-      @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap");
-
-      :root {
-        --color-primary: #6c9bcf;
-        --color-danger: #ff0060;
-        --color-success: #1b9c85;
-        --color-warning: #f7d060;
-        --color-white: #fff;
-        --color-info-dark: #7d8da1;
-        --color-dark: #363949;
-        --color-light: rgba(132, 139, 200, 0.18);
-        --color-dark-variant: #677483;
-        --color-background: #f6f6f9;
-
-        --card-border-radius: 2rem;
-        --border-radius-1: 0.4rem;
-        --border-radius-2: 1.2rem;
-
-        --card-padding: 1.8rem;
-        --padding-1: 1.2rem;
-
-        --box-shadow: 0 2rem 3rem var(--color-light);
-      }
-
-      .dark-mode-variables {
-        --color-background: #181a1e;
-        --color-white: #202528;
-        --color-dark: #edeffd;
-        --color-dark-variant: #a3bdcc;
-        --color-light: rgba(0, 0, 0, 0.4);
-        --box-shadow: 0 2rem 3rem var(--color-light);
-      }
-
-      * {
-        margin: 0;
-        padding: 0;
-        outline: 0;
-        appearance: 0;
-        border: 0;
-        text-decoration: none;
-        box-sizing: border-box;
-      }
-      html {
-        font-size: 14px;
-      }
-      body {
-        width: 100vw;
-        height: 100vh;
-        font-family: "Poppins", sans-serif;
-        font-size: 0.88rem;
-        user-select: none;
-        overflow-x: hidden;
-        color: var(--color-dark);
-        background: var(--color-background);
-      }
-      a {
-        color: var(--color-dark);
-      }
-      img {
-        display: block;
-        width: 100%;
-        object-fit: cover;
-      }
-      h1 {
-        font-weight: 800;
-        font-size: 1.8rem;
-      }
-      h2 {
-        font-weight: 600;
-        font-size: 1.4rem;
-      }
-      h3 {
-        font-weight: 500;
-        font-size: 0.87rem;
-      }
-      small {
-        font-size: 0.76rem;
-      }
-      p {
-        color: var(--color-dark-variant);
-      }
-      b {
-        color: var(--color-dark);
-      }
-      .text-muted {
-        color: var(--color-info-dark);
-      }
-      .primary {
-        color: var(--color-primary);
-      }
-      .danger {
-        color: var(--color-danger);
-      }
-      .success {
-        color: var(--color-success);
-      }
-      .warning {
-        color: var(--color-warning);
-      }
-
-      /* ===== LAYOUT (kept) ===== */
-      .container {
-        display: grid;
-        width: 96%;
-        margin: 0 auto;
-        gap: 1.8rem;
-        grid-template-columns: 12rem auto 23rem;
-      }
-      aside {
-        height: 100vh;
-      }
-      aside .toggle {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-top: 1.4rem;
-      }
-      aside .toggle .logo {
-        display: flex;
-        gap: 0.5rem;
-      }
-      aside .toggle .logo img {
-        width: 2rem;
-        height: 2rem;
-      }
-      aside .toggle .close {
-        padding-right: 1rem;
-        display: none;
-      }
-      aside .sidebar {
-        display: flex;
-        flex-direction: column;
-        background: var(--color-white);
-        box-shadow: var(--box-shadow);
-        border-radius: 15px;
-        height: 88vh;
-        position: relative;
-        top: 1.5rem;
-        transition: 0.3s;
-      }
-      aside .sidebar:hover {
-        box-shadow: none;
-      }
-      aside .sidebar a {
-        display: flex;
-        align-items: center;
-        color: var(--color-info-dark);
-        height: 3.7rem;
-        gap: 1rem;
-        position: relative;
-        margin-left: 2rem;
-        transition: 0.3s;
-      }
-      aside .sidebar a span {
-        font-size: 1.6rem;
-        transition: 0.3s;
-      }
-      aside .sidebar a:last-child {
-        position: absolute;
-        bottom: 2rem;
-        width: 100%;
-      }
-      aside .sidebar a.active {
-        width: 100%;
-        color: var(--color-primary);
-        background: var(--color-light);
-        margin-left: 0;
-      }
-      aside .sidebar a.active::before {
-        content: "";
-        width: 6px;
-        height: 18px;
-        background: var(--color-primary);
-      }
-      aside .sidebar a.active span {
-        color: var(--color-primary);
-        margin-left: calc(1rem - 3px);
-      }
-      aside .sidebar a:hover {
-        color: var(--color-primary);
-      }
-      aside .sidebar a:hover span {
-        margin-left: 0.6rem;
-      }
-      aside .sidebar .message-count {
-        background: var(--color-danger);
-        padding: 2px 6px;
-        color: var(--color-white);
-        font-size: 11px;
-        border-radius: var(--border-radius-1);
-      }
-
-      @media (max-width: 1200px) {
-        .container {
-          width: 95%;
-          grid-template-columns: 7rem auto 23rem;
-        }
-        aside .logo h2 {
-          display: none;
-        }
-        aside .sidebar h3 {
-          display: none;
-        }
-        aside .sidebar a {
-          width: 5.6rem;
-        }
-        aside .sidebar a:last-child {
-          position: relative;
-          margin-top: 1.8rem;
-        }
-      }
-      @media (max-width: 768px) {
-        .container {
-          width: 100%;
-          grid-template-columns: 1fr;
-          padding: 0 var(--padding-1);
-        }
-        aside {
-          position: fixed;
-          background: var(--color-white);
-          width: 15rem;
-          z-index: 3;
-          box-shadow: 1rem 3rem 4rem var(--color-light);
-          height: 100vh;
-          left: -100%;
-          display: none;
-          animation: showMenu 0.4s ease forwards;
-        }
-        @keyframes showMenu {
-          to {
-            left: 0;
-          }
-        }
-        aside .logo {
-          margin-left: 1rem;
-        }
-        aside .logo h2,
-        aside .sidebar h3 {
-          display: inline;
-        }
-        aside .sidebar a {
-          width: 100%;
-          height: 3.4rem;
-        }
-        aside .sidebar a:last-child {
-          position: absolute;
-          bottom: 5rem;
-        }
-        aside .toggle .close {
-          display: inline-block;
-          cursor: pointer;
-        }
-      }
-
       /* ===== MAIN CONTENT (new) ===== */
       main {
-        width: 100%;
-        max-width: 1100px;
-        margin: 0 auto 3rem;
+        margin-top: 1.4rem;
       }
       .page-header {
         display: flex;
         flex-direction: column;
         gap: 0.4rem;
-        margin-top: 2rem;
       }
       .page-header h1 {
         color: #1c2430;
@@ -283,8 +27,15 @@
         font-size: 0.9rem;
       }
 
-      .searchbar {
+      /* Search + Filters row */
+      .searchBarDiv {
         margin-top: 1rem;
+        display: grid;
+        grid-template-columns: 1.5fr repeat(3, auto); /* search + price + category + level */
+        gap: 0.6rem;
+        align-items: center;
+      }
+      .searchDiv {
         background: var(--color-white);
         border-radius: 999px;
         box-shadow: var(--box-shadow);
@@ -293,15 +44,85 @@
         gap: 0.6rem;
         padding: 0.8rem 1.2rem;
       }
-      .searchbar input {
+      .searchDiv input {
         flex: 1;
         background: transparent;
         font: inherit;
         color: var(--color-dark);
+        border: none;
+        outline: none;
       }
-      .searchbar .material-icons-sharp {
+      .searchDiv .material-icons-sharp {
         font-size: 1.2rem;
         color: var(--color-info-dark);
+      }
+
+      /* Dropdowns */
+      .dropdown {
+        position: relative;
+      }
+      .dropbtn {
+        padding: 0.7rem 1rem;
+        border-radius: 999px;
+        border: 1px solid #e5e7eb;
+        background: #fff;
+        box-shadow: var(--box-shadow);
+        cursor: pointer;
+        font-weight: 600;
+      }
+      .dropdown-content {
+        position: absolute;
+        top: 110%;
+        right: 0;
+        min-width: 220px;
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        box-shadow: var(--box-shadow);
+        display: none;
+        z-index: 10;
+        padding: 0.4rem;
+      }
+      .dropdown.open .dropdown-content {
+        display: block;
+      }
+      .dropdown-content a {
+        display: block;
+        padding: 0.6rem 0.8rem;
+        border-radius: 10px;
+        color: #1f2937;
+        text-decoration: none;
+        font-size: 0.92rem;
+      }
+      .dropdown-content a:hover {
+        background: #f3f4f6;
+      }
+
+      /* Price range mini-form inside dropdown */
+      .price-controls {
+        padding: 0.6rem 0.8rem;
+        display: grid;
+        gap: 0.5rem;
+      }
+      .price-controls .row {
+        display: flex;
+        gap: 0.5rem;
+      }
+      .price-controls input {
+        width: 100%;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        padding: 0.5rem 0.6rem;
+      }
+      .price-controls button {
+        width: 100%;
+        border: none;
+        border-radius: 999px;
+        padding: 0.6rem 0.8rem;
+        cursor: pointer;
+        font-weight: 600;
+        background: #3bbf67;
+        color: #fff;
       }
 
       .cards {
@@ -324,9 +145,10 @@
         display: flex;
         flex-direction: column;
       }
-      .job-card .thumb {
-        height: 180px;
-        background: #ddd;
+      .thumb img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
       }
       .job-card .content {
         padding: 1rem 1.2rem;
@@ -349,10 +171,8 @@
         color: #6b7280;
         border: 1px solid #e5e7eb;
       }
-
       .info-grid {
         display: grid;
-        grid-template-columns: 1fr 1fr;
         gap: 0.6rem;
         margin: 0.6rem 0 0.8rem;
       }
@@ -363,7 +183,6 @@
         font-size: 0.86rem;
         margin: 0.4rem 0 1rem;
       }
-
       .apply {
         margin: 0 1.2rem 1.2rem;
         border-radius: 999px;
@@ -385,63 +204,76 @@
         margin: 1rem 0 2rem;
         font-size: 0.85rem;
       }
+
+      /*JOB TITLE & CATEGORY SA ILALIM NG PIC*/
+      .contentFirstRow {
+        display: flex;
+        grid-template-columns: 1fr 1fr;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      /* Tiny helper to show the current filter on the button */
+      .dropbtn .current {
+        color: #6b7280;
+        font-weight: 500;
+        margin-left: 0.3rem;
+      }
     </style>
   </head>
   <body>
     <div class="container">
-      <!-- Sidebar -->
+      <!-- Sidebar Section -->
       <aside>
         <div class="toggle">
           <div class="logo">
-            <img src="../images/logo.png" alt="logo" />
-            <h2>Asmr<span class="danger">Prog</span></h2>
+            <img src="#" />
+            <h2>SIMP<span class="danger">Project</span></h2>
           </div>
           <div class="close" id="close-btn">
             <span class="material-icons-sharp">close</span>
           </div>
         </div>
-
         <div class="sidebar">
-          <a href="dashboard.html">
-            <span class="material-icons-sharp">dashboard</span>
-            <h3>Dashboard</h3>
-          </a>
-          <a href="job.html" class="active">
-            <span class="material-icons-sharp">work_outline</span>
-            <h3>Jobs</h3>
-          </a>
-          <a href="myApplication.html">
-            <span class="material-icons-sharp">receipt_long</span>
-            <h3>My Application</h3>
-          </a>
-          <a href="courses.html">
-            <span class="material-icons-sharp">insights</span>
-            <h3>Courses</h3>
-          </a>
-          <a href="shop.html">
-            <span class="material-icons-sharp">mail_outline</span>
-            <h3>Shop</h3>
-            <span class="message-count">27</span>
-          </a>
-          <a href="earnings.html">
-            <span class="material-icons-sharp">inventory</span>
-            <h3>Earnings</h3>
-          </a>
-          <a href="documents.html">
-            <span class="material-icons-sharp">report_gmailerrorred</span>
-            <h3>Documents</h3>
-          </a>
-          <a href="settings.html">
-            <span class="material-icons-sharp">settings</span>
-            <h3>Settings</h3>
-          </a>
-          <a href="#" id="logout-btn">
-            <span class="material-icons-sharp">logout</span>
-            <h3>Logout</h3>
-          </a>
+          <a href="dashboard.html"
+            ><span class="material-icons-sharp">dashboard</span>
+            <h3>Dashboard</h3></a
+          >
+          <a href="job.html" class="active"
+            ><span class="material-icons-sharp">work</span>
+            <h3>Jobs</h3></a
+          >
+          <a href="myApplication.html"
+            ><span class="material-icons-sharp">receipt</span>
+            <h3>My Application</h3></a
+          >
+          <a href="courses.html"
+            ><span class="material-icons-sharp">school</span>
+            <h3>Courses</h3></a
+          >
+          <a href="shop.html"
+            ><span class="material-icons-sharp">shopping_cart</span>
+            <h3>Shop</h3></a
+          >
+          <a href="earnings.html"
+            ><span class="material-icons-sharp">account_balance</span>
+            <h3>Earnings</h3></a
+          >
+          <a href="documents.html"
+            ><span class="material-icons-sharp">file_copy</span>
+            <h3>Documents</h3></a
+          >
+          <a href="settings.html"
+            ><span class="material-icons-sharp">settings</span>
+            <h3>Settings</h3></a
+          >
+          <a href="#" id="logout-btn"
+            ><span class="material-icons-sharp">logout</span>
+            <h3>Logout</h3></a
+          >
         </div>
       </aside>
-      <!-- /Sidebar -->
+      <!-- End of Sidebar Section -->
 
       <!-- Main content column (center) -->
       <main>
@@ -450,79 +282,65 @@
           <p>Explore career opportunities near you.</p>
         </div>
 
-        <div class="searchbar">
-          <span class="material-icons-sharp">search</span>
-          <input type="text" placeholder="Search jobs" />
+        <!-- SEARCH + FILTERS -->
+        <div class="searchBarDiv">
+          <!-- Search -->
+          <div class="searchDiv">
+            <span class="material-icons-sharp">search</span>
+            <input
+              id="searchInput"
+              type="text"
+              placeholder="Search jobs (title, description, location)"
+            />
+          </div>
+
+          <!-- Price -->
+          <div class="dropdown" data-filter="price">
+            <button class="dropbtn">
+              Price<span class="current" id="priceLabel"></span>
+            </button>
+            <div class="dropdown-content">
+              <div class="price-controls">
+                <div class="row">
+                  <input
+                    id="minPrice"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    placeholder="Min ₱"
+                  />
+                  <input
+                    id="maxPrice"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    placeholder="Max ₱"
+                  />
+                </div>
+                <button id="applyPrice">Apply range</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Category (FIXED LIST) -->
+          <div class="dropdown" data-filter="category">
+            <button class="dropbtn">
+              Category<span class="current" id="categoryLabel"></span>
+            </button>
+            <div class="dropdown-content" id="categoryMenu"></div>
+          </div>
+
+          <!-- Level (1–10 FIXED) -->
+          <div class="dropdown" data-filter="level">
+            <button class="dropbtn">
+              Level<span class="current" id="levelLabel"></span>
+            </button>
+            <div class="dropdown-content" id="levelMenu"></div>
+          </div>
         </div>
 
-        <section class="cards">
-          <!-- Card 1 -->
-          <article class="job-card">
-            <div class="thumb">
-              <img
-                src="https://picsum.photos/800/400?random=4"
-                alt="Job image"
-              />
-            </div>
-            <div class="content">
-              <div class="title">Job Title</div>
-              <div class="meta-row">
-                <span class="pill">Category</span>
-                <span class="pill">Difficulty</span>
-              </div>
-              <div class="info-grid">
-                <div>
-                  <div class="label">Pay</div>
-                  <small class="text-muted">—</small>
-                </div>
-                <div>
-                  <div class="label">Date/Time</div>
-                  <small class="text-muted">—</small>
-                </div>
-                <div>
-                  <div class="label">Location</div>
-                  <small class="text-muted">—</small>
-                </div>
-              </div>
-              <div class="desc">Description here</div>
-            </div>
-            <button class="apply">Apply for this Job!</button>
-          </article>
-
-          <!-- Card 2 -->
-          <article class="job-card">
-            <div class="thumb">
-              <img
-                src="https://picsum.photos/800/400?random=7"
-                alt="Job image"
-              />
-            </div>
-            <div class="content">
-              <div class="title">Job Title</div>
-              <div class="meta-row">
-                <span class="pill">Category</span>
-                <span class="pill">Difficulty</span>
-              </div>
-              <div class="info-grid">
-                <div>
-                  <div class="label">Pay</div>
-                  <small class="text-muted">—</small>
-                </div>
-                <div>
-                  <div class="label">Date/Time</div>
-                  <small class="text-muted">—</small>
-                </div>
-                <div>
-                  <div class="label">Location</div>
-                  <small class="text-muted">—</small>
-                </div>
-              </div>
-              <div class="desc">Description here</div>
-            </div>
-            <button class="apply">Apply for this Job!</button>
-          </article>
-        </section>
-
+        <!-- CARDS -->
+        <section class="cards"></section>
         <div class="scroll-tip">Scroll down for more</div>
       </main>
 
@@ -530,7 +348,291 @@
       <div></div>
     </div>
     <!-- CLOSE .container AT THE END -->
+
+    <script src="../../general_files/index.js"></script>
+    <script type="module" src="../../general_files/session.js"></script>
+    <!-- Supabase UMD build -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+
+    <script>
+      const { createClient } = supabase;
+
+      // ✅ Your Supabase project details
+      const SUPABASE_URL = "https://gxydxmobwrccqagltlci.supabase.co";
+      const SUPABASE_ANON_KEY =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd4eWR4bW9id3JjY3FhZ2x0bGNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUxNDMzOTMsImV4cCI6MjA3MDcxOTM5M30.Zk2xUlmlPGbe-7rDsqC486Js9LGFMMOp-fytNZSwzBs";
+      const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+      // ---------- helpers ----------
+      const $ = (sel) => document.querySelector(sel);
+      const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+      const esc = (str) =>
+        String(str ?? "").replace(
+          /[&<>"']/g,
+          (s) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            }[s])
+        );
+      const fmtPeso = (n) => {
+        const v = typeof n === "string" ? parseFloat(n) : n;
+        return isNaN(v)
+          ? "-"
+          : v.toLocaleString("en-PH", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            });
+      };
+      const fmtDate = (d) =>
+        d ? new Date(d + "T00:00:00").toLocaleDateString() : "-";
+      const fmtTime = (t) => (t ? String(t).slice(0, 5) : "");
+
+      // Build PUBLIC URL from jobs bucket
+      function publicJobImageUrl(rawPath, postedBy) {
+        if (!rawPath) return "";
+        if (/^https?:\/\//i.test(rawPath)) return rawPath;
+        let clean = String(rawPath)
+          .replace(/^\/+/, "")
+          .replace(/^jobs\//, "");
+        if (clean && !clean.includes("/") && postedBy)
+          clean = `${postedBy}/${clean}`;
+        const { data } = sb.storage.from("jobs").getPublicUrl(clean);
+        return data?.publicUrl || "";
+      }
+
+      // ---------- FIXED FILTER OPTIONS ----------
+      const FIXED_CATEGORIES = [
+        "", // All
+        "Electrical",
+        "Safety",
+        "Networking",
+        "CCTV",
+        "Plumbing",
+        "General Services",
+      ];
+      const FIXED_LEVELS = [
+        "",
+        ...Array.from({ length: 10 }, (_, i) => String(i + 1)),
+      ];
+
+      // ---------- state ----------
+      let ALL_JOBS = [];
+      const FILTERS = {
+        q: "", // text search
+        minPrice: null, // number | null
+        maxPrice: null, // number | null
+        category: "", // exact match
+        level: "", // exact match (1..10)
+      };
+
+      // ---------- rendering ----------
+      function renderJobs(list) {
+        const container = $(".cards");
+        container.innerHTML = "";
+        if (!list || list.length === 0) {
+          container.innerHTML =
+            '<div class="scroll-tip">No jobs match your filters.</div>';
+          return;
+        }
+        for (const job of list) {
+          const imgUrl = publicJobImageUrl(job.job_picture_url, job.posted_by);
+          const card = document.createElement("article");
+          card.className = "job-card";
+          card.innerHTML = `
+          <div class="thumb">
+            <img src="${imgUrl || "../images/profile-4.jpg"}" alt="Job image"
+              onerror="this.onerror=null;console.warn('Image not found:', this.src); this.src='../images/profile-4.jpg';" />
+          </div>
+          <div class="content">
+            <div class="contentFirstRow">
+              <div class="title">${esc(job.job_title)}</div>
+              <div class="meta-row">
+                <span class="pill">${esc(
+                  job.job_category || "Uncategorized"
+                )}</span>
+                <span class="pill">Difficulty: ${esc(
+                  job.job_difficulty ?? ""
+                )}</span>
+              </div>
+            </div>
+            <div class="info-grid">
+              <div><div class="label">Pay: ₱${fmtPeso(job.job_pay)}</div></div>
+              <div><div class="label">Date/Time: ${fmtDate(
+                job.job_date
+              )} ${fmtTime(job.job_time)}</div></div>
+              <div><div class="label">Location: ${esc(
+                job.job_location || "Not specified"
+              )}</div></div>
+            </div>
+            <div class="desc">${esc(
+              job.job_description || "No description provided"
+            )}</div>
+          </div>
+          <button class="apply" data-job-id="${
+            job.job_id
+          }">Apply for this Job!</button>
+        `;
+          container.appendChild(card);
+        }
+      }
+
+      function populateMenus() {
+        const fillMenu = (el, values) => {
+          el.innerHTML = values
+            .map(
+              (v) =>
+                `<a href="#" data-value="${esc(v)}">${v ? esc(v) : "All"}</a>`
+            )
+            .join("");
+        };
+
+        fillMenu($("#categoryMenu"), FIXED_CATEGORIES);
+        fillMenu($("#levelMenu"), FIXED_LEVELS);
+
+        updateButtonLabels();
+      }
+
+      function updateButtonLabels() {
+        $("#priceLabel").textContent =
+          FILTERS.minPrice || FILTERS.maxPrice
+            ? `(${FILTERS.minPrice ?? 0}–${FILTERS.maxPrice ?? "∞"})`
+            : "";
+        $("#categoryLabel").textContent = FILTERS.category
+          ? `(${FILTERS.category})`
+          : "";
+        $("#levelLabel").textContent = FILTERS.level
+          ? `(${FILTERS.level})`
+          : "";
+      }
+
+      // Apply filters to ALL_JOBS
+function applyFilters() {
+  let list = [...ALL_JOBS];
+
+  // text search across title/desc/location
+  const q = (FILTERS.q || "").trim().toLowerCase();
+  if (q) {
+    list = list.filter((j) => {
+      const hay = [j.job_title, j.job_description, j.job_location]
+        .map((x) => String(x ?? "").toLowerCase())
+        .join(" | ");
+      return hay.includes(q);
+    });
+  }
+
+  // category
+  if (FILTERS.category)
+    list = list.filter(
+      (j) => String(j.job_category || "") === FILTERS.category
+    );
+
+  // level (difficulty)
+  if (FILTERS.level)
+    list = list.filter(
+      (j) => String(j.job_difficulty || "") === FILTERS.level
+    );
+
+  // price range
+  const toNum = (v) =>
+    v === null || v === "" || Number.isNaN(v) ? null : Number(v);
+  const minP = toNum(FILTERS.minPrice);
+  const maxP = toNum(FILTERS.maxPrice);
+
+  if (minP !== null)
+    list = list.filter((j) => Number(j.job_pay ?? 0) >= minP);
+  if (maxP !== null)
+    list = list.filter((j) => Number(j.job_pay ?? 0) <= maxP);
+
+  renderJobs(list);
+  updateButtonLabels();
+}
+
+
+      // ---------- main ----------
+      async function loadJobs() {
+        const container = $(".cards");
+        if (!container) {
+          console.error(
+            'Missing .cards element. Ensure <section class="cards"> exists.'
+          );
+          return;
+        }
+        container.innerHTML = '<div class="scroll-tip">Loading jobs…</div>';
+
+        const { data: jobs, error } = await sb
+          .from("job")
+          .select(
+            "job_id, posted_by, job_title, job_description, job_difficulty, job_category, job_location, job_date, job_time, job_pay, job_picture_url, created_at"
+          )
+          .order("created_at", { ascending: false });
+
+        if (error) {
+          console.error("Error fetching jobs:", error);
+          container.innerHTML = `<div class="scroll-tip">Could not load jobs: ${esc(
+            error.message || "Check URL/key & RLS"
+          )}</div>`;
+          return;
+        }
+
+        ALL_JOBS = jobs || [];
+        populateMenus(); // fixed menus
+        applyFilters(); // initial render
+      }
+
+      // ---------- UI wiring ----------
+      // Open/close dropdowns (click outside closes)
+      document.addEventListener("click", (e) => {
+        const dd = e.target.closest(".dropdown");
+        // Close all
+        $$(".dropdown").forEach((d) => d.classList.remove("open"));
+        // Toggle the one clicked (if any)
+        if (dd) dd.classList.add("open");
+      });
+
+      // Category / Level option clicks
+      ["categoryMenu", "levelMenu"].forEach((menuId) => {
+        const menu = document.getElementById(menuId);
+        menu.addEventListener("click", (e) => {
+          const a = e.target.closest("a[data-value]");
+          if (!a) return;
+          e.preventDefault();
+          const value = a.getAttribute("data-value");
+          if (menuId === "categoryMenu") FILTERS.category = value;
+          if (menuId === "levelMenu") FILTERS.level = value;
+          applyFilters();
+          // close the dropdown
+          menu.closest(".dropdown").classList.remove("open");
+        });
+      });
+
+      // Price apply
+      $("#applyPrice").addEventListener("click", () => {
+        const min = $("#minPrice").value ? Number($("#minPrice").value) : null;
+        const max = $("#maxPrice").value ? Number($("#maxPrice").value) : null;
+        FILTERS.minPrice = Number.isFinite(min) ? min : null;
+        FILTERS.maxPrice = Number.isFinite(max) ? max : null;
+        applyFilters();
+        $("#minPrice").blur();
+        $("#maxPrice").blur();
+        $("#applyPrice").closest(".dropdown").classList.remove("open");
+      });
+
+      // Search (debounced)
+      let tId;
+      $("#searchInput").addEventListener("input", (e) => {
+        clearTimeout(tId);
+        tId = setTimeout(() => {
+          FILTERS.q = e.target.value || "";
+          applyFilters();
+        }, 200);
+      });
+
+      // Load
+      document.addEventListener("DOMContentLoaded", loadJobs);
+    </script>
   </body>
-  <script src="../../general_files/index.js"></script>
-  <script type="module" src="../../general_files/session.js"></script>
 </html>
