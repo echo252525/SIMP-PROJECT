@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css_files/sideBar.css" />
+    <title>Courses</title>
+    <style>
+      main {
+        margin-top: 1.4rem;
+      }
+
+      /* ===== Status pill (MAIN ONLY) ===== */
+      main .statusDiv {
+        --brand: #20a44c;
+        --accent: #20647c;
+        --pct: 0%;
+        display: inline-grid;
+        grid-auto-flow: column;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.6rem 0.9rem 0.9rem;
+        /* extra bottom for progress strip */
+        border: 1px solid #cfe4ea;
+        border-radius: 14px;
+        background: radial-gradient(
+          140% 140% at -10% -10%,
+          #eefaf2 0%,
+          #ffffff 55%
+        );
+        color: #0f172a;
+        font-weight: 700;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+        position: relative;
+        max-width: 100%;
+        transition: transform 0.12s ease, box-shadow 0.22s ease,
+          border-color 0.2s ease;
+      }
+
+      main .statusDiv .material-icons-sharp {
+        font-size: 22px;
+        color: var(--accent);
+        filter: drop-shadow(0 1px 1px rgba(32, 100, 124, 0.15));
+      }
+
+      main .statusDiv .label {
+        color: #374151;
+      }
+
+      main .statusDiv .value {
+        color: var(--brand);
+      }
+
+      /* Fun micro-interactions */
+      @keyframes badgePop {
+        0% {
+          transform: scale(0.96);
+        }
+
+        60% {
+          transform: scale(1.04);
+        }
+
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      main .statusDiv:hover {
+        transform: translateY(-1px);
+        border-color: #b7e3c7;
+        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+      }
+
+      main .statusDiv:hover .material-icons-sharp {
+        animation: badgePop 0.24s ease;
+      }
+
+      /* Reduced motion */
+      @media (prefers-reduced-motion: reduce) {
+        main .statusDiv,
+        main .statusDiv * {
+          animation: none !important;
+          transition: none !important;
+        }
+      }
+
+      /*MAIN CONTENT HERE*/
+      /*ROOT FOR COURSE CARD*/
+      :root {
+        --card-bg: #fff;
+        --text: #2b2b2b;
+        --muted: #6b7280;
+        --pill: #f0f2f5;
+        --green: #22c55e;
+        --green-600: #16a34a;
+        --border: #e5e7eb;
+        --shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+        --radius: 16px;
+      }
+
+      /* wrapper */
+      .course-card {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        background: var(--card-bg);
+        color: var(--text);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 14px 18px;
+        box-shadow: var(--shadow);
+      }
+
+      /* left image */
+      .course-image {
+        flex: 0 0 220px;
+        /* image column width */
+        height: 120px;
+        border-radius: 12px;
+        overflow: hidden;
+      }
+
+      .course-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+
+      /* middle */
+      .course-content {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        min-width: 0;
+        /* enables text truncation */
+        flex: 1 1 auto;
+      }
+
+      .course-text h3 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 700;
+      }
+
+      .course-text p {
+        margin: 6px 0 0;
+        font-size: 13px;
+        line-height: 1.4;
+        color: var(--muted);
+      }
+
+      /* tags */
+      .course-tags {
+        display: flex;
+        gap: 10px;
+      }
+
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        padding: 6px 12px;
+        font-size: 12px;
+        border-radius: 999px;
+        background: var(--pill);
+        color: #555;
+        white-space: nowrap;
+      }
+
+      .tag.level {
+        border: 1px solid var(--green);
+        background: #ecfdf5;
+        color: var(--green-600);
+      }
+
+      /* right actions */
+      .course-actions {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 10px;
+        margin-left: auto;
+        /* push to the far right */
+        min-width: 120px;
+      }
+
+      .duration {
+        font-size: 12px;
+        color: #7a7a7a;
+      }
+
+      .enroll-btn {
+        padding: 10px 18px;
+        font-size: 14px;
+        border-radius: 999px;
+        border: none;
+        background: #20a44c;
+        color: #fff;
+        cursor: pointer;
+      }
+
+      .enroll-btn:hover {
+        background: var(--green-600);
+      }
+
+      /* responsiveness */
+      @media (max-width: 760px) {
+        .course-card {
+          flex-wrap: wrap;
+          gap: 14px;
+        }
+
+        .course-image {
+          flex: 1 1 100%;
+          height: 160px;
+          border-radius: 12px;
+        }
+
+        .course-actions {
+          width: 100%;
+          flex-direction: row;
+          justify-content: space-between;
+          align-items: center;
+          margin-left: 0;
+        }
+      }
+
+      /* ===== MAIN — ANIMATIONS ONLY ===== */
+      main {
+        --brand: #20a44c;
+        --accent: #20647c;
+        scroll-behavior: smooth;
+      }
+
+      /* Title fade-up */
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(6px);
+        }
+
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+
+      main .titlePageDiv h1 {
+        animation: fadeUp 0.28s ease both;
+      }
+
+      main .titlePageDiv p {
+        animation: fadeUp 0.28s ease 0.06s both;
+      }
+
+      /* Search bar focus glow */
+      main .searchDiv {
+        transition: box-shadow 0.2s ease, border-color 0.2s ease;
+      }
+
+      main .searchDiv:focus-within {
+        box-shadow: 0 0 0 3px rgba(32, 164, 76, 0.18);
+        border-color: #b7e3c7;
+      }
+
+      /* Dropdown: fade/slide open */
+      main .dropdown {
+        position: relative;
+      }
+
+      main .dropdown-content {
+        display: block;
+        opacity: 0;
+        transform: translateY(-6px) scale(0.98);
+        pointer-events: none;
+        visibility: hidden;
+        transition: opacity 0.18s ease, transform 0.18s ease,
+          visibility 0.18s linear;
+        z-index: 5;
+      }
+
+      main .dropdown:hover .dropdown-content {
+        opacity: 1;
+        transform: none;
+        pointer-events: auto;
+        visibility: visible;
+      }
+
+      /* Course card: staggered entrance + hover lift */
+      @keyframes cardIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+
+      main .course-card {
+        animation: cardIn 0.34s ease both;
+        transition: transform 0.12s ease, box-shadow 0.22s ease,
+          border-color 0.2s ease;
+      }
+
+      main .course-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 14px 32px rgba(0, 0, 0, 0.08);
+        border-color: #d1d5db;
+      }
+
+      /* Image zoom + shine sweep */
+      @keyframes shine {
+        to {
+          transform: translateX(250%) rotate(25deg);
+        }
+      }
+
+      main .course-image {
+        position: relative;
+        overflow: hidden;
+      }
+
+      main .course-image img {
+        transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+      }
+
+      main .course-card:hover .course-image img {
+        transform: scale(1.04);
+      }
+
+      main .course-image::after {
+        content: "";
+        position: absolute;
+        top: -50%;
+        left: -60%;
+        width: 60%;
+        height: 200%;
+        background: linear-gradient(
+          120deg,
+          rgba(255, 255, 255, 0) 0,
+          rgba(255, 255, 255, 0.45) 50%,
+          rgba(255, 255, 255, 0) 100%
+        );
+        transform: translateX(-150%) rotate(25deg);
+        pointer-events: none;
+      }
+
+      main .course-card:hover .course-image::after {
+        animation: shine 0.9s ease;
+      }
+
+      /* Tags: tiny hover pop */
+      main .tag {
+        transition: transform 0.12s ease, box-shadow 0.2s ease;
+      }
+
+      main .tag:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 14px rgba(0, 0, 0, 0.06);
+      }
+
+      /* Enroll button: glow + soft ripple */
+      @keyframes glow {
+        0%,
+        100% {
+          box-shadow: 0 6px 18px rgba(32, 164, 76, 0.22);
+        }
+
+        50% {
+          box-shadow: 0 10px 28px rgba(32, 164, 76, 0.32);
+        }
+      }
+
+      main .enroll-btn {
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.06s ease, box-shadow 0.22s ease,
+          background 0.2s ease;
+      }
+
+      main .enroll-btn:hover {
+        transform: translateY(-1px);
+        animation: glow 1.4s ease-in-out infinite;
+      }
+
+      main .enroll-btn::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+          120px 120px at 50% 50%,
+          rgba(255, 255, 255, 0.28),
+          rgba(255, 255, 255, 0) 70%
+        );
+        opacity: 0;
+        transform: scale(0.6);
+        transition: opacity 0.35s ease, transform 0.35s ease;
+      }
+
+      main .enroll-btn:hover::after {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      /* Progressive enhancement: scroll reveal */
+      @supports (animation-timeline: view()) {
+        @keyframes revealOnScroll {
+          from {
+            opacity: 0;
+            transform: translateY(14px);
+          }
+
+          to {
+            opacity: 1;
+            transform: none;
+          }
+        }
+
+        main .course-card {
+          animation: revealOnScroll linear both;
+          animation-timeline: view();
+          animation-range: entry 15% cover 30%;
+        }
+      }
+
+      /* Reduced motion accessibility */
+      @media (prefers-reduced-motion: reduce) {
+        main * {
+          animation: none !important;
+          transition: none !important;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <!-- Sidebar Section -->
+      <aside>
+        <div class="toggle">
+          <div class="logo">
+            <img src="../images/STEQ Logo 3.png" />
+            <h2>SIMP<span class="danger">Project</span></h2>
+          </div>
+          <div class="close" id="close-btn">
+            <span class="material-icons-sharp">close</span>
+          </div>
+        </div>
+
+        <div class="sidebar">
+          <a href="dashboard.html">
+            <span class="material-icons-sharp">dashboard</span>
+            <h3>Dashboard</h3>
+          </a>
+          <a href="job.html">
+            <span class="material-icons-sharp">work</span>
+            <h3>Jobs</h3>
+          </a>
+          <a href="myApplication.html">
+            <span class="material-icons-sharp">receipt</span>
+            <h3>My Application</h3>
+          </a>
+          <a href="courses.html" class="active">
+            <span class="material-icons-sharp">school</span>
+            <h3>Courses</h3>
+          </a>
+          <a href="shop.html">
+            <span class="material-icons-sharp">shopping_cart</span>
+            <h3>Shop</h3>
+          </a>
+          <a href="#">
+            <span class="material-icons-sharp">account_balance</span>
+            <h3>Earnings</h3>
+          </a>
+          <a href="#">
+            <span class="material-icons-sharp">file_copy</span>
+            <h3>Documents</h3>
+          </a>
+          <a href="#">
+            <span class="material-icons-sharp">settings</span>
+            <h3>Settings</h3>
+          </a>
+          <a href="#" id="logout-btn">
+            <span class="material-icons-sharp">logout</span>
+            <h3>Logout</h3>
+          </a>
+        </div>
+      </aside>
+      <!-- End of Sidebar Section -->
+
+      <!--MAIN CONTENT-->
+      <main>
+        <div class="titlePageDiv">
+          <h1>Available courses</h1>
+          <p>Level up your skills and qualify for more job opportunities.</p>
+        </div>
+
+        <div class="searchBarDiv">
+          <div class="searchDiv">
+            <span class="material-icons-sharp">search</span>
+            <input type="text" placeholder="Search courses" />
+          </div>
+
+          <div class="dropdown">
+            <button class="dropbtn">Skills</button>
+            <div class="dropdown-content">
+              <a href="#">add skill</a>
+              <a href="#">add skill</a>
+              <a href="#">add skill</a>
+            </div>
+          </div>
+
+          <div class="dropdown">
+            <button class="dropbtn">Completed Courses</button>
+            <div class="dropdown-content">
+              <a href="#">Total Completed Courses</a>
+              <a href="#">To Continue</a>
+            </div>
+          </div>
+
+          <div
+            class="statusDiv"
+            role="status"
+            aria-label="Current skill level 0"
+          >
+            <span class="material-icons-sharp" aria-hidden="true"
+              >workspace_premium</span
+            >
+            <span class="label">Status:</span>
+            <strong class="value">Level 0</strong>
+          </div>
+        </div>
+
+        <div class="course-card">
+          <!-- Left side: Image -->
+          <div class="course-image">
+            <img src="../images/profile-4.jpg" alt="Networking Fundamentals" />
+          </div>
+
+          <!-- Right side: Content -->
+          <div class="course-content">
+            <!-- Title + Description -->
+            <div class="course-text">
+              <h3>Networking Fundamentals</h3>
+              <p>
+                Learn the essential concepts, tools, and practices to set up,
+                manage, and troubleshoot computer networks with confidence.
+              </p>
+            </div>
+
+            <!-- Tags (Networking + Level 4) -->
+            <div class="course-tags">
+              <span class="tag">Networking</span>
+              <span class="tag level">Level 4</span>
+            </div>
+          </div>
+
+          <!-- Right side: Duration + Enroll -->
+          <div class="course-actions">
+            <span class="duration">2 hour video</span>
+            <button class="enroll-btn">Enroll</button>
+          </div>
+        </div>
+
+        <div class="course-card-subpage">
+          <div class="course-vid">
+            <iframe
+              width="70%"
+              height="90%"
+              src="https://www.youtube.com/watch?v=bj-Yfakjllcautoplay=1&mute=1"
+            >
+            </iframe>
+          </div>
+        </div>
+      </main>
+      <!--END MAIN CONTENT-->
+    </div>
+    <script src="../../general_files/index.js"></script>
+    <script type="module" src="../../general_files/session.js"></script>
+  </body>
+</html>

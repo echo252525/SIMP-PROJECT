@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css_files/sideBar.css" />
+    <title>Application</title>
+    <style>
+      /* MAIN CONTENT */
+      main {
+        margin-top: 1.4rem;
+      }
+
+      /* Title */
+      .titlePageDiv h1 {
+        line-height: 1.2;
+        margin-bottom: 0.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .titlePageDiv h1 .material-icons-sharp {
+        font-size: 26px;
+        color: #20647c;
+      }
+
+      .titlePageDiv p {
+        font-size: 0.9rem;
+      }
+
+      .cards {
+        margin-top: 1.4rem;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 1.4rem;
+      }
+
+      .applicationsDiv {
+        background: var(--color-white);
+        border-radius: 20px;
+        box-shadow: var(--box-shadow);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+      }
+
+      .thumb img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+      }
+
+      .applicationsDiv .content {
+        padding: 1rem 1.2rem;
+      }
+
+      .applicationsDiv .title {
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+      }
+
+      .applicationsDiv .title .material-icons-sharp {
+        font-size: 20px;
+        color: #20647c;
+      }
+
+      .meta-row {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        margin: 0.6rem 0 0.2rem;
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-size: 0.72rem;
+        line-height: 1;
+        padding: 0.42rem 0.8rem;
+        border-radius: 999px;
+        background: #eef2f7;
+        color: #374151;
+        border: 1px solid #e5e7eb;
+      }
+
+      .pill .material-icons,
+      .pill .material-icons-sharp {
+        font-size: 16px;
+        color: #20647c;
+      }
+
+      .info-grid {
+        display: grid;
+        gap: 0.6rem;
+        margin: 0.6rem 0 0.8rem;
+      }
+
+      .info-grid .label {
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        color: #0f172a;
+      }
+
+      .info-grid .label .material-icons,
+      .info-grid .label .material-icons-sharp {
+        font-size: 18px;
+        color: #20647c;
+      }
+
+      .desc {
+        font-size: 0.86rem;
+        margin: 0.4rem 0 1rem;
+      }
+
+      .apply {
+        margin: 0 1.2rem 1.2rem;
+        border-radius: 999px;
+        background: #cd201f;
+        color: #fff;
+        font-weight: 600;
+        padding: 0.8rem 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        gap: 0.5rem;
+      }
+
+      .apply .material-icons {
+        font-size: 20px;
+      }
+
+      /* Job title row */
+      .contentFirstRow {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      /* Scroll text */
+      .scrollDownText {
+        text-align: center;
+        color: #6b7280;
+        font-size: 0.85rem;
+        margin-top: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.35rem;
+      }
+
+      .scrollDownText .material-icons {
+        font-size: 18px;
+      }
+
+      /* Responsive */
+      @media (max-width: 1200px) {
+        .cards {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 700px) {
+        .cards {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Meta + Status row */
+      .meta-status-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+      }
+
+      /* Status chips */
+      .status {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-size: 0.72rem;
+        line-height: 1;
+        padding: 0.42rem 0.8rem;
+        border-radius: 999px;
+        font-weight: 600;
+        border: 1px solid transparent;
+        white-space: nowrap;
+      }
+
+      .status .material-icons {
+        font-size: 16px;
+      }
+
+      /* Status variants */
+      .status-submitted {
+        background: #eef2ff;
+        color: #4338ca;
+        border-color: #e0e7ff;
+      }
+
+      .status-viewed {
+        background: #fff7ed;
+        color: #c2410c;
+        border-color: #ffedd5;
+      }
+
+      .status-accepted {
+        background: rgba(27, 156, 133, 0.12);
+        color: var(--color-success);
+        border-color: rgba(27, 156, 133, 0.25);
+      }
+
+      .status-rejected {
+        background: rgba(255, 0, 96, 0.1);
+        color: var(--color-danger);
+        border-color: rgba(255, 0, 96, 0.25);
+      }
+
+      /* ===== Existing animations (kept) + tiny icon micro-interactions ===== */
+      main {
+        --brand: #20a44c;
+        --accent: #20647c;
+        scroll-behavior: smooth;
+      }
+
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(6px);
+        }
+
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+
+      main .titlePageDiv h1 {
+        animation: fadeUp 0.28s ease both;
+      }
+
+      main .titlePageDiv p {
+        animation: fadeUp 0.28s ease 0.06s both;
+      }
+
+      @keyframes cardIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+
+      main .cards > .applicationsDiv {
+        animation: cardIn 0.34s ease both;
+      }
+
+      main .cards > .applicationsDiv:nth-child(2) {
+        animation-delay: 0.05s;
+      }
+
+      main .cards > .applicationsDiv:nth-child(3) {
+        animation-delay: 0.1s;
+      }
+
+      main .cards > .applicationsDiv:nth-child(4) {
+        animation-delay: 0.15s;
+      }
+
+      main .applicationsDiv {
+        transition: transform 0.12s ease, box-shadow 0.22s ease,
+          border-color 0.2s ease;
+      }
+
+      main .applicationsDiv:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 14px 32px rgba(0, 0, 0, 0.08);
+      }
+
+      main .applicationsDiv::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 4px;
+        width: 25%;
+        background: linear-gradient(90deg, var(--accent), var(--brand));
+        transition: width 0.35s ease, background 0.25s ease;
+      }
+
+      main .applicationsDiv:has(.status-viewed)::before {
+        width: 50%;
+      }
+
+      main .applicationsDiv:has(.status-accepted)::before {
+        width: 100%;
+      }
+
+      main .applicationsDiv:has(.status-rejected)::before {
+        width: 100%;
+        background: linear-gradient(90deg, #e11d48, #f97316);
+      }
+
+      @keyframes shine {
+        to {
+          transform: translateX(250%) rotate(25deg);
+        }
+      }
+
+      main .thumb {
+        position: relative;
+        overflow: hidden;
+      }
+
+      main .thumb img {
+        transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+      }
+
+      main .applicationsDiv:hover .thumb img {
+        transform: scale(1.04);
+      }
+
+      main .thumb::after {
+        content: "";
+        position: absolute;
+        top: -50%;
+        left: -60%;
+        width: 60%;
+        height: 200%;
+        background: linear-gradient(
+          120deg,
+          rgba(255, 255, 255, 0) 0,
+          rgba(255, 255, 255, 0.45) 50%,
+          rgba(255, 255, 255, 0) 100%
+        );
+        transform: translateX(-150%) rotate(25deg);
+        pointer-events: none;
+      }
+
+      main .applicationsDiv:hover .thumb::after {
+        animation: shine 0.9s ease;
+      }
+
+      @keyframes acceptPulse {
+        0%,
+        100% {
+          box-shadow: 0 0 0 0 rgba(32, 164, 76, 0);
+        }
+
+        50% {
+          box-shadow: 0 0 0 6px rgba(32, 164, 76, 0.16);
+        }
+      }
+
+      main .status {
+        transition: transform 0.12s ease, box-shadow 0.2s ease;
+      }
+
+      main .status:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 14px rgba(0, 0, 0, 0.07);
+      }
+
+      main .status-accepted {
+        animation: acceptPulse 2.2s ease-in-out infinite;
+      }
+
+      main .apply {
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.06s ease, box-shadow 0.22s ease,
+          filter 0.2s ease;
+      }
+
+      main .apply:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 10px 24px rgba(32, 100, 124, 0.18);
+      }
+
+      main .apply:active {
+        transform: translateY(0);
+      }
+
+      main .apply::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+          120px 120px at 50% 50%,
+          rgba(255, 255, 255, 0.28),
+          rgba(255, 255, 255, 0) 70%
+        );
+        opacity: 0;
+        transform: scale(0.6);
+        transition: opacity 0.35s ease, transform 0.35s ease;
+      }
+
+      main .apply:hover::after {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      main .dropdown {
+        position: relative;
+      }
+
+      main .dropdown-content {
+        display: block;
+        opacity: 0;
+        transform: translateY(-6px) scale(0.98);
+        pointer-events: none;
+        visibility: hidden;
+        transition: opacity 0.18s ease, transform 0.18s ease,
+          visibility 0.18s linear;
+      }
+
+      main .dropdown:hover .dropdown-content {
+        opacity: 1;
+        transform: none;
+        pointer-events: auto;
+        visibility: visible;
+      }
+
+      /* Subtle icon lift on hover (pills & labels) */
+      .pill:hover .material-icons,
+      .pill:hover .material-icons-sharp,
+      .info-grid .label:hover .material-icons,
+      .info-grid .label:hover .material-icons-sharp {
+        transform: translateY(-1px);
+        transition: transform 0.15s ease;
+      }
+
+      @supports (animation-timeline: view()) {
+        @keyframes revealOnScroll {
+          from {
+            opacity: 0;
+            transform: translateY(14px);
+          }
+
+          to {
+            opacity: 1;
+            transform: none;
+          }
+        }
+
+        main .cards > .applicationsDiv {
+          animation: revealOnScroll linear both;
+          animation-timeline: view();
+          animation-range: entry 15% cover 30%;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        main * {
+          animation: none !important;
+          transition: none !important;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <!-- Sidebar Section (unchanged) -->
+      <aside>
+        <div class="toggle">
+          <div class="logo">
+            <img src="../images/STEQ Logo 3.png" />
+            <h2>SIMP<span class="danger">Project</span></h2>
+          </div>
+          <div class="close" id="close-btn">
+            <span class="material-icons-sharp">close</span>
+          </div>
+        </div>
+
+        <div class="sidebar">
+          <a href="dashboard.html">
+            <span class="material-icons-sharp">dashboard</span>
+            <h3>Dashboard</h3>
+          </a>
+          <a href="job.html">
+            <span class="material-icons-sharp">work</span>
+            <h3>Jobs</h3>
+          </a>
+          <a href="myApplication.html" class="active">
+            <span class="material-icons-sharp">receipt</span>
+            <h3>My Application</h3>
+          </a>
+          <a href="courses.html">
+            <span class="material-icons-sharp">school</span>
+            <h3>Courses</h3>
+          </a>
+          <a href="shop.html">
+            <span class="material-icons-sharp">shopping_cart</span>
+            <h3>Shop</h3>
+          </a>
+          <a href="#">
+            <span class="material-icons-sharp">account_balance</span>
+            <h3>Earnings</h3>
+          </a>
+          <a href="#">
+            <span class="material-icons-sharp">file_copy</span>
+            <h3>Documents</h3>
+          </a>
+          <a href="#">
+            <span class="material-icons-sharp">settings</span>
+            <h3>Settings</h3>
+          </a>
+          <a href="#" id="logout-btn">
+            <span class="material-icons-sharp">logout</span>
+            <h3>Logout</h3>
+          </a>
+        </div>
+      </aside>
+
+      <!--Main Content-->
+      <main>
+        <div class="titlePageDiv">
+          <h1>Manage your applications easily.</h1>
+          <p>All your applications, organized and accessible anytime.</p>
+        </div>
+
+        <div class="searchBarDiv">
+          <div class="searchDiv">
+            <span class="material-icons-sharp" aria-hidden="true">search</span>
+            <input type="text" placeholder="Search jobs" />
+          </div>
+
+          <div class="dropdown">
+            <button class="dropbtn">
+              <span
+                class="material-icons"
+                aria-hidden="true"
+                style="
+                  vertical-align: middle;
+                  font-size: 18px;
+                  margin-right: 0.35rem;
+                  color: #20647c;
+                "
+                >filter_list</span
+              >
+              Status
+            </button>
+            <div class="dropdown-content">
+              <a href="#"
+                ><span
+                  class="material-icons"
+                  aria-hidden="true"
+                  style="
+                    font-size: 18px;
+                    vertical-align: middle;
+                    margin-right: 0.35rem;
+                  "
+                  >hourglass_top</span
+                >Submitted</a
+              >
+              <a href="#"
+                ><span
+                  class="material-icons"
+                  aria-hidden="true"
+                  style="
+                    font-size: 18px;
+                    vertical-align: middle;
+                    margin-right: 0.35rem;
+                  "
+                  >visibility</span
+                >Viewed</a
+              >
+              <a href="#"
+                ><span
+                  class="material-icons"
+                  aria-hidden="true"
+                  style="
+                    font-size: 18px;
+                    vertical-align: middle;
+                    margin-right: 0.35rem;
+                  "
+                  >task_alt</span
+                >Accepted</a
+              >
+              <a href="#"
+                ><span
+                  class="material-icons"
+                  aria-hidden="true"
+                  style="
+                    font-size: 18px;
+                    vertical-align: middle;
+                    margin-right: 0.35rem;
+                  "
+                  >close</span
+                >Rejected</a
+              >
+            </div>
+          </div>
+        </div>
+
+        <section class="cards">
+          <!-- Card 1 — Submitted -->
+          <article class="applicationsDiv">
+            <div class="thumb">
+              <img src="../images/profile-4.jpg" alt="Job image" />
+            </div>
+            <div class="content">
+              <div class="contentFirstRow">
+                <div class="title">
+                  <span class="material-icons-sharp" aria-hidden="true"
+                    >work_outline</span
+                  >Job Title
+                </div>
+              </div>
+
+              <div class="meta-status-row">
+                <div class="meta-row">
+                  <span class="pill"
+                    ><span class="material-icons" aria-hidden="true"
+                      >category</span
+                    >Category</span
+                  >
+                  <span class="pill"
+                    ><span class="material-icons" aria-hidden="true">speed</span
+                    >Difficulty</span
+                  >
+                </div>
+                <span class="status status-submitted">
+                  <span class="material-icons" aria-hidden="true"
+                    >hourglass_top</span
+                  >
+                  Submitted
+                </span>
+              </div>
+
+              <div class="info-grid">
+                <div>
+                  <div class="label">
+                    <span class="material-icons" aria-hidden="true"
+                      >payments</span
+                    >Pay
+                  </div>
+                </div>
+                <div>
+                  <div class="label">
+                    <span class="material-icons" aria-hidden="true">event</span
+                    >Date/Time
+                  </div>
+                </div>
+                <div>
+                  <div class="label">
+                    <span class="material-icons" aria-hidden="true">place</span
+                    >Location
+                  </div>
+                </div>
+              </div>
+              <div class="desc">Description here</div>
+            </div>
+            <button class="apply">Cancel Application</button>
+          </article>
+
+          <!-- Card 2 — Viewed -->
+          <article class="applicationsDiv">
+            <div class="thumb">
+              <img src="../images/profile-4.jpg" alt="Job image" />
+            </div>
+            <div class="content">
+              <div class="contentFirstRow">
+                <div class="title">
+                  <span class="material-icons-sharp" aria-hidden="true"
+                    >work_outline</span
+                  >Job Title
+                </div>
+              </div>
+
+              <div class="meta-status-row">
+                <div class="meta-row">
+                  <span class="pill"
+                    ><span class="material-icons" aria-hidden="true"
+                      >category</span
+                    >Category</span
+                  >
+                  <span class="pill"
+                    ><span class="material-icons" aria-hidden="true">speed</span
+                    >Difficulty</span
+                  >
+                </div>
+                <span class="status status-viewed">
+                  <span class="material-icons" aria-hidden="true"
+                    >visibility</span
+                  >
+                  Viewed
+                </span>
+              </div>
+
+              <div class="info-grid">
+                <div>
+                  <div class="label">
+                    <span class="material-icons" aria-hidden="true"
+                      >payments</span
+                    >Pay
+                  </div>
+                </div>
+                <div>
+                  <div class="label">
+                    <span class="material-icons" aria-hidden="true">event</span
+                    >Date/Time
+                  </div>
+                </div>
+                <div>
+                  <div class="label">
+                    <span class="material-icons" aria-hidden="true">place</span
+                    >Location
+                  </div>
+                </div>
+              </div>
+              <div class="desc">Description here</div>
+            </div>
+            <button class="apply">Cancel Application</button>
+          </article>
+
+          <!-- Card 3 — Accepted -->
+          <article class="applicationsDiv">
+            <div class="thumb">
+              <img src="../images/profile-4.jpg" alt="Job image" />
+            </div>
+            <div class="content">
+              <div class="contentFirstRow">
+                <div class="title">
+                  <span class="material-icons-sharp" aria-hidden="true"
+                    >work_outline</span
+                  >Job Title
+                </div>
+              </div>
+
+              <div class="meta-status-row">
+                <div class="meta-row">
+                  <span class="pill"
+                    ><span class="material-icons" aria-hidden="true"
+                      >category</span
+                    >Category</span
+                  >
+                  <span class="pill"
+                    ><span class="material-icons" aria-hidden="true">speed</span
+                    >Difficulty</span
+                  >
+                </div>
+                <span class="status status-accepted">
+                  <span class="material-icons" aria-hidden="true"
+                    >task_alt</span
+                  >
+                  Accepted
+                </span>
+              </div>
+
+              <div class="info-grid">
+                <div>
+                  <div class="label">
+                    <span class="material-icons" aria-hidden="true"
+                      >payments</span
+                    >Pay
+                  </div>
+                </div>
+                <div>
+                  <div class="label">
+                    <span class="material-icons" aria-hidden="true">event</span
+                    >Date/Time
+                  </div>
+                </div>
+                <div>
+                  <div class="label">
+                    <span class="material-icons" aria-hidden="true">place</span
+                    >Location
+                  </div>
+                </div>
+              </div>
+              <div class="desc">Description here</div>
+            </div>
+            <button class="apply">Cancel Application</button>
+          </article>
+
+          <!-- Card 4 — Rejected -->
+          <article class="applicationsDiv">
+            <div class="thumb">
+              <img src="../images/profile-4.jpg" alt="Job image" />
+            </div>
+            <div class="content">
+              <div class="contentFirstRow">
+                <div class="title">
+                  <span class="material-icons-sharp" aria-hidden="true"
+                    >work_outline</span
+                  >Job Title
+                </div>
+              </div>
+
+              <div class="meta-status-row">
+                <div class="meta-row">
+                  <span class="pill"
+                    ><span class="material-icons" aria-hidden="true"
+                      >category</span
+                    >Category</span
+                  >
+                  <span class="pill"
+                    ><span class="material-icons" aria-hidden="true">speed</span
+                    >Difficulty</span
+                  >
+                </div>
+                <span class="status status-rejected">
+                  <span class="material-icons" aria-hidden="true">close</span>
+                  Rejected
+                </span>
+              </div>
+
+              <div class="info-grid">
+                <div>
+                  <div class="label">
+                    <span class="material-icons" aria-hidden="true"
+                      >payments</span
+                    >Pay
+                  </div>
+                </div>
+                <div>
+                  <div class="label">
+                    <span class="material-icons" aria-hidden="true">event</span
+                    >Date/Time
+                  </div>
+                </div>
+                <div>
+                  <div class="label">
+                    <span class="material-icons" aria-hidden="true">place</span
+                    >Location
+                  </div>
+                </div>
+              </div>
+              <div class="desc">Description here</div>
+            </div>
+            <button class="apply">Cancel Application</button>
+          </article>
+        </section>
+
+        <p class="scrollDownText">
+          <span class="material-icons" aria-hidden="true">south</span> Scroll
+          down for more
+        </p>
+      </main>
+    </div>
+    <script src="../../general_files/index.js"></script>
+    <script type="module" src="../../general_files/session.js"></script>
+  </body>
+</html>

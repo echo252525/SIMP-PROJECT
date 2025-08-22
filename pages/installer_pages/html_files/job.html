@@ -255,15 +255,15 @@
             ><span class="material-icons-sharp">shopping_cart</span>
             <h3>Shop</h3></a
           >
-          <a href="earnings.html"
+          <a href="#"
             ><span class="material-icons-sharp">account_balance</span>
             <h3>Earnings</h3></a
           >
-          <a href="documents.html"
+          <a href="#"
             ><span class="material-icons-sharp">file_copy</span>
             <h3>Documents</h3></a
           >
-          <a href="settings.html"
+          <a href="#"
             ><span class="material-icons-sharp">settings</span>
             <h3>Settings</h3></a
           >
@@ -510,47 +510,46 @@
       }
 
       // Apply filters to ALL_JOBS
-function applyFilters() {
-  let list = [...ALL_JOBS];
+      function applyFilters() {
+        let list = [...ALL_JOBS];
 
-  // text search across title/desc/location
-  const q = (FILTERS.q || "").trim().toLowerCase();
-  if (q) {
-    list = list.filter((j) => {
-      const hay = [j.job_title, j.job_description, j.job_location]
-        .map((x) => String(x ?? "").toLowerCase())
-        .join(" | ");
-      return hay.includes(q);
-    });
-  }
+        // text search across title/desc/location
+        const q = (FILTERS.q || "").trim().toLowerCase();
+        if (q) {
+          list = list.filter((j) => {
+            const hay = [j.job_title, j.job_description, j.job_location]
+              .map((x) => String(x ?? "").toLowerCase())
+              .join(" | ");
+            return hay.includes(q);
+          });
+        }
 
-  // category
-  if (FILTERS.category)
-    list = list.filter(
-      (j) => String(j.job_category || "") === FILTERS.category
-    );
+        // category
+        if (FILTERS.category)
+          list = list.filter(
+            (j) => String(j.job_category || "") === FILTERS.category
+          );
 
-  // level (difficulty)
-  if (FILTERS.level)
-    list = list.filter(
-      (j) => String(j.job_difficulty || "") === FILTERS.level
-    );
+        // level (difficulty)
+        if (FILTERS.level)
+          list = list.filter(
+            (j) => String(j.job_difficulty || "") === FILTERS.level
+          );
 
-  // price range
-  const toNum = (v) =>
-    v === null || v === "" || Number.isNaN(v) ? null : Number(v);
-  const minP = toNum(FILTERS.minPrice);
-  const maxP = toNum(FILTERS.maxPrice);
+        // price range
+        const toNum = (v) =>
+          v === null || v === "" || Number.isNaN(v) ? null : Number(v);
+        const minP = toNum(FILTERS.minPrice);
+        const maxP = toNum(FILTERS.maxPrice);
 
-  if (minP !== null)
-    list = list.filter((j) => Number(j.job_pay ?? 0) >= minP);
-  if (maxP !== null)
-    list = list.filter((j) => Number(j.job_pay ?? 0) <= maxP);
+        if (minP !== null)
+          list = list.filter((j) => Number(j.job_pay ?? 0) >= minP);
+        if (maxP !== null)
+          list = list.filter((j) => Number(j.job_pay ?? 0) <= maxP);
 
-  renderJobs(list);
-  updateButtonLabels();
-}
-
+        renderJobs(list);
+        updateButtonLabels();
+      }
 
       // ---------- main ----------
       async function loadJobs() {
@@ -634,5 +633,7 @@ function applyFilters() {
       // Load
       document.addEventListener("DOMContentLoaded", loadJobs);
     </script>
+    <script src="../../general_files/index.js"></script>
+    <script type="module" src="../../general_files/session.js"></script>
   </body>
 </html>
