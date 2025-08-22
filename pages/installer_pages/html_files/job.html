@@ -219,6 +219,154 @@
         font-weight: 500;
         margin-left: 0.3rem;
       }
+
+      /* ===== Modal (Job Application) ===== */
+      .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(17, 24, 39, 0.45);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 50;
+      }
+      .modal-backdrop.show {
+        display: flex;
+      }
+
+      .job-modal {
+        width: min(980px, 92vw);
+        max-height: 86vh;
+        border-radius: 22px;
+        background: #fff;
+        box-shadow: 0 25px 70px rgba(0, 0, 0, 0.25);
+        overflow: hidden;
+        display: grid;
+        grid-template-columns: 1.1fr 1fr;
+      }
+      @media (max-width: 900px) {
+        .job-modal {
+          grid-template-columns: 1fr;
+          width: min(720px, 92vw);
+        }
+      }
+
+      .job-modal .left {
+        position: relative;
+        background: #0b1220;
+        color: #fff;
+        display: grid;
+        align-content: start;
+      }
+      .job-modal .left img {
+        width: 100%;
+        height: 320px;
+        object-fit: cover;
+        display: block;
+      }
+      .job-modal .left .left-meta {
+        padding: 16px 18px 18px;
+        display: grid;
+        gap: 8px;
+      }
+      .job-modal .left .pills {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .job-modal .left .pill {
+        background: #0f172a;
+        color: #cbd5e1;
+        border: 1px solid #1f2937;
+        border-radius: 999px;
+        padding: 0.35rem 0.7rem;
+        font-size: 0.75rem;
+      }
+
+      .job-modal .right {
+        padding: 18px 18px 22px;
+        overflow: auto;
+      }
+      .job-modal h3 {
+        margin: 0 0 6px;
+      }
+      .job-modal .tiny {
+        color: #6b7280;
+        font-size: 0.84rem;
+      }
+      .job-modal .desc {
+        margin: 12px 0 10px;
+        line-height: 1.5;
+        font-size: 0.92rem;
+        color: #1f2937;
+      }
+
+      .job-modal .resume {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 8px;
+        font-size: 0.9rem;
+      }
+      .job-modal .resume a {
+        color: #15803d;
+        text-decoration: none;
+      }
+
+      .job-modal .cta-row {
+        display: flex;
+        gap: 10px;
+        margin-top: 16px;
+      }
+      .job-modal .btn {
+        border: none;
+        border-radius: 999px;
+        padding: 0.8rem 1rem;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .job-modal .btn-apply {
+        background: #22c55e;
+        color: #fff;
+      }
+      .job-modal .btn-apply:disabled {
+        opacity: 0.5;
+        cursor: default;
+      }
+      .job-modal .btn-cancel {
+        background: #e5e7eb;
+        color: #111827;
+      }
+
+      .job-modal .banner {
+        background: #ecfdf5;
+        color: #065f46;
+        border-bottom: 1px solid #d1fae5;
+        padding: 8px 12px;
+        font-size: 0.86rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      /* Toast */
+      .toast {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #111827;
+        color: #fff;
+        padding: 10px 14px;
+        border-radius: 10px;
+        z-index: 60;
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+        font-size: 0.9rem;
+        display: none;
+      }
+      .toast.show {
+        display: block;
+      }
     </style>
   </head>
   <body>
@@ -348,6 +496,73 @@
       <div></div>
     </div>
     <!-- CLOSE .container AT THE END -->
+
+    <!-- Job Application Modal -->
+    <div id="applyModal" class="modal-backdrop" aria-hidden="true">
+      <div
+        class="job-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="jobModalTitle"
+      >
+        <!-- LEFT: image & quick meta -->
+        <div class="left">
+          <img id="mImg" src="" alt="Job photo" />
+          <div class="left-meta">
+            <div class="pills">
+              <span class="pill" id="mCategory">Category</span>
+              <span class="pill" id="mDifficulty">Difficulty</span>
+            </div>
+            <div class="tiny">
+              <strong>Pay:</strong> <span id="mPay">₱–</span>
+            </div>
+            <div class="tiny">
+              <strong>Date/Time:</strong> <span id="mDT">–</span>
+            </div>
+            <div class="tiny">
+              <strong>Location:</strong> <span id="mLoc">–</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: description & actions -->
+        <div class="right">
+          <div class="banner" id="fitBanner" style="display: none">
+            <span class="material-icons-sharp" style="font-size: 18px"
+              >verified</span
+            >
+            <span>You are a strong candidate for this job</span>
+          </div>
+
+          <h3 id="jobModalTitle">Job Title</h3>
+          <div class="tiny" id="mPostedBy"></div>
+          <div class="desc" id="mDesc"></div>
+
+          <!-- Optional resume badge (you can hook your uploader later) -->
+          <div class="resume">
+            <span
+              class="material-icons-sharp"
+              style="font-size: 18px; color: #059669"
+              >attach_file</span
+            >
+            <a href="javascript:void(0)" title="Coming soon">resume.pdf</a>
+            <span class="tiny" style="margin-left: auto; color: #6b7280"
+              >(optional)</span
+            >
+          </div>
+
+          <div class="cta-row">
+            <button id="modalApplyBtn" class="btn btn-apply">
+              Apply for this Job!
+            </button>
+            <button id="modalCancelBtn" class="btn btn-cancel">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="toast"></div>
 
     <script src="../../general_files/index.js"></script>
     <script type="module" src="../../general_files/session.js"></script>
@@ -633,6 +848,159 @@
       // Load
       document.addEventListener("DOMContentLoaded", loadJobs);
     </script>
+    <script>
+      // ===== Modal + Application Logic =====
+      const modal = document.getElementById("applyModal");
+      const modalBtnApply = document.getElementById("modalApplyBtn");
+      const modalBtnCancel = document.getElementById("modalCancelBtn");
+      const toastEl = document.getElementById("toast");
+
+      let CURRENT_JOB_ID = null;
+
+      function showToast(msg, ms = 2200) {
+        toastEl.textContent = msg;
+        toastEl.classList.add("show");
+        setTimeout(() => toastEl.classList.remove("show"), ms);
+      }
+
+      function openApplyModal(job) {
+        CURRENT_JOB_ID = job.job_id;
+
+        // Fill left
+        const imgUrl = publicJobImageUrl(job.job_picture_url, job.posted_by);
+        document.getElementById("mImg").src =
+          imgUrl || "../images/profile-4.jpg";
+        document.getElementById("mCategory").textContent =
+          job.job_category || "Uncategorized";
+        document.getElementById("mDifficulty").textContent = `Difficulty: ${
+          job.job_difficulty ?? "-"
+        }`;
+        document.getElementById("mPay").textContent =
+          "₱" + fmtPeso(job.job_pay);
+        document.getElementById("mDT").textContent = `${fmtDate(
+          job.job_date
+        )} ${fmtTime(job.job_time)}`;
+        document.getElementById("mLoc").textContent =
+          job.job_location || "Not specified";
+
+        // Right
+        document.getElementById("jobModalTitle").textContent =
+          job.job_title || "Job";
+        document.getElementById("mPostedBy").textContent = job.posted_by
+          ? `Posted by: ${job.posted_by}`
+          : "";
+        document.getElementById("mDesc").textContent =
+          job.job_description || "No description provided";
+        document.getElementById("fitBanner").style.display = "none"; // you can add your own logic
+
+        modal.classList.add("show");
+        modal.setAttribute("aria-hidden", "false");
+      }
+
+      function closeApplyModal() {
+        modal.classList.remove("show");
+        modal.setAttribute("aria-hidden", "true");
+        CURRENT_JOB_ID = null;
+      }
+
+      // Close on backdrop click
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) closeApplyModal();
+      });
+      modalBtnCancel.addEventListener("click", closeApplyModal);
+
+      // Delegate click from job cards to open modal
+      document.addEventListener("click", (e) => {
+        const btn = e.target.closest(".apply[data-job-id]");
+        if (!btn) return;
+        const jobId = btn.getAttribute("data-job-id");
+        const job = (ALL_JOBS || []).find(
+          (j) => String(j.job_id) === String(jobId)
+        );
+        if (!job) {
+          showToast("Could not load job details.");
+          return;
+        }
+        openApplyModal(job);
+      });
+
+      // Resolve installer_id from the logged in user.
+      // Strategy: get user email from auth, then fetch installer.id by email.
+      // Fallback: prompt for installer id if we can’t resolve automatically.
+      async function resolveInstallerId() {
+        const {
+          data: { user },
+          error: uErr,
+        } = await sb.auth.getUser();
+        if (uErr) {
+          console.warn("auth.getUser error", uErr);
+        }
+
+        const email = user?.email;
+        if (!email) return null;
+
+        const { data: inst, error } = await sb
+          .from("installer")
+          .select("id, email")
+          .eq("email", email)
+          .limit(1)
+          .maybeSingle();
+
+        if (error) {
+          console.warn("installer lookup error", error);
+          return null;
+        }
+        return inst?.id ?? null;
+      }
+
+      // Handle "Apply" click inside modal
+      modalBtnApply.addEventListener("click", async () => {
+        if (!CURRENT_JOB_ID) {
+          return;
+        }
+        modalBtnApply.disabled = true;
+        modalBtnApply.textContent = "Submitting…";
+
+        try {
+          const installerId = await resolveInstallerId();
+
+          if (!installerId) {
+            showToast("No linked installer profile found for this account.");
+            modalBtnApply.disabled = false;
+            modalBtnApply.textContent = "Apply for this Job!";
+            return;
+          }
+
+          const payload = {
+            job_id: CURRENT_JOB_ID,
+            installer_id: installerId,
+            status: "pending",
+          };
+
+          const { error } = await sb.from("job_application").insert(payload);
+
+          if (error) {
+            // Unique violation / already applied
+            // Postgres code 23505 or Supabase message contains 'duplicate'
+            const msg =
+              error.code === "23505" || /duplicate/i.test(error.message)
+                ? "You already applied to this job."
+                : `Could not submit application: ${error.message}`;
+            showToast(msg, 3000);
+          } else {
+            showToast("Application submitted! Status: pending", 2400);
+            closeApplyModal();
+          }
+        } catch (err) {
+          console.error(err);
+          showToast("Unexpected error. Please try again.");
+        } finally {
+          modalBtnApply.disabled = false;
+          modalBtnApply.textContent = "Apply for this Job!";
+        }
+      });
+    </script>
+
     <script src="../../general_files/index.js"></script>
     <script type="module" src="../../general_files/session.js"></script>
   </body>
