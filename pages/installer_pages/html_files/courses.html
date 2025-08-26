@@ -554,21 +554,89 @@
         <!-- Right side: Duration + Enroll -->
         <div class="course-actions">
           <span class="duration">2 hour video</span>
+          <button class="enroll-btn" data-course="networking-fundamentals">Enroll</button>
+        </div>
+      </div>
+
+      <div class="course-card">
+        <!-- Left side: Image -->
+        <div class="course-image">
+          <img src="../images/profile-4.jpg" alt="Networking Fundamentals" />
+        </div>
+
+        <!-- Right side: Content -->
+        <div class="course-content">
+          <!-- Title + Description -->
+          <div class="course-text">
+            <h3>Networking Fundamentals</h3>
+            <p>
+              Learn the essential concepts, tools, and practices to set up,
+              manage, and troubleshoot computer networks with confidence.
+            </p>
+          </div>
+
+          <!-- Tags (Networking + Level 4) -->
+          <div class="course-tags">
+            <span class="tag">Networking</span>
+            <span class="tag level">Level 4</span>
+          </div>
+        </div>
+
+        <!-- Right side: Duration + Enroll -->
+        <div class="course-actions">
+          <span class="duration">2 hour video</span>
           <button class="enroll-btn">Enroll</button>
         </div>
       </div>
 
-      <div class="course-card-subpage">
-        <div class="course-vid">
-          <iframe width="70%" height="90%" src="https://www.youtube.com/watch?v=bj-Yfakjllcautoplay=1&mute=1">
-          </iframe>
+      <div class="course-card">
+        <!-- Left side: Image -->
+        <div class="course-image">
+          <img src="../images/profile-4.jpg" alt="Networking Fundamentals" />
         </div>
+
+        <!-- Right side: Content -->
+        <div class="course-content">
+          <!-- Title + Description -->
+          <div class="course-text">
+            <h3>Networking Fundamentals</h3>
+            <p>
+              Learn the essential concepts, tools, and practices to set up,
+              manage, and troubleshoot computer networks with confidence.
+            </p>
+          </div>
+
+          <!-- Tags (Networking + Level 4) -->
+          <div class="course-tags">
+            <span class="tag">Networking</span>
+            <span class="tag level">Level 4</span>
+          </div>
+        </div>
+
+        <!-- Right side: Duration + Enroll -->
+        <div class="course-actions">
+          <span class="duration">2 hour video</span>
+          <button class="enroll-btn">Enroll</button>
+        </div>
+      </div>
       </div>
     </main>
     <!--END MAIN CONTENT-->
   </div>
   <script src="../../general_files/index.js"></script>
   <script type="module" src="../../general_files/session.js"></script>
+  <script>
+  // Attach once DOM is ready
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.enroll-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const slug = btn.getAttribute('data-course') || 'networking-fundamentals';
+        // You can also pass a title if you want: &title=Networking%20Fundamentals
+        window.location.href = `courseMaterial.html?course=${encodeURIComponent(slug)}`;
+      });
+    });
+  });
+</script>
 </body>
 
 </html>

@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet" />
+  <link rel="stylesheet" href="../css_files/sideBar.css" />
+  <title>Course</title>
+  <style>
+    /* Keep your main spacing */
+    main { margin-top: 1.4rem; --brand:#20a44c; --accent:#20647c; }
+
+    /* Header & crumbs */
+    .course-top {
+      display:flex; align-items:center; justify-content:space-between; gap:1rem; margin-bottom:1rem;
+    }
+    .crumbs {
+      display:flex; align-items:center; gap:.5rem; color:#6b7280; font-size:.9rem;
+    }
+    .crumbs a { color:#374151; text-decoration:none; }
+    .crumbs .sep { opacity:.5; }
+
+    /* Reuse your status pill from the list page */
+    .statusDiv {
+      --brand:#20a44c; --accent:#20647c;
+      display:inline-grid; grid-auto-flow:column; align-items:center; gap:.5rem;
+      padding:.6rem .9rem .9rem; border:1px solid #cfe4ea; border-radius:14px;
+      background: radial-gradient(140% 140% at -10% -10%, #eefaf2 0%, #ffffff 55%);
+      color:#0f172a; font-weight:700; box-shadow:0 2px 10px rgba(0,0,0,.04);
+    }
+    .statusDiv .material-icons-sharp { font-size:22px; color:var(--accent); }
+
+    /* Progress bar */
+    .progress-wrap { margin: 1rem 0 1.4rem; }
+    .progress-label { display:flex; justify-content:space-between; font-size:.9rem; color:#6b7280; margin-bottom:.4rem; }
+    .progress-bar {
+      height: 10px; background:#eef2f7; border-radius:999px; overflow:hidden; border:1px solid #e5e7eb;
+    }
+    .progress-bar .fill {
+      height:100%; width:0%; background:linear-gradient(90deg, #20a44c, #2ecc71);
+      transition: width .25s ease; border-right:1px solid rgba(0,0,0,.06);
+    }
+
+    /* Lesson/quiz card */
+    .course-shell {
+      background:#fff; border:1px solid #e5e7eb; border-radius:16px;
+      box-shadow:0 4px 14px rgba(0,0,0,.06); padding:18px;
+    }
+
+    .lesson-title { margin:0 0 .4rem; font-size:20px; font-weight:800; color:#1f2937; }
+    .lesson-text { color:#4b5563; font-size:14px; line-height:1.55; }
+    .video-frame {
+      width:100%; aspect-ratio:16/9; background:#000; border-radius:12px; overflow:hidden; margin:10px 0 14px;
+      border:1px solid #e5e7eb;
+    }
+    .video-frame video, .video-frame iframe { width:100%; height:100%; display:block; }
+
+    /* Quiz */
+    .quiz-list { display:flex; flex-direction:column; gap:16px; margin-top:10px; }
+    .q-card {
+      border:1px solid #e5e7eb; border-radius:12px; padding:14px; background:#fff;
+    }
+    .q-title { font-weight:700; margin:0 0 .6rem; color:#111827; }
+    .q-options { display:grid; gap:8px; }
+    .q-options label {
+      display:flex; align-items:flex-start; gap:10px; padding:10px 12px; border:1px solid #e5e7eb; border-radius:10px; cursor:pointer;
+      transition:transform .06s ease, box-shadow .18s ease, border-color .18s ease;
+      background:#fafafa;
+    }
+    .q-options input { margin-top:2px; }
+    .q-options label:hover { transform:translateY(-1px); box-shadow:0 8px 18px rgba(0,0,0,.06); border-color:#d1d5db; background:#ffffff; }
+
+    /* Nav controls */
+    .nav-row {
+      display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:16px;
+    }
+    .nav-left, .nav-right { display:flex; gap:10px; }
+    .btn {
+      appearance:none; border:1px solid #d1d5db; background:#fff; color:#111827;
+      padding:10px 16px; border-radius:999px; cursor:pointer; font-weight:600;
+      transition: transform .06s ease, box-shadow .18s ease, border-color .18s ease, background .18s ease;
+    }
+    .btn:hover { transform:translateY(-1px); box-shadow:0 10px 22px rgba(0,0,0,.06); border-color:#c7ced6; }
+    .btn-primary { background:#20a44c; border-color:#20a44c; color:#fff; }
+    .btn-primary:hover { background:#16a34a; border-color:#16a34a; }
+
+    .page-indicator { color:#6b7280; font-size:.9rem; }
+
+    /* Result banner */
+    .result {
+      margin-top:14px; padding:12px 14px; border-radius:12px; background:#ecfdf5; border:1px solid #bbf7d0; color:#065f46; display:none;
+    }
+
+    /* Mobile tweaks */
+    @media (max-width: 760px){
+      .course-top { flex-direction:column; align-items:flex-start; gap:.6rem; }
+      .nav-row { flex-direction:column; align-items:stretch; }
+      .nav-left, .nav-right { justify-content:space-between; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <!-- Sidebar -->
+    <aside>
+      <div class="toggle">
+        <div class="logo">
+          <img src="../images/STEQ Logo 3.png" />
+          <h2>SIMP<span class="danger">Project</span></h2>
+        </div>
+        <div class="close" id="close-btn">
+          <span class="material-icons-sharp">close</span>
+        </div>
+      </div>
+
+      <div class="sidebar">
+        <a href="dashboard.html">
+          <span class="material-icons-sharp">dashboard</span><h3>Dashboard</h3>
+        </a>
+        <a href="job.html">
+          <span class="material-icons-sharp">work</span><h3>Jobs</h3>
+        </a>
+        <a href="myApplication.html">
+          <span class="material-icons-sharp">receipt</span><h3>My Application</h3>
+        </a>
+        <a href="courses.html" class="active">
+          <span class="material-icons-sharp">school</span><h3>Courses</h3>
+        </a>
+        <a href="shop.html">
+          <span class="material-icons-sharp">shopping_cart</span><h3>Shop</h3>
+        </a>
+        <a href="earnings.html">
+          <span class="material-icons-sharp">account_balance</span><h3>Earnings</h3>
+        </a>
+        <a href="documents.html">
+          <span class="material-icons-sharp">file_copy</span><h3>Documents</h3>
+        </a>
+        <a href="settings.html">
+          <span class="material-icons-sharp">settings</span><h3>Settings</h3>
+        </a>
+        <a href="#" id="logout-btn">
+          <span class="material-icons-sharp">logout</span><h3>Logout</h3>
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main>
+      <div class="course-top">
+        <div class="crumbs">
+          <a href="courses.html"><span class="material-icons-sharp" style="font-size:18px;vertical-align:-3px;">arrow_back</span> Back to Courses</a>
+          <span class="sep">/</span>
+          <span id="courseTitleCrumb">Course</span>
+        </div>
+
+        <div class="statusDiv" role="status" aria-label="Course progress">
+          <span class="material-icons-sharp" aria-hidden="true">workspace_premium</span>
+          <span class="label">Progress:</span>
+          <strong class="value" id="progressLabel">0%</strong>
+        </div>
+      </div>
+
+      <h1 id="courseTitle" style="margin:.2rem 0 0.8rem;">Course</h1>
+
+      <div class="progress-wrap">
+        <div class="progress-label">
+          <span id="stepLabel">Step 1</span>
+          <span id="stepCount">of N</span>
+        </div>
+        <div class="progress-bar"><div class="fill" id="progressFill"></div></div>
+      </div>
+
+      <section class="course-shell" id="courseShell" aria-live="polite">
+        <!-- Dynamic lesson/quiz content goes here -->
+      </section>
+
+      <div class="nav-row">
+        <div class="nav-left">
+          <button class="btn" id="btnPrev"><span class="material-icons-sharp" style="font-size:18px;vertical-align:-4px;">chevron_left</span> Back</button>
+        </div>
+        <div class="page-indicator" id="pageIndicator">Page 1</div>
+        <div class="nav-right">
+          <button class="btn btn-primary" id="btnNext">Next <span class="material-icons-sharp" style="font-size:18px;vertical-align:-4px;">chevron_right</span></button>
+          <button class="btn btn-primary" id="btnSubmit" style="display:none;">Submit Quiz</button>
+        </div>
+      </div>
+
+      <div class="result" id="resultBanner"></div>
+    </main>
+  </div>
+
+  <script>
+    /* =============================
+       1) Define your course templates here.
+       - Duplicate an entry in COURSE_TEMPLATES for each new course.
+       - Use the same slug you pass in ?course=slug
+       - Each page can be:
+         { type:'lesson', title, text, videoUrl? | embed? }
+         { type:'quiz',   title, questions:[{q, choices:[...], answer:index}] }
+       ============================= */
+    const COURSE_TEMPLATES = {
+      "networking-fundamentals": {
+        title: "Networking Fundamentals",
+        pages: [
+          {
+            type: "lesson",
+            title: "Welcome & What You’ll Learn",
+            text: "In this course you’ll build an intuitive foundation for modern networks—devices, topologies, addressing, and basic troubleshooting. Watch the quick overview video below, then hit Next.",
+            videoUrl: "" // (optional) leave empty if you plan to embed a YouTube iframe
+          },
+          {
+            type: "lesson",
+            title: "OSI Model in Plain Language",
+            text: "We’ll simplify each layer with real-world analogies so you can reason about issues quickly. Keep notes as you watch.",
+            // Example YouTube embed instead of <video>
+            embed: "https://www.youtube.com/embed/dQw4w9WgXcQ"
+          },
+          {
+            type: "lesson",
+            title: "IP Addressing & Subnets",
+            text: "Understand IPv4 basics: classes, masks, gateways, and CIDR. This will be crucial for routing and troubleshooting later.",
+            videoUrl: "" // replace with your mp4 path if needed
+          },
+          /* ---- Final page must be the quiz ---- */
+          {
+            type: "quiz",
+            title: "Final Quiz (10 items)",
+            questions: [
+              { q: "Which layer of the OSI model handles routing?", choices: ["Layer 2", "Layer 3", "Layer 4", "Layer 7"], answer: 1 },
+              { q: "What does IP stand for?", choices: ["Internet Protocol", "Internal Process", "Instance Port", "Input Packet"], answer: 0 },
+              { q: "Which device primarily operates at Layer 2?", choices: ["Router", "Switch", "Firewall", "Server"], answer: 1 },
+              { q: "Default subnet mask for a Class C network?", choices: ["255.0.0.0", "255.255.0.0", "255.255.255.0", "255.255.255.255"], answer: 2 },
+              { q: "Which record is used to map a hostname to an IP in DNS?", choices: ["MX", "CNAME", "A", "TXT"], answer: 2 },
+              { q: "Which tool is best to test reachability to a host?", choices: ["netstat", "ping", "nslookup", "ipconfig"], answer: 1 },
+              { q: "NAT is used primarily to:", choices: ["Encrypt traffic", "Block ports", "Translate addresses", "Accelerate Wi-Fi"], answer: 2 },
+              { q: "A VLAN helps to:", choices: ["Increase cable length", "Raise CPU speed", "Segment a network logically", "Boost PSU efficiency"], answer: 2 },
+              { q: "TCP differs from UDP because TCP is:", choices: ["Connectionless", "Encrypted", "Connection-oriented", "Wireless only"], answer: 2 },
+              { q: "Private IPv4 ranges include:", choices: ["8.8.8.0/24", "10.0.0.0/8", "1.1.1.0/24", "172.33.0.0/16"], answer: 1 }
+            ]
+          }
+        ]
+      },
+
+      /* ==== Example: add more courses here and reuse the same template ==== */
+      "safety-basics": {
+        title: "Electrical Safety Basics",
+        pages: [
+          { type:"lesson", title:"Safety Mindset", text:"Learn safety frameworks and hazard identification.", embed:"https://www.youtube.com/embed/dQw4w9WgXcQ" },
+          { type:"lesson", title:"PPE Essentials", text:"Understand proper PPE selection and use.", videoUrl:"" },
+          { type:"quiz",   title:"Final Quiz (10 items)", questions:[
+              { q:"First action before working on a circuit?", choices:["Check email","Assume it’s safe","De-energize/lockout","Wear sandals"], answer:2 },
+              { q:"PPE stands for:", choices:["Personal Protective Equipment","Public Power Entity","Partial Protective Enclosure","Portable Power Extension"], answer:0 },
+              { q:"A GFCI helps prevent:", choices:["Data loss","Overheating","Ground-fault shocks","DNS leaks"], answer:2 },
+              { q:"Lockout/Tagout is used to:", choices:["Decorate tools","Control hazardous energy","Label cables","Calibrate meters"], answer:1 },
+              { q:"Insulated tools are designed to:", choices:["Make tools lighter","Withstand voltage","Look stylish","Reduce taxes"], answer:1 },
+              { q:"Wet environments increase risk of:", choices:["Noise","Electrocution","Packet loss","Rust-only"], answer:1 },
+              { q:"Rubber gloves should be:", choices:["Shared frequently","Damaged","Regularly inspected","Painted"], answer:2 },
+              { q:"When in doubt you should:", choices:["Proceed fast","Guess","Stop work and verify","Outsource immediately"], answer:2 },
+              { q:"Electrical fires should be fought with:", choices:["Water","Foam","CO2/dry chemical (rated)","Paper"], answer:2 },
+              { q:"Bare conductors should be:", choices:["Exposed","Isolated/covered","Painted","Warmed"], answer:1 }
+          ] }
+        ]
+      }
+    };
+
+    /* =============================
+       2) Runtime: read ?course=, render pages, handle nav & quiz
+       ============================= */
+    const params = new URLSearchParams(location.search);
+    const courseSlug = params.get('course') || 'networking-fundamentals';
+    const course = COURSE_TEMPLATES[courseSlug] || COURSE_TEMPLATES["networking-fundamentals"];
+
+    const courseTitleEl = document.getElementById('courseTitle');
+    const crumbEl = document.getElementById('courseTitleCrumb');
+    const courseShell = document.getElementById('courseShell');
+    const progressFill = document.getElementById('progressFill');
+    const progressLabel = document.getElementById('progressLabel');
+    const stepLabel = document.getElementById('stepLabel');
+    const stepCount = document.getElementById('stepCount');
+    const pageIndicator = document.getElementById('pageIndicator');
+    const btnPrev = document.getElementById('btnPrev');
+    const btnNext = document.getElementById('btnNext');
+    const btnSubmit = document.getElementById('btnSubmit');
+    const resultBanner = document.getElementById('resultBanner');
+
+    let index = 0; // current page
+    const total = course.pages.length;
+
+    courseTitleEl.textContent = course.title;
+    crumbEl.textContent = course.title;
+    stepCount.textContent = `of ${total}`;
+
+    function render() {
+      resultBanner.style.display = 'none';
+      const page = course.pages[index];
+      const pct = Math.round((index) / (total - 1) * 100); // shows 0% on first, 100% on quiz page start
+      progressFill.style.width = pct + '%';
+      progressLabel.textContent = pct + '%';
+      stepLabel.textContent = `Step ${index + 1}`;
+      pageIndicator.textContent = `Page ${index + 1}`;
+
+      const isQuiz = page.type === 'quiz';
+      btnNext.style.display = isQuiz ? 'none' : '';
+      btnSubmit.style.display = isQuiz ? '' : 'none';
+      btnPrev.disabled = index === 0;
+
+      // Render lesson or quiz
+      if (page.type === 'lesson') {
+        courseShell.innerHTML = `
+          <h2 class="lesson-title">${escapeHTML(page.title)}</h2>
+          <div class="lesson-text">${escapeHTML(page.text)}</div>
+          ${renderVideo(page)}
+        `;
+      } else {
+        // Quiz
+        courseShell.innerHTML = `
+          <h2 class="lesson-title">${escapeHTML(page.title)}</h2>
+          <p class="lesson-text">Answer all questions below. You can only submit once.</p>
+          <div class="quiz-list">
+            ${page.questions.map((q, i) => renderQuestion(q, i)).join('')}
+          </div>
+        `;
+      }
+    }
+
+    function renderVideo(page) {
+      if (page.embed) {
+        return `
+          <div class="video-frame">
+            <iframe src="${page.embed}" title="Course video" frameborder="0" allowfullscreen></iframe>
+          </div>
+        `;
+      }
+      if (page.videoUrl) {
+        return `
+          <div class="video-frame">
+            <video controls src="${page.videoUrl}"></video>
+          </div>
+        `;
+      }
+      // No video provided yet; placeholder frame
+      return `
+        <div class="video-frame" style="display:grid;place-items:center;color:#9ca3af;">
+          <div style="text-align:center">
+            <span class="material-icons-sharp" style="font-size:42px;">ondemand_video</span>
+            <div>Add a videoUrl or embed in COURSE_TEMPLATES</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderQuestion(q, idx) {
+      const name = `q_${idx}`;
+      return `
+        <div class="q-card">
+          <p class="q-title">Q${idx + 1}. ${escapeHTML(q.q)}</p>
+          <div class="q-options">
+            ${q.choices.map((c, i) => `
+              <label>
+                <input type="radio" name="${name}" value="${i}" />
+                <span>${escapeHTML(c)}</span>
+              </label>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function escapeHTML(s) {
+      return String(s ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+    }
+
+    // Nav handlers
+    btnPrev.addEventListener('click', () => {
+      if (index > 0) { index--; render(); window.scrollTo({top:0, behavior:'smooth'}); }
+    });
+
+    btnNext.addEventListener('click', () => {
+      if (index < total - 1) { index++; render(); window.scrollTo({top:0, behavior:'smooth'}); }
+    });
+
+    btnSubmit.addEventListener('click', () => {
+      const page = course.pages[index];
+      if (page.type !== 'quiz') return;
+      const answers = page.questions.map((q, i) => {
+        const checked = document.querySelector(`input[name="q_${i}"]:checked`);
+        return checked ? Number(checked.value) : null;
+      });
+
+      // Simple validation
+      if (answers.some(a => a === null)) {
+        resultBanner.textContent = "Please answer all questions before submitting.";
+        resultBanner.style.display = 'block';
+        resultBanner.style.background = '#fef3c7';
+        resultBanner.style.borderColor = '#fde68a';
+        resultBanner.style.color = '#92400e';
+        return;
+      }
+
+      const score = answers.reduce((acc, a, i) => acc + (a === page.questions[i].answer ? 1 : 0), 0);
+      const pct = Math.round((score / page.questions.length) * 100);
+      resultBanner.innerHTML = `
+        <strong>Result:</strong> ${score}/${page.questions.length} (${pct}%)
+        <div style="margin-top:6px;display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn" onclick="window.location.href='courses.html'">
+            <span class="material-icons-sharp" style="font-size:18px;vertical-align:-4px;">arrow_back</span> Back to Courses
+          </button>
+          <button class="btn btn-primary" onclick="alert('Marked as completed! (Hook this to your backend)')">
+            <span class="material-icons-sharp" style="font-size:18px;vertical-align:-4px;">task_alt</span> Mark as Completed
+          </button>
+        </div>
+      `;
+      resultBanner.style.display = 'block';
+      resultBanner.style.background = '#ecfdf5';
+      resultBanner.style.borderColor = '#bbf7d0';
+      resultBanner.style.color = '#065f46';
+      // TODO: Send score to backend here if needed
+    });
+
+    // Initial render
+    render();
+  </script>
+  <script src="../../general_files/index.js"></script>
+  <script type="module" src="../../general_files/session.js"></script>
+</body>
+</html>
