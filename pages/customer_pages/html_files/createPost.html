@@ -285,7 +285,7 @@
             <span class="material-icons-sharp">add</span>
             <h3>Create a post</h3>
           </a>
-        
+
           <a href="#" id="logout-btn">
             <span class="material-icons-sharp">logout</span>
             <h3>Logout</h3>
@@ -510,307 +510,376 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <script type="module">
-  import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+      import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-  /* =========================
+      /* =========================
      CONFIG
      ========================= */
-  const SUPABASE_URL = "https://gxydxmobwrccqagltlci.supabase.co";
-  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd4eWR4bW9id3JjY3FhZ2x0bGNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUxNDMzOTMsImV4cCI6MjA3MDcxOTM5M30.Zk2xUlmlPGbe-7rDsqC486Js9LGFMMOp-fytNZSwzBs";
-  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      import { SUPABASE_URL, SUPABASE_ANON_KEY } from "../../../supabase.js";
+      const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  // Geocoding strategy:
-  // - If you have a backend proxy that calls Nominatim with a proper User-Agent & adds CORS, enable it:
-  const USE_PROXY = false;                       // <-- set to true when your proxy is ready
-  const PROXY_BASE = "http://localhost:3000";   // <-- change to your proxy origin when available
+      // Geocoding strategy:
+      // - If you have a backend proxy that calls Nominatim with a proper User-Agent & adds CORS, enable it:
+      const USE_PROXY = false; // <-- set to true when your proxy is ready
+      const PROXY_BASE = "http://localhost:3000"; // <-- change to your proxy origin when available
 
-  /* =========================
+      /* =========================
      DOM HOOKS
      ========================= */
-  const form = document.getElementById("jobForm");
-  const postsTable = document.getElementById("postsTable");
+      const form = document.getElementById("jobForm");
+      const postsTable = document.getElementById("postsTable");
 
-  const diffRange  = document.getElementById("job_difficulty_range");
-  const diffHidden = document.getElementById("job_difficulty");
-  const diffBadge  = document.getElementById("diffBadge");
+      const diffRange = document.getElementById("job_difficulty_range");
+      const diffHidden = document.getElementById("job_difficulty");
+      const diffBadge = document.getElementById("diffBadge");
 
-  const dz        = document.getElementById("dz");
-  const fileInput = document.getElementById("job_picture");
-  const dzThumb   = document.getElementById("dzThumb");
-  const dzImg     = document.getElementById("dzImg");
-  const btnReset  = document.getElementById("btnReset");
+      const dz = document.getElementById("dz");
+      const fileInput = document.getElementById("job_picture");
+      const dzThumb = document.getElementById("dzThumb");
+      const dzImg = document.getElementById("dzImg");
+      const btnReset = document.getElementById("btnReset");
 
-  const inputLocation = document.getElementById("job_location");
-  const inputLat = document.getElementById("job_lat");
-  const inputLng = document.getElementById("job_lng");
-  const btnLocate = document.getElementById("btnLocate");
+      const inputLocation = document.getElementById("job_location");
+      const inputLat = document.getElementById("job_lat");
+      const inputLng = document.getElementById("job_lng");
+      const btnLocate = document.getElementById("btnLocate");
 
-  // Optional nav (guarded so missing elements won't crash)
-  const navCreate = document.getElementById("nav-create");
-  const navView   = document.getElementById("nav-view");
-  const sectionCreate = document.getElementById("create-post");
-  const sectionView   = document.getElementById("view-posts");
+      // Optional nav (guarded so missing elements won't crash)
+      const navCreate = document.getElementById("nav-create");
+      const navView = document.getElementById("nav-view");
+      const sectionCreate = document.getElementById("create-post");
+      const sectionView = document.getElementById("view-posts");
 
-  /* =========================
+      /* =========================
      UX: Difficulty slider & Dropzone
      ========================= */
-  diffRange.addEventListener("input", () => {
-    diffBadge.textContent = `${diffRange.value}/10`;
-    diffHidden.value = diffRange.value;
-  });
+      diffRange.addEventListener("input", () => {
+        diffBadge.textContent = `${diffRange.value}/10`;
+        diffHidden.value = diffRange.value;
+      });
 
-  dz.addEventListener("dragover", (e)=>{ e.preventDefault(); dz.style.borderColor="#6366f1"; });
-  dz.addEventListener("dragleave", ()=>{ dz.style.borderColor="#cbd5e1"; });
-  dz.addEventListener("drop", (e)=>{
-    e.preventDefault(); dz.style.borderColor="#cbd5e1";
-    if(e.dataTransfer.files?.length){ fileInput.files = e.dataTransfer.files; previewImage(fileInput.files[0]); }
-  });
-  fileInput.addEventListener("change", () => { if(fileInput.files?.length) previewImage(fileInput.files[0]); });
-  function previewImage(file){
-    const reader = new FileReader();
-    reader.onload = () => { dzImg.src = reader.result; dzThumb.style.display="block"; };
-    reader.readAsDataURL(file);
-  }
+      dz.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        dz.style.borderColor = "#6366f1";
+      });
+      dz.addEventListener("dragleave", () => {
+        dz.style.borderColor = "#cbd5e1";
+      });
+      dz.addEventListener("drop", (e) => {
+        e.preventDefault();
+        dz.style.borderColor = "#cbd5e1";
+        if (e.dataTransfer.files?.length) {
+          fileInput.files = e.dataTransfer.files;
+          previewImage(fileInput.files[0]);
+        }
+      });
+      fileInput.addEventListener("change", () => {
+        if (fileInput.files?.length) previewImage(fileInput.files[0]);
+      });
+      function previewImage(file) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          dzImg.src = reader.result;
+          dzThumb.style.display = "block";
+        };
+        reader.readAsDataURL(file);
+      }
 
-  /* =========================
+      /* =========================
      MAP
      ========================= */
-  const DEFAULT_CENTER = [14.5995, 120.9842]; // Manila
-  const DEFAULT_ZOOM = 12;
+      const DEFAULT_CENTER = [14.5995, 120.9842]; // Manila
+      const DEFAULT_ZOOM = 12;
 
-  const map = L.map("job-map").setView(DEFAULT_CENTER, DEFAULT_ZOOM);
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> contributors'
-  }).addTo(map);
+      const map = L.map("job-map").setView(DEFAULT_CENTER, DEFAULT_ZOOM);
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution:
+          '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> contributors',
+      }).addTo(map);
 
-  let marker = L.marker(DEFAULT_CENTER, { draggable: true }).addTo(map);
+      let marker = L.marker(DEFAULT_CENTER, { draggable: true }).addTo(map);
 
-  // -- Reverse geocode: coords -> address (via proxy if available)
-  // -- Reverse geocode: coords -> human-readable address
-async function reverseGeocode(lat, lng) {
-  try {
-    const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`;
-    const res = await fetch(url, {
-      headers: {
-        "Accept-Language": "en-PH",
-        "User-Agent": "SIMPProject/1.0 (your-email@example.com)" // required by Nominatim
+      // -- Reverse geocode: coords -> address (via proxy if available)
+      // -- Reverse geocode: coords -> human-readable address
+      async function reverseGeocode(lat, lng) {
+        try {
+          const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`;
+          const res = await fetch(url, {
+            headers: {
+              "Accept-Language": "en-PH",
+              "User-Agent": "SIMPProject/1.0 (your-email@example.com)", // required by Nominatim
+            },
+          });
+          if (!res.ok) throw new Error("Reverse geocoding failed");
+          const data = await res.json();
+          return data.display_name || `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+        } catch (e) {
+          console.warn("reverseGeocode error:", e);
+          return `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+        }
       }
-    });
-    if (!res.ok) throw new Error("Reverse geocoding failed");
-    const data = await res.json();
-    return data.display_name || `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
-  } catch (e) {
-    console.warn("reverseGeocode error:", e);
-    return `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
-  }
-}
 
-
-  // -- Forward geocode: address -> coords (via proxy if available)
-  async function forwardGeocode(query) {
-    if (!query || query === "Resolving address…") return null;
-    try {
-      if (USE_PROXY) {
-        const res = await fetch(`${PROXY_BASE}/api/fwdgeo?q=${encodeURIComponent(query)}`);
-        if (!res.ok) throw new Error("Proxy forward geocoding failed");
-        const results = await res.json();
-        if (!results.length) throw new Error("Address not found");
-        const { lat, lon } = results[0];
-        return [parseFloat(lat), parseFloat(lon)];
-      } else {
-        // Without proxy, skip calling remote API from browser.
-        // Let the user keep the typed address; we won't move the pin automatically.
-        return null;
+      // -- Forward geocode: address -> coords (via proxy if available)
+      async function forwardGeocode(query) {
+        if (!query || query === "Resolving address…") return null;
+        try {
+          if (USE_PROXY) {
+            const res = await fetch(
+              `${PROXY_BASE}/api/fwdgeo?q=${encodeURIComponent(query)}`
+            );
+            if (!res.ok) throw new Error("Proxy forward geocoding failed");
+            const results = await res.json();
+            if (!results.length) throw new Error("Address not found");
+            const { lat, lon } = results[0];
+            return [parseFloat(lat), parseFloat(lon)];
+          } else {
+            // Without proxy, skip calling remote API from browser.
+            // Let the user keep the typed address; we won't move the pin automatically.
+            return null;
+          }
+        } catch (e) {
+          console.warn("forwardGeocode error:", e);
+          return null;
+        }
       }
-    } catch (e) {
-      console.warn("forwardGeocode error:", e);
-      return null;
-    }
-  }
 
-  // -- Set from coords: write address -> hidden lat/lng -> move pin -> center
-  async function setFromCoords(lat, lng, zoom = 16) {
-  inputLocation.value = "Resolving address…";
-  const addr = await reverseGeocode(lat, lng);
-  inputLocation.value = addr; // 👈 this now shows full address
-  inputLat.value = lat;
-  inputLng.value = lng;
-  marker.setLatLng([lat, lng]);
-  map.setView([lat, lng], zoom);
-}
+      // -- Set from coords: write address -> hidden lat/lng -> move pin -> center
+      async function setFromCoords(lat, lng, zoom = 16) {
+        inputLocation.value = "Resolving address…";
+        const addr = await reverseGeocode(lat, lng);
+        inputLocation.value = addr; // 👈 this now shows full address
+        inputLat.value = lat;
+        inputLng.value = lng;
+        marker.setLatLng([lat, lng]);
+        map.setView([lat, lng], zoom);
+      }
 
+      // Initial address
+      setFromCoords(DEFAULT_CENTER[0], DEFAULT_CENTER[1], DEFAULT_ZOOM);
 
-  // Initial address
-  setFromCoords(DEFAULT_CENTER[0], DEFAULT_CENTER[1], DEFAULT_ZOOM);
+      // Map click -> update address and pin
+      map.on("click", (e) => setFromCoords(e.latlng.lat, e.latlng.lng, 17));
 
-  // Map click -> update address and pin
-  map.on("click", (e) => setFromCoords(e.latlng.lat, e.latlng.lng, 17));
+      // Drag pin -> update address and inputs
+      marker.on("dragend", async () => {
+        const { lat, lng } = marker.getLatLng();
+        await setFromCoords(lat, lng, map.getZoom());
+      });
 
-  // Drag pin -> update address and inputs
-  marker.on("dragend", async () => {
-    const { lat, lng } = marker.getLatLng();
-    await setFromCoords(lat, lng, map.getZoom());
-  });
+      // Locate me: high-accuracy + brief refine, always updates input first
+      btnLocate.addEventListener("click", () => {
+        if (!navigator.geolocation) {
+          alert("Geolocation not supported by your browser.");
+          return;
+        }
 
-  // Locate me: high-accuracy + brief refine, always updates input first
-  btnLocate.addEventListener("click", () => {
-    if (!navigator.geolocation) { alert("Geolocation not supported by your browser."); return; }
+        navigator.geolocation.getCurrentPosition(
+          async (pos) => {
+            const { latitude: lat, longitude: lng, accuracy } = pos.coords;
+            await setFromCoords(lat, lng, accuracy && accuracy < 60 ? 17 : 16);
 
-    navigator.geolocation.getCurrentPosition(
-      async (pos) => {
-        const { latitude: lat, longitude: lng, accuracy } = pos.coords;
-        await setFromCoords(lat, lng, accuracy && accuracy < 60 ? 17 : 16);
-
-        // Short refine for a tighter fix
-        const watchId = navigator.geolocation.watchPosition(
-          async (p) => {
-            const { latitude, longitude, accuracy: acc } = p.coords;
-            if (acc <= 30) {
-              await setFromCoords(latitude, longitude, 17);
-              navigator.geolocation.clearWatch(watchId);
-            }
+            // Short refine for a tighter fix
+            const watchId = navigator.geolocation.watchPosition(
+              async (p) => {
+                const { latitude, longitude, accuracy: acc } = p.coords;
+                if (acc <= 30) {
+                  await setFromCoords(latitude, longitude, 17);
+                  navigator.geolocation.clearWatch(watchId);
+                }
+              },
+              () => {},
+              { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+            );
+            setTimeout(() => navigator.geolocation.clearWatch(watchId), 20000);
           },
-          () => {},
-          { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+          (err) => {
+            alert(
+              `Unable to get your location. (${
+                err?.message || "Unknown error"
+              })`
+            );
+          },
+          { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
         );
-        setTimeout(() => navigator.geolocation.clearWatch(watchId), 20000);
-      },
-      (err) => { alert(`Unable to get your location. (${err?.message || "Unknown error"})`); },
-      { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
-    );
-  });
+      });
 
-  // Optional: typing an address moves the pin (only when proxy is enabled)
-  inputLocation.addEventListener("keydown", async (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      if (!USE_PROXY) return; // avoid CORS without proxy
-      const q = inputLocation.value.trim();
-      const coords = await forwardGeocode(q);
-      if (coords) await setFromCoords(coords[0], coords[1], 17);
-    }
-  });
-  inputLocation.addEventListener("blur", async () => {
-    if (!USE_PROXY) return;
-    const q = inputLocation.value.trim();
-    if (!q || q === "Resolving address…") return;
-    const coords = await forwardGeocode(q);
-    if (coords) await setFromCoords(coords[0], coords[1], 17);
-  });
+      // Optional: typing an address moves the pin (only when proxy is enabled)
+      inputLocation.addEventListener("keydown", async (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          if (!USE_PROXY) return; // avoid CORS without proxy
+          const q = inputLocation.value.trim();
+          const coords = await forwardGeocode(q);
+          if (coords) await setFromCoords(coords[0], coords[1], 17);
+        }
+      });
+      inputLocation.addEventListener("blur", async () => {
+        if (!USE_PROXY) return;
+        const q = inputLocation.value.trim();
+        if (!q || q === "Resolving address…") return;
+        const coords = await forwardGeocode(q);
+        if (coords) await setFromCoords(coords[0], coords[1], 17);
+      });
 
-  /* =========================
+      /* =========================
      Optional: Nav toggles (guarded)
      ========================= */
-  if (navCreate && navView && sectionCreate && sectionView) {
-    function ensureMapSize(){ setTimeout(()=> map.invalidateSize(), 0); }
+      if (navCreate && navView && sectionCreate && sectionView) {
+        function ensureMapSize() {
+          setTimeout(() => map.invalidateSize(), 0);
+        }
 
-    navCreate.addEventListener("click", (e) => {
-      e.preventDefault();
-      navCreate.classList.add("active");
-      navView.classList.remove("active");
-      sectionCreate.classList.remove("hidden");
-      sectionView.classList.add("hidden");
-      ensureMapSize();
-    });
+        navCreate.addEventListener("click", (e) => {
+          e.preventDefault();
+          navCreate.classList.add("active");
+          navView.classList.remove("active");
+          sectionCreate.classList.remove("hidden");
+          sectionView.classList.add("hidden");
+          ensureMapSize();
+        });
 
-    navView.addEventListener("click", async (e) => {
-      e.preventDefault();
-      navView.classList.add("active");
-      navCreate.classList.remove("active");
-      sectionView.classList.remove("hidden");
-      sectionCreate.classList.add("hidden");
+        navView.addEventListener("click", async (e) => {
+          e.preventDefault();
+          navView.classList.add("active");
+          navCreate.classList.remove("active");
+          sectionView.classList.remove("hidden");
+          sectionCreate.classList.add("hidden");
 
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-      const { data } = await supabase
-        .from("job")
-        .select("job_title, job_date, job_pay, job_difficulty")
-        .eq("posted_by", user.id);
+          const {
+            data: { user },
+          } = await supabase.auth.getUser();
+          if (!user) return;
+          const { data } = await supabase
+            .schema("jobs")
+            .from("job")
+            .select("job_title, job_date, job_pay, job_difficulty")
+            .eq("posted_by", user.id);
 
-      postsTable.innerHTML = "";
-      (data || []).forEach((job) => {
-        postsTable.innerHTML += `
+          postsTable.innerHTML = "";
+          (data || []).forEach((job) => {
+            postsTable.innerHTML += `
           <tr>
             <td>${job.job_title}</td>
             <td>${job.job_date}</td>
-            <td>₱${Number(job.job_pay).toLocaleString("en-PH", {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+            <td>₱${Number(job.job_pay).toLocaleString("en-PH", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}</td>
             <td>${job.job_difficulty}</td>
           </tr>`;
-      });
-    });
-  }
+          });
+        });
+      }
 
-  /* =========================
+      /* =========================
      FORM SUBMIT
      ========================= */
-  btnReset.addEventListener("click", ()=>{
-    dzThumb.style.display="none"; dzImg.src="";
-    diffRange.value = "3"; diffBadge.textContent="3/10"; diffHidden.value="3";
-    setFromCoords(DEFAULT_CENTER[0], DEFAULT_CENTER[1], DEFAULT_ZOOM);
-  });
+      btnReset.addEventListener("click", () => {
+        dzThumb.style.display = "none";
+        dzImg.src = "";
+        diffRange.value = "3";
+        diffBadge.textContent = "3/10";
+        diffHidden.value = "3";
+        setFromCoords(DEFAULT_CENTER[0], DEFAULT_CENTER[1], DEFAULT_ZOOM);
+      });
 
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
 
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { alert("You must be logged in to post a job."); return; }
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        if (!user) {
+          alert("You must be logged in to post a job.");
+          return;
+        }
 
-    // Upload job picture (if provided)
-    let pictureUrl = null;
-    if (fileInput.files.length > 0) {
-      const file = fileInput.files[0];
-      const fileExt = file.name.split(".").pop();
-      const filePath = `${user.id}/${Date.now()}.${fileExt}`;
+        // Upload job picture (if provided)
+        let pictureUrl = null;
+        if (fileInput.files.length > 0) {
+          const file = fileInput.files[0];
+          const fileExt = file.name.split(".").pop();
+          const filePath = `${user.id}/${Date.now()}.${fileExt}`;
 
-      const { error: uploadError } = await supabase.storage.from("jobs").upload(filePath, file);
-      if (uploadError) { alert("Error uploading picture: " + uploadError.message); return; }
-      const { data: publicUrlData } = supabase.storage.from("jobs").getPublicUrl(filePath);
-      pictureUrl = publicUrlData.publicUrl;
-    }
+          const { error: uploadError } = await supabase.storage
+            .from("jobs")
+            .upload(filePath, file);
+          if (uploadError) {
+            alert("Error uploading picture: " + uploadError.message);
+            return;
+          }
+          const { data: publicUrlData } = supabase.storage
+            .from("jobs")
+            .getPublicUrl(filePath);
+          pictureUrl = publicUrlData.publicUrl;
+        }
 
-    function generateJobCode() {
-      const letters = Array.from({ length: 4 }, () => String.fromCharCode(65 + Math.floor(Math.random() * 26))).join("");
-      const numbers = String(Math.floor(Math.random() * 10000)).padStart(4, "0");
-      return `${letters}-${numbers}`;
-    }
-    const job_code = generateJobCode();
+        function generateJobCode() {
+          const letters = Array.from({ length: 4 }, () =>
+            String.fromCharCode(65 + Math.floor(Math.random() * 26))
+          ).join("");
+          const numbers = String(Math.floor(Math.random() * 10000)).padStart(
+            4,
+            "0"
+          );
+          return `${letters}-${numbers}`;
+        }
+        const job_code = generateJobCode();
 
-    const jobData = {
-      job_code,
-      job_title: document.getElementById("job_title").value.trim(),
-      job_description: document.getElementById("job_description").value.trim(),
-      job_difficulty: parseInt(document.getElementById("job_difficulty").value, 10),
-      job_category: document.getElementById("job_category").value,
-      job_location: document.getElementById("job_location").value.trim(),
-      job_date: document.getElementById("job_date").value,
-      job_time: document.getElementById("job_time").value,
-      job_duration: parseInt(document.getElementById("job_duration").value, 10),
-      job_pay: parseFloat(document.getElementById("job_pay").value),
-      job_picture_url: pictureUrl,
-      posted_by: user.id,
-      // If/when you enable storing exact coords:
-      // lat: parseFloat(inputLat.value) || null,
-      // lng: parseFloat(inputLng.value) || null,
-    };
+        const jobData = {
+          job_code,
+          job_title: document.getElementById("job_title").value.trim(),
+          job_description: document
+            .getElementById("job_description")
+            .value.trim(),
+          job_difficulty: parseInt(
+            document.getElementById("job_difficulty").value,
+            10
+          ),
+          job_category: document.getElementById("job_category").value,
+          job_location: document.getElementById("job_location").value.trim(),
+          job_date: document.getElementById("job_date").value,
+          job_time: document.getElementById("job_time").value,
+          job_duration: parseInt(
+            document.getElementById("job_duration").value,
+            10
+          ),
+          job_pay: parseFloat(document.getElementById("job_pay").value),
+          job_picture_url: pictureUrl,
+          posted_by: user.id,
+          // If/when you enable storing exact coords:
+          // lat: parseFloat(inputLat.value) || null,
+          // lng: parseFloat(inputLng.value) || null,
+        };
 
-    if (!jobData.job_location || jobData.job_location === "Resolving address…") {
-      alert("Please set the job location by clicking/dragging the pin on the map (or type a full address).");
-      return;
-    }
+        if (
+          !jobData.job_location ||
+          jobData.job_location === "Resolving address…"
+        ) {
+          alert(
+            "Please set the job location by clicking/dragging the pin on the map (or type a full address)."
+          );
+          return;
+        }
 
-    const { error } = await supabase.from("job").insert([jobData]);
-    if (error) {
-      console.error(error);
-      alert("Error posting job: " + error.message);
-    } else {
-      alert("Job posted successfully!");
-      form.reset();
-      dzThumb.style.display="none"; dzImg.src="";
-      diffRange.value = "3"; diffBadge.textContent="3/10"; diffHidden.value="3";
-      setFromCoords(DEFAULT_CENTER[0], DEFAULT_CENTER[1], DEFAULT_ZOOM);
-    }
-  });
-</script>
-
+        const { error } = await supabase
+          .schema("jobs")
+          .from("job")
+          .insert([jobData]);
+        if (error) {
+          console.error(error);
+          alert("Error posting job: " + error.message);
+        } else {
+          alert("Job posted successfully!");
+          form.reset();
+          dzThumb.style.display = "none";
+          dzImg.src = "";
+          diffRange.value = "3";
+          diffBadge.textContent = "3/10";
+          diffHidden.value = "3";
+          setFromCoords(DEFAULT_CENTER[0], DEFAULT_CENTER[1], DEFAULT_ZOOM);
+        }
+      });
+    </script>
   </body>
 </html>

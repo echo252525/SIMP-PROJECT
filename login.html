@@ -38,11 +38,13 @@
 
     <script type="module">
       import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+      import { SUPABASE_URL, SUPABASE_ANON_KEY } from "/supabase.js";
 
-      const SUPABASE_URL = "https://gxydxmobwrccqagltlci.supabase.co";
-      const SUPABASE_ANON_KEY =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd4eWR4bW9id3JjY3FhZ2x0bGNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUxNDMzOTMsImV4cCI6MjA3MDcxOTM5M30.Zk2xUlmlPGbe-7rDsqC486Js9LGFMMOp-fytNZSwzBs";
       const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+      // If installer_documents is in another schema, e.g. "jobs", use:
+      // const db = supabase.schema("jobs");
+      const db = supabase; // public schema
 
       // Paths
       const INSTALLER_UPLOAD =
@@ -51,17 +53,26 @@
         "../pages/installer_pages/html_files/dashboard.html";
       const INSTALLER_REVIEW =
         "../pages/installer_pages/html_files/review.html";
-      const CUSTOMER_DASH = "../pages/customer_pages/html_files/createPost.html";
+      const INSTALLER_APPROVED =
+        "../pages/installer_pages/html_files/approved.html";
+      const INSTALLER_REJECTED =
+        "../pages/installer_pages/html_files/rejected.html";
+      const CUSTOMER_DASH =
+        "../pages/customer_pages/html_files/createPost.html";
 
-      async function getInstallerStatus(userId) {
-        const { data, error } = await supabase
-          .from("installer")
-          .select("status")
-          .eq("id", userId)
+      // Get the latest installer_documents row for this user
+      async function getLatestInstallerDoc(userId) {
+        const { data, error } = await db
+          .from("installer_documents")
+          .select("installer_id, status, updated_at, uploaded_at")
+          .eq("installer_id", userId)
+          .order("updated_at", { ascending: false, nullsLast: true })
+          .order("uploaded_at", { ascending: false, nullsLast: true })
+          .limit(1)
           .maybeSingle();
 
         if (error) throw error;
-        return data ? data.status : null;
+        return data; // may be null if no docs yet
       }
 
       async function isCustomer(userId) {
@@ -70,7 +81,6 @@
           .select("id")
           .eq("id", userId)
           .maybeSingle();
-
         if (error) throw error;
         return !!data;
       }
@@ -89,22 +99,65 @@
           const userId = signInData.user.id;
 
           if (role === "installer") {
-            const statusRaw = await getInstallerStatus(userId);
-            if (statusRaw !== null) {
-              const status = String(statusRaw).toLowerCase();
+            const doc = await getLatestInstallerDoc(userId);
+
+            if (doc) {
+              const status = String(doc.status || "").toLowerCase();
+
+              // 2) When status is "approved", flip to "verified"
+              if (status === "approved") {
+                try {
+                  const { data: updated, error: updErr } = await db
+                    .from("installer_documents")
+                    .update({ status: "verified" })
+                    .eq("installer_id", userId) // ← NOT doc.id
+                    .select("status") // force returning row
+                    .single(); // 406 if nothing matched
+                  if (updErr) throw updErr;
+                  console.log("Status updated to:", updated.status);
+                } catch (e) {
+                  console.warn(
+                    "Auto-upgrade failed (still going to Approved page):",
+                    e
+                  );
+                }
+                window.location.href = INSTALLER_APPROVED;
+                return;
+              }
+
               if (status === "verified") {
                 window.location.href = INSTALLER_DASH;
-              } else if (status === "pending review" || status === "pending") {
-                window.location.href = INSTALLER_REVIEW;
-              } else {
-                window.location.href = INSTALLER_UPLOAD;
+                return;
               }
+
+              if (
+                status === "pending review" ||
+                status === "pending" ||
+                status === "submitted" ||
+                status === "under review"
+              ) {
+                window.location.href = INSTALLER_REVIEW;
+                return;
+              }
+
+              if (status === "rejected") {
+                window.location.href = INSTALLER_REJECTED;
+                return;
+              }
+
+              // Unknown status → send to upload
+              window.location.href = INSTALLER_UPLOAD;
+              return;
             } else {
               alert(
-                "No installer profile found. Please register as installer."
+                "No installer documents found. Please upload your documents."
               );
+              window.location.href = INSTALLER_UPLOAD;
+              return;
             }
-          } else if (role === "customer") {
+          }
+
+          if (role === "customer") {
             const customer = await isCustomer(userId);
             if (customer) {
               window.location.href = CUSTOMER_DASH;

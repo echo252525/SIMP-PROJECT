@@ -54,71 +54,172 @@
         box-sizing: border-box;
       }
 
-      html { font-size: 14px; }
+      html {
+        font-size: 14px;
+      }
 
       body {
-        width: 100vw; height: 100vh;
+        width: 100vw;
+        height: 100vh;
         font-family: "Poppins", sans-serif;
         font-size: 0.88rem;
-        user-select: none; overflow-x: hidden;
+        user-select: none;
+        overflow-x: hidden;
         color: var(--color-dark);
         background-color: var(--color-background);
       }
 
-      a { color: var(--color-dark); }
-      img { display: block; width: 100%; object-fit: cover; }
+      a {
+        color: var(--color-dark);
+      }
+      img {
+        display: block;
+        width: 100%;
+        object-fit: cover;
+      }
 
-      h1 { font-weight: 800; font-size: 1.8rem; }
-      h2 { font-weight: 600; font-size: 1.4rem; }
-      h3 { font-weight: 500; font-size: 0.87rem; }
-      small { font-size: 0.76rem; }
-      p { color: var(--color-dark-variant); }
-      b { color: var(--color-dark); }
+      h1 {
+        font-weight: 800;
+        font-size: 1.8rem;
+      }
+      h2 {
+        font-weight: 600;
+        font-size: 1.4rem;
+      }
+      h3 {
+        font-weight: 500;
+        font-size: 0.87rem;
+      }
+      small {
+        font-size: 0.76rem;
+      }
+      p {
+        color: var(--color-dark-variant);
+      }
+      b {
+        color: var(--color-dark);
+      }
 
-      .text-muted { color: var(--color-info-dark); }
-      .primary { color: var(--color-primary); }
-      .danger { color: var(--color-danger); }
-      .success { color: var(--color-success); }
-      .warning { color: var(--color-warning); }
+      .text-muted {
+        color: var(--color-info-dark);
+      }
+      .primary {
+        color: var(--color-primary);
+      }
+      .danger {
+        color: var(--color-danger);
+      }
+      .success {
+        color: var(--color-success);
+      }
+      .warning {
+        color: var(--color-warning);
+      }
 
-      .container { display: grid; width: 96%; margin: 0 auto; gap: 1.8rem; grid-template-columns: 12rem auto 23rem; }
-      aside { height: 100vh; }
+      .container {
+        display: grid;
+        width: 96%;
+        margin: 0 auto;
+        gap: 1.8rem;
+        grid-template-columns: 12rem auto 23rem;
+      }
+      aside {
+        height: 100vh;
+      }
 
-      aside .toggle { display: flex; align-items: center; justify-content: space-between; margin-top: 1.4rem; }
-      aside .toggle .logo { display: flex; gap: 0.5rem; }
-      aside .toggle .logo img { width: 2rem; height: 2rem; }
-      aside .toggle .close { padding-right: 1rem; display: none; }
+      aside .toggle {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 1.4rem;
+      }
+      aside .toggle .logo {
+        display: flex;
+        gap: 0.5rem;
+      }
+      aside .toggle .logo img {
+        width: 2rem;
+        height: 2rem;
+      }
+      aside .toggle .close {
+        padding-right: 1rem;
+        display: none;
+      }
 
       aside .sidebar {
-        display: flex; flex-direction: column;
+        display: flex;
+        flex-direction: column;
         background-color: var(--color-white);
         box-shadow: var(--box-shadow);
-        border-radius: 15px; height: 88vh;
-        position: relative; top: 1.5rem;
+        border-radius: 15px;
+        height: 88vh;
+        position: relative;
+        top: 1.5rem;
         transition: all 0.3s ease;
       }
-      aside .sidebar:hover { box-shadow: none; }
+      aside .sidebar:hover {
+        box-shadow: none;
+      }
 
       aside .sidebar a {
-        display: flex; align-items: center;
+        display: flex;
+        align-items: center;
         color: var(--color-info-dark);
-        height: 3.7rem; gap: 1rem;
-        position: relative; margin-left: 2rem;
+        height: 3.7rem;
+        gap: 1rem;
+        position: relative;
+        margin-left: 2rem;
         transition: all 0.3s ease;
       }
-      aside .sidebar a span { font-size: 1.6rem; transition: all 0.3s ease; }
-      aside .sidebar a:last-child { position: absolute; bottom: 2rem; width: 100%; }
-      aside .sidebar a.active { width: 100%; color: var(--color-primary); background-color: var(--color-light); margin-left: 0; }
-      aside .sidebar a.active::before { content: ""; width: 6px; height: 18px; background-color: var(--color-primary); }
-      aside .sidebar a.active span { color: var(--color-primary); margin-left: calc(1rem - 3px); }
-      aside .sidebar a:hover { color: var(--color-primary); }
-      aside .sidebar a:hover span { margin-left: 0.6rem; }
-      aside .sidebar .message-count { background-color: var(--color-danger); padding: 2px 6px; color: var(--color-white); font-size: 11px; border-radius: var(--border-radius-1); }
+      aside .sidebar a span {
+        font-size: 1.6rem;
+        transition: all 0.3s ease;
+      }
+      aside .sidebar a:last-child {
+        position: absolute;
+        bottom: 2rem;
+        width: 100%;
+      }
+      aside .sidebar a.active {
+        width: 100%;
+        color: var(--color-primary);
+        background-color: var(--color-light);
+        margin-left: 0;
+      }
+      aside .sidebar a.active::before {
+        content: "";
+        width: 6px;
+        height: 18px;
+        background-color: var(--color-primary);
+      }
+      aside .sidebar a.active span {
+        color: var(--color-primary);
+        margin-left: calc(1rem - 3px);
+      }
+      aside .sidebar a:hover {
+        color: var(--color-primary);
+      }
+      aside .sidebar a:hover span {
+        margin-left: 0.6rem;
+      }
+      aside .sidebar .message-count {
+        background-color: var(--color-danger);
+        padding: 2px 6px;
+        color: var(--color-white);
+        font-size: 11px;
+        border-radius: var(--border-radius-1);
+      }
 
-      main { margin-top: 1.4rem; }
+      main {
+        margin-top: 1.4rem;
+      }
 
       /* ====== Analytics cards ====== */
-      main .analyse { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.6rem; }
+      main .analyse {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.6rem;
+      }
       main .analyse > div {
         background-color: var(--color-white);
         padding: var(--card-padding);
@@ -128,165 +229,406 @@
         cursor: pointer;
         transition: all 0.3s ease;
       }
-      main .analyse > div:hover { box-shadow: none; }
-      main .analyse > div .status { display: flex; align-items: center; justify-content: space-between; }
-      main .analyse h3 { margin-left: 0.6rem; font-size: 1rem; }
+      main .analyse > div:hover {
+        box-shadow: none;
+      }
+      main .analyse > div .status {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      main .analyse h3 {
+        margin-left: 0.6rem;
+        font-size: 1rem;
+      }
 
-      main .analyse .progresss { position: relative; width: 92px; height: 92px; border-radius: 50%; }
-      main .analyse svg { width: 7rem; height: 7rem; }
+      main .analyse .progresss {
+        position: relative;
+        width: 92px;
+        height: 92px;
+        border-radius: 50%;
+      }
+      main .analyse svg {
+        width: 7rem;
+        height: 7rem;
+      }
       main .analyse svg circle {
-        fill: none; stroke-width: 10; stroke-linecap: round; transform: translate(5px, 5px);
+        fill: none;
+        stroke-width: 10;
+        stroke-linecap: round;
+        transform: translate(5px, 5px);
         stroke: var(--color-success);
       }
-      .visits svg circle { stroke: var(--color-danger); }
-      .searches svg circle { stroke: var(--color-primary); }
+      .visits svg circle {
+        stroke: var(--color-danger);
+      }
+      .searches svg circle {
+        stroke: var(--color-primary);
+      }
       main .analyse .progresss .percentage {
-        position: absolute; top: -3px; left: -1px; display: flex; align-items: center; justify-content: center; height: 100%; width: 100%;
+        position: absolute;
+        top: -3px;
+        left: -1px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        width: 100%;
       }
 
       /* ====== New Jobs Posted ====== */
-      .section-header{
+      .section-header {
         margin-top: 1.3rem;
-        display:flex; align-items:center; justify-content:space-between;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
       }
-      .section-header .see-all{
-        display:inline-flex; align-items:center; justify-content:center;
-        padding:.45rem .7rem; border-radius:12px;
-        background:var(--color-white); box-shadow:var(--box-shadow);
-        color:var(--color-dark);
-        transition:transform .12s ease, box-shadow .22s ease;
+      .section-header .see-all {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.45rem 0.7rem;
+        border-radius: 12px;
+        background: var(--color-white);
+        box-shadow: var(--box-shadow);
+        color: var(--color-dark);
+        transition: transform 0.12s ease, box-shadow 0.22s ease;
       }
-      .section-header .see-all:hover{ transform:translateX(2px); box-shadow:none; }
-      .section-header .see-all .material-icons-sharp{ font-size:20px; }
+      .section-header .see-all:hover {
+        transform: translateX(2px);
+        box-shadow: none;
+      }
+      .section-header .see-all .material-icons-sharp {
+        font-size: 20px;
+      }
 
-      .new-users { margin-top: .6rem; }
+      .new-users {
+        margin-top: 0.6rem;
+      }
       .new-users .user-list {
         background-color: var(--color-white);
         padding: var(--card-padding);
         border-radius: var(--card-border-radius);
-        margin-top: .8rem;
+        margin-top: 0.8rem;
         box-shadow: var(--box-shadow);
-        display: flex; justify-content: space-around; flex-wrap: wrap; gap: 1.4rem;
+        display: flex;
+        justify-content: space-around;
+        flex-wrap: wrap;
+        gap: 1.4rem;
         transition: all 0.3s ease;
       }
-      .new-users .user-list:hover { box-shadow: none; }
+      .new-users .user-list:hover {
+        box-shadow: none;
+      }
       .new-users .user-list a.user {
-        display:flex; flex-direction:column; align-items:center; justify-content:center;
-        width: 160px; text-align:center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 160px;
+        text-align: center;
       }
       .new-users .user-list a.user img {
-        width: 5rem; height: 5rem; margin-bottom: 0.4rem; border-radius: 12px; object-fit: cover;
+        width: 5rem;
+        height: 5rem;
+        margin-bottom: 0.4rem;
+        border-radius: 12px;
+        object-fit: cover;
       }
-      .new-users .user-list a.user h2 { font-size: 1rem; }
-      .new-users .user-list a.user p { font-size: .8rem; }
+      .new-users .user-list a.user h2 {
+        font-size: 1rem;
+      }
+      .new-users .user-list a.user p {
+        font-size: 0.8rem;
+      }
 
       /* ====== Upcoming Work ====== */
-      .recent-orders { margin-top: 1.3rem; }
-      .recent-orders h2 { margin-bottom: 0.8rem; }
+      .recent-orders {
+        margin-top: 1.3rem;
+      }
+      .recent-orders h2 {
+        margin-bottom: 0.8rem;
+      }
       .recent-orders table {
         background-color: var(--color-white);
-        width: 100%; padding: var(--card-padding);
-        text-align: center; box-shadow: var(--box-shadow);
+        width: 100%;
+        padding: var(--card-padding);
+        text-align: center;
+        box-shadow: var(--box-shadow);
         border-radius: var(--card-border-radius);
         transition: all 0.3s ease;
       }
-      .recent-orders table:hover { box-shadow: none; }
-      main table tbody td { height: 2.8rem; border-bottom: 1px solid var(--color-light); color: var(--color-dark-variant); }
-      main table tbody tr:last-child td { border: none; }
-      .recent-orders a { text-align: center; display: block; margin: 1rem auto; color: var(--color-primary); }
+      .recent-orders table:hover {
+        box-shadow: none;
+      }
+      main table tbody td {
+        height: 2.8rem;
+        border-bottom: 1px solid var(--color-light);
+        color: var(--color-dark-variant);
+      }
+      main table tbody tr:last-child td {
+        border: none;
+      }
+      .recent-orders a {
+        text-align: center;
+        display: block;
+        margin: 1rem auto;
+        color: var(--color-primary);
+      }
 
       /* ====== Right section ====== */
-      .right-section { margin-top: 1.4rem; }
-      .right-section .nav { display: flex; justify-content: end; gap: 2rem; }
-      .right-section .nav button { display: none; }
+      .right-section {
+        margin-top: 1.4rem;
+      }
+      .right-section .nav {
+        display: flex;
+        justify-content: end;
+        gap: 2rem;
+      }
+      .right-section .nav button {
+        display: none;
+      }
 
       .right-section .dark-mode {
         background-color: var(--color-light);
-        display: flex; justify-content: space-between; align-items: center;
-        height: 1.6rem; width: 4.2rem; cursor: pointer; border-radius: var(--border-radius-1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 1.6rem;
+        width: 4.2rem;
+        cursor: pointer;
+        border-radius: var(--border-radius-1);
       }
       .right-section .dark-mode span {
-        font-size: 1.2rem; width: 50%; height: 100%;
-        display: flex; align-items: center; justify-content: center;
+        font-size: 1.2rem;
+        width: 50%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
-      .right-section .dark-mode span.active { background-color: var(--color-primary); color: white; border-radius: var(--border-radius-1); }
+      .right-section .dark-mode span.active {
+        background-color: var(--color-primary);
+        color: white;
+        border-radius: var(--border-radius-1);
+      }
 
-      .right-section .nav .profile { display: flex; gap: 2rem; text-align: right; }
-      .right-section .nav .profile .profile-photo { width: 2.8rem; height: 2.8rem; border-radius: 50%; overflow: hidden; }
+      .right-section .nav .profile {
+        display: flex;
+        gap: 2rem;
+        text-align: right;
+      }
+      .right-section .nav .profile .profile-photo {
+        width: 2.8rem;
+        height: 2.8rem;
+        border-radius: 50%;
+        overflow: hidden;
+      }
 
       .right-section .user-profile {
-        display: flex; justify-content: center; text-align: center; margin-top: 1rem;
+        display: flex;
+        justify-content: center;
+        text-align: center;
+        margin-top: 1rem;
         background-color: var(--color-white);
-        padding: var(--card-padding); border-radius: var(--card-border-radius);
+        padding: var(--card-padding);
+        border-radius: var(--card-border-radius);
         box-shadow: var(--box-shadow);
-        transition: all 0.3s ease; border: 2px dashed #20a44c;
+        transition: all 0.3s ease;
+        border: 2px dashed #20a44c;
       }
-      .right-section .user-profile:hover { box-shadow: none; }
+      .right-section .user-profile:hover {
+        box-shadow: none;
+      }
 
-      .right-section .reminders { margin-top: 2rem; }
-      .right-section .reminders .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.8rem; }
-      .right-section .reminders .header span { padding: 10px; box-shadow: var(--box-shadow); background-color: var(--color-white); border-radius: 50%; }
+      .right-section .reminders {
+        margin-top: 2rem;
+      }
+      .right-section .reminders .header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.8rem;
+      }
+      .right-section .reminders .header span {
+        padding: 10px;
+        box-shadow: var(--box-shadow);
+        background-color: var(--color-white);
+        border-radius: 50%;
+      }
 
       .right-section .reminders .notification {
         background-color: var(--color-white);
-        display: flex; align-items: center; gap: 1rem; margin-bottom: 0.7rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 0.7rem;
         padding: 1.4rem var(--card-padding);
         border-radius: var(--border-radius-2);
         box-shadow: var(--box-shadow);
         transition: all 0.3s ease;
       }
       .right-section .reminders .notification .content {
-        display: flex; justify-content: space-between; align-items: center; margin: 0; width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 0;
+        width: 100%;
       }
       .right-section .reminders .notification .icon {
-        padding: 0.6rem; color: var(--color-white); background-color: var(--color-success); border-radius: 20%; display: flex;
+        padding: 0.6rem;
+        color: var(--color-white);
+        background-color: var(--color-success);
+        border-radius: 20%;
+        display: flex;
       }
-      .right-section .reminders .notification.deactive .icon { background-color: var(--color-danger); }
+      .right-section .reminders .notification.deactive .icon {
+        background-color: var(--color-danger);
+      }
 
       /* ====== Responsive (unchanged from your base) ====== */
       @media screen and (max-width: 1200px) {
-        .container { width: 95%; grid-template-columns: 7rem auto 23rem; }
-        aside .logo h2 { display: none; }
-        aside .sidebar h3 { display: none; }
-        aside .sidebar a { width: 5.6rem; }
-        aside .sidebar a:last-child { position: relative; margin-top: 1.8rem; }
-        main .analyse { grid-template-columns: 1fr; gap: 0; }
-        .new-users .user-list .user { flex-basis: 40%; }
-        .recent-orders { width: 94%; position: absolute; left: 50%; transform: translateX(-50%); margin: 2rem 0 0 0.8rem; }
-        .recent-orders table { width: 83vw; }
-        main table thead tr th:last-child, main table thead tr th:first-child { display: none; }
-        main table tbody tr td:last-child, main table tbody tr td:first-child { display: none; }
+        .container {
+          width: 95%;
+          grid-template-columns: 7rem auto 23rem;
+        }
+        aside .logo h2 {
+          display: none;
+        }
+        aside .sidebar h3 {
+          display: none;
+        }
+        aside .sidebar a {
+          width: 5.6rem;
+        }
+        aside .sidebar a:last-child {
+          position: relative;
+          margin-top: 1.8rem;
+        }
+        main .analyse {
+          grid-template-columns: 1fr;
+          gap: 0;
+        }
+        .new-users .user-list .user {
+          flex-basis: 40%;
+        }
+        .recent-orders {
+          width: 94%;
+          position: absolute;
+          left: 50%;
+          transform: translateX(-50%);
+          margin: 2rem 0 0 0.8rem;
+        }
+        .recent-orders table {
+          width: 83vw;
+        }
+        main table thead tr th:last-child,
+        main table thead tr th:first-child {
+          display: none;
+        }
+        main table tbody tr td:last-child,
+        main table tbody tr td:first-child {
+          display: none;
+        }
       }
 
       @media screen and (max-width: 768px) {
-        .container { width: 100%; grid-template-columns: 1fr; padding: 0 var(--padding-1); }
+        .container {
+          width: 100%;
+          grid-template-columns: 1fr;
+          padding: 0 var(--padding-1);
+        }
         aside {
-          position: fixed; background-color: var(--color-white);
-          width: 15rem; z-index: 3; box-shadow: 1rem 3rem 4rem var(--color-light);
-          height: 100vh; left: -100%; display: none; animation: showMenu 0.4s ease forwards;
+          position: fixed;
+          background-color: var(--color-white);
+          width: 15rem;
+          z-index: 3;
+          box-shadow: 1rem 3rem 4rem var(--color-light);
+          height: 100vh;
+          left: -100%;
+          display: none;
+          animation: showMenu 0.4s ease forwards;
         }
-        @keyframes showMenu { to { left: 0; } }
-        aside .logo { margin-left: 1rem; }
-        aside .logo h2 { display: inline; }
-        aside .sidebar h3 { display: inline; }
-        aside .sidebar a { width: 100%; height: 3.4rem; }
-        aside .sidebar a:last-child { position: absolute; bottom: 5rem; }
-        aside .toggle .close { display: inline-block; cursor: pointer; }
+        @keyframes showMenu {
+          to {
+            left: 0;
+          }
+        }
+        aside .logo {
+          margin-left: 1rem;
+        }
+        aside .logo h2 {
+          display: inline;
+        }
+        aside .sidebar h3 {
+          display: inline;
+        }
+        aside .sidebar a {
+          width: 100%;
+          height: 3.4rem;
+        }
+        aside .sidebar a:last-child {
+          position: absolute;
+          bottom: 5rem;
+        }
+        aside .toggle .close {
+          display: inline-block;
+          cursor: pointer;
+        }
 
-        main { margin-top: 8rem; padding: 0 1rem; }
-        .new-users .user-list .user { flex-basis: 35%; }
-        .recent-orders { position: relative; margin: 3rem 0 0 0; width: 100%; }
-        .recent-orders table { width: 100%; margin: 0; }
+        main {
+          margin-top: 8rem;
+          padding: 0 1rem;
+        }
+        .new-users .user-list .user {
+          flex-basis: 35%;
+        }
+        .recent-orders {
+          position: relative;
+          margin: 3rem 0 0 0;
+          width: 100%;
+        }
+        .recent-orders table {
+          width: 100%;
+          margin: 0;
+        }
 
-        .right-section { width: 94%; margin: 0 auto 4rem; }
+        .right-section {
+          width: 94%;
+          margin: 0 auto 4rem;
+        }
         .right-section .nav {
-          position: fixed; top: 0; left: 0; align-items: center; background-color: var(--color-white);
-          padding: 0 var(--padding-1); height: 4.6rem; width: 100%; z-index: 2; box-shadow: 0 1rem 1rem var(--color-light); margin: 0;
+          position: fixed;
+          top: 0;
+          left: 0;
+          align-items: center;
+          background-color: var(--color-white);
+          padding: 0 var(--padding-1);
+          height: 4.6rem;
+          width: 100%;
+          z-index: 2;
+          box-shadow: 0 1rem 1rem var(--color-light);
+          margin: 0;
         }
-        .right-section .nav .dark-mode { width: 4.4rem; position: absolute; left: 66%; }
-        .right-section .profile .info { display: none; }
-        .right-section .nav button { display: inline-block; background-color: transparent; cursor: pointer; color: var(--color-dark); position: absolute; left: 1rem; }
-        .right-section .nav button span { font-size: 2rem; }
+        .right-section .nav .dark-mode {
+          width: 4.4rem;
+          position: absolute;
+          left: 66%;
+        }
+        .right-section .profile .info {
+          display: none;
+        }
+        .right-section .nav button {
+          display: inline-block;
+          background-color: transparent;
+          cursor: pointer;
+          color: var(--color-dark);
+          position: absolute;
+          left: 1rem;
+        }
+        .right-section .nav button span {
+          font-size: 2rem;
+        }
       }
     </style>
   </head>
@@ -297,7 +639,7 @@
       <aside>
         <div class="toggle">
           <div class="logo">
-            <img src="images/logo.png" alt="logo"/>
+            <img src="images/logo.png" alt="logo" />
             <h2>Asmr<span class="danger">Prog</span></h2>
           </div>
           <div class="close" id="close-btn">
@@ -359,7 +701,9 @@
               <div class="info">
                 <h3>Jobs Applied</h3>
                 <h1 id="appliedCount">0</h1>
-                <small class="text-muted" id="appliedCaption">Applied vs Total Jobs</small>
+                <small class="text-muted" id="appliedCaption"
+                  >Applied vs Total Jobs</small
+                >
               </div>
               <div class="progresss">
                 <svg><circle cx="38" cy="38" r="36"></circle></svg>
@@ -374,7 +718,9 @@
               <div class="info">
                 <h3>Jobs Assigned</h3>
                 <h1 id="approvedCount">0</h1>
-                <small class="text-muted" id="approvedCaption">Approved vs Pending</small>
+                <small class="text-muted" id="approvedCaption"
+                  >Approved vs Pending</small
+                >
               </div>
               <div class="progresss">
                 <svg><circle cx="38" cy="38" r="36"></circle></svg>
@@ -404,7 +750,9 @@
         <div class="section-header">
           <h2>New Jobs Posted</h2>
           <a class="see-all" href="job.html" title="View all jobs">
-            <span class="material-icons-sharp" aria-hidden="true">arrow_forward</span>
+            <span class="material-icons-sharp" aria-hidden="true"
+              >arrow_forward</span
+            >
           </a>
         </div>
         <div class="new-users">
@@ -443,7 +791,9 @@
 
           <!-- Dark mode toggle (persisted via localStorage) -->
           <div class="dark-mode" id="themeToggle" title="Toggle theme">
-            <span class="material-icons-sharp" id="lightIcon"> light_mode </span>
+            <span class="material-icons-sharp" id="lightIcon">
+              light_mode
+            </span>
             <span class="material-icons-sharp" id="darkIcon"> dark_mode </span>
           </div>
 
@@ -453,7 +803,7 @@
               <small class="text-muted">User</small>
             </div>
             <div class="profile-photo">
-              <img src="images/profile-1.jpg" alt="profile"/>
+              <img src="images/profile-1.jpg" alt="profile" />
             </div>
           </div>
         </div>
@@ -470,27 +820,47 @@
           <div class="header"><h2>Take Courses</h2></div>
 
           <div class="notification">
-            <div class="icon"><span class="material-icons-sharp"> volume_up </span></div>
+            <div class="icon">
+              <span class="material-icons-sharp"> volume_up </span>
+            </div>
             <div class="content">
               <div class="info">
                 <h3>Job Title</h3>
                 <small class="text_muted"> Job Level to achieve </small>
               </div>
-              <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#434343">
-                <path d="M504-480 320-664l56-56 240 240-240 240-56-56 184-184Z" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                height="24px"
+                viewBox="0 -960 960 960"
+                width="24px"
+                fill="#434343"
+              >
+                <path
+                  d="M504-480 320-664l56-56 240 240-240 240-56-56 184-184Z"
+                />
               </svg>
             </div>
           </div>
 
           <div class="notification deactive">
-            <div class="icon"><span class="material-icons-sharp"> edit </span></div>
+            <div class="icon">
+              <span class="material-icons-sharp"> edit </span>
+            </div>
             <div class="content">
               <div class="info">
                 <h3>Job Title</h3>
                 <small class="text_muted"> Job Level to achieve </small>
               </div>
-              <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#434343">
-                <path d="M504-480 320-664l56-56 240 240-240 240-56-56 184-184Z" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                height="24px"
+                viewBox="0 -960 960 960"
+                width="24px"
+                fill="#434343"
+              >
+                <path
+                  d="M504-480 320-664l56-56 240 240-240 240-56-56 184-184Z"
+                />
               </svg>
             </div>
           </div>
@@ -505,18 +875,17 @@
 
     <!-- Supabase UMD -->
     <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-    <script>
+    <script type="module">
       const { createClient } = supabase;
 
       // ✅ Supabase details
-      const SUPABASE_URL = "https://gxydxmobwrccqagltlci.supabase.co";
-      const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd4eWR4bW9id3JjY3FhZ2x0bGNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUxNDMzOTMsImV4cCI6MjA3MDcxOTM5M30.Zk2xUlmlPGbe-7rDsqC486Js9LGFMMOp-fytNZSwzBs";
+      import { SUPABASE_URL, SUPABASE_ANON_KEY } from "../../../supabase.js";
       const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
       // ---------- Theme persistence ----------
       const bodyEl = document.body;
       const lightIcon = document.getElementById("lightIcon");
-      const darkIcon  = document.getElementById("darkIcon");
+      const darkIcon = document.getElementById("darkIcon");
       const themeToggle = document.getElementById("themeToggle");
 
       function applySavedTheme() {
@@ -526,14 +895,14 @@
 
         // Icon state
         lightIcon.classList.toggle("active", !dark);
-        darkIcon.classList.toggle("active",  dark);
+        darkIcon.classList.toggle("active", dark);
       }
 
       function toggleTheme() {
         const isDark = bodyEl.classList.toggle("dark-mode-variables");
         localStorage.setItem("theme", isDark ? "dark" : "light");
         lightIcon.classList.toggle("active", !isDark);
-        darkIcon.classList.toggle("active",  isDark);
+        darkIcon.classList.toggle("active", isDark);
       }
 
       themeToggle.addEventListener("click", toggleTheme);
@@ -549,7 +918,12 @@
       // ---------- Helpers ----------
       const fmtPeso = (n) => {
         const v = typeof n === "string" ? parseFloat(n) : n;
-        return isNaN(v) ? "0.00" : v.toLocaleString("en-PH", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        return isNaN(v)
+          ? "0.00"
+          : v.toLocaleString("en-PH", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            });
       };
 
       function setCircleProgress(circleEl, percent) {
@@ -565,8 +939,11 @@
         if (!rawPath) return "";
         if (/^https?:\/\//i.test(rawPath)) return rawPath;
 
-        let clean = String(rawPath).replace(/^\/+/, "").replace(/^jobs\//, "");
-        if (clean && !clean.includes("/") && postedBy) clean = `${postedBy}/${clean}`;
+        let clean = String(rawPath)
+          .replace(/^\/+/, "")
+          .replace(/^jobs\//, "");
+        if (clean && !clean.includes("/") && postedBy)
+          clean = `${postedBy}/${clean}`;
 
         const { data } = sb.storage.from("jobs").getPublicUrl(clean);
         return data?.publicUrl || "";
@@ -589,7 +966,10 @@
       }
 
       async function resolveInstaller() {
-        const { data: { user }, error: uErr } = await sb.auth.getUser();
+        const {
+          data: { user },
+          error: uErr,
+        } = await sb.auth.getUser();
         if (uErr) console.warn("auth.getUser error:", uErr);
         const email = user?.email;
         if (!email) return null;
@@ -609,10 +989,12 @@
 
       async function fetchCounts(installerId) {
         const { count: totalJobs = 0 } = await sb
+          .schema("jobs")
           .from("job")
           .select("job_id", { count: "exact", head: true });
 
         const { data: apps, error } = await sb
+          .schema("jobs")
           .from("job_application")
           .select("status")
           .eq("installer_id", installerId);
@@ -623,7 +1005,8 @@
         }
 
         const applied = apps?.length || 0;
-        let approved = 0, pending = 0;
+        let approved = 0,
+          pending = 0;
         for (const a of apps || []) {
           const st = String(a.status || "").toLowerCase();
           if (st === "approved") approved++;
@@ -635,8 +1018,13 @@
       function updateLevelUI({ name, levelstatus, earningBalance }) {
         if (name) document.getElementById("profileName").textContent = name;
 
-        document.getElementById("levelHeading").textContent = `Level ${levelstatus ?? 0}`;
-        const note = (levelstatus ?? 0) > 0 ? "Keep going to reach the next level!" : "Take courses to level up!";
+        document.getElementById("levelHeading").textContent = `Level ${
+          levelstatus ?? 0
+        }`;
+        const note =
+          (levelstatus ?? 0) > 0
+            ? "Keep going to reach the next level!"
+            : "Take courses to level up!";
         document.getElementById("levelNote").textContent = note;
 
         const balText = `₱${fmtPeso(earningBalance ?? 0)}`;
@@ -648,20 +1036,30 @@
       }
 
       function updateAppliedCard({ applied, totalJobs }) {
-        document.getElementById("appliedCount").textContent = applied.toLocaleString();
-        document.getElementById("appliedCaption").textContent = `Applied vs Total Jobs (${applied}/${totalJobs})`;
+        document.getElementById("appliedCount").textContent =
+          applied.toLocaleString();
+        document.getElementById(
+          "appliedCaption"
+        ).textContent = `Applied vs Total Jobs (${applied}/${totalJobs})`;
         const pct = totalJobs > 0 ? applied / totalJobs : 0;
-        document.getElementById("appliedPct").textContent = `${Math.round(pct * 100)}%`;
+        document.getElementById("appliedPct").textContent = `${Math.round(
+          pct * 100
+        )}%`;
         const circle1 = document.querySelector("#cardApplied svg circle");
         setCircleProgress(circle1, pct);
       }
 
       function updateApprovedCard({ approved, pending }) {
         const total = approved + pending;
-        document.getElementById("approvedCount").textContent = approved.toLocaleString();
-        document.getElementById("approvedCaption").textContent = `Approved vs Pending (${approved}/${pending})`;
+        document.getElementById("approvedCount").textContent =
+          approved.toLocaleString();
+        document.getElementById(
+          "approvedCaption"
+        ).textContent = `Approved vs Pending (${approved}/${pending})`;
         const pct = total > 0 ? approved / total : 0;
-        document.getElementById("approvedPct").textContent = `${Math.round(pct * 100)}%`;
+        document.getElementById("approvedPct").textContent = `${Math.round(
+          pct * 100
+        )}%`;
         const circle2 = document.querySelector("#cardApproved svg circle");
         setCircleProgress(circle2, pct);
       }
@@ -671,6 +1069,7 @@
         wrap.innerHTML = "<p>Loading…</p>";
 
         const { data: jobs, error } = await sb
+          .schema("jobs")
           .from("job")
           .select("job_id, job_title, job_picture_url, posted_by, created_at")
           .order("created_at", { ascending: false })
@@ -689,13 +1088,17 @@
 
         wrap.innerHTML = "";
         for (const j of jobs) {
-          const imgUrl = publicJobImageUrl(j.job_picture_url, j.posted_by) || "images/profile-4.jpg";
+          const imgUrl =
+            publicJobImageUrl(j.job_picture_url, j.posted_by) ||
+            "images/profile-4.jpg";
           const a = document.createElement("a");
           a.href = `job.html?job=${encodeURIComponent(j.job_id)}`; // deep link to open modal there
           a.className = "user";
           a.innerHTML = `
             <img src="${imgUrl}" alt="Job image" onerror="this.onerror=null;this.src='images/profile-4.jpg';" />
-            <h2 title="${(j.job_title || "").replace(/"/g, "&quot;")}">${j.job_title || "Untitled Job"}</h2>
+            <h2 title="${(j.job_title || "").replace(/"/g, "&quot;")}">${
+            j.job_title || "Untitled Job"
+          }</h2>
             <p>${timeAgo(j.created_at)}</p>
           `;
           wrap.appendChild(a);
@@ -706,12 +1109,18 @@
         const inst = await resolveInstaller();
         if (!inst) {
           console.warn("No installer found for current user.");
-          updateLevelUI({ name: "Installer", levelstatus: 0, earningBalance: 0 });
+          updateLevelUI({
+            name: "Installer",
+            levelstatus: 0,
+            earningBalance: 0,
+          });
           updateAppliedCard({ applied: 0, totalJobs: 0 });
           updateApprovedCard({ approved: 0, pending: 0 });
         } else {
           updateLevelUI(inst);
-          const { totalJobs, applied, approved, pending } = await fetchCounts(inst.id);
+          const { totalJobs, applied, approved, pending } = await fetchCounts(
+            inst.id
+          );
           updateAppliedCard({ applied, totalJobs });
           updateApprovedCard({ approved, pending });
         }

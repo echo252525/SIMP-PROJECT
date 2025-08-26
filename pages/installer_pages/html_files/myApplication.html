@@ -3,120 +3,421 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="../css_files/sideBar.css" />
     <title>Application</title>
     <style>
       /* MAIN CONTENT */
-      main { margin-top: 1.4rem; }
+      main {
+        margin-top: 1.4rem;
+      }
 
       /* Title */
       .titlePageDiv h1 {
-        line-height: 1.2; margin-bottom: 0.25rem; display: flex; align-items: center; gap: 0.5rem;
+        line-height: 1.2;
+        margin-bottom: 0.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
       }
-      .titlePageDiv h1 .material-icons-sharp { font-size: 26px; color: #20647c; }
-      .titlePageDiv p { font-size: 0.9rem; }
+      .titlePageDiv h1 .material-icons-sharp {
+        font-size: 26px;
+        color: #20647c;
+      }
+      .titlePageDiv p {
+        font-size: 0.9rem;
+      }
 
-      .cards { margin-top: 1.4rem; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.4rem; }
+      .cards {
+        margin-top: 1.4rem;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 1.4rem;
+      }
       .applicationsDiv {
-        background: var(--color-white); border-radius: 20px; box-shadow: var(--box-shadow);
-        overflow: hidden; display: flex; flex-direction: column; position: relative;
+        background: var(--color-white);
+        border-radius: 20px;
+        box-shadow: var(--box-shadow);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        position: relative;
       }
-      .thumb img { width: 100%; height: 200px; object-fit: cover; }
-      .applicationsDiv .content { padding: 1rem 1.2rem; }
-      .applicationsDiv .title { font-weight: 700; display: flex; align-items: center; gap: 0.4rem; }
-      .applicationsDiv .title .material-icons-sharp { font-size: 20px; color: #20647c; }
+      .thumb img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+      }
+      .applicationsDiv .content {
+        padding: 1rem 1.2rem;
+      }
+      .applicationsDiv .title {
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+      }
+      .applicationsDiv .title .material-icons-sharp {
+        font-size: 20px;
+        color: #20647c;
+      }
 
-      .meta-row { display: flex; align-items: center; gap: 0.6rem; margin: 0.6rem 0 0.2rem; }
-      .pill { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.72rem; line-height: 1;
-        padding: 0.42rem 0.8rem; border-radius: 999px; background: #eef2f7; color: #374151; border: 1px solid #e5e7eb; }
-      .pill .material-icons, .pill .material-icons-sharp { font-size: 16px; color: #20647c; }
+      .meta-row {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        margin: 0.6rem 0 0.2rem;
+      }
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-size: 0.72rem;
+        line-height: 1;
+        padding: 0.42rem 0.8rem;
+        border-radius: 999px;
+        background: #eef2f7;
+        color: #374151;
+        border: 1px solid #e5e7eb;
+      }
+      .pill .material-icons,
+      .pill .material-icons-sharp {
+        font-size: 16px;
+        color: #20647c;
+      }
 
-      .info-grid { display: grid; gap: 0.6rem; margin: 0.6rem 0 0.8rem; }
-      .info-grid .label { font-weight: 700; display: inline-flex; align-items: center; gap: 0.4rem; color: #0f172a; }
-      .info-grid .label .material-icons, .info-grid .label .material-icons-sharp { font-size: 18px; color: #20647c; }
+      .info-grid {
+        display: grid;
+        gap: 0.6rem;
+        margin: 0.6rem 0 0.8rem;
+      }
+      .info-grid .label {
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        color: #0f172a;
+      }
+      .info-grid .label .material-icons,
+      .info-grid .label .material-icons-sharp {
+        font-size: 18px;
+        color: #20647c;
+      }
 
-      .desc { font-size: 0.86rem; margin: 0.4rem 0 1rem; }
+      .desc {
+        font-size: 0.86rem;
+        margin: 0.4rem 0 1rem;
+      }
 
       .apply {
-        margin: 0 1.2rem 1.2rem; border-radius: 999px; background: #cd201f; color: #fff; font-weight: 600;
-        padding: 0.8rem 1rem; display: flex; align-items: center; justify-content: center; cursor: pointer; gap: 0.5rem;
+        margin: 0 1.2rem 1.2rem;
+        border-radius: 999px;
+        background: #cd201f;
+        color: #fff;
+        font-weight: 600;
+        padding: 0.8rem 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        gap: 0.5rem;
       }
-      .apply .material-icons { font-size: 20px; }
+      .apply .material-icons {
+        font-size: 20px;
+      }
 
-      .contentFirstRow { display: flex; align-items: center; justify-content: space-between; }
+      .contentFirstRow {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
 
       /* Search/filter row */
-      .searchBarDiv { margin-top: 1rem; display: grid; grid-template-columns: 1.5fr auto; gap: 0.6rem; align-items: center; }
+      .searchBarDiv {
+        margin-top: 1rem;
+        display: grid;
+        grid-template-columns: 1.5fr auto;
+        gap: 0.6rem;
+        align-items: center;
+      }
       .searchDiv {
-        background: var(--color-white); border-radius: 999px; box-shadow: var(--box-shadow);
-        display: flex; align-items: center; gap: 0.6rem; padding: 0.8rem 1.2rem;
+        background: var(--color-white);
+        border-radius: 999px;
+        box-shadow: var(--box-shadow);
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.8rem 1.2rem;
       }
-      .searchDiv input { flex: 1; background: transparent; font: inherit; color: var(--color-dark); border: none; outline: none; }
-      .searchDiv .material-icons-sharp { font-size: 1.2rem; color: #20647c; }
+      .searchDiv input {
+        flex: 1;
+        background: transparent;
+        font: inherit;
+        color: var(--color-dark);
+        border: none;
+        outline: none;
+      }
+      .searchDiv .material-icons-sharp {
+        font-size: 1.2rem;
+        color: #20647c;
+      }
 
-      .dropdown { position: relative; }
-      .dropbtn {
-        padding: 0.7rem 1rem; border-radius: 999px; border: 1px solid #e5e7eb;
-        background: #fff; box-shadow: var(--box-shadow); cursor: pointer; font-weight: 600;
+      .dropdown {
+        position: relative;
       }
-      .dropbtn .current { color: #6b7280; font-weight: 500; margin-left: 0.3rem; }
+      .dropbtn {
+        padding: 0.7rem 1rem;
+        border-radius: 999px;
+        border: 1px solid #e5e7eb;
+        background: #fff;
+        box-shadow: var(--box-shadow);
+        cursor: pointer;
+        font-weight: 600;
+      }
+      .dropbtn .current {
+        color: #6b7280;
+        font-weight: 500;
+        margin-left: 0.3rem;
+      }
 
       .dropdown-content {
-        position: absolute; top: 110%; right: 0; min-width: 220px; background: #fff; border: 1px solid #e5e7eb;
-        border-radius: 14px; box-shadow: var(--box-shadow); display: none; z-index: 10; padding: 0.4rem;
+        position: absolute;
+        top: 110%;
+        right: 0;
+        min-width: 220px;
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        box-shadow: var(--box-shadow);
+        display: none;
+        z-index: 10;
+        padding: 0.4rem;
       }
-      .dropdown.open .dropdown-content { display: block; }
+      .dropdown.open .dropdown-content {
+        display: block;
+      }
       .dropdown-content a {
-        display: block; padding: 0.6rem 0.8rem; border-radius: 10px; color: #1f2937; text-decoration: none; font-size: 0.92rem;
+        display: block;
+        padding: 0.6rem 0.8rem;
+        border-radius: 10px;
+        color: #1f2937;
+        text-decoration: none;
+        font-size: 0.92rem;
       }
-      .dropdown-content a:hover { background: #f3f4f6; }
+      .dropdown-content a:hover {
+        background: #f3f4f6;
+      }
 
-      .scrollDownText { text-align: center; color: #6b7280; font-size: 0.85rem; margin-top: 16px; display: flex; align-items: center; justify-content: center; gap: 0.35rem; }
-      .scrollDownText .material-icons { font-size: 18px; }
+      .scrollDownText {
+        text-align: center;
+        color: #6b7280;
+        font-size: 0.85rem;
+        margin-top: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.35rem;
+      }
+      .scrollDownText .material-icons {
+        font-size: 18px;
+      }
 
-      @media (max-width: 1200px) { .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-      @media (max-width: 700px)  { .cards { grid-template-columns: 1fr; } }
+      @media (max-width: 1200px) {
+        .cards {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+      @media (max-width: 700px) {
+        .cards {
+          grid-template-columns: 1fr;
+        }
+      }
 
       /* Status chips */
-      .status { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.72rem; line-height: 1;
-        padding: 0.42rem 0.8rem; border-radius: 999px; font-weight: 600; border: 1px solid transparent; white-space: nowrap; }
-      .status .material-icons { font-size: 16px; }
-      .status-submitted { background: #eef2ff; color: #4338ca; border-color: #e0e7ff; } /* not used */
-      .status-viewed    { background: #fff7ed; color: #c2410c; border-color: #ffedd5; }
-      .status-accepted  { background: rgba(27,156,133,.12); color: var(--color-success); border-color: rgba(27,156,133,.25); }
-      .status-rejected  { background: rgba(255,0,96,.1); color: var(--color-danger); border-color: rgba(255,0,96,.25); }
-      .status-pending   { background: #f1f5f9; color: #334155; border-color: #e2e8f0; }
+      .status {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-size: 0.72rem;
+        line-height: 1;
+        padding: 0.42rem 0.8rem;
+        border-radius: 999px;
+        font-weight: 600;
+        border: 1px solid transparent;
+        white-space: nowrap;
+      }
+      .status .material-icons {
+        font-size: 16px;
+      }
+      .status-submitted {
+        background: #eef2ff;
+        color: #4338ca;
+        border-color: #e0e7ff;
+      } /* not used */
+      .status-viewed {
+        background: #fff7ed;
+        color: #c2410c;
+        border-color: #ffedd5;
+      }
+      .status-accepted {
+        background: rgba(27, 156, 133, 0.12);
+        color: var(--color-success);
+        border-color: rgba(27, 156, 133, 0.25);
+      }
+      .status-rejected {
+        background: rgba(255, 0, 96, 0.1);
+        color: var(--color-danger);
+        border-color: rgba(255, 0, 96, 0.25);
+      }
+      .status-pending {
+        background: #f1f5f9;
+        color: #334155;
+        border-color: #e2e8f0;
+      }
 
       /* Animations & micro-interactions (unchanged) */
-      main { --brand: #20a44c; --accent: #20647c; scroll-behavior: smooth; }
-      @keyframes fadeUp { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
-      main .titlePageDiv h1{animation:fadeUp .28s ease both}
-      main .titlePageDiv p{animation:fadeUp .28s ease .06s both}
-      @keyframes cardIn{from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:none}}
-      main .cards>.applicationsDiv{animation:cardIn .34s ease both}
-      main .cards>.applicationsDiv:nth-child(2){animation-delay:.05s}
-      main .cards>.applicationsDiv:nth-child(3){animation-delay:.1s}
-      main .cards>.applicationsDiv:nth-child(4){animation-delay:.15s}
-      main .applicationsDiv{transition:transform .12s ease,box-shadow .22s ease,border-color .2s ease}
-      main .applicationsDiv:hover{transform:translateY(-2px);box-shadow:0 14px 32px rgba(0,0,0,.08)}
-      main .applicationsDiv::before{content:"";position:absolute;left:0;top:0;height:4px;width:25%;background:linear-gradient(90deg,var(--accent),var(--brand));transition:width .35s ease,background .25s ease}
-      main .applicationsDiv:has(.status-viewed)::before{width:50%}
-      main .applicationsDiv:has(.status-accepted)::before{width:100%}
-      main .applicationsDiv:has(.status-rejected)::before{width:100%;background:linear-gradient(90deg,#e11d48,#f97316)}
-      @keyframes shine{to{transform:translateX(250%) rotate(25deg)}}
-      main .thumb{position:relative;overflow:hidden}
-      main .thumb img{transition:transform .6s cubic-bezier(.2,.8,.2,1)}
-      main .applicationsDiv:hover .thumb img{transform:scale(1.04)}
-      main .thumb::after{content:"";position:absolute;top:-50%;left:-60%;width:60%;height:200%;background:linear-gradient(120deg,rgba(255,255,255,0) 0,rgba(255,255,255,.45) 50%,rgba(255,255,255,0) 100%);transform:translateX(-150%) rotate(25deg);pointer-events:none}
-      main .applicationsDiv:hover .thumb::after{animation:shine .9s ease}
-      @keyframes acceptPulse{0%,100%{box-shadow:0 0 0 0 rgba(32,164,76,0)}50%{box-shadow:0 0 0 6px rgba(32,164,76,.16)}}
-      main .status{transition:transform .12s ease,box-shadow .2s ease}
-      main .status:hover{transform:translateY(-1px);box-shadow:0 6px 14px rgba(0,0,0,.07)}
-      main .status-accepted{animation:acceptPulse 2.2s ease-in-out infinite}
-      .dropdown-content a .material-icons{font-size:18px;vertical-align:middle;margin-right:.35rem}
-      @media (prefers-reduced-motion: reduce){main *{animation:none!important;transition:none!important}}
+      main {
+        --brand: #20a44c;
+        --accent: #20647c;
+        scroll-behavior: smooth;
+      }
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(6px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      main .titlePageDiv h1 {
+        animation: fadeUp 0.28s ease both;
+      }
+      main .titlePageDiv p {
+        animation: fadeUp 0.28s ease 0.06s both;
+      }
+      @keyframes cardIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      main .cards > .applicationsDiv {
+        animation: cardIn 0.34s ease both;
+      }
+      main .cards > .applicationsDiv:nth-child(2) {
+        animation-delay: 0.05s;
+      }
+      main .cards > .applicationsDiv:nth-child(3) {
+        animation-delay: 0.1s;
+      }
+      main .cards > .applicationsDiv:nth-child(4) {
+        animation-delay: 0.15s;
+      }
+      main .applicationsDiv {
+        transition: transform 0.12s ease, box-shadow 0.22s ease,
+          border-color 0.2s ease;
+      }
+      main .applicationsDiv:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 14px 32px rgba(0, 0, 0, 0.08);
+      }
+      main .applicationsDiv::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 4px;
+        width: 25%;
+        background: linear-gradient(90deg, var(--accent), var(--brand));
+        transition: width 0.35s ease, background 0.25s ease;
+      }
+      main .applicationsDiv:has(.status-viewed)::before {
+        width: 50%;
+      }
+      main .applicationsDiv:has(.status-accepted)::before {
+        width: 100%;
+      }
+      main .applicationsDiv:has(.status-rejected)::before {
+        width: 100%;
+        background: linear-gradient(90deg, #e11d48, #f97316);
+      }
+      @keyframes shine {
+        to {
+          transform: translateX(250%) rotate(25deg);
+        }
+      }
+      main .thumb {
+        position: relative;
+        overflow: hidden;
+      }
+      main .thumb img {
+        transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+      }
+      main .applicationsDiv:hover .thumb img {
+        transform: scale(1.04);
+      }
+      main .thumb::after {
+        content: "";
+        position: absolute;
+        top: -50%;
+        left: -60%;
+        width: 60%;
+        height: 200%;
+        background: linear-gradient(
+          120deg,
+          rgba(255, 255, 255, 0) 0,
+          rgba(255, 255, 255, 0.45) 50%,
+          rgba(255, 255, 255, 0) 100%
+        );
+        transform: translateX(-150%) rotate(25deg);
+        pointer-events: none;
+      }
+      main .applicationsDiv:hover .thumb::after {
+        animation: shine 0.9s ease;
+      }
+      @keyframes acceptPulse {
+        0%,
+        100% {
+          box-shadow: 0 0 0 0 rgba(32, 164, 76, 0);
+        }
+        50% {
+          box-shadow: 0 0 0 6px rgba(32, 164, 76, 0.16);
+        }
+      }
+      main .status {
+        transition: transform 0.12s ease, box-shadow 0.2s ease;
+      }
+      main .status:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 14px rgba(0, 0, 0, 0.07);
+      }
+      main .status-accepted {
+        animation: acceptPulse 2.2s ease-in-out infinite;
+      }
+      .dropdown-content a .material-icons {
+        font-size: 18px;
+        vertical-align: middle;
+        margin-right: 0.35rem;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        main * {
+          animation: none !important;
+          transition: none !important;
+        }
+      }
     </style>
   </head>
 
@@ -129,19 +430,48 @@
             <img src="../images/STEQ Logo 3.png" />
             <h2>SIMP<span class="danger">Project</span></h2>
           </div>
-          <div class="close" id="close-btn"><span class="material-icons-sharp">close</span></div>
+          <div class="close" id="close-btn">
+            <span class="material-icons-sharp">close</span>
+          </div>
         </div>
 
         <div class="sidebar">
-          <a href="dashboard.html"><span class="material-icons-sharp">dashboard</span><h3>Dashboard</h3></a>
-          <a href="job.html"><span class="material-icons-sharp">work</span><h3>Jobs</h3></a>
-          <a href="myApplication.html" class="active"><span class="material-icons-sharp">receipt</span><h3>My Application</h3></a>
-          <a href="courses.html"><span class="material-icons-sharp">school</span><h3>Courses</h3></a>
-          <a href="shop.html"><span class="material-icons-sharp">shopping_cart</span><h3>Shop</h3></a>
-          <a href="#"><span class="material-icons-sharp">account_balance</span><h3>Earnings</h3></a>
-          <a href="documents.html"><span class="material-icons-sharp">file_copy</span><h3>Documents</h3></a>
-          <a href="#"><span class="material-icons-sharp">settings</span><h3>Settings</h3></a>
-          <a href="#" id="logout-btn"><span class="material-icons-sharp">logout</span><h3>Logout</h3></a>
+          <a href="dashboard.html"
+            ><span class="material-icons-sharp">dashboard</span>
+            <h3>Dashboard</h3></a
+          >
+          <a href="job.html"
+            ><span class="material-icons-sharp">work</span>
+            <h3>Jobs</h3></a
+          >
+          <a href="myApplication.html" class="active"
+            ><span class="material-icons-sharp">receipt</span>
+            <h3>My Application</h3></a
+          >
+          <a href="courses.html"
+            ><span class="material-icons-sharp">school</span>
+            <h3>Courses</h3></a
+          >
+          <a href="shop.html"
+            ><span class="material-icons-sharp">shopping_cart</span>
+            <h3>Shop</h3></a
+          >
+          <a href="#"
+            ><span class="material-icons-sharp">account_balance</span>
+            <h3>Earnings</h3></a
+          >
+          <a href="documents.html"
+            ><span class="material-icons-sharp">file_copy</span>
+            <h3>Documents</h3></a
+          >
+          <a href="#"
+            ><span class="material-icons-sharp">settings</span>
+            <h3>Settings</h3></a
+          >
+          <a href="#" id="logout-btn"
+            ><span class="material-icons-sharp">logout</span>
+            <h3>Logout</h3></a
+          >
         </div>
       </aside>
 
@@ -155,20 +485,50 @@
         <div class="searchBarDiv">
           <div class="searchDiv">
             <span class="material-icons-sharp" aria-hidden="true">search</span>
-            <input id="searchInput" type="text" placeholder="Search by title, description, or location" />
+            <input
+              id="searchInput"
+              type="text"
+              placeholder="Search by title, description, or location"
+            />
           </div>
 
           <div class="dropdown" id="statusDropdown">
             <button class="dropbtn" id="statusBtn">
-              <span class="material-icons" aria-hidden="true" style="vertical-align: middle; font-size: 18px; margin-right: 0.35rem; color: #20647c;">filter_list</span>
+              <span
+                class="material-icons"
+                aria-hidden="true"
+                style="
+                  vertical-align: middle;
+                  font-size: 18px;
+                  margin-right: 0.35rem;
+                  color: #20647c;
+                "
+                >filter_list</span
+              >
               Status <span class="current" id="statusLabel"></span>
             </button>
             <div class="dropdown-content" id="statusMenu">
-              <a href="#" data-status=""><span class="material-icons" aria-hidden="true">apps</span>All</a>
-              <a href="#" data-status="viewed"><span class="material-icons" aria-hidden="true">visibility</span>Viewed</a>
-              <a href="#" data-status="approved"><span class="material-icons" aria-hidden="true">task_alt</span>Approved</a>
-              <a href="#" data-status="rejected"><span class="material-icons" aria-hidden="true">close</span>Rejected</a>
-              <a href="#" data-status="pending"><span class="material-icons" aria-hidden="true">pending</span>Pending</a>
+              <a href="#" data-status=""
+                ><span class="material-icons" aria-hidden="true">apps</span
+                >All</a
+              >
+              <a href="#" data-status="viewed"
+                ><span class="material-icons" aria-hidden="true"
+                  >visibility</span
+                >Viewed</a
+              >
+              <a href="#" data-status="approved"
+                ><span class="material-icons" aria-hidden="true">task_alt</span
+                >Approved</a
+              >
+              <a href="#" data-status="rejected"
+                ><span class="material-icons" aria-hidden="true">close</span
+                >Rejected</a
+              >
+              <a href="#" data-status="pending"
+                ><span class="material-icons" aria-hidden="true">pending</span
+                >Pending</a
+              >
             </div>
           </div>
         </div>
@@ -176,7 +536,8 @@
         <section class="cards" id="applicationsContainer"></section>
 
         <p class="scrollDownText">
-          <span class="material-icons" aria-hidden="true">south</span> Scroll down for more
+          <span class="material-icons" aria-hidden="true">south</span> Scroll
+          down for more
         </p>
       </main>
     </div>
@@ -185,12 +546,11 @@
     <script type="module" src="../../general_files/session.js"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 
-    <script>
+    <script type="module">
       const { createClient } = supabase;
 
       // Supabase credentials
-      const SUPABASE_URL = "https://gxydxmobwrccqagltlci.supabase.co";
-      const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd4eWR4bW9id3JjY3FhZ2x0bGNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUxNDMzOTMsImV4cCI6MjA3MDcxOTM5M30.Zk2xUlmlPGbe-7rDsqC486Js9LGFMMOp-fytNZSwzBs";
+      import { SUPABASE_URL, SUPABASE_ANON_KEY } from "../../../supabase.js";
       const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
       const container = document.getElementById("applicationsContainer");
@@ -201,10 +561,22 @@
 
       // Status presentation map
       const STATUS_MAP = Object.freeze({
-        pending:  { class: "status-pending",  label: "Pending",  icon: "hourglass_top" },
-        viewed:   { class: "status-viewed",   label: "Viewed",   icon: "visibility" },
-        approved: { class: "status-accepted", label: "Approved", icon: "task_alt" },
-        rejected: { class: "status-rejected", label: "Rejected", icon: "close" },
+        pending: {
+          class: "status-pending",
+          label: "Pending",
+          icon: "hourglass_top",
+        },
+        viewed: { class: "status-viewed", label: "Viewed", icon: "visibility" },
+        approved: {
+          class: "status-accepted",
+          label: "Approved",
+          icon: "task_alt",
+        },
+        rejected: {
+          class: "status-rejected",
+          label: "Rejected",
+          icon: "close",
+        },
       });
 
       // Local state
@@ -212,25 +584,46 @@
       const FILTERS = { q: "", status: "" }; // status "" means "All"
 
       // Utils
-      const esc = (str) => String(str ?? "").replace(/[&<>"']/g, (s) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[s]));
+      const esc = (str) =>
+        String(str ?? "").replace(
+          /[&<>"']/g,
+          (s) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            }[s])
+        );
       const fmtPeso = (n) => {
         const v = typeof n === "string" ? parseFloat(n) : n;
-        return isNaN(v) ? "0.00" : v.toLocaleString("en-PH", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        return isNaN(v)
+          ? "0.00"
+          : v.toLocaleString("en-PH", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            });
       };
-      const fmtDate = (d) => d ? new Date(d + "T00:00:00").toLocaleDateString() : "";
+      const fmtDate = (d) =>
+        d ? new Date(d + "T00:00:00").toLocaleDateString() : "";
       const fmtTime = (t) => (t ? String(t).slice(0, 5) : "");
 
       // If job images are in a storage bucket, compute a public URL; else allow full URLs
       function publicJobImageUrl(rawPath) {
         if (!rawPath) return "";
         if (/^https?:\/\//i.test(rawPath)) return rawPath;
-        const clean = String(rawPath).replace(/^\/+/, "").replace(/^jobs\//, "");
+        const clean = String(rawPath)
+          .replace(/^\/+/, "")
+          .replace(/^jobs\//, "");
         const { data } = sb.storage.from("jobs").getPublicUrl(clean);
         return data?.publicUrl || "";
       }
 
       function updateStatusButtonLabel() {
-        statusLabel.textContent = FILTERS.status ? ` (${FILTERS.status[0].toUpperCase() + FILTERS.status.slice(1)})` : "";
+        statusLabel.textContent = FILTERS.status
+          ? ` (${FILTERS.status[0].toUpperCase() + FILTERS.status.slice(1)})`
+          : "";
       }
 
       function applyFiltersAndRender() {
@@ -238,18 +631,19 @@
 
         // Filter by status
         const st = (FILTERS.status || "").trim().toLowerCase();
-        if (st) list = list.filter(a => String(a.status || "").toLowerCase() === st);
+        if (st)
+          list = list.filter(
+            (a) => String(a.status || "").toLowerCase() === st
+          );
 
         // Search across title, description, location
         const q = (FILTERS.q || "").trim().toLowerCase();
         if (q) {
-          list = list.filter(a => {
+          list = list.filter((a) => {
             const j = a.job || {};
-            const hay = [
-              j.job_title,
-              j.job_description,
-              j.job_location
-            ].map(x => String(x ?? "").toLowerCase()).join(" | ");
+            const hay = [j.job_title, j.job_description, j.job_location]
+              .map((x) => String(x ?? "").toLowerCase())
+              .join(" | ");
             return hay.includes(q);
           });
         }
@@ -260,14 +654,17 @@
       function renderApplications(rows) {
         container.innerHTML = "";
         if (!rows || rows.length === 0) {
-          container.innerHTML = `<p>No applications found${FILTERS.status || FILTERS.q ? " for current filters." : "."}</p>`;
+          container.innerHTML = `<p>No applications found${
+            FILTERS.status || FILTERS.q ? " for current filters." : "."
+          }</p>`;
           return;
         }
 
         for (const app of rows) {
           const job = app.job || {};
           const statusInfo = STATUS_MAP[app.status] || STATUS_MAP["pending"];
-          const imgUrl = publicJobImageUrl(job.job_picture_url) || "../images/profile-4.jpg";
+          const imgUrl =
+            publicJobImageUrl(job.job_picture_url) || "../images/profile-4.jpg";
 
           const card = document.createElement("article");
           card.className = "applicationsDiv";
@@ -295,7 +692,9 @@
                   </span>
                 </div>
                 <span class="status ${statusInfo.class}">
-                  <span class="material-icons" aria-hidden="true">${statusInfo.icon}</span>
+                  <span class="material-icons" aria-hidden="true">${
+                    statusInfo.icon
+                  }</span>
                   ${statusInfo.label}
                 </span>
               </div>
@@ -321,7 +720,9 @@
                 </div>
               </div>
 
-              <div class="desc">${esc(job.job_description || "No description provided.")}</div>
+              <div class="desc">${esc(
+                job.job_description || "No description provided."
+              )}</div>
             </div>
             <button class="apply"><span class="material-icons" aria-hidden="true">cancel</span>Cancel Application</button>
           `;
@@ -333,41 +734,72 @@
       async function loadApplications() {
         container.innerHTML = "<p>Loading applications…</p>";
 
-        const { data, error } = await sb
+        // 1) Load applications (from jobs schema)
+        const { data: apps, error: appErr } = await sb
+          .schema("jobs")
           .from("job_application")
-          .select(`
-            application_id,
-            status,
-            applied_at,
-            job:job_id (
-              job_id,
-              job_title,
-              job_category,
-              job_difficulty,
-              job_location,
-              job_date,
-              job_time,
-              job_pay,
-              job_description,
-              job_picture_url
-            )
-          `)
+          .select("application_id, status, applied_at, job_id")
           .order("applied_at", { ascending: false });
 
-        if (error) {
-          console.error("Error fetching applications:", error);
-          container.innerHTML = `<p>Error loading applications: ${esc(error.message)}</p>`;
+        if (appErr) {
+          console.error("Error fetching applications:", appErr);
+          container.innerHTML = `<p>Error loading applications: ${esc(
+            appErr.message
+          )}</p>`;
           return;
         }
 
-        ALL_APPS = data || [];
+        // 2) Load the jobs those apps reference (from public schema)
+        const jobIds = [
+          ...new Set((apps || []).map((a) => a.job_id).filter(Boolean)),
+        ];
+
+        let jobsById = {};
+        if (jobIds.length) {
+          const { data: jobs, error: jobErr } = await sb
+          .schema("jobs")
+            .from("job") // public schema by default
+            .select(
+              `
+        job_id,
+        job_title,
+        job_category,
+        job_difficulty,
+        job_location,
+        job_date,
+        job_time,
+        job_pay,
+        job_description,
+        job_picture_url
+      `
+            )
+            .in("job_id", jobIds);
+
+          if (jobErr) {
+            console.error("Error fetching jobs:", jobErr);
+            container.innerHTML = `<p>Error loading jobs: ${esc(
+              jobErr.message
+            )}</p>`;
+            return;
+          }
+
+          jobsById = Object.fromEntries((jobs || []).map((j) => [j.job_id, j]));
+        }
+
+        // 3) Stitch: put the job under each application
+        ALL_APPS = (apps || []).map((a) => ({
+          ...a,
+          job: jobsById[a.job_id] || null,
+        }));
         applyFiltersAndRender();
       }
 
       // --- UI wiring: dropdown open/close ---
       document.addEventListener("click", (e) => {
         const dd = e.target.closest(".dropdown");
-        document.querySelectorAll(".dropdown").forEach((d) => d.classList.remove("open"));
+        document
+          .querySelectorAll(".dropdown")
+          .forEach((d) => d.classList.remove("open"));
         if (dd && dd.id === "statusDropdown") dd.classList.add("open");
       });
 
