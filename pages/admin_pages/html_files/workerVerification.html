@@ -1,570 +1,657 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../css_files/sideBar.css" />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp"
+      rel="stylesheet"
+    />
+    <title>Worker Verification</title>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="../css_files/sideBar.css" />
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet" />
-  <title>Worker Verification</title>
+    <style>
+      :root {
+        --ink: #1c2430;
+        --muted: #6c7a8a;
+        --line: #e7edf3;
+        --brand: #20a44c;
+        --warn: #f59e0b;
+        --danger: #e53935;
+        --bg: #f8fbfd;
+        --card: #ffffff;
+        --pill: #eef6ff;
+        --radius: 14px;
+      }
 
-  <style>
-    :root {
-      --ink: #1c2430;
-      --muted: #6c7a8a;
-      --line: #e7edf3;
-      --brand: #20a44c;
-      --warn: #f59e0b;
-      --danger: #e53935;
-      --bg: #f8fbfd;
-      --card: #ffffff;
-      --pill: #eef6ff;
-      --radius: 14px;
-    }
+      main {
+        margin-top: 1.4rem;
+      }
 
-    main {
-      margin-top: 1.4rem;
-    }
-
-    .workers-wrap {
-      display: grid;
-      grid-template-columns: 340px 1fr;
-      gap: 1rem;
-    }
-
-    @media (max-width: 980px) {
       .workers-wrap {
-        grid-template-columns: 1fr;
+        display: grid;
+        grid-template-columns: 340px 1fr;
+        gap: 1rem;
       }
-    }
 
-    .panel {
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      padding: 12px;
-    }
+      @media (max-width: 980px) {
+        .workers-wrap {
+          grid-template-columns: 1fr;
+        }
+      }
 
-    .panel h3 {
-      margin: 0 0 .5rem 0;
-      font-size: 1rem;
-    }
+      .panel {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 12px;
+      }
 
-    .search {
-      position: relative;
-      margin-bottom: .6rem;
-    }
+      .panel h3 {
+        margin: 0 0 0.5rem 0;
+        font-size: 1rem;
+      }
 
-    .search input {
-      width: 100%;
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      padding: 10px 12px 10px 36px;
-      outline: none;
-      background: #fcfeff;
-    }
+      .search {
+        position: relative;
+        margin-bottom: 0.6rem;
+      }
 
-    .search .material-icons-sharp {
-      position: absolute;
-      left: 10px;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 20px;
-      color: var(--muted);
-    }
+      .search input {
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 10px 12px 10px 36px;
+        outline: none;
+        background: #fcfeff;
+      }
 
-    .worker-list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      max-height: 70vh;
-      overflow: auto;
-    }
+      .search .material-icons-sharp {
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 20px;
+        color: var(--muted);
+      }
 
-    .worker-item {
-      display: grid;
-      grid-template-columns: 40px 1fr auto;
-      align-items: center;
-      gap: 10px;
-      padding: 10px;
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      cursor: pointer;
-      transition: background .15s ease;
-    }
+      .worker-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        max-height: 70vh;
+        overflow: auto;
+      }
 
-    .worker-item:hover {
-      background: #f6fafc;
-    }
+      .worker-item {
+        display: grid;
+        grid-template-columns: 40px 1fr auto;
+        align-items: center;
+        gap: 10px;
+        padding: 10px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        cursor: pointer;
+        transition: background 0.15s ease;
+      }
 
-    .worker-item.active {
-      outline: 2px solid var(--brand);
-      background: #f3fdf7;
-    }
+      .worker-item:hover {
+        background: #f6fafc;
+      }
 
-    .avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 1px solid var(--line);
-    }
+      .worker-item.active {
+        outline: 2px solid var(--brand);
+        background: #f3fdf7;
+      }
 
-    .pill {
-      font-size: .75rem;
-      background: var(--pill);
-      padding: 4px 8px;
-      border-radius: 999px;
-      color: #2463a6;
-      border: 1px solid #d6e9ff;
-      white-space: nowrap;
-    }
+      .avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 1px solid var(--line);
+      }
 
-    .details {
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      overflow: clip;
-    }
+      .pill {
+        font-size: 0.75rem;
+        background: var(--pill);
+        padding: 4px 8px;
+        border-radius: 999px;
+        color: #2463a6;
+        border: 1px solid #d6e9ff;
+        white-space: nowrap;
+      }
 
-    .details .head {
-      display: flex;
-      gap: 16px;
-      padding: 16px;
-      border-bottom: 1px solid var(--line);
-      align-items: center;
-      background: linear-gradient(180deg, #f9fbff, #ffffff);
-    }
+      .details {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        overflow: clip;
+      }
 
-    .details .head img {
-      width: 72px;
-      height: 72px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 1px solid var(--line);
-      background: #fff;
-    }
+      .details .head {
+        display: flex;
+        gap: 16px;
+        padding: 16px;
+        border-bottom: 1px solid var(--line);
+        align-items: center;
+        background: linear-gradient(180deg, #f9fbff, #ffffff);
+      }
 
-    .details .head .name {
-      font-size: 1.1rem;
-      font-weight: 700;
-      margin: 0 0 2px;
-    }
+      .details .head img {
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 1px solid var(--line);
+        background: #fff;
+      }
 
-    .meta {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-top: 4px;
-    }
+      .details .head .name {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin: 0 0 2px;
+      }
 
-    .meta .kv {
-      font-size: .85rem;
-      color: var(--muted);
-    }
+      .meta {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 4px;
+      }
 
-    .grid-2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      padding: 16px;
-    }
+      .meta .kv {
+        font-size: 0.85rem;
+        color: var(--muted);
+      }
 
-    @media (max-width: 980px) {
       .grid-2 {
-        grid-template-columns: 1fr;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        padding: 16px;
       }
-    }
 
-    .card {
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      padding: 12px;
-      background: #fff;
-    }
+      @media (max-width: 980px) {
+        .grid-2 {
+          grid-template-columns: 1fr;
+        }
+      }
 
-    .card h4 {
-      margin: 0 0 .6rem 0;
-      font-size: .95rem;
-    }
+      .card {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 12px;
+        background: #fff;
+      }
 
-    .info-list {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px 12px;
-      font-size: .95rem;
-    }
+      .card h4 {
+        margin: 0 0 0.6rem 0;
+        font-size: 0.95rem;
+      }
 
-    @media (max-width: 640px) {
       .info-list {
-        grid-template-columns: 1fr;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px 12px;
+        font-size: 0.95rem;
       }
-    }
 
-    .info-list .label {
-      color: var(--muted);
-      font-size: .85rem;
-      display: block;
-    }
+      @media (max-width: 640px) {
+        .info-list {
+          grid-template-columns: 1fr;
+        }
+      }
 
-    .doc-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-      gap: 10px;
-    }
+      .info-list .label {
+        color: var(--muted);
+        font-size: 0.85rem;
+        display: block;
+      }
 
-    .doc {
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      padding: 10px;
-      display: grid;
-      grid-template-rows: auto auto 1fr auto;
-      gap: 6px;
-      background: #fcfeff;
-    }
+      .doc-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 10px;
+      }
 
-    .doc .doc-title {
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
+      .doc {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 10px;
+        display: grid;
+        grid-template-rows: auto auto 1fr auto;
+        gap: 6px;
+        background: #fcfeff;
+      }
 
-    .doc .actions {
-      display: flex;
-      gap: 8px;
-      margin-top: 6px;
-    }
+      .doc .doc-title {
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
 
-    .btn {
-      appearance: none;
-      border: 1px solid var(--line);
-      background: #fff;
-      border-radius: 10px;
-      padding: 8px 10px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: .5rem;
-    }
+      .doc .actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 6px;
+      }
 
-    .btn.primary {
-      background: var(--brand);
-      color: #fff;
-      border-color: var(--brand);
-    }
+      .btn {
+        appearance: none;
+        border: 1px solid var(--line);
+        background: #fff;
+        border-radius: 10px;
+        padding: 8px 10px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+      }
 
-    .btn.reject {
-      background: #fff5f5;
-      color: var(--danger);
-      border-color: #ffd7d7;
-    }
+      .btn.primary {
+        background: var(--brand);
+        color: #fff;
+        border-color: var(--brand);
+      }
 
-    .btn:disabled {
-      opacity: .6;
-      cursor: not-allowed;
-    }
+      .btn.reject {
+        background: #fff5f5;
+        color: var(--danger);
+        border-color: #ffd7d7;
+      }
 
-    .status-dot {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: .85rem;
-      color: var(--muted);
-    }
+      .btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
 
-    .status-dot .dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #cbd5e1;
-    }
+      .status-dot {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.85rem;
+        color: var(--muted);
+      }
 
-    .status-dot.approved .dot {
-      background: var(--brand);
-    }
+      .status-dot .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #cbd5e1;
+      }
 
-    .status-dot.rejected .dot {
-      background: var(--danger);
-    }
+      .status-dot.approved .dot {
+        background: var(--brand);
+      }
 
-    .hint {
-      font-size: .85rem;
-      color: var(--muted);
-    }
+      .status-dot.rejected .dot {
+        background: var(--danger);
+      }
 
-    .modal {
-      position: fixed;
-      inset: 0;
-      background: rgba(14, 25, 42, 0.6);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      z-index: 1000;
-    }
+      .hint {
+        font-size: 0.85rem;
+        color: var(--muted);
+      }
 
-    .modal.open {
-      display: flex;
-    }
+      .modal {
+        position: fixed;
+        inset: 0;
+        background: rgba(14, 25, 42, 0.6);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        z-index: 1000;
+      }
 
-    .modal-card {
-      width: min(1080px, 96vw);
-      height: min(80vh, 900px);
-      background: #fff;
-      border-radius: 14px;
-      overflow: hidden;
-      display: grid;
-      grid-template-rows: auto 1fr;
-      box-shadow: 0 20px 70px rgba(0, 0, 0, .25);
-    }
+      .modal.open {
+        display: flex;
+      }
 
-    .modal-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 12px;
-      border-bottom: 1px solid var(--line);
-      background: #f7fbff;
-    }
+      .modal-card {
+        width: min(1080px, 96vw);
+        height: min(80vh, 900px);
+        background: #fff;
+        border-radius: 14px;
+        overflow: hidden;
+        display: grid;
+        grid-template-rows: auto 1fr;
+        box-shadow: 0 20px 70px rgba(0, 0, 0, 0.25);
+      }
 
-    .modal-head h4 {
-      margin: 0;
-      font-size: .95rem;
-      font-weight: 700;
-    }
+      .modal-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 12px;
+        border-bottom: 1px solid var(--line);
+        background: #f7fbff;
+      }
 
-    .modal-body {
-      background: #fff;
-      position: relative;
-    }
+      .modal-head h4 {
+        margin: 0;
+        font-size: 0.95rem;
+        font-weight: 700;
+      }
 
-    .modal-body iframe,
-    .modal-body img {
-      width: 100%;
-      height: 100%;
-      border: 0;
-      display: block;
-    }
+      .modal-body {
+        background: #fff;
+        position: relative;
+      }
 
-    .empty-state {
-      padding: 24px;
-      border: 1px dashed var(--line);
-      border-radius: 12px;
-      background: #fbfeff;
-      text-align: center;
-      color: var(--muted);
-    }
-  </style>
-</head>
+      .modal-body iframe,
+      .modal-body img {
+        width: 100%;
+        height: 100%;
+        border: 0;
+        display: block;
+      }
 
-<body>
-  <div class="container">
-    <aside>
-      <div class="toggle">
-        <div class="logo">
-          <img src="../img/simpLogo.png" alt="logo" />
-          <h2>SIMP<span class="danger">Project</span></h2>
-        </div>
-        <div class="close" id="close-btn"><span class="material-icons-sharp">close</span></div>
-      </div>
+      .empty-state {
+        padding: 24px;
+        border: 1px dashed var(--line);
+        border-radius: 12px;
+        background: #fbfeff;
+        text-align: center;
+        color: var(--muted);
+      }
+    </style>
+  </head>
 
-      <div class="sidebar">
-        <a href="dashboard.html">
-          <span class="material-icons-sharp">dashboard</span>
-          <h3>Dashboard</h3>
-        </a>
-        <a href="workerVerification.html" class="active">
-          <span class="material-icons-sharp">engineering</span>
-          <h3>Workers<br>Verification</h3>
-        </a>
-        <a href="jobVerification.html">
-          <span class="material-icons-sharp">work</span>
-          <h3>Jobs<br>Verification</h3>
-        </a>
-        <a href="adminVerification.html">
-          <span class="material-icons-sharp">shield</span>
-          <h3>Admin<br>Verification</h3>
-        </a>
-        <a href="courses.html">
-          <span class="material-icons-sharp">school</span>
-          <h3>Course<br>Publisher</h3>
-        </a>
-        <a href="#">
-          <span class="material-icons-sharp">settings</span>
-          <h3>Settings</h3>
-        </a>
-
-        <a href="#" id="logout-btn">
-          <span class="material-icons-sharp">logout</span>
-          <h3>Logout</h3>
-        </a>
-      </div>
-    </aside>
-
-    <main>
-      <section id="tab-workers">
-        <div class="workers-wrap">
-          <div class="panel">
-            <h3>New Sign-Ups</h3>
-            <div class="search">
-              <span class="material-icons-sharp">search</span>
-              <input id="searchInput" type="text" placeholder="Search name, email, phone…" />
-            </div>
-            <div style="margin-bottom:.6rem;">
-              <select id="statusFilter"
-                style="width:100%; border:1px solid var(--line); border-radius:10px; padding:10px 12px; background:#fcfeff; outline:none;">
-                <option value="">All statuses</option>
-                <option value="pending">Pending</option>
-                <option value="approved">Approved</option>
-                <option value="rejected">Rejected</option>
-              </select>
-            </div>
-            <div id="workerList" class="worker-list"></div>
-            <div id="emptyWorkers" class="empty-state" style="display:none;">No new workers found.</div>
+  <body>
+    <div class="container">
+      <aside>
+        <div class="toggle">
+          <div class="logo">
+            <img src="../img/simpLogo.png" alt="logo" />
+            <h2>SIMP<span class="danger">Project</span></h2>
           </div>
-
-          <div class="details" id="detailsPane">
-            <div class="empty-state">Select a worker on the left to review their profile & documents.</div>
+          <div class="close" id="close-btn">
+            <span class="material-icons-sharp">close</span>
           </div>
         </div>
-      </section>
-    </main>
-  </div>
 
-  <div id="docModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="docTitle">
-    <div class="modal-card">
-      <div class="modal-head">
-        <h4 id="docTitle">Document</h4>
-        <button class="btn" id="closeModal"><span class="material-icons-sharp">close</span></button>
-      </div>
-      <div class="modal-body" id="docBody"></div>
+        <div class="sidebar">
+          <a href="dashboard.html">
+            <span class="material-icons-sharp">dashboard</span>
+            <h3>Dashboard</h3>
+          </a>
+          <a href="workerVerification.html" class="active">
+            <span class="material-icons-sharp">engineering</span>
+            <h3>Workers<br />Verification</h3>
+          </a>
+          <a href="jobVerification.html">
+            <span class="material-icons-sharp">work</span>
+            <h3>Jobs<br />Verification</h3>
+          </a>
+          <a href="adminVerification.html">
+            <span class="material-icons-sharp">shield</span>
+            <h3>Admin<br />Verification</h3>
+          </a>
+          <a href="courses.html">
+            <span class="material-icons-sharp">school</span>
+            <h3>Course<br />Publisher</h3>
+          </a>
+          <a href="#">
+            <span class="material-icons-sharp">settings</span>
+            <h3>Settings</h3>
+          </a>
+
+          <a href="#" id="logout-btn">
+            <span class="material-icons-sharp">logout</span>
+            <h3>Logout</h3>
+          </a>
+        </div>
+      </aside>
+
+      <main>
+        <section id="tab-workers">
+          <div class="workers-wrap">
+            <div class="panel">
+              <h3>New Sign-Ups</h3>
+              <div class="search">
+                <span class="material-icons-sharp">search</span>
+                <input
+                  id="searchInput"
+                  type="text"
+                  placeholder="Search name, email, phone…"
+                />
+              </div>
+              <div style="margin-bottom: 0.6rem">
+                <select
+                  id="statusFilter"
+                  style="
+                    width: 100%;
+                    border: 1px solid var(--line);
+                    border-radius: 10px;
+                    padding: 10px 12px;
+                    background: #fcfeff;
+                    outline: none;
+                  "
+                >
+                  <option value="">All statuses</option>
+                  <option value="pending">Pending</option>
+                  <option value="approved">Approved</option>
+                  <option value="rejected">Rejected</option>
+                </select>
+              </div>
+              <div id="workerList" class="worker-list"></div>
+              <div id="emptyWorkers" class="empty-state" style="display: none">
+                No new workers found.
+              </div>
+            </div>
+
+            <div class="details" id="detailsPane">
+              <div class="empty-state">
+                Select a worker on the left to review their profile & documents.
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
     </div>
-  </div>
 
-  <script>
-    const workers = [
-      {
-        id: "wkr_001",
-        avatar: "https://i.pravatar.cc/150?img=12",
-        fullName: "Arvin D. Santos",
-        birthdate: "1999-05-14",
-        age: 26,
-        phone: "0917 123 4567",
-        email: "arvin.santos@example.com",
-        role: "worker",
-        profession: "CCTV Installer",
-        highestQualification: "BS Electronics",
-        employmentStatus: "Freelancer",
-        mainIncomeSource: "Contract Projects",
-        bankName: "BPI",
-        accountHolder: "Arvin D. Santos",
-        accountNumber: "**** 4321",
-        documents: [
-          { type: "Resume", url: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf", status: "pending" },
-          { type: "NBI Clearance", url: "https://picsum.photos/id/1027/800/1200", status: "pending" },
-          { type: "Police Clearance", url: "https://picsum.photos/id/1040/1000/1400", status: "pending" },
-          { type: "Transcript of Records (TOR)", url: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf", status: "pending" },
-          { type: "Portfolio", url: "https://picsum.photos/id/1003/1600/900", status: "pending" },
-          { type: "Certificates", url: "https://picsum.photos/id/1011/1200/900", status: "pending" },
-        ],
-        //dito ang rereflect yung filter
-        profileStatus: "rejected",
-        createdAt: "2025-08-20T09:10:00+08:00"
-      },
-      {
-        id: "wkr_002",
-        avatar: "https://i.pravatar.cc/150?img=30",
-        fullName: "Paolo M. Reyes",
-        birthdate: "1998-08-02",
-        age: 27,
-        phone: "0999 888 1122",
-        email: "paolo.reyes@example.com",
-        role: "worker",
-        profession: "Network Technician",
-        highestQualification: "TESDA NCII",
-        employmentStatus: "Employed",
-        mainIncomeSource: "Salary",
-        bankName: "BDO",
-        accountHolder: "Paolo M. Reyes",
-        accountNumber: "**** 7788",
-        documents: [
-          { type: "Resume", url: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf", status: "pending" },
-          { type: "NBI Clearance", url: "https://picsum.photos/id/1025/1000/1400", status: "pending" },
-          { type: "Police Clearance", url: "https://picsum.photos/id/1020/1000/1400", status: "pending" },
-          { type: "Transcript of Records (TOR)", url: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf", status: "pending" },
-          { type: "Portfolio", url: "https://picsum.photos/id/1005/1600/900", status: "pending" },
-          { type: "Certificates", url: "https://picsum.photos/id/1015/1200/900", status: "pending" },
-        ],
-        //dito ang rereflect yung filter
-        profileStatus: "approved",
-        createdAt: "2025-08-22T14:25:00+08:00"
-      }
-    ];
+    <div
+      id="docModal"
+      class="modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="docTitle"
+    >
+      <div class="modal-card">
+        <div class="modal-head">
+          <h4 id="docTitle">Document</h4>
+          <button class="btn" id="closeModal">
+            <span class="material-icons-sharp">close</span>
+          </button>
+        </div>
+        <div class="modal-body" id="docBody"></div>
+      </div>
+    </div>
+    <script src="../../general_files/index.js"></script>
+    <script type="module" src="../../general_files/session.js"></script>
+    <script>
+      const workers = [
+        {
+          id: "wkr_001",
+          avatar: "https://i.pravatar.cc/150?img=12",
+          fullName: "Arvin D. Santos",
+          birthdate: "1999-05-14",
+          age: 26,
+          phone: "0917 123 4567",
+          email: "arvin.santos@example.com",
+          role: "worker",
+          profession: "CCTV Installer",
+          highestQualification: "BS Electronics",
+          employmentStatus: "Freelancer",
+          mainIncomeSource: "Contract Projects",
+          bankName: "BPI",
+          accountHolder: "Arvin D. Santos",
+          accountNumber: "**** 4321",
+          documents: [
+            {
+              type: "Resume",
+              url: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+              status: "pending",
+            },
+            {
+              type: "NBI Clearance",
+              url: "https://picsum.photos/id/1027/800/1200",
+              status: "pending",
+            },
+            {
+              type: "Police Clearance",
+              url: "https://picsum.photos/id/1040/1000/1400",
+              status: "pending",
+            },
+            {
+              type: "Transcript of Records (TOR)",
+              url: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+              status: "pending",
+            },
+            {
+              type: "Portfolio",
+              url: "https://picsum.photos/id/1003/1600/900",
+              status: "pending",
+            },
+            {
+              type: "Certificates",
+              url: "https://picsum.photos/id/1011/1200/900",
+              status: "pending",
+            },
+          ],
+          //dito ang rereflect yung filter
+          profileStatus: "rejected",
+          createdAt: "2025-08-20T09:10:00+08:00",
+        },
+        {
+          id: "wkr_002",
+          avatar: "https://i.pravatar.cc/150?img=30",
+          fullName: "Paolo M. Reyes",
+          birthdate: "1998-08-02",
+          age: 27,
+          phone: "0999 888 1122",
+          email: "paolo.reyes@example.com",
+          role: "worker",
+          profession: "Network Technician",
+          highestQualification: "TESDA NCII",
+          employmentStatus: "Employed",
+          mainIncomeSource: "Salary",
+          bankName: "BDO",
+          accountHolder: "Paolo M. Reyes",
+          accountNumber: "**** 7788",
+          documents: [
+            {
+              type: "Resume",
+              url: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+              status: "pending",
+            },
+            {
+              type: "NBI Clearance",
+              url: "https://picsum.photos/id/1025/1000/1400",
+              status: "pending",
+            },
+            {
+              type: "Police Clearance",
+              url: "https://picsum.photos/id/1020/1000/1400",
+              status: "pending",
+            },
+            {
+              type: "Transcript of Records (TOR)",
+              url: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+              status: "pending",
+            },
+            {
+              type: "Portfolio",
+              url: "https://picsum.photos/id/1005/1600/900",
+              status: "pending",
+            },
+            {
+              type: "Certificates",
+              url: "https://picsum.photos/id/1015/1200/900",
+              status: "pending",
+            },
+          ],
+          //dito ang rereflect yung filter
+          profileStatus: "approved",
+          createdAt: "2025-08-22T14:25:00+08:00",
+        },
+      ];
 
-    const searchInput = document.getElementById("searchInput");
-    const statusFilter = document.getElementById("statusFilter");
-    const workerList = document.getElementById("workerList");
-    const emptyWorkers = document.getElementById("emptyWorkers");
-    const detailsPane = document.getElementById("detailsPane");
-    const docModal = document.getElementById("docModal");
-    const docBody = document.getElementById("docBody");
-    const docTitle = document.getElementById("docTitle");
+      const searchInput = document.getElementById("searchInput");
+      const statusFilter = document.getElementById("statusFilter");
+      const workerList = document.getElementById("workerList");
+      const emptyWorkers = document.getElementById("emptyWorkers");
+      const detailsPane = document.getElementById("detailsPane");
+      const docModal = document.getElementById("docModal");
+      const docBody = document.getElementById("docBody");
+      const docTitle = document.getElementById("docTitle");
 
-    let activeWorkerId = null;
+      let activeWorkerId = null;
 
-    function renderWorkerList(filter = "") {
-      workerList.innerHTML = "";
-      const selectedStatus = (statusFilter?.value || "").toLowerCase();
+      function renderWorkerList(filter = "") {
+        workerList.innerHTML = "";
+        const selectedStatus = (statusFilter?.value || "").toLowerCase();
 
-      const q = filter.trim().toLowerCase();
+        const q = filter.trim().toLowerCase();
 
-      const filtered = workers.filter(w =>
-        (!q ||
-          w.fullName.toLowerCase().includes(q) ||
-          w.email.toLowerCase().includes(q) ||
-          w.phone.toLowerCase().includes(q)
-        ) &&
-        (!selectedStatus || (w.profileStatus || "pending").toLowerCase() === selectedStatus)
-      );
+        const filtered = workers.filter(
+          (w) =>
+            (!q ||
+              w.fullName.toLowerCase().includes(q) ||
+              w.email.toLowerCase().includes(q) ||
+              w.phone.toLowerCase().includes(q)) &&
+            (!selectedStatus ||
+              (w.profileStatus || "pending").toLowerCase() === selectedStatus)
+        );
 
-      emptyWorkers.style.display = filtered.length ? "none" : "block";
+        emptyWorkers.style.display = filtered.length ? "none" : "block";
 
-      filtered
-        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-        .forEach(w => {
-          const item = document.createElement("div");
-          item.className = "worker-item";
-          if (w.id === activeWorkerId) item.classList.add("active");
-          item.dataset.id = w.id;
+        filtered
+          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+          .forEach((w) => {
+            const item = document.createElement("div");
+            item.className = "worker-item";
+            if (w.id === activeWorkerId) item.classList.add("active");
+            item.dataset.id = w.id;
 
-          item.innerHTML = `
+            item.innerHTML = `
             <img class="avatar" src="${w.avatar}" alt="${w.fullName}">
             <div>
               <div style="font-weight:700">${w.fullName}</div>
               <div style="font-size:.85rem;color:var(--muted)">${w.email}</div>
             </div>
-            <span class="pill">${capitalize(w.profileStatus || "pending")}</span>
+            <span class="pill">${capitalize(
+              w.profileStatus || "pending"
+            )}</span>
 
           `;
 
-          item.addEventListener("click", () => {
-            activeWorkerId = w.id;
-            document.querySelectorAll(".worker-item").forEach(i => i.classList.remove("active"));
-            item.classList.add("active");
-            renderDetails(w);
+            item.addEventListener("click", () => {
+              activeWorkerId = w.id;
+              document
+                .querySelectorAll(".worker-item")
+                .forEach((i) => i.classList.remove("active"));
+              item.classList.add("active");
+              renderDetails(w);
+            });
+
+            workerList.appendChild(item);
           });
+      }
 
-          workerList.appendChild(item);
-        });
-    }
+      searchInput.addEventListener("input", (e) =>
+        renderWorkerList(e.target.value)
+      );
+      statusFilter.addEventListener("change", () =>
+        renderWorkerList(searchInput.value)
+      );
 
-    searchInput.addEventListener("input", (e) => renderWorkerList(e.target.value));
-    statusFilter.addEventListener("change", () => renderWorkerList(searchInput.value));
-
-    function renderDetails(worker) {
-      detailsPane.innerHTML = `
+      function renderDetails(worker) {
+        detailsPane.innerHTML = `
         <div class="head">
           <img src="${worker.avatar}" alt="${worker.fullName}">
           <div>
@@ -575,11 +662,15 @@
               </span>
             </div>
             <div class="meta">
-              <span class="kv"><strong>Birthdate:</strong> ${worker.birthdate}</span>
+              <span class="kv"><strong>Birthdate:</strong> ${
+                worker.birthdate
+              }</span>
               <span class="kv"><strong>Age:</strong> ${worker.age}</span>
               <span class="kv"><strong>Phone:</strong> ${worker.phone}</span>
               <span class="kv"><strong>Email:</strong> ${worker.email}</span>
-              <span class="kv"><strong>Role:</strong> ${worker.role === "worker" ? "Worker" : "Customer"}</span>
+              <span class="kv"><strong>Role:</strong> ${
+                worker.role === "worker" ? "Worker" : "Customer"
+              }</span>
             </div>
           </div>
 
@@ -594,10 +685,18 @@
             <h4>Basic Information</h4>
             <div class="info-list">
               <div><span class="label">Full Name</span>${worker.fullName}</div>
-              <div><span class="label">Profession</span>${worker.profession}</div>
-              <div><span class="label">Highest Qualification</span>${worker.highestQualification}</div>
-              <div><span class="label">Employment Status</span>${worker.employmentStatus}</div>
-              <div><span class="label">Main Income Source</span>${worker.mainIncomeSource}</div>
+              <div><span class="label">Profession</span>${
+                worker.profession
+              }</div>
+              <div><span class="label">Highest Qualification</span>${
+                worker.highestQualification
+              }</div>
+              <div><span class="label">Employment Status</span>${
+                worker.employmentStatus
+              }</div>
+              <div><span class="label">Main Income Source</span>${
+                worker.mainIncomeSource
+              }</div>
             </div>
           </div>
 
@@ -605,8 +704,12 @@
             <h4>Bank Details</h4>
             <div class="info-list">
               <div><span class="label">Bank Name</span>${worker.bankName}</div>
-              <div><span class="label">Account Holder</span>${worker.accountHolder}</div>
-              <div><span class="label">Account Number</span>${worker.accountNumber}</div>
+              <div><span class="label">Account Holder</span>${
+                worker.accountHolder
+              }</div>
+              <div><span class="label">Account Number</span>${
+                worker.accountNumber
+              }</div>
             </div>
           </div>
         </div>
@@ -615,9 +718,13 @@
           <h4>Submitted Documents</h4>
           <p class="hint">Click a document to preview. Approve/Reject each individually.</p>
           <div class="doc-list">
-            ${worker.documents.map((d, idx) => `
+            ${worker.documents
+              .map(
+                (d, idx) => `
               <div class="doc" data-doc="${idx}">
-                <div class="doc-title"><span class="material-icons-sharp">description</span> ${d.type}</div>
+                <div class="doc-title"><span class="material-icons-sharp">description</span> ${
+                  d.type
+                }</div>
                 <button class="btn" data-view="${idx}">
                   <span class="material-icons-sharp" style="font-size:18px;">visibility</span> Preview
                 </button>
@@ -630,86 +737,102 @@
                   <button class="btn reject" data-reject="${idx}">Reject</button>
                 </div>
               </div>
-            `).join("")}
+            `
+              )
+              .join("")}
           </div>
         </div>
       `;
 
-      // Wire Approve/Reject profile buttons HERE
-      detailsPane.querySelector("#approveProfileBtn").addEventListener("click", () => {
-        worker.profileStatus = "approved";
-        alert(`✅ Worker ${worker.fullName} profile approved.`);
-        renderDetails(worker); // refresh details panel
-        renderWorkerList(searchInput.value); // refresh left list
-        // TODO: persist to backend
-      });
+        // Wire Approve/Reject profile buttons HERE
+        detailsPane
+          .querySelector("#approveProfileBtn")
+          .addEventListener("click", () => {
+            worker.profileStatus = "approved";
+            alert(`✅ Worker ${worker.fullName} profile approved.`);
+            renderDetails(worker); // refresh details panel
+            renderWorkerList(searchInput.value); // refresh left list
+            // TODO: persist to backend
+          });
 
-      detailsPane.querySelector("#rejectProfileBtn").addEventListener("click", () => {
-        worker.profileStatus = "rejected";
-        alert(`❌ Worker ${worker.fullName} profile rejected.`);
-        renderDetails(worker);
-        renderWorkerList(searchInput.value);
-        // TODO: persist to backend
-      });
+        detailsPane
+          .querySelector("#rejectProfileBtn")
+          .addEventListener("click", () => {
+            worker.profileStatus = "rejected";
+            alert(`❌ Worker ${worker.fullName} profile rejected.`);
+            renderDetails(worker);
+            renderWorkerList(searchInput.value);
+            // TODO: persist to backend
+          });
 
-      // Wire document actions
-      detailsPane.querySelectorAll("[data-view]").forEach(btn => {
-        btn.addEventListener("click", () => {
-          const index = Number(btn.dataset.view);
-          openDoc(worker.documents[index].type, worker.documents[index].url);
+        // Wire document actions
+        detailsPane.querySelectorAll("[data-view]").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const index = Number(btn.dataset.view);
+            openDoc(worker.documents[index].type, worker.documents[index].url);
+          });
         });
-      });
-      detailsPane.querySelectorAll("[data-approve]").forEach(btn => {
-        btn.addEventListener("click", () => {
-          const index = Number(btn.dataset.approve);
-          setDocStatus(worker, index, "approved");
+        detailsPane.querySelectorAll("[data-approve]").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const index = Number(btn.dataset.approve);
+            setDocStatus(worker, index, "approved");
+          });
         });
-      });
-      detailsPane.querySelectorAll("[data-reject]").forEach(btn => {
-        btn.addEventListener("click", () => {
-          const index = Number(btn.dataset.reject);
-          setDocStatus(worker, index, "rejected");
+        detailsPane.querySelectorAll("[data-reject]").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const index = Number(btn.dataset.reject);
+            setDocStatus(worker, index, "rejected");
+          });
         });
-      });
-    }
-
-    function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
-
-    function setDocStatus(worker, docIndex, status) {
-      worker.documents[docIndex].status = status;
-      if (activeWorkerId === worker.id) renderDetails(worker);
-    }
-
-    function openDoc(title, url) {
-      document.getElementById("docTitle").textContent = title;
-      const body = document.getElementById("docBody");
-      body.innerHTML = "";
-      const isPDF = /\.pdf($|\?)/i.test(url);
-      const isImage = /\.(png|jpe?g|gif|webp|bmp|svg)($|\?)/i.test(url);
-      if (isImage) {
-        const img = document.createElement("img"); img.src = url; img.alt = title; body.appendChild(img);
-      } else {
-        const frame = document.createElement("iframe"); frame.src = url; body.appendChild(frame);
       }
-      document.getElementById("docModal").classList.add("open");
-    }
-    function closeDoc() {
-      document.getElementById("docModal").classList.remove("open");
-      document.getElementById("docBody").innerHTML = "";
-    }
-    document.getElementById("closeModal").addEventListener("click", closeDoc);
-    document.getElementById("docModal").addEventListener("click", (e) => { if (e.target.id === "docModal") closeDoc(); });
 
-    renderWorkerList();
-    if (workers.length) {
-      activeWorkerId = workers[0].id;
-      renderDetails(workers[0]);
-      setTimeout(() => {
-        const first = document.querySelector(`.worker-item[data-id="${workers[0].id}"]`);
-        if (first) first.classList.add("active");
+      function capitalize(s) {
+        return s.charAt(0).toUpperCase() + s.slice(1);
+      }
+
+      function setDocStatus(worker, docIndex, status) {
+        worker.documents[docIndex].status = status;
+        if (activeWorkerId === worker.id) renderDetails(worker);
+      }
+
+      function openDoc(title, url) {
+        document.getElementById("docTitle").textContent = title;
+        const body = document.getElementById("docBody");
+        body.innerHTML = "";
+        const isPDF = /\.pdf($|\?)/i.test(url);
+        const isImage = /\.(png|jpe?g|gif|webp|bmp|svg)($|\?)/i.test(url);
+        if (isImage) {
+          const img = document.createElement("img");
+          img.src = url;
+          img.alt = title;
+          body.appendChild(img);
+        } else {
+          const frame = document.createElement("iframe");
+          frame.src = url;
+          body.appendChild(frame);
+        }
+        document.getElementById("docModal").classList.add("open");
+      }
+      function closeDoc() {
+        document.getElementById("docModal").classList.remove("open");
+        document.getElementById("docBody").innerHTML = "";
+      }
+      document.getElementById("closeModal").addEventListener("click", closeDoc);
+      document.getElementById("docModal").addEventListener("click", (e) => {
+        if (e.target.id === "docModal") closeDoc();
       });
-    }
-  </script>
-</body>
 
+      renderWorkerList();
+      if (workers.length) {
+        activeWorkerId = workers[0].id;
+        renderDetails(workers[0]);
+        setTimeout(() => {
+          const first = document.querySelector(
+            `.worker-item[data-id="${workers[0].id}"]`
+          );
+          if (first) first.classList.add("active");
+        });
+      }
+    </script>
+  </body>
 </html>

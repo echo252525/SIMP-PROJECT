@@ -1,334 +1,342 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-  <meta charset="UTF-8" />
-  <title>Admin – Course Builder</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet" />
-  <link rel="stylesheet" href="../css_files/sideBar.css" />
-  <style>
-    :root {
-      --ink: #1c2430;
-      --muted: #6c7a8a;
-      --line: #e7edf3;
-      --brand: #20a44c;
-      --danger: #e53935;
-      --card: #ffffff;
-      --bg: #f8fbfd;
-      --radius: 14px;
-      --border: #e5e7eb;
-    }
-
-    body {
-      background: var(--bg);
-    }
-
-    main {
-      margin-top: 1.4rem;
-    }
-
-    .page-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 1rem;
-    }
-
-    .btn {
-      border: 1px solid var(--brand);
-      background: var(--brand);
-      color: #fff;
-      padding: 10px 14px;
-      border-radius: 999px;
-      cursor: pointer;
-    }
-
-    .btn.ghost {
-      background: #fff;
-      color: #0f172a;
-      border-color: #d1e7db;
-    }
-
-    .btn.danger {
-      background: #fff;
-      color: var(--danger);
-      border-color: #ffc9c7;
-    }
-
-    .form {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-      background: #fff;
-      padding: 16px;
-      border: 1px solid var(--border);
-      border-radius: 16px;
-    }
-
-    .form label {
-      font-size: 12px;
-      color: #374151;
-    }
-
-    .form input,
-    .form textarea {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #dfe3ea;
-      border-radius: 10px;
-    }
-
-    .form textarea {
-      min-height: 84px;
-    }
-
-    .sections {
-      margin-top: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .section {
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      background: #fff;
-      padding: 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .section-head {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .section-title {
-      flex: 1;
-    }
-
-    .stack {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .block {
-      border: 1px solid #e7edf3;
-      border-radius: 12px;
-      background: #fcfdff;
-      padding: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .block .row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
-    .block .row-1 {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 10px;
-    }
-
-    .muted {
-      color: #6b7280;
-      font-size: 12px;
-    }
-
-    .hr {
-      height: 1px;
-      background: #eef2f7;
-      margin: 6px 0;
-    }
-
-    .quiz-q {
-      border: 1px dashed #cbd5e1;
-      border-radius: 10px;
-      padding: 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      background: #fff;
-    }
-
-    .opt-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-    }
-
-    .inline {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .right {
-      margin-left: auto;
-    }
-
-    @media (max-width: 860px) {
-      .form {
-        grid-template-columns: 1fr;
+  <head>
+    <meta charset="UTF-8" />
+    <title>Admin – Course Builder</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css_files/sideBar.css" />
+    <style>
+      :root {
+        --ink: #1c2430;
+        --muted: #6c7a8a;
+        --line: #e7edf3;
+        --brand: #20a44c;
+        --danger: #e53935;
+        --card: #ffffff;
+        --bg: #f8fbfd;
+        --radius: 14px;
+        --border: #e5e7eb;
       }
-    }
-  </style>
-</head>
 
-<body>
-  <div class="container">
-    <!-- Sidebar -->
-    <aside>
-      <div class="toggle">
-        <div class="logo">
-          <img src="../../../img/simpLogo.png" />
-          <h2>SIMP<span class="danger">Project</span></h2>
+      body {
+        background: var(--bg);
+      }
+
+      main {
+        margin-top: 1.4rem;
+      }
+
+      .page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+      }
+
+      .btn {
+        border: 1px solid var(--brand);
+        background: var(--brand);
+        color: #fff;
+        padding: 10px 14px;
+        border-radius: 999px;
+        cursor: pointer;
+      }
+
+      .btn.ghost {
+        background: #fff;
+        color: #0f172a;
+        border-color: #d1e7db;
+      }
+
+      .btn.danger {
+        background: #fff;
+        color: var(--danger);
+        border-color: #ffc9c7;
+      }
+
+      .form {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+        background: #fff;
+        padding: 16px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+      }
+
+      .form label {
+        font-size: 12px;
+        color: #374151;
+      }
+
+      .form input,
+      .form textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #dfe3ea;
+        border-radius: 10px;
+      }
+
+      .form textarea {
+        min-height: 84px;
+      }
+
+      .sections {
+        margin-top: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .section {
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: #fff;
+        padding: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .section-head {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .section-title {
+        flex: 1;
+      }
+
+      .stack {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .block {
+        border: 1px solid #e7edf3;
+        border-radius: 12px;
+        background: #fcfdff;
+        padding: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .block .row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .block .row-1 {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
+      .muted {
+        color: #6b7280;
+        font-size: 12px;
+      }
+
+      .hr {
+        height: 1px;
+        background: #eef2f7;
+        margin: 6px 0;
+      }
+
+      .quiz-q {
+        border: 1px dashed #cbd5e1;
+        border-radius: 10px;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        background: #fff;
+      }
+
+      .opt-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+
+      .inline {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .right {
+        margin-left: auto;
+      }
+
+      @media (max-width: 860px) {
+        .form {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <!-- Sidebar -->
+      <aside>
+        <div class="toggle">
+          <div class="logo">
+            <img src="../../../img/simpLogo.png" />
+            <h2>SIMP<span class="danger">Project</span></h2>
+          </div>
+          <div class="close" id="close-btn">
+            <span class="material-icons-sharp">close</span>
+          </div>
         </div>
-        <div class="close" id="close-btn">
-          <span class="material-icons-sharp">close</span>
+
+        <div class="sidebar">
+          <a href="dashboard.html">
+            <span class="material-icons-sharp">dashboard</span>
+            <h3>Dashboard</h3>
+          </a>
+          <a href="workerVerification.html">
+            <span class="material-icons-sharp">engineering</span>
+            <h3>Workers<br />Verification</h3>
+          </a>
+          <a href="jobVerification.html">
+            <span class="material-icons-sharp">work</span>
+            <h3>Jobs<br />Verification</h3>
+          </a>
+          <a href="adminVerification.html">
+            <span class="material-icons-sharp">shield</span>
+            <h3>Admin<br />Verification</h3>
+          </a>
+          <a href="courses.html" class="active">
+            <span class="material-icons-sharp">school</span>
+            <h3>Course<br />Publisher</h3>
+          </a>
+          <a href="#">
+            <span class="material-icons-sharp">settings</span>
+            <h3>Settings</h3>
+          </a>
+
+          <a href="#" id="logout-btn">
+            <span class="material-icons-sharp">logout</span>
+            <h3>Logout</h3>
+          </a>
         </div>
-      </div>
+      </aside>
 
-      <div class="sidebar">
-        <a href="dashboard.html">
-          <span class="material-icons-sharp">dashboard</span>
-          <h3>Dashboard</h3>
-        </a>
-        <a href="workerVerification.html">
-          <span class="material-icons-sharp">engineering</span>
-          <h3>Workers<br>Verification</h3>
-        </a>
-        <a href="jobVerification.html">
-          <span class="material-icons-sharp">work</span>
-          <h3>Jobs<br>Verification</h3>
-        </a>
-        <a href="adminVerification.html">
-          <span class="material-icons-sharp">shield</span>
-          <h3>Admin<br>Verification</h3>
-        </a>
-        <a href="courses.html" class="active">
-          <span class="material-icons-sharp">school</span>
-          <h3>Course<br>Publisher</h3>
-        </a>
-        <a href="#">
-          <span class="material-icons-sharp">settings</span>
-          <h3>Settings</h3>
-        </a>
-
-        <a href="#" id="logout-btn">
-          <span class="material-icons-sharp">logout</span>
-          <h3>Logout</h3>
-        </a>
-      </div>
-    </aside>
-
-    <!-- Main -->
-    <main>
-      <div class="page-header">
-        <h1>Course Builder</h1>
-        <div class="stack">
-          <button id="saveBtn" class="btn">Save Course</button>
-          <button id="cancelBtn" class="btn ghost">Back</button>
+      <!-- Main -->
+      <main>
+        <div class="page-header">
+          <h1>Course Builder</h1>
+          <div class="stack">
+            <button id="saveBtn" class="btn">Save Course</button>
+            <button id="cancelBtn" class="btn ghost">Back</button>
+          </div>
         </div>
-      </div>
 
-      <!-- Course meta -->
-      <div class="form" id="courseMeta">
-        <div>
-          <label>Course Title</label>
-          <input id="title" placeholder="Networking Fundamentals" />
+        <!-- Course meta -->
+        <div class="form" id="courseMeta">
+          <div>
+            <label>Course Title</label>
+            <input id="title" placeholder="Networking Fundamentals" />
+          </div>
+          <div>
+            <label>Slug (auto)</label>
+            <input id="slug" placeholder="networking-fundamentals" />
+          </div>
+          <div style="grid-column: 1/-1">
+            <label>Description</label>
+            <textarea
+              id="description"
+              placeholder="What learners will gain..."
+            ></textarea>
+          </div>
+          <div>
+            <label>Level</label>
+            <input id="level" type="number" min="0" max="10" value="0" />
+          </div>
+          <div>
+            <label>Tags (comma separated)</label>
+            <input id="tags" placeholder="Networking, TCP/IP" />
+          </div>
+          <div style="grid-column: 1/-1">
+            <label>Thumbnail URL</label>
+            <input id="thumb" placeholder="../images/profile-4.jpg" />
+          </div>
         </div>
-        <div>
-          <label>Slug (auto)</label>
-          <input id="slug" placeholder="networking-fundamentals" />
+
+        <!-- Sections -->
+        <div class="sections" id="sections"></div>
+
+        <div class="stack" style="margin-top: 10px">
+          <button id="addSectionBtn" class="btn ghost">+ Add Section</button>
         </div>
-        <div style="grid-column: 1/-1">
-          <label>Description</label>
-          <textarea id="description" placeholder="What learners will gain..."></textarea>
-        </div>
-        <div>
-          <label>Level</label>
-          <input id="level" type="number" min="0" max="10" value="0" />
-        </div>
-        <div>
-          <label>Tags (comma separated)</label>
-          <input id="tags" placeholder="Networking, TCP/IP" />
-        </div>
-        <div style="grid-column: 1/-1">
-          <label>Thumbnail URL</label>
-          <input id="thumb" placeholder="../images/profile-4.jpg" />
-        </div>
-      </div>
+      </main>
+    </div>
 
-      <!-- Sections -->
-      <div class="sections" id="sections"></div>
+    <script src="../../general_files/index.js"></script>
+    <script type="module" src="../../general_files/session.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+      // ----- CONFIG -----
+      const SUPABASE_URL = "https://gxydxmobwrccqagltlci.supabase.co";
+      const SUPABASE_ANON_KEY =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd4eWR4bW9id3JjY3FhZ2x0bGNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUxNDMzOTMsImV4cCI6MjA3MDcxOTM5M30.Zk2xUlmlPGbe-7rDsqC486Js9LGFMMOp-fytNZSwzBs";
+      const supabase = window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY,
+        { db: { schema: "courses" } }
+      );
 
-      <div class="stack" style="margin-top: 10px">
-        <button id="addSectionBtn" class="btn ghost">+ Add Section</button>
-      </div>
-    </main>
-  </div>
+      const sContainer = document.getElementById("sections");
+      const addSectionBtn = document.getElementById("addSectionBtn");
+      const saveBtn = document.getElementById("saveBtn");
+      const cancelBtn = document.getElementById("cancelBtn");
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-    // ----- CONFIG -----
-    const SUPABASE_URL = "https://gxydxmobwrccqagltlci.supabase.co";
-    const SUPABASE_ANON_KEY =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd4eWR4bW9id3JjY3FhZ2x0bGNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUxNDMzOTMsImV4cCI6MjA3MDcxOTM5M30.Zk2xUlmlPGbe-7rDsqC486Js9LGFMMOp-fytNZSwzBs";
-    const supabase = window.supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_ANON_KEY,
-      { db: { schema: "courses" } }
-    );
+      const titleEl = document.getElementById("title");
+      const slugEl = document.getElementById("slug");
+      const descEl = document.getElementById("description");
+      const levelEl = document.getElementById("level");
+      const tagsEl = document.getElementById("tags");
+      const thumbEl = document.getElementById("thumb");
 
-    const sContainer = document.getElementById("sections");
-    const addSectionBtn = document.getElementById("addSectionBtn");
-    const saveBtn = document.getElementById("saveBtn");
-    const cancelBtn = document.getElementById("cancelBtn");
+      // If editing existing course
+      const params = new URLSearchParams(window.location.search);
+      const editingCourseId = params.get("course") || null;
 
-    const titleEl = document.getElementById("title");
-    const slugEl = document.getElementById("slug");
-    const descEl = document.getElementById("description");
-    const levelEl = document.getElementById("level");
-    const tagsEl = document.getElementById("tags");
-    const thumbEl = document.getElementById("thumb");
+      // Basic slugify
+      function slugify(s) {
+        return (s || "")
+          .toLowerCase()
+          .trim()
+          .replace(/[^\w\s-]/g, "")
+          .replace(/\s+/g, "-")
+          .replace(/-+/g, "-");
+      }
+      titleEl.addEventListener("input", () => {
+        if (!editingCourseId) slugEl.value = slugify(titleEl.value);
+      });
 
-    // If editing existing course
-    const params = new URLSearchParams(window.location.search);
-    const editingCourseId = params.get("course") || null;
+      // UI builders
+      function addSectionUI(initial = {}) {
+        const idx = sContainer.children.length + 1;
+        const wrapper = document.createElement("div");
+        wrapper.className = "section";
+        wrapper.dataset.position = idx;
 
-    // Basic slugify
-    function slugify(s) {
-      return (s || "")
-        .toLowerCase()
-        .trim()
-        .replace(/[^\w\s-]/g, "")
-        .replace(/\s+/g, "-")
-        .replace(/-+/g, "-");
-    }
-    titleEl.addEventListener("input", () => {
-      if (!editingCourseId) slugEl.value = slugify(titleEl.value);
-    });
-
-    // UI builders
-    function addSectionUI(initial = {}) {
-      const idx = sContainer.children.length + 1;
-      const wrapper = document.createElement("div");
-      wrapper.className = "section";
-      wrapper.dataset.position = idx;
-
-      wrapper.innerHTML = `
+        wrapper.innerHTML = `
       <div class="section-head">
         <strong>Section</strong>
-        <input class="section-title" placeholder="Section title" value="${initial.title || ""
+        <input class="section-title" placeholder="Section title" value="${
+          initial.title || ""
         }" />
         <button class="btn danger right remove-section">Remove</button>
       </div>
@@ -339,57 +347,60 @@
       </div>
       <div class="blocks"></div>
     `;
-      sContainer.appendChild(wrapper);
+        sContainer.appendChild(wrapper);
 
-      wrapper
-        .querySelector(".remove-section")
-        .addEventListener("click", () => wrapper.remove());
-      wrapper
-        .querySelector(".add-text")
-        .addEventListener("click", () => addBlock(wrapper, "text"));
-      wrapper
-        .querySelector(".add-video")
-        .addEventListener("click", () => addBlock(wrapper, "video"));
-      wrapper
-        .querySelector(".add-quiz")
-        .addEventListener("click", () => addBlock(wrapper, "quiz"));
-      return wrapper;
-    }
+        wrapper
+          .querySelector(".remove-section")
+          .addEventListener("click", () => wrapper.remove());
+        wrapper
+          .querySelector(".add-text")
+          .addEventListener("click", () => addBlock(wrapper, "text"));
+        wrapper
+          .querySelector(".add-video")
+          .addEventListener("click", () => addBlock(wrapper, "video"));
+        wrapper
+          .querySelector(".add-quiz")
+          .addEventListener("click", () => addBlock(wrapper, "quiz"));
+        return wrapper;
+      }
 
-    function addBlock(sectionEl, type, initial = {}) {
-      const blocks = sectionEl.querySelector(".blocks");
-      const item = document.createElement("div");
-      item.className = "block";
-      item.dataset.type = type;
-      item.dataset.position = blocks.children.length + 1;
+      function addBlock(sectionEl, type, initial = {}) {
+        const blocks = sectionEl.querySelector(".blocks");
+        const item = document.createElement("div");
+        item.className = "block";
+        item.dataset.type = type;
+        item.dataset.position = blocks.children.length + 1;
 
-      if (type === "text") {
-        item.innerHTML = `
+        if (type === "text") {
+          item.innerHTML = `
         <div class="inline" style="justify-content:space-between">
           <strong>Text</strong>
           <button class="btn danger remove">Remove</button>
         </div>
         <div class="row-1">
-          <textarea class="text-body" placeholder="Write the lecture text...">${initial.body || ""
+          <textarea class="text-body" placeholder="Write the lecture text...">${
+            initial.body || ""
           }</textarea>
         </div>
       `;
-      } else if (type === "video") {
-        item.innerHTML = `
+        } else if (type === "video") {
+          item.innerHTML = `
         <div class="inline" style="justify-content:space-between">
           <strong>Video</strong>
           <button class="btn danger remove">Remove</button>
         </div>
         <div class="row">
-          <input class="video-url" placeholder="Video URL (mp4, YouTube, etc.)" value="${initial.video_url || ""
+          <input class="video-url" placeholder="Video URL (mp4, YouTube, etc.)" value="${
+            initial.video_url || ""
           }" />
-          <input class="video-duration" type="number" min="0" placeholder="Duration (seconds)" value="${initial.duration_seconds || ""
+          <input class="video-duration" type="number" min="0" placeholder="Duration (seconds)" value="${
+            initial.duration_seconds || ""
           }" />
         </div>
       `;
-      } else {
-        // quiz
-        item.innerHTML = `
+        } else {
+          // quiz
+          item.innerHTML = `
         <div class="inline" style="justify-content:space-between">
           <strong>Quiz</strong>
           <div class="inline">
@@ -398,42 +409,46 @@
           </div>
         </div>
         <div class="row">
-          <input class="quiz-title" placeholder="Quiz title" value="${initial.title || "Quiz"
+          <input class="quiz-title" placeholder="Quiz title" value="${
+            initial.title || "Quiz"
           }" />
-          <input class="quiz-pass" type="number" min="0" max="100" value="${initial.passing_score ?? 70
+          <input class="quiz-pass" type="number" min="0" max="100" value="${
+            initial.passing_score ?? 70
           }" />
         </div>
         <div class="row-1">
-          <input class="quiz-limit" type="number" min="0" placeholder="Time limit (seconds, 0 = no limit)" value="${initial.time_limit_seconds || 0
+          <input class="quiz-limit" type="number" min="0" placeholder="Time limit (seconds, 0 = no limit)" value="${
+            initial.time_limit_seconds || 0
           }" />
         </div>
         <div class="hr"></div>
         <div class="quiz-qs"></div>
       `;
+        }
+
+        blocks.appendChild(item);
+        item
+          .querySelector(".remove")
+          .addEventListener("click", () => item.remove());
+
+        if (type === "quiz") {
+          const qWrap = item.querySelector(".quiz-qs");
+          const addQ = item.querySelector(".add-q");
+          addQ.addEventListener("click", () => addQuizQuestion(qWrap));
+        }
       }
 
-      blocks.appendChild(item);
-      item
-        .querySelector(".remove")
-        .addEventListener("click", () => item.remove());
-
-      if (type === "quiz") {
-        const qWrap = item.querySelector(".quiz-qs");
-        const addQ = item.querySelector(".add-q");
-        addQ.addEventListener("click", () => addQuizQuestion(qWrap));
-      }
-    }
-
-    function addQuizQuestion(qWrap, initial = {}) {
-      const q = document.createElement("div");
-      q.className = "quiz-q";
-      q.innerHTML = `
+      function addQuizQuestion(qWrap, initial = {}) {
+        const q = document.createElement("div");
+        q.className = "quiz-q";
+        q.innerHTML = `
       <div class="inline" style="justify-content:space-between">
         <strong>Question</strong>
         <button class="btn danger remove-q">Remove</button>
       </div>
-      <textarea class="qq" placeholder="Type the question...">${initial.question || ""
-        }</textarea>
+      <textarea class="qq" placeholder="Type the question...">${
+        initial.question || ""
+      }</textarea>
       <div class="opt-grid">
         <input class="qa" placeholder="Option A" value="${initial.A || ""}" />
         <input class="qb" placeholder="Option B" value="${initial.B || ""}" />
@@ -446,334 +461,334 @@
           <option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option>
         </select>
         <label class="muted" style="margin-left:12px;">Points</label>
-        <input class="points" type="number" min="1" value="${initial.points || 1
+        <input class="points" type="number" min="1" value="${
+          initial.points || 1
         }" />
       </div>
     `;
-      if (initial.correct)
-        q.querySelector(".correct").value = initial.correct;
-      q.querySelector(".remove-q").addEventListener("click", () =>
-        q.remove()
-      );
-      qWrap.appendChild(q);
-    }
-
-    addSectionBtn.addEventListener("click", () => addSectionUI());
-
-    cancelBtn.addEventListener("click", () => {
-      window.location.href = "courses.html";
-    });
-
-    // Load if editing
-    document.addEventListener("DOMContentLoaded", async () => {
-      if (editingCourseId) {
-        // Load course + sections + blocks + quiz
-        const { data: course, error } = await supabase
-          .from("course")
-          .select("id,title,slug,description,level,tags,thumbnail_url")
-          .eq("id", editingCourseId)
-          .maybeSingle();
-        if (error) {
-          alert("Error loading course: " + error.message);
-          return;
-        }
-        if (!course) {
-          alert("Course not found");
-          return;
-        }
-
-        titleEl.value = course.title || "";
-        slugEl.value = course.slug || "";
-        descEl.value = course.description || "";
-        levelEl.value = course.level ?? 0;
-        tagsEl.value = (course.tags || []).join(", ");
-        thumbEl.value = course.thumbnail_url || "";
-
-        // Load sections
-        const { data: sections, error: sErr } = await supabase
-          .from("section")
-          .select("id,title,position")
-          .eq("course_id", editingCourseId)
-          .order("position", { ascending: true });
-        if (sErr) {
-          alert("Error loading sections: " + sErr.message);
-          return;
-        }
-
-        for (const s of sections) {
-          const secEl = addSectionUI({ title: s.title });
-          // Load blocks
-          const { data: blocks, error: bErr } = await supabase
-            .from("section_content")
-            .select(
-              "id,content_type,position,body,video_url,duration_seconds,quiz_id"
-            )
-            .eq("section_id", s.id)
-            .order("position", { ascending: true });
-          if (bErr) {
-            alert("Error loading blocks: " + bErr.message);
-            return;
-          }
-          for (const b of blocks) {
-            if (b.content_type === "text") {
-              addBlock(secEl, "text", { body: b.body || "" });
-            } else if (b.content_type === "video") {
-              addBlock(secEl, "video", {
-                video_url: b.video_url || "",
-                duration_seconds: b.duration_seconds || 0,
-              });
-            } else if (b.content_type === "quiz" && b.quiz_id) {
-              // load quiz
-              const { data: qz, error: qzErr } = await supabase
-                .from("quiz")
-                .select("id,title,passing_score,time_limit_seconds")
-                .eq("id", b.quiz_id)
-                .maybeSingle();
-              if (qzErr) {
-                alert("Error loading quiz: " + qzErr.message);
-                continue;
-              }
-              const sec = secEl;
-              addBlock(sec, "quiz", {
-                title: qz.title,
-                passing_score: qz.passing_score,
-                time_limit_seconds: qz.time_limit_seconds,
-              });
-              // append its questions to the *last* quiz block we just added
-              const quizBlocks = sec.querySelectorAll(
-                '.block[data-type="quiz"]'
-              );
-              const lastQuizBlock = quizBlocks[quizBlocks.length - 1];
-              const qWrap = lastQuizBlock.querySelector(".quiz-qs");
-
-              const { data: qs, error: qsErr } = await supabase
-                .from("quiz_question")
-                .select("id,question,options,correct_answer,points,position")
-                .eq("quiz_id", qz.id)
-                .order("position", { ascending: true });
-              if (qsErr) {
-                alert("Error loading questions: " + qsErr.message);
-                continue;
-              }
-              for (const q of qs) {
-                addQuizQuestion(qWrap, {
-                  question: q.question,
-                  A: q.options?.A || "",
-                  B: q.options?.B || "",
-                  C: q.options?.C || "",
-                  D: q.options?.D || "",
-                  correct: q.correct_answer,
-                  points: q.points || 1,
-                });
-              }
-            }
-          }
-        }
-      }
-    });
-
-    // Save all
-    saveBtn.addEventListener("click", async () => {
-      const title = titleEl.value.trim();
-      if (!title) {
-        alert("Title is required.");
-        return;
+        if (initial.correct)
+          q.querySelector(".correct").value = initial.correct;
+        q.querySelector(".remove-q").addEventListener("click", () =>
+          q.remove()
+        );
+        qWrap.appendChild(q);
       }
 
-      const slug = slugEl.value.trim() || slugify(title);
-      const description = descEl.value.trim();
-      const level = Number(levelEl.value || 0);
-      const tags = tagsEl.value
-        .split(",")
-        .map((s) => s.trim())
-        .filter(Boolean);
-      const thumbnail_url = thumbEl.value.trim() || null;
+      addSectionBtn.addEventListener("click", () => addSectionUI());
 
-      // Upsert the course
-      let courseId = editingCourseId;
-      if (courseId) {
-        const { error: uErr } = await supabase
-          .from("course")
-          .update({ title, slug, description, level, tags, thumbnail_url })
-          .eq("id", courseId);
-        if (uErr) {
-          alert("Update failed: " + uErr.message);
-          return;
-        }
-      } else {
-        const { data: inserted, error: iErr } = await supabase
-          .from("course")
-          .insert({ title, slug, description, level, tags, thumbnail_url })
-          .select("id")
-          .single();
-        if (iErr) {
-          alert("Insert failed: " + iErr.message);
-          return;
-        }
-        courseId = inserted.id;
-      }
-
-      // Clear and re-write sections if editing for simplicity (idempotent)
-      if (editingCourseId) {
-        await supabase.from("section").delete().eq("course_id", courseId);
-        // CASCADE will remove section_content & quiz via FKs
-      }
-
-      // collect UI → DB
-      const sections = Array.from(
-        sContainer.querySelectorAll(".section")
-      ).map((sec, i) => {
-        const title =
-          sec.querySelector(".section-title").value.trim() ||
-          `Section ${i + 1}`;
-        const blocks = Array.from(sec.querySelector(".blocks").children);
-        const items = blocks.map((b, j) => {
-          const type = b.dataset.type;
-          if (type === "text") {
-            return {
-              type,
-              position: j + 1,
-              body: b.querySelector(".text-body").value.trim(),
-            };
-          } else if (type === "video") {
-            return {
-              type,
-              position: j + 1,
-              video_url: b.querySelector(".video-url").value.trim(),
-              duration_seconds: Number(
-                b.querySelector(".video-duration").value || 0
-              ),
-            };
-          } else {
-            // quiz
-            const title =
-              b.querySelector(".quiz-title").value.trim() || "Quiz";
-            const passing_score = Number(
-              b.querySelector(".quiz-pass").value || 70
-            );
-            const time_limit_seconds = Number(
-              b.querySelector(".quiz-limit").value || 0
-            );
-            const qs = Array.from(b.querySelectorAll(".quiz-q")).map(
-              (q, qIdx) => {
-                return {
-                  position: qIdx + 1,
-                  question: q.querySelector(".qq").value.trim(),
-                  options: {
-                    A: q.querySelector(".qa").value.trim(),
-                    B: q.querySelector(".qb").value.trim(),
-                    C: q.querySelector(".qc").value.trim(),
-                    D: q.querySelector(".qd").value.trim(),
-                  },
-                  correct_answer: q.querySelector(".correct").value,
-                  points: Number(q.querySelector(".points").value || 1),
-                };
-              }
-            );
-            return {
-              type,
-              position: j + 1,
-              quiz: {
-                title,
-                passing_score,
-                time_limit_seconds,
-                questions: qs,
-              },
-            };
-          }
-        });
-        return { title, position: i + 1, items };
+      cancelBtn.addEventListener("click", () => {
+        window.location.href = "courses.html";
       });
 
-      // Write to DB sequentially
-      try {
-        for (const s of sections) {
-          // insert section
-          const { data: secRow, error: sErr } = await supabase
+      // Load if editing
+      document.addEventListener("DOMContentLoaded", async () => {
+        if (editingCourseId) {
+          // Load course + sections + blocks + quiz
+          const { data: course, error } = await supabase
+            .from("course")
+            .select("id,title,slug,description,level,tags,thumbnail_url")
+            .eq("id", editingCourseId)
+            .maybeSingle();
+          if (error) {
+            alert("Error loading course: " + error.message);
+            return;
+          }
+          if (!course) {
+            alert("Course not found");
+            return;
+          }
+
+          titleEl.value = course.title || "";
+          slugEl.value = course.slug || "";
+          descEl.value = course.description || "";
+          levelEl.value = course.level ?? 0;
+          tagsEl.value = (course.tags || []).join(", ");
+          thumbEl.value = course.thumbnail_url || "";
+
+          // Load sections
+          const { data: sections, error: sErr } = await supabase
             .from("section")
-            .insert({
-              course_id: courseId,
-              title: s.title,
-              position: s.position,
-            })
-            .select("id")
-            .single();
-          if (sErr) throw sErr;
+            .select("id,title,position")
+            .eq("course_id", editingCourseId)
+            .order("position", { ascending: true });
+          if (sErr) {
+            alert("Error loading sections: " + sErr.message);
+            return;
+          }
 
-          // insert items
-          for (const it of s.items) {
-            if (it.type === "text") {
-              const { error } = await supabase
-                .from("section_content")
-                .insert({
-                  section_id: secRow.id,
-                  content_type: "text",
-                  position: it.position,
-                  body: it.body || null,
+          for (const s of sections) {
+            const secEl = addSectionUI({ title: s.title });
+            // Load blocks
+            const { data: blocks, error: bErr } = await supabase
+              .from("section_content")
+              .select(
+                "id,content_type,position,body,video_url,duration_seconds,quiz_id"
+              )
+              .eq("section_id", s.id)
+              .order("position", { ascending: true });
+            if (bErr) {
+              alert("Error loading blocks: " + bErr.message);
+              return;
+            }
+            for (const b of blocks) {
+              if (b.content_type === "text") {
+                addBlock(secEl, "text", { body: b.body || "" });
+              } else if (b.content_type === "video") {
+                addBlock(secEl, "video", {
+                  video_url: b.video_url || "",
+                  duration_seconds: b.duration_seconds || 0,
                 });
-              if (error) throw error;
-            } else if (it.type === "video") {
-              const { error } = await supabase
-                .from("section_content")
-                .insert({
-                  section_id: secRow.id,
-                  content_type: "video",
-                  position: it.position,
-                  video_url: it.video_url || null,
-                  duration_seconds: it.duration_seconds || null,
+              } else if (b.content_type === "quiz" && b.quiz_id) {
+                // load quiz
+                const { data: qz, error: qzErr } = await supabase
+                  .from("quiz")
+                  .select("id,title,passing_score,time_limit_seconds")
+                  .eq("id", b.quiz_id)
+                  .maybeSingle();
+                if (qzErr) {
+                  alert("Error loading quiz: " + qzErr.message);
+                  continue;
+                }
+                const sec = secEl;
+                addBlock(sec, "quiz", {
+                  title: qz.title,
+                  passing_score: qz.passing_score,
+                  time_limit_seconds: qz.time_limit_seconds,
                 });
-              if (error) throw error;
-            } else if (it.type === "quiz") {
-              // create quiz
-              const { data: qz, error: qzErr } = await supabase
-                .from("quiz")
-                .insert({
-                  course_id: courseId,
-                  title: it.quiz.title,
-                  passing_score: it.quiz.passing_score,
-                  time_limit_seconds: it.quiz.time_limit_seconds,
-                })
-                .select("id")
-                .single();
-              if (qzErr) throw qzErr;
+                // append its questions to the *last* quiz block we just added
+                const quizBlocks = sec.querySelectorAll(
+                  '.block[data-type="quiz"]'
+                );
+                const lastQuizBlock = quizBlocks[quizBlocks.length - 1];
+                const qWrap = lastQuizBlock.querySelector(".quiz-qs");
 
-              // link quiz via section_content
-              const { error: scErr } = await supabase
-                .from("section_content")
-                .insert({
-                  section_id: secRow.id,
-                  content_type: "quiz",
-                  position: it.position,
-                  quiz_id: qz.id,
-                });
-              if (scErr) throw scErr;
-
-              // questions
-              for (const q of it.quiz.questions) {
-                const { error: qqErr } = await supabase
+                const { data: qs, error: qsErr } = await supabase
                   .from("quiz_question")
-                  .insert({
-                    quiz_id: qz.id,
+                  .select("id,question,options,correct_answer,points,position")
+                  .eq("quiz_id", qz.id)
+                  .order("position", { ascending: true });
+                if (qsErr) {
+                  alert("Error loading questions: " + qsErr.message);
+                  continue;
+                }
+                for (const q of qs) {
+                  addQuizQuestion(qWrap, {
                     question: q.question,
-                    options: q.options,
-                    correct_answer: q.correct_answer,
-                    points: q.points,
-                    position: q.position,
+                    A: q.options?.A || "",
+                    B: q.options?.B || "",
+                    C: q.options?.C || "",
+                    D: q.options?.D || "",
+                    correct: q.correct_answer,
+                    points: q.points || 1,
                   });
-                if (qqErr) throw qqErr;
+                }
               }
             }
           }
         }
+      });
 
-        alert("Course saved!");
-        window.location.href = "courses.html";
-      } catch (e) {
-        console.error(e);
-        alert("Save failed: " + (e?.message || e));
-      }
-    });
-  </script>
-</body>
+      // Save all
+      saveBtn.addEventListener("click", async () => {
+        const title = titleEl.value.trim();
+        if (!title) {
+          alert("Title is required.");
+          return;
+        }
 
+        const slug = slugEl.value.trim() || slugify(title);
+        const description = descEl.value.trim();
+        const level = Number(levelEl.value || 0);
+        const tags = tagsEl.value
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean);
+        const thumbnail_url = thumbEl.value.trim() || null;
+
+        // Upsert the course
+        let courseId = editingCourseId;
+        if (courseId) {
+          const { error: uErr } = await supabase
+            .from("course")
+            .update({ title, slug, description, level, tags, thumbnail_url })
+            .eq("id", courseId);
+          if (uErr) {
+            alert("Update failed: " + uErr.message);
+            return;
+          }
+        } else {
+          const { data: inserted, error: iErr } = await supabase
+            .from("course")
+            .insert({ title, slug, description, level, tags, thumbnail_url })
+            .select("id")
+            .single();
+          if (iErr) {
+            alert("Insert failed: " + iErr.message);
+            return;
+          }
+          courseId = inserted.id;
+        }
+
+        // Clear and re-write sections if editing for simplicity (idempotent)
+        if (editingCourseId) {
+          await supabase.from("section").delete().eq("course_id", courseId);
+          // CASCADE will remove section_content & quiz via FKs
+        }
+
+        // collect UI → DB
+        const sections = Array.from(
+          sContainer.querySelectorAll(".section")
+        ).map((sec, i) => {
+          const title =
+            sec.querySelector(".section-title").value.trim() ||
+            `Section ${i + 1}`;
+          const blocks = Array.from(sec.querySelector(".blocks").children);
+          const items = blocks.map((b, j) => {
+            const type = b.dataset.type;
+            if (type === "text") {
+              return {
+                type,
+                position: j + 1,
+                body: b.querySelector(".text-body").value.trim(),
+              };
+            } else if (type === "video") {
+              return {
+                type,
+                position: j + 1,
+                video_url: b.querySelector(".video-url").value.trim(),
+                duration_seconds: Number(
+                  b.querySelector(".video-duration").value || 0
+                ),
+              };
+            } else {
+              // quiz
+              const title =
+                b.querySelector(".quiz-title").value.trim() || "Quiz";
+              const passing_score = Number(
+                b.querySelector(".quiz-pass").value || 70
+              );
+              const time_limit_seconds = Number(
+                b.querySelector(".quiz-limit").value || 0
+              );
+              const qs = Array.from(b.querySelectorAll(".quiz-q")).map(
+                (q, qIdx) => {
+                  return {
+                    position: qIdx + 1,
+                    question: q.querySelector(".qq").value.trim(),
+                    options: {
+                      A: q.querySelector(".qa").value.trim(),
+                      B: q.querySelector(".qb").value.trim(),
+                      C: q.querySelector(".qc").value.trim(),
+                      D: q.querySelector(".qd").value.trim(),
+                    },
+                    correct_answer: q.querySelector(".correct").value,
+                    points: Number(q.querySelector(".points").value || 1),
+                  };
+                }
+              );
+              return {
+                type,
+                position: j + 1,
+                quiz: {
+                  title,
+                  passing_score,
+                  time_limit_seconds,
+                  questions: qs,
+                },
+              };
+            }
+          });
+          return { title, position: i + 1, items };
+        });
+
+        // Write to DB sequentially
+        try {
+          for (const s of sections) {
+            // insert section
+            const { data: secRow, error: sErr } = await supabase
+              .from("section")
+              .insert({
+                course_id: courseId,
+                title: s.title,
+                position: s.position,
+              })
+              .select("id")
+              .single();
+            if (sErr) throw sErr;
+
+            // insert items
+            for (const it of s.items) {
+              if (it.type === "text") {
+                const { error } = await supabase
+                  .from("section_content")
+                  .insert({
+                    section_id: secRow.id,
+                    content_type: "text",
+                    position: it.position,
+                    body: it.body || null,
+                  });
+                if (error) throw error;
+              } else if (it.type === "video") {
+                const { error } = await supabase
+                  .from("section_content")
+                  .insert({
+                    section_id: secRow.id,
+                    content_type: "video",
+                    position: it.position,
+                    video_url: it.video_url || null,
+                    duration_seconds: it.duration_seconds || null,
+                  });
+                if (error) throw error;
+              } else if (it.type === "quiz") {
+                // create quiz
+                const { data: qz, error: qzErr } = await supabase
+                  .from("quiz")
+                  .insert({
+                    course_id: courseId,
+                    title: it.quiz.title,
+                    passing_score: it.quiz.passing_score,
+                    time_limit_seconds: it.quiz.time_limit_seconds,
+                  })
+                  .select("id")
+                  .single();
+                if (qzErr) throw qzErr;
+
+                // link quiz via section_content
+                const { error: scErr } = await supabase
+                  .from("section_content")
+                  .insert({
+                    section_id: secRow.id,
+                    content_type: "quiz",
+                    position: it.position,
+                    quiz_id: qz.id,
+                  });
+                if (scErr) throw scErr;
+
+                // questions
+                for (const q of it.quiz.questions) {
+                  const { error: qqErr } = await supabase
+                    .from("quiz_question")
+                    .insert({
+                      quiz_id: qz.id,
+                      question: q.question,
+                      options: q.options,
+                      correct_answer: q.correct_answer,
+                      points: q.points,
+                      position: q.position,
+                    });
+                  if (qqErr) throw qqErr;
+                }
+              }
+            }
+          }
+
+          alert("Course saved!");
+          window.location.href = "courses.html";
+        } catch (e) {
+          console.error(e);
+          alert("Save failed: " + (e?.message || e));
+        }
+      });
+    </script>
+  </body>
 </html>
