@@ -378,8 +378,8 @@
             <span>Admin</span>
           </label>
           <label style="display: flex; align-items: center; gap: 8px">
-            <input type="radio" name="approveRole" value="Superadmin" />
-            <span>Superadmin</span>
+            <input type="radio" name="approveRole" value="Super Administrator" />
+            <span>Super Administrator</span>
           </label>
         </div>
         <div class="modal-actions">
@@ -402,7 +402,7 @@
           fullName: "Mara M. Cruz",
           email: "mara.cruz@example.com",
           phone: "0917 555 1122",
-          requestedLevel: "Admin",
+          
           profileStatus: "pending",
           createdAt: "2025-08-24T10:10:00+08:00",
         },
@@ -412,7 +412,7 @@
           fullName: "Kenji H. Tan",
           email: "kenji.tan@example.com",
           phone: "0998 221 4433",
-          requestedLevel: "Superadmin",
+          
           profileStatus: "pending",
           createdAt: "2025-08-25T15:40:00+08:00",
         },
@@ -520,13 +520,6 @@
                 admin.profileStatus || "pending"
               )}</span>
             </div>
-            <div class="meta">
-              <span><strong>Email:</strong> ${admin.email}</span>
-              <span><strong>Phone:</strong> ${admin.phone}</span>
-              <span><strong>Requested Level:</strong> ${
-                admin.requestedLevel || "Admin"
-              }</span>
-            </div>
           </div>
 
           <div style="margin-left:auto; display:flex; gap:8px;">
@@ -542,9 +535,7 @@
               <div><span class="label">Full Name</span>${admin.fullName}</div>
               <div><span class="label">Email</span>${admin.email}</div>
               <div><span class="label">Phone</span>${admin.phone}</div>
-              <div><span class="label">Requested Level</span>${
-                admin.requestedLevel || "Admin"
-              }</div>
+              
             </div>
           </div>
 
@@ -554,11 +545,6 @@
               Review the candidate’s previous activity and ensure proper authorization before granting admin roles.
             </p>
           </div>
-        </div>
-
-        <div class="actions-row">
-          <button class="btn reject" id="rejectBtnBottom"><span class="material-icons-sharp">close</span> Reject</button>
-          <button class="btn primary" id="approveBtnBottom"><span class="material-icons-sharp">task_alt</span> Approve</button>
         </div>
       `;
 
@@ -576,13 +562,7 @@
           .querySelector("#approveBtn")
           .addEventListener("click", approve);
         detailsPane
-          .querySelector("#approveBtnBottom")
-          .addEventListener("click", approve);
-        detailsPane
           .querySelector("#rejectBtn")
-          .addEventListener("click", reject);
-        detailsPane
-          .querySelector("#rejectBtnBottom")
           .addEventListener("click", reject);
       }
 
