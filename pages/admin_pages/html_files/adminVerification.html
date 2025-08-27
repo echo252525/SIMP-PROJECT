@@ -8,9 +8,48 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet" />
   <title>Admin Verification</title>
   <style>
-    main {
-      margin-top: 1.4rem;
+    :root{
+      --ink:#1c2430; --muted:#6c7a8a; --line:#e7edf3; --brand:#20a44c; --danger:#e53935; --card:#fff; --pill:#eef6ff; --radius:14px;
     }
+    main{ margin-top:1.4rem; }
+    .two-col{ display:grid; grid-template-columns:340px 1fr; gap:1rem; }
+    @media (max-width:980px){ .two-col{ grid-template-columns:1fr; } }
+    .panel{ background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:12px; }
+    .panel h3{ margin:0 0 .5rem 0; font-size:1rem; }
+    .search{ position:relative; margin-bottom:.6rem; }
+    .search input{ width:100%; border:1px solid var(--line); border-radius:10px; padding:10px 12px 10px 36px; outline:none; background:#fcfeff;}
+    .search .material-icons-sharp{ position:absolute; left:10px; top:50%; transform:translateY(-50%); color:var(--muted); }
+    .list{ display:flex; flex-direction:column; gap:8px; max-height:70vh; overflow:auto; }
+    .item{ display:grid; grid-template-columns:40px 1fr auto; align-items:center; gap:10px; padding:10px; border:1px solid var(--line); border-radius:12px; cursor:pointer; background:#fff; }
+    .item:hover{ background:#f6fafc; }
+    .item.active{ outline:2px solid var(--brand); background:#f3fdf7; }
+    .avatar{ width:40px; height:40px; border-radius:50%; object-fit:cover; border:1px solid var(--line); }
+    .pill{ font-size:.75rem; background:var(--pill); padding:4px 8px; border-radius:999px; color:#2463a6; border:1px solid #d6e9ff; white-space:nowrap; }
+    .details{ background:var(--card); border:1px solid var(--line); border-radius:var(--radius); overflow:clip; }
+    .details .head{ display:flex; gap:16px; padding:16px; border-bottom:1px solid var(--line); align-items:center; background:linear-gradient(180deg,#f9fbff,#ffffff); }
+    .details .head img{ width:72px; height:72px; border-radius:50%; object-fit:cover; border:1px solid var(--line); background:#fff; }
+    .details .name{ font-size:1.1rem; font-weight:700; margin:0 0 2px; display:flex; align-items:center; gap:8px; }
+    .meta{ display:flex; gap:8px; flex-wrap:wrap; margin-top:4px; color:var(--muted); font-size:.9rem; }
+    .grid-2{ display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:16px; }
+    @media (max-width:980px){ .grid-2{ grid-template-columns:1fr; } }
+    .card{ border:1px solid var(--line); border-radius:12px; padding:12px; background:#fff; }
+    .card h4{ margin:0 0 .6rem 0; font-size:.95rem; }
+    .info-list{ display:grid; grid-template-columns:1fr 1fr; gap:8px 12px; }
+    @media (max-width:640px){ .info-list{ grid-template-columns:1fr; } }
+    .label{ color:var(--muted); font-size:.85rem; display:block; }
+    .actions-row{ display:flex; gap:10px; padding:12px 16px 16px; border-top:1px solid var(--line); justify-content:flex-end; background:#fff; }
+    .btn{ appearance:none; border:1px solid var(--line); background:#fff; border-radius:10px; padding:9px 12px; cursor:pointer; display:inline-flex; align-items:center; gap:.5rem; font-weight:600; }
+    .btn.primary{ background:var(--brand); color:#fff; border-color:var(--brand); }
+    .btn.reject{ background:#fff5f5; color:var(--danger); border-color:#ffd7d7; }
+    .empty-state{ padding:24px; border:1px dashed var(--line); border-radius:12px; background:#fbfeff; text-align:center; color:var(--muted); }
+
+    /* Small modal for choosing role */
+    .modal{ position:fixed; inset:0; background:rgba(14,25,42,.5); display:none; align-items:center; justify-content:center; padding:16px; z-index:1000; }
+    .modal.open{ display:flex; }
+    .modal-card{ width:min(420px,96vw); background:#fff; border-radius:12px; border:1px solid var(--line); overflow:hidden; }
+    .modal-head{ padding:12px 14px; border-bottom:1px solid var(--line); font-weight:700; }
+    .modal-body{ padding:14px; }
+    .modal-actions{ display:flex; justify-content:flex-end; gap:8px; padding:0 14px 14px; }
   </style>
 </head>
 
@@ -49,11 +88,9 @@
           <span class="material-icons-sharp">school</span>
           <h3>Course<br>Publisher</h3>
         </a>
-        <a href="#">
-          <span class="material-icons-sharp">settings</span>
+        <a href="#"><span class="material-icons-sharp">settings</span>
           <h3>Settings</h3>
         </a>
-
         <a href="#" id="logout-btn">
           <span class="material-icons-sharp">logout</span>
           <h3>Logout</h3>
@@ -62,15 +99,265 @@
     </aside>
     <!-- End of Sidebar Section -->
 
-    <!--MAIN CONTENT-->
+    <!-- MAIN CONTENT -->
     <main>
-      <div class="titlePageDiv">
-        <h1>ADMIN DASHBOARD</h1>
-        <p>dashboard.</p>
-      </div>
+      <section>
+        <div class="two-col">
+          <!-- Left: list -->
+          <div class="panel">
+            <h3>Pending Admin Profiles</h3>
 
-      <!--insert below here-->
+            <div class="search">
+              <span class="material-icons-sharp">search</span>
+              <input id="searchInput" type="text" placeholder="Search name, email, phone…" />
+            </div>
+
+            <!-- Status filter under search -->
+            <div style="margin-bottom:.6rem;">
+              <select id="statusFilter"
+                style="width:100%; border:1px solid var(--line); border-radius:10px; padding:10px 12px; background:#fcfeff; outline:none;">
+                <option value="">All statuses</option>
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+                <option value="rejected">Rejected</option>
+              </select>
+            </div>
+
+            <div id="adminList" class="list"></div>
+            <div id="emptyAdmins" class="empty-state" style="display:none;">No admin profiles found.</div>
+          </div>
+
+          <!-- Right: details -->
+          <div class="details" id="detailsPane">
+            <div class="empty-state">Select a profile on the left to review full details.</div>
+          </div>
+        </div>
+      </section>
+    </main>
   </div>
-</body>
 
+  <!-- Approve Role Modal -->
+  <div id="roleModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="roleModalTitle">
+    <div class="modal-card">
+      <div class="modal-head" id="roleModalTitle">Approve as…</div>
+      <div class="modal-body">
+        <label style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+          <input type="radio" name="approveRole" value="Admin" checked>
+          <span>Admin</span>
+        </label>
+        <label style="display:flex; align-items:center; gap:8px;">
+          <input type="radio" name="approveRole" value="Superadmin">
+          <span>Superadmin</span>
+        </label>
+      </div>
+      <div class="modal-actions">
+        <button class="btn" id="cancelRoleBtn">Cancel</button>
+        <button class="btn primary" id="confirmRoleBtn">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /***************
+     * Mock data
+     ***************/
+    const admins = [
+      {
+        id: "adm_001",
+        avatar: "https://i.pravatar.cc/150?img=5",
+        fullName: "Mara M. Cruz",
+        email: "mara.cruz@example.com",
+        phone: "0917 555 1122",
+        requestedLevel: "Admin",
+        profileStatus: "pending",
+        createdAt: "2025-08-24T10:10:00+08:00"
+      },
+      {
+        id: "adm_002",
+        avatar: "https://i.pravatar.cc/150?img=48",
+        fullName: "Kenji H. Tan",
+        email: "kenji.tan@example.com",
+        phone: "0998 221 4433",
+        requestedLevel: "Superadmin",
+        profileStatus: "pending",
+        createdAt: "2025-08-25T15:40:00+08:00"
+      }
+    ];
+
+    /***************
+     * Elements
+     ***************/
+    const searchInput = document.getElementById("searchInput");
+    const statusFilter = document.getElementById("statusFilter");
+    const adminList = document.getElementById("adminList");
+    const emptyAdmins = document.getElementById("emptyAdmins");
+    const detailsPane = document.getElementById("detailsPane");
+
+    // Modal
+    const roleModal = document.getElementById("roleModal");
+    const confirmRoleBtn = document.getElementById("confirmRoleBtn");
+    const cancelRoleBtn = document.getElementById("cancelRoleBtn");
+
+    let activeAdminId = null;
+    let pendingApproveTarget = null; // holds the admin object when modal opens
+
+    /***************
+     * Helpers
+     ***************/
+    const cap = s => s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+
+    function openRoleModal(admin){
+      pendingApproveTarget = admin;
+      roleModal.classList.add("open");
+    }
+    function closeRoleModal(){
+      roleModal.classList.remove("open");
+      pendingApproveTarget = null;
+    }
+
+    /***************
+     * List + filter
+     ***************/
+    function renderAdminList(filter = ""){
+      adminList.innerHTML = "";
+      const q = filter.trim().toLowerCase();
+      const selectedStatus = (statusFilter?.value || "").toLowerCase();
+
+      const filtered = admins.filter(a =>
+        (!q ||
+          a.fullName.toLowerCase().includes(q) ||
+          a.email.toLowerCase().includes(q) ||
+          a.phone.toLowerCase().includes(q)
+        ) &&
+        (!selectedStatus || (a.profileStatus || "pending").toLowerCase() === selectedStatus)
+      );
+
+      emptyAdmins.style.display = filtered.length ? "none" : "block";
+
+      filtered
+        .sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt))
+        .forEach(a => {
+          const item = document.createElement("div");
+          item.className = "item";
+          if (a.id === activeAdminId) item.classList.add("active");
+          item.dataset.id = a.id;
+
+          item.innerHTML = `
+            <img class="avatar" src="${a.avatar}" alt="${a.fullName}">
+            <div>
+              <div style="font-weight:700">${a.fullName}</div>
+              <div style="font-size:.85rem; color:var(--muted)">${a.email}</div>
+            </div>
+            <span class="pill">${cap(a.profileStatus || "pending")}</span>
+          `;
+
+          item.addEventListener("click", () => {
+            activeAdminId = a.id;
+            document.querySelectorAll("#adminList .item").forEach(i => i.classList.remove("active"));
+            item.classList.add("active");
+            renderDetails(a);
+          });
+
+          adminList.appendChild(item);
+        });
+    }
+
+    searchInput.addEventListener("input", (e) => renderAdminList(e.target.value));
+    statusFilter.addEventListener("change", () => renderAdminList(searchInput.value));
+
+    /***************
+     * Details pane
+     ***************/
+    function renderDetails(admin){
+      detailsPane.innerHTML = `
+        <div class="head">
+          <img src="${admin.avatar}" alt="${admin.fullName}">
+          <div>
+            <div class="name">
+              ${admin.fullName}
+              <span class="pill" id="statusPill">${cap(admin.profileStatus || "pending")}</span>
+            </div>
+            <div class="meta">
+              <span><strong>Email:</strong> ${admin.email}</span>
+              <span><strong>Phone:</strong> ${admin.phone}</span>
+              <span><strong>Requested Level:</strong> ${admin.requestedLevel || "Admin"}</span>
+            </div>
+          </div>
+
+          <div style="margin-left:auto; display:flex; gap:8px;">
+            <button class="btn reject" id="rejectBtn">Reject Profile</button>
+            <button class="btn primary" id="approveBtn">Approve Profile</button>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <h4>Basic Information</h4>
+            <div class="info-list">
+              <div><span class="label">Full Name</span>${admin.fullName}</div>
+              <div><span class="label">Email</span>${admin.email}</div>
+              <div><span class="label">Phone</span>${admin.phone}</div>
+              <div><span class="label">Requested Level</span>${admin.requestedLevel || "Admin"}</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h4>Notes</h4>
+            <p style="margin:0; color:var(--muted); font-size:.95rem;">
+              Review the candidate’s previous activity and ensure proper authorization before granting admin roles.
+            </p>
+          </div>
+        </div>
+
+        <div class="actions-row">
+          <button class="btn reject" id="rejectBtnBottom"><span class="material-icons-sharp">close</span> Reject</button>
+          <button class="btn primary" id="approveBtnBottom"><span class="material-icons-sharp">task_alt</span> Approve</button>
+        </div>
+      `;
+
+      // Wire actions (top & bottom buttons)
+      const approve = () => openRoleModal(admin);
+      const reject = () => {
+        admin.profileStatus = "rejected";
+        alert(`❌ ${admin.fullName} profile rejected.`);
+        renderDetails(admin);
+        renderAdminList(searchInput.value);
+        // TODO: persist to backend
+      };
+
+      detailsPane.querySelector("#approveBtn").addEventListener("click", approve);
+      detailsPane.querySelector("#approveBtnBottom").addEventListener("click", approve);
+      detailsPane.querySelector("#rejectBtn").addEventListener("click", reject);
+      detailsPane.querySelector("#rejectBtnBottom").addEventListener("click", reject);
+    }
+
+    /***************
+     * Modal logic
+     ***************/
+    confirmRoleBtn.addEventListener("click", () => {
+      if(!pendingApproveTarget) return;
+      const selected = document.querySelector('input[name="approveRole"]:checked')?.value || "Admin";
+      pendingApproveTarget.profileStatus = "approved";
+      pendingApproveTarget.approvedLevel = selected; // store chosen level
+      alert(`✅ ${pendingApproveTarget.fullName} approved as ${selected}.`);
+      // Refresh UI
+      if (activeAdminId === pendingApproveTarget.id) renderDetails(pendingApproveTarget);
+      renderAdminList(searchInput.value);
+      // TODO: persist to backend (status + approvedLevel)
+      closeRoleModal();
+    });
+    cancelRoleBtn.addEventListener("click", closeRoleModal);
+    roleModal.addEventListener("click", (e)=>{ if(e.target === roleModal) closeRoleModal(); });
+
+    /***************
+     * Init
+     ***************/
+    renderAdminList();
+    if (admins.length){
+      activeAdminId = admins[0].id;
+      renderDetails(admins[0]);
+      setTimeout(() => document.querySelector(`#adminList .item[data-id="${admins[0].id}"]`)?.classList.add("active"));
+    }
+  </script>
+</body>
 </html>
