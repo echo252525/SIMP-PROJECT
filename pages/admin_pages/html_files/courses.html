@@ -57,6 +57,7 @@
       .small { font-size: 12px; color: #7a7a7a; }
       .link { color: var(--brand); text-decoration: none; font-weight: 600; }
       .empty { border: 1px dashed #cbd5e1; border-radius: 16px; padding: 20px; text-align: center; color: #6b7280; }
+      .course-users { font-size: 12px; color: #555; margin-top: 4px; }
     </style>
   </head>
   <body>
@@ -111,8 +112,13 @@
       const SUPABASE_URL = "https://gxydxmobwrccqagltlci.supabase.co";
       const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd4eWR4bW9id3JjY3FhZ2x0bGNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUxNDMzOTMsImV4cCI6MjA3MDcxOTM5M30.Zk2xUlmlPGbe-7rDsqC486Js9LGFMMOp-fytNZSwzBs";
 
-      // Use 'courses' schema
+      // Use 'courses' schema client for course data
       const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { db: { schema: "courses" } });
+      // Separate client for public schema to read admin names
+      const supabasePublic = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { db: { schema: "public" } });
+
+      // Public table to resolve IDs -> exact names
+      const ADMIN_TABLE = "admin"; // public.admin (id, email, name, ...)
 
       const addBtn = document.getElementById("addCourseBtn");
       const refreshBtn = document.getElementById("refreshBtn");
@@ -164,11 +170,30 @@
         emptyState.style.display = hasCards ? "none" : "";
       }
 
+      // Resolve a set of user IDs to names from public.admin
+      async function resolveAdminNames(ids) {
+        const unique = Array.from(new Set(ids.filter(Boolean)));
+        if (!unique.length) return {};
+
+        const { data, error } = await supabasePublic
+          .from(ADMIN_TABLE)
+          .select("id,name")
+          .in("id", unique);
+
+        if (error) {
+          console.warn("admin name lookup failed:", error.message);
+          return {};
+        }
+        const map = {};
+        (data || []).forEach(row => { map[row.id] = row.name || row.id; });
+        return map;
+      }
+
       async function loadCourses() {
         grid.innerHTML = "";
         const { data, error } = await supabase
           .from("course")
-          .select("id,title,slug,description,level,tags,thumbnail_url,created_at,updated_at")
+          .select("id,title,slug,description,level,tags,thumbnail_url,created_at,updated_at,created_by,last_edited_by")
           .order("created_at", { ascending: false });
 
         if (error) {
@@ -182,6 +207,16 @@
         }
         emptyState.style.display = "none";
 
+        // Collect IDs to resolve
+        const ids = [];
+        data.forEach(c => {
+          if (c.created_by) ids.push(c.created_by);
+          if (c.last_edited_by) ids.push(c.last_edited_by);
+        });
+
+        // Map id -> exact admin.name
+        const nameMap = await resolveAdminNames(ids);
+
         data.forEach((c) => {
           const editLink = el("a", {
             class: "btn small secondary",
@@ -190,6 +225,9 @@
 
           const delBtn = el("button", { class: "btn small danger", type: "button" }, [document.createTextNode("Delete")]);
           delBtn.addEventListener("click", () => deleteCourse(c.id, c.title, delBtn));
+
+          const createdName = nameMap[c.created_by] || "Unknown";
+          const editedName  = c.last_edited_by ? (nameMap[c.last_edited_by] || "Unknown") : "—";
 
           const card = el("div", { class: "course-card" }, [
             el("div", { class: "course-image" }, [
@@ -203,6 +241,7 @@
                 el("span", { class: "pill", html: `Level: ${c.level ?? 0}` }),
                 el("span", { class: "pill", html: `Tags: ${(c.tags || []).join(", ") || "—"}` }),
               ]),
+              el("div", { class: "course-users", html: `Created by: ${createdName}<br>Last edited by: ${editedName}` }),
             ]),
             el("div", { class: "right" }, [
               el("span", { class: "small", html: new Date(c.created_at).toLocaleString() }),
