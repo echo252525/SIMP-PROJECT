@@ -35,11 +35,16 @@
       }
       .item:hover { background: #f6fafc; }
       .item.active { outline: 2px solid var(--brand); background: #f3fdf7; }
-      .avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid var(--line); background:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; color:#1f2a3a; }
+      .avatar {
+        width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid var(--line);
+        background:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; color:#1f2a3a;
+      }
       .pill { font-size: 0.75rem; background: var(--pill); padding: 4px 8px; border-radius: 999px; color: #2463a6; border: 1px solid #d6e9ff; white-space: nowrap; }
+      /* "You" tags */
+      .pill.you { background: #e8fff4; color: #0f5132; border-color: #b7e4c7; margin-left: 8px; }
       .details { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); overflow: clip; }
       .details .head { display: flex; gap: 16px; padding: 16px; border-bottom: 1px solid var(--line); align-items: center; background: linear-gradient(180deg, #f9fbff, #ffffff); }
-      .details .name { font-size: 1.1rem; font-weight: 700; margin: 0 0 2px; display: flex; align-items: center; gap: 8px; }
+      .details .name { font-size: 1.1rem; font-weight: 700; margin: 0 0 2px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
       .meta { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; color: var(--muted); font-size: 0.9rem; }
       .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 16px; }
       @media (max-width: 980px) { .grid-2 { grid-template-columns: 1fr; } }
@@ -48,7 +53,6 @@
       .info-list { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; }
       @media (max-width: 640px) { .info-list { grid-template-columns: 1fr; } }
       .label { color: var(--muted); font-size: 0.85rem; display: block; }
-      .actions-row { display: flex; gap: 10px; padding: 12px 16px 16px; border-top: 1px solid var(--line); justify-content: flex-end; background: #fff; }
       .btn { appearance: none; border: 1px solid var(--line); background: #fff; border-radius: 10px; padding: 9px 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 600; }
       .btn.primary { background: var(--brand); color: #fff; border-color: var(--brand); }
       .btn.warn { background: #fff8e1; color: #8a6d0a; border-color: #fde68a; }
@@ -88,7 +92,7 @@
       <!-- MAIN -->
       <main>
         <section>
-          <div class="two-col" id="contentArea" style="display:none;">
+          <div class="two-col" id="contentArea" style="display: none">
             <!-- Left: list -->
             <div class="panel">
               <h3>Admin Directory</h3>
@@ -117,65 +121,35 @@
             </div>
           </div>
 
-          <div id="notAuth" class="not-auth" style="display:none;">
+          <div id="notAuth" class="not-auth" style="display: none">
             You don’t have access to Admin Verification. Please contact a super administrator.
           </div>
         </section>
       </main>
     </div>
 
-    <!-- Modal for superadmin: promote/demote choice -->
-    <div id="roleModal" class="modal" style="display:none;">
-      <div class="modal-card" style="width:min(420px,96vw); background:#fff; border-radius:12px; border:1px solid var(--line); overflow:hidden;">
-        <div class="modal-head" style="padding:12px 14px; border-bottom:1px solid var(--line); font-weight:700;">Set Role</div>
-        <div class="modal-body" style="padding:14px;">
-          <label style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
-            <input type="radio" name="setRole" value="admin" checked />
-            <span>Admin</span>
-          </label>
-          <label style="display:flex; align-items:center; gap:8px;">
-            <input type="radio" name="setRole" value="superadmin" />
-            <span>Super Administrator</span>
-          </label>
-        </div>
-        <div class="modal-actions" style="display:flex; justify-content:flex-end; gap:8px; padding:0 14px 14px;">
-          <button class="btn" id="cancelRoleBtn">Cancel</button>
-          <button class="btn primary" id="confirmRoleBtn">Confirm</button>
-        </div>
-      </div>
-      <style>
-        .modal { position:fixed; inset:0; background:rgba(14,25,42,0.5); align-items:center; justify-content:center; padding:16px; z-index:1000; }
-        .modal.open { display:flex !important; }
-      </style>
-    </div>
-
     <script src="../../general_files/index.js"></script>
     <script type="module" src="../../general_files/session.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-      // ----- CONFIG -----
-      const SUPABASE_URL = "https://gxydxmobwrccqagltlci.supabase.co";
-      const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd4eWR4bW9id3JjY3FhZ2x0bGNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUxNDMzOTMsImV4cCI6MjA3MDcxOTM5M30.Zk2xUlmlPGbe-7rDsqC486Js9LGFMMOp-fytNZSwzBs";
+    <script type="module">
+      import { SUPABASE_URL, SUPABASE_ANON_KEY } from "../../../supabase.js";
+
+      // Public schema for admin directory
       const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { db: { schema: "public" } });
 
       // Elements
-      const contentArea = document.getElementById("contentArea");
-      const notAuth = document.getElementById("notAuth");
-      const adminList = document.getElementById("adminList");
-      const emptyAdmins = document.getElementById("emptyAdmins");
-      const detailsPane = document.getElementById("detailsPane");
-      const searchInput = document.getElementById("searchInput");
+      const contentArea  = document.getElementById("contentArea");
+      const notAuth      = document.getElementById("notAuth");
+      const adminList    = document.getElementById("adminList");
+      const emptyAdmins  = document.getElementById("emptyAdmins");
+      const detailsPane  = document.getElementById("detailsPane");
+      const searchInput  = document.getElementById("searchInput");
       const statusFilter = document.getElementById("statusFilter");
 
-      const roleModal = document.getElementById("roleModal");
-      const confirmRoleBtn = document.getElementById("confirmRoleBtn");
-      const cancelRoleBtn = document.getElementById("cancelRoleBtn");
-
-      let currentUser = null;         // supabase.auth user
-      let currentRole = null;         // 'pending' | 'admin' | 'superadmin' | null
-      let admins = [];                // loaded admin rows
+      let currentUser = null;       // supabase.auth user
+      let currentRole = null;       // 'pending' | 'admin' | 'superadmin' | null
+      let admins = [];              // loaded admin rows
       let activeAdminId = null;
-      let pendingRoleTarget = null;   // admin row selected when opening modal
 
       // Helpers
       const cap = (s) => s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
@@ -185,18 +159,6 @@
         return '<span class="role-dot dot-pending"></span>';
       };
       const initials = (name='') => (name.trim().split(/\s+/).map(p=>p[0] || '').join('').toUpperCase()).slice(0,2) || '?';
-
-      function openRoleModal(targetRow) {
-        pendingRoleTarget = targetRow;
-        roleModal.classList.add("open");
-        // default radio: admin
-        const adminRadio = roleModal.querySelector('input[name="setRole"][value="admin"]');
-        if (adminRadio) adminRadio.checked = true;
-      }
-      function closeRoleModal() {
-        pendingRoleTarget = null;
-        roleModal.classList.remove("open");
-      }
 
       // Auth & load
       document.addEventListener("DOMContentLoaded", async () => {
@@ -234,18 +196,6 @@
       function wireUI() {
         searchInput.addEventListener("input", () => renderAdminList());
         statusFilter.addEventListener("change", () => renderAdminList());
-
-        // Modal events
-        cancelRoleBtn.addEventListener("click", closeRoleModal);
-        roleModal.addEventListener("click", (e) => {
-          if (e.target === roleModal) closeRoleModal();
-        });
-        confirmRoleBtn.addEventListener("click", async () => {
-          if (!pendingRoleTarget) return;
-          const val = roleModal.querySelector('input[name="setRole"]:checked')?.value || "admin";
-          await setRole(pendingRoleTarget.id, val);
-          closeRoleModal();
-        });
       }
 
       async function refreshAdmins() {
@@ -267,7 +217,6 @@
           const first = admins[0];
           activeAdminId = first.id;
           renderDetails(first);
-          // mark active in list
           setTimeout(() => {
             document.querySelectorAll("#adminList .item").forEach(n => {
               if (n.dataset.id === activeAdminId) n.classList.add("active");
@@ -284,10 +233,8 @@
         const roleSel = (statusFilter.value || "").toLowerCase();
 
         const filtered = (admins || []).filter(a => {
-          const matchesQuery =
-            !q || (a.name?.toLowerCase().includes(q)) || (a.email?.toLowerCase().includes(q));
-          const matchesRole =
-            !roleSel || (a.role || "").toLowerCase() === roleSel;
+          const matchesQuery = !q || (a.name?.toLowerCase().includes(q)) || (a.email?.toLowerCase().includes(q));
+          const matchesRole  = !roleSel || (a.role || "").toLowerCase() === roleSel;
           return matchesQuery && matchesRole;
         });
 
@@ -299,11 +246,13 @@
           item.dataset.id = a.id;
           if (a.id === activeAdminId) item.classList.add("active");
 
+          const youBadge = a.id === (currentUser?.id || "") ? ' <span class="pill you">You</span>' : "";
+
           const avatarHTML = `<div class="avatar">${initials(a.name || a.email)}</div>`;
           item.innerHTML = `
             ${avatarHTML}
             <div>
-              <div style="font-weight:700">${a.name || "(no name)"}</div>
+              <div style="font-weight:700">${a.name || "(no name)"}${youBadge}</div>
               <div style="font-size:.85rem; color:var(--muted)">${a.email}</div>
             </div>
             <span class="pill">${roleDot(a.role)} ${a.role ? cap(a.role) : "Pending"}</span>
@@ -324,25 +273,27 @@
         const when = new Date(admin.created_at).toLocaleString();
         const roleLabel = admin.role ? cap(admin.role) : "Pending";
         const roleBadge = `${roleDot(admin.role)} ${roleLabel}`;
+        const youHeaderBadge = admin.id === (currentUser?.id || "") ? ' <span class="pill you">This is you</span>' : "";
 
         // Decide actions
         const actions = [];
         if (currentRole === "admin") {
-          // Admins: can approve or reject only pending profiles
           if ((admin.role || "pending") === "pending") {
             actions.push(`<button class="btn primary" id="approveBtn">Approve</button>`);
             actions.push(`<button class="btn reject" id="rejectBtn">Reject</button>`);
           }
         } else if (currentRole === "superadmin") {
-          const ar = (admin.role || "pending");
+          const ar = admin.role || "pending";
           if (ar === "pending") {
             actions.push(`<button class="btn primary" id="approveBtn">Approve (to Admin)</button>`);
             actions.push(`<button class="btn reject" id="rejectBtn">Reject</button>`);
           } else if (ar === "admin") {
-            actions.push(`<button class="btn warn" id="demoteBtn">Demote to Pending</button>`);
-            actions.push(`<button class="btn primary" id="promoteBtn">Promote to Super Admin</button>`);
+            if (admin.id !== currentUser.id) {
+              actions.push(`<button class="btn warn" id="demoteBtn">Demote to Pending</button>`);
+              actions.push(`<button class="btn primary" id="promoteBtn">Promote to Super Admin</button>`);
+            }
           } else if (ar === "superadmin") {
-            // Superadmin viewing superadmin -> no actions (you can add transfer logic if needed)
+            // Viewing superadmin -> no actions
           }
         }
 
@@ -352,7 +303,7 @@
             <div>
               <div class="name">
                 ${admin.name || "(no name)"}
-                <span class="pill" id="statusPill">${roleBadge}</span>
+                <span class="pill" id="statusPill">${roleBadge}</span>${youHeaderBadge}
               </div>
               <div class="meta">Created: ${when}</div>
             </div>
@@ -387,65 +338,96 @@
         const demoteBtn  = detailsPane.querySelector("#demoteBtn");
         const promoteBtn = detailsPane.querySelector("#promoteBtn");
 
-        if (approveBtn) approveBtn.addEventListener("click", async () => {
-          // Admin -> approve pending to ADMIN
-          await setRole(admin.id, "admin");
+        if (approveBtn) approveBtn.addEventListener("click", async () => { await setRole(admin.id, "admin"); });
+        if (rejectBtn)  rejectBtn.addEventListener("click", async () => {
+          if (!confirm(`Reject this profile (${admin.email})? This deletes the user from auth and removes their admin row.`)) return;
+          await rejectProfileDeleteAuthUser(admin.id);
         });
-        if (rejectBtn) rejectBtn.addEventListener("click", async () => {
-          if (!confirm(`Reject this profile (${admin.email})? This will remove their admin application.`)) return;
-          await rejectProfile(admin.id);
-        });
-        if (demoteBtn) demoteBtn.addEventListener("click", async () => {
+        if (demoteBtn)  demoteBtn.addEventListener("click", async () => {
           if (!confirm(`Demote ${admin.email} to Pending?`)) return;
           await setRole(admin.id, "pending");
         });
         if (promoteBtn) promoteBtn.addEventListener("click", async () => {
-          // Superadmin: choose Admin or Superadmin via modal
-          openRoleModal(admin);
+          // Direct swap: current superadmin -> admin, target admin -> superadmin
+          if (!confirm("Transfer SUPERADMIN to this user and become ADMIN yourself?")) return;
+          await promoteToSuperadminSwapClientSide(admin.id);
         });
       }
 
       async function setRole(id, role) {
         try {
-          const { error } = await supabase
-            .from("admin")
-            .update({ role })
-            .eq("id", id);
-          if (error) {
-            alert("Failed to set role: " + error.message);
-            return;
-          }
-          // Refresh data & keep selection
+          const { error } = await supabase.from("admin").update({ role }).eq("id", id);
+          if (error) { alert("Failed to set role: " + (error.message || "Unknown error")); return; }
           const keepId = activeAdminId;
           await refreshAdmins();
           const updated = admins.find(a => a.id === keepId) || admins[0];
-          if (updated) {
-            activeAdminId = updated.id;
-            renderDetails(updated);
-          }
+          if (updated) { activeAdminId = updated.id; renderDetails(updated); }
           alert(`Role updated to ${role.toUpperCase()}.`);
         } catch (e) {
           alert("Unexpected error: " + (e?.message || e));
         }
       }
 
-      async function rejectProfile(id) {
-        try {
-          const { error } = await supabase
-            .from("admin")
-            .delete()
-            .eq("id", id);
-          if (error) {
-            alert("Failed to reject profile: " + error.message);
-            return;
+      async function reloadMyRole() {
+        const { data, error } = await supabase.from("admin").select("role").eq("id", currentUser.id).maybeSingle();
+        if (!error && data) currentRole = data.role || null;
+      }
+
+      // --- Direct client-side swap ---
+      async function promoteToSuperadminSwapClientSide(targetId) {
+        // 1) Demote me (current superadmin) to admin
+        const { error: e1 } = await supabase.from("admin").update({ role: "admin" }).eq("id", currentUser.id);
+        if (e1) {
+          alert("Could not demote yourself: " + e1.message);
+          return;
+        }
+
+        // 2) Promote target to superadmin
+        const { error: e2 } = await supabase.from("admin").update({ role: "superadmin" }).eq("id", targetId);
+        if (e2) {
+          // 3) Restore me back to superadmin if step 2 failed
+          const { error: restoreErr } = await supabase.from("admin").update({ role: "superadmin" }).eq("id", currentUser.id);
+          if (restoreErr) {
+            alert("Promotion failed (" + e2.message + ") and restoring your superadmin role also failed (" + restoreErr.message + "). Please check roles manually.");
+          } else {
+            alert("Promotion failed: " + e2.message + ". Your superadmin role was restored.");
           }
-          // Refresh list
+          await reloadMyRole();
+          await refreshAdmins();
+          return;
+        }
+
+        // Success: I am now admin, target is superadmin
+        await reloadMyRole();
+        await refreshAdmins();
+        const selected = admins.find(a => a.id === targetId) || admins[0];
+        if (selected) { activeAdminId = selected.id; renderDetails(selected); }
+        alert("Superadmin role transferred.");
+      }
+
+      /**
+       * Reject path that deletes the user from auth via Edge Function (requires service role).
+       * Your DB FK (public.admin.id -> auth.users.id ON DELETE CASCADE) will remove the admin row.
+       */
+      async function rejectProfileDeleteAuthUser(userId) {
+        const { data, error } = await supabase.functions.invoke("admin-delete-user", { body: { user_id: userId } });
+
+        if (error) {
+          alert("Failed to delete auth user: " + (error.message || JSON.stringify(error)));
+          return;
+        }
+
+        const payload = typeof data === "string" ? JSON.parse(data) : data;
+        if (payload?.ok === true) {
           await refreshAdmins();
           detailsPane.innerHTML = '<div class="empty-state">Select a profile on the left to review full details.</div>';
-        } catch (e) {
-          alert("Unexpected error: " + (e?.message || e));
+          alert("User rejected and removed from authentication.");
+        } else {
+          alert("Auth deletion did not report success. Response: " + JSON.stringify(payload));
         }
       }
     </script>
+
+    <!-- Edge Function reference remains the same (admin-delete-user). -->
   </body>
 </html>
