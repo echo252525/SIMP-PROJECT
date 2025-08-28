@@ -339,6 +339,13 @@
   const fmtDate = (d) => d ? new Date(d + "T00:00:00").toLocaleDateString() : "-";
   const fmtTime = (t) => (t ? String(t).slice(0, 5) : "");
 
+  function showToast(msg, ms = 2800) {
+    const el = document.getElementById("toast");
+    el.textContent = msg;
+    el.classList.add("show");
+    setTimeout(() => el.classList.remove("show"), ms);
+  }
+
   // Build PUBLIC URL from jobs bucket
   function publicJobImageUrl(rawPath, postedBy) {
     if (!rawPath) return "";
@@ -479,6 +486,85 @@
     ALL_JOBS = jobs || [];
     populateMenus();     // fixed menus
     applyFilters();      // initial render
+
+    // Start realtime listener after initial load
+    initRealtimeApprovalListener();
+  }
+
+  // ---------- REALTIME: auto-append jobs that become approved ----------
+  let jobsChannel = null;
+
+  function upsertApprovedJob(row) {
+    if (!row || row.job_status !== "approved") return;
+
+    // don't duplicate
+    const idx = ALL_JOBS.findIndex(j => String(j.job_id) === String(row.job_id));
+    if (idx >= 0) {
+      ALL_JOBS[idx] = row; // update existing
+    } else {
+      // put newest on top; if you prefer sort by created_at, you can re-sort here
+      ALL_JOBS.unshift(row);
+    }
+    applyFilters();
+    showToast(`New approved job: ${row.job_title || "Untitled"}`);
+  }
+
+  function removeIfNoLongerApproved(row) {
+    if (!row) return;
+    const beforeLen = ALL_JOBS.length;
+    ALL_JOBS = ALL_JOBS.filter(j => String(j.job_id) !== String(row.job_id));
+    if (ALL_JOBS.length !== beforeLen) {
+      applyFilters();
+      // Optional feedback:
+      // showToast(`A job was removed from approved: ${row.job_title || row.job_id}`);
+    }
+  }
+
+  function initRealtimeApprovalListener() {
+    if (jobsChannel) return; // prevent double-subscribe
+
+    jobsChannel = sb
+      .channel("jobs-approved-feed")
+      // INSERT events (in case a row is created already approved)
+      .on("postgres_changes",
+        { event: "INSERT", schema: "jobs", table: "job" },
+        (payload) => {
+          const row = payload.new;
+          if (row?.job_status === "approved") {
+            upsertApprovedJob(row);
+          }
+        }
+      )
+      // UPDATE events (watch transitions to/from approved)
+      .on("postgres_changes",
+        { event: "UPDATE", schema: "jobs", table: "job" },
+        (payload) => {
+          const n = payload.new;
+          const o = payload.old;
+
+          // Became approved → add/refresh in list
+          if (n?.job_status === "approved" && o?.job_status !== "approved") {
+            upsertApprovedJob(n);
+            return;
+          }
+
+          // Stayed approved → update any changed fields
+          if (n?.job_status === "approved" && o?.job_status === "approved") {
+            upsertApprovedJob(n);
+            return;
+          }
+
+          // Left approved → remove from list
+          if (o?.job_status === "approved" && n?.job_status !== "approved") {
+            removeIfNoLongerApproved(n);
+          }
+        }
+      )
+      .subscribe((status) => {
+        if (status === "SUBSCRIBED") {
+          console.log("[Realtime] Subscribed to jobs-approved-feed");
+        }
+      });
   }
 
   // ---------- dropdown UI wiring ----------
@@ -530,15 +616,8 @@
   const modal = document.getElementById("applyModal");
   const modalBtnApply = document.getElementById("modalApplyBtn");
   const modalBtnCancel = document.getElementById("modalCancelBtn");
-  const toastEl = document.getElementById("toast");
   const resumeLinkEl = document.getElementById("mResumeLink");
   let CURRENT_JOB_ID = null;
-
-  function showToast(msg, ms = 2800) {
-    toastEl.textContent = msg;
-    toastEl.classList.add("show");
-    setTimeout(() => toastEl.classList.remove("show"), ms);
-  }
 
   // -- Resolve current installer id via auth email -> installer table
   async function resolveInstallerId() {
@@ -662,7 +741,7 @@
 
   // Close on backdrop click
   modal.addEventListener("click", (e) => { if (e.target === modal) closeApplyModal(); });
-  modalBtnCancel.addEventListener("click", closeApplyModal);
+  document.getElementById("modalCancelBtn").addEventListener("click", closeApplyModal);
 
   // Delegate click from job cards to open modal
   document.addEventListener("click", (e) => {
@@ -678,8 +757,9 @@
   });
 
   // Handle "Apply" click inside modal with level check
-  modalBtnApply.addEventListener("click", async () => {
+  document.getElementById("modalApplyBtn").addEventListener("click", async () => {
     if (!CURRENT_JOB_ID) return;
+    const modalBtnApply = document.getElementById("modalApplyBtn");
     modalBtnApply.disabled = true;
     modalBtnApply.textContent = "Checking eligibility…";
     try {

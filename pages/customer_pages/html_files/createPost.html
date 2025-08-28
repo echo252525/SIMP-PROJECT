@@ -286,7 +286,7 @@
             <h3>Create a post</h3>
           </a>
 
-          <a href="#" id="logout-btn">
+        <a href="#" id="logout-btn">
             <span class="material-icons-sharp">logout</span>
             <h3>Logout</h3>
           </a>
@@ -352,7 +352,7 @@
                   </div>
                 </div>
                 <input type="hidden" id="job_difficulty" value="3" />
-                <div class="hint">1 = very easy, 10 = expert‑level.</div>
+                <div class="hint">1 = very easy, 10 = expert-level.</div>
               </div>
 
               <!-- Pay -->
@@ -427,7 +427,7 @@
                   </div>
                   <input type="file" id="job_picture" accept="image/*" />
                   <div class="dz-actions hint">
-                    Clear, well‑lit photos help workers decide faster.
+                    Clear, well-lit photos help workers decide faster.
                   </div>
                   <div class="dz-thumb" id="dzThumb">
                     <img id="dzImg" alt="Preview" />
@@ -543,6 +543,9 @@
       const inputLat = document.getElementById("job_lat");
       const inputLng = document.getElementById("job_lng");
       const btnLocate = document.getElementById("btnLocate");
+
+      // NEW: date restriction hooks
+      const inputDate = document.getElementById("job_date");
 
       // Optional nav (guarded so missing elements won't crash)
       const navCreate = document.getElementById("nav-create");
@@ -722,6 +725,20 @@
       });
 
       /* =========================
+     NEW: Date restrictions (no past dates)
+     ========================= */
+      function todayYYYYMMDD() {
+        const d = new Date(); // local time (works for PH)
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, "0");
+        const day = String(d.getDate()).padStart(2, "0");
+        return `${y}-${m}-${day}`;
+      }
+      const TODAY_STR = todayYYYYMMDD();
+      // Set min attribute so picker disallows past dates
+      inputDate.setAttribute("min", TODAY_STR);
+
+      /* =========================
      Optional: Nav toggles (guarded)
      ========================= */
       if (navCreate && navView && sectionCreate && sectionView) {
@@ -780,11 +797,21 @@
         diffRange.value = "3";
         diffBadge.textContent = "3/10";
         diffHidden.value = "3";
+        // keep today's min and clear value
+        inputDate.setAttribute("min", TODAY_STR);
+        inputDate.value = ""; // optional: force reselect
         setFromCoords(DEFAULT_CENTER[0], DEFAULT_CENTER[1], DEFAULT_ZOOM);
       });
 
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
+
+        // Block past dates (string compare avoids timezone issues)
+        const picked = inputDate.value;
+        if (!picked || picked < TODAY_STR) {
+          alert("Please select today or a future date for the job.");
+          return;
+        }
 
         const {
           data: { user },
@@ -818,7 +845,7 @@
           const letters = Array.from({ length: 4 }, () =>
             String.fromCharCode(65 + Math.floor(Math.random() * 26))
           ).join("");
-          const numbers = String(Math.floor(Math.random() * 10000)).padStart(
+        const numbers = String(Math.floor(Math.random() * 10000)).padStart(
             4,
             "0"
           );
@@ -877,6 +904,8 @@
           diffRange.value = "3";
           diffBadge.textContent = "3/10";
           diffHidden.value = "3";
+          // keep min date restriction after reset
+          inputDate.setAttribute("min", TODAY_STR);
           setFromCoords(DEFAULT_CENTER[0], DEFAULT_CENTER[1], DEFAULT_ZOOM);
         }
       });

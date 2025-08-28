@@ -45,8 +45,10 @@
       }
       .item:hover { background: #f6fafc; }
       .item.active { outline: 2px solid var(--brand); }
-      /* Keep white when read */
+      /* viewed (white) */
       .item.read { background: #fff !important; }
+      /* NEW: darker when pending */
+      .item.pending { background: #f0f4f9 !important; }
 
       .thumb { width: 48px; height: 48px; border-radius: 8px; object-fit: cover; border: 1px solid var(--line); }
 
@@ -299,7 +301,13 @@
           item.className = "item";
           item.dataset.id = j.id;
           if (j.id === activeJobId) item.classList.add("active");
-          if ((j.status || "").toLowerCase() === "viewed") item.classList.add("read");
+
+          // status → class
+          if ((j.status || "").toLowerCase() === "viewed") {
+            item.classList.add("read");
+          } else if (!(j.status) || (j.status || "").toLowerCase() === "pending") {
+            item.classList.add("pending");
+          }
 
           item.innerHTML = `
             <img class="thumb" src="${j.photo}" alt="${esc(j.title)}" onerror="this.onerror=null;this.src='../images/profile-4.jpg';">
@@ -315,8 +323,9 @@
             document.querySelectorAll("#jobList .item").forEach(i => i.classList.remove("active"));
             item.classList.add("active");
 
-            // Mark as "Viewed" for UI; DB tries 'viewed' else NULL
+            // Mark as viewed (UI + DB)
             await ensureViewed(j);
+            item.classList.remove("pending");
             item.classList.add("read");
             item.querySelector(".pill").textContent = nice(j.status || "pending");
 
@@ -428,7 +437,13 @@
         const row = document.querySelector(`#jobList .item[data-id="${job.id}"]`);
         if (row) {
           row.querySelector(".pill").textContent = nice(job.status || "pending");
-          if ((job.status || "").toLowerCase() === "viewed") row.classList.add("read");
+          row.classList.remove("pending","read");
+          const s = (job.status || "").toLowerCase();
+          if (s === "viewed") {
+            row.classList.add("read");
+          } else if (!s || s === "pending") {
+            row.classList.add("pending");
+          }
         }
         const pill = document.getElementById("jobStatusPill");
         if (pill) pill.textContent = nice(job.status || "pending");
