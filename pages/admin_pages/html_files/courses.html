@@ -58,6 +58,10 @@
       .link { color: var(--brand); text-decoration: none; font-weight: 600; }
       .empty { border: 1px dashed #cbd5e1; border-radius: 16px; padding: 20px; text-align: center; color: #6b7280; }
       .course-users { font-size: 12px; color: #555; margin-top: 4px; }
+      .notice {
+        display:none; margin: 10px 0 0; font-size: 12px; color: #b45309; background:#fff7ed; border:1px solid #fed7aa;
+        padding:8px 10px; border-radius:10px;
+      }
     </style>
   </head>
   <body>
@@ -78,7 +82,7 @@
           <a href="dashboard.html"><span class="material-icons-sharp">dashboard</span><h3>Dashboard</h3></a>
           <a href="workerVerification.html"><span class="material-icons-sharp">engineering</span><h3>Workers<br>Verification</h3></a>
           <a href="jobVerification.html"><span class="material-icons-sharp">work</span><h3>Jobs<br>Verification</h3></a>
-          <a href="#"><span class="material-icons-sharp">shield</span><h3>Admin<br>Verification</h3></a>
+          <a href="adminVerification.html"><span class="material-icons-sharp">shield</span><h3>Admin<br>Verification</h3></a>
           <a href="courses.html" class="active"><span class="material-icons-sharp">school</span><h3>Course<br>Publisher</h3></a>
           <a href="#"><span class="material-icons-sharp">settings</span><h3>Settings</h3></a>
           <a href="#" id="logout-btn"><span class="material-icons-sharp">logout</span><h3>Logout</h3></a>
@@ -103,6 +107,10 @@
         <div id="emptyState" class="empty" style="display: none">
           No courses yet. Click <strong>+ Add Course</strong> to create your first one.
         </div>
+
+        <div id="nameNotice" class="notice">
+          Some creator/editor names couldn’t be loaded. If you’re seeing “Unknown,” update RLS to allow admins to SELECT name/email from <code>public.admin</code>.
+        </div>
       </main>
     </div>
 
@@ -112,18 +120,18 @@
       const SUPABASE_URL = "https://gxydxmobwrccqagltlci.supabase.co";
       const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd4eWR4bW9id3JjY3FhZ2x0bGNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUxNDMzOTMsImV4cCI6MjA3MDcxOTM5M30.Zk2xUlmlPGbe-7rDsqC486Js9LGFMMOp-fytNZSwzBs";
 
-      // Use 'courses' schema client for course data
+      // Courses schema client
       const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { db: { schema: "courses" } });
-      // Separate client for public schema to read admin names
+      // Public schema client (to read public.admin)
       const supabasePublic = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { db: { schema: "public" } });
 
-      // Public table to resolve IDs -> exact names
-      const ADMIN_TABLE = "admin"; // public.admin (id, email, name, ...)
+      const ADMIN_TABLE = "admin"; // public.admin
 
       const addBtn = document.getElementById("addCourseBtn");
       const refreshBtn = document.getElementById("refreshBtn");
       const grid = document.getElementById("coursesGrid");
       const emptyState = document.getElementById("emptyState");
+      const nameNotice = document.getElementById("nameNotice");
 
       addBtn.addEventListener("click", () => { window.location.href = "courseBuilder.html"; });
       refreshBtn.addEventListener("click", loadCourses);
@@ -155,11 +163,9 @@
         const { error } = await supabase.from("course").delete().eq("id", id);
 
         if (error) {
-          // Revert on error
           btnEl.disabled = false;
           btnEl.innerHTML = originalHTML;
           alert("Delete failed: " + error.message);
-          // Reload to restore list correctly
           await loadCourses();
           return;
         }
@@ -170,27 +176,32 @@
         emptyState.style.display = hasCards ? "none" : "";
       }
 
-      // Resolve a set of user IDs to names from public.admin
+      // Resolve admin IDs to names via public.admin
       async function resolveAdminNames(ids) {
         const unique = Array.from(new Set(ids.filter(Boolean)));
-        if (!unique.length) return {};
+        if (!unique.length) return { map: {}, unresolved: [] };
 
         const { data, error } = await supabasePublic
           .from(ADMIN_TABLE)
-          .select("id,name")
+          .select("id,name,email")
           .in("id", unique);
 
         if (error) {
-          console.warn("admin name lookup failed:", error.message);
-          return {};
+          // If RLS blocks the whole query, mark all unresolved
+          return { map: {}, unresolved: unique };
         }
+
         const map = {};
-        (data || []).forEach(row => { map[row.id] = row.name || row.id; });
-        return map;
+        (data || []).forEach(row => { map[row.id] = row.name || row.email || row.id; });
+
+        const unresolved = unique.filter(id => !map[id]);
+        return { map, unresolved };
       }
 
       async function loadCourses() {
         grid.innerHTML = "";
+        nameNotice.style.display = "none";
+
         const { data, error } = await supabase
           .from("course")
           .select("id,title,slug,description,level,tags,thumbnail_url,created_at,updated_at,created_by,last_edited_by")
@@ -207,15 +218,17 @@
         }
         emptyState.style.display = "none";
 
-        // Collect IDs to resolve
+        // Collect all IDs to resolve
         const ids = [];
         data.forEach(c => {
           if (c.created_by) ids.push(c.created_by);
           if (c.last_edited_by) ids.push(c.last_edited_by);
         });
 
-        // Map id -> exact admin.name
-        const nameMap = await resolveAdminNames(ids);
+        const { map: nameMap, unresolved } = await resolveAdminNames(ids);
+        if (unresolved && unresolved.length) {
+          nameNotice.style.display = "";
+        }
 
         data.forEach((c) => {
           const editLink = el("a", {
