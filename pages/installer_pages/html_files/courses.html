@@ -1,642 +1,885 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css_files/sideBar.css" />
+    <title>Courses</title>
+    <style>
+      main {
+        margin-top: 1.4rem;
+      }
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet" />
-  <link rel="stylesheet" href="../css_files/sideBar.css" />
-  <title>Courses</title>
-  <style>
-    main {
-      margin-top: 1.4rem;
-    }
-
-    /* ===== Status pill (MAIN ONLY) ===== */
-    main .statusDiv {
-      --brand: #20a44c;
-      --accent: #20647c;
-      --pct: 0%;
-      display: inline-grid;
-      grid-auto-flow: column;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.6rem 0.9rem 0.9rem;
-      /* extra bottom for progress strip */
-      border: 1px solid #cfe4ea;
-      border-radius: 14px;
-      background: radial-gradient(140% 140% at -10% -10%,
+      /* ===== Status pill (MAIN ONLY) ===== */
+      main .statusDiv {
+        --brand: #20a44c;
+        --accent: #20647c;
+        --pct: 0%;
+        display: inline-grid;
+        grid-auto-flow: column;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.6rem 0.9rem 0.9rem;
+        border: 1px solid #cfe4ea;
+        border-radius: 14px;
+        background: radial-gradient(
+          140% 140% at -10% -10%,
           #eefaf2 0%,
-          #ffffff 55%);
-      color: #0f172a;
-      font-weight: 700;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
-      position: relative;
-      max-width: 100%;
-      transition: transform 0.12s ease, box-shadow 0.22s ease,
-        border-color 0.2s ease;
-    }
-
-    main .statusDiv .material-icons-sharp {
-      font-size: 22px;
-      color: var(--accent);
-      filter: drop-shadow(0 1px 1px rgba(32, 100, 124, 0.15));
-    }
-
-    main .statusDiv .label {
-      color: #374151;
-    }
-
-    main .statusDiv .value {
-      color: var(--brand);
-    }
-
-    /* Fun micro-interactions */
-    @keyframes badgePop {
-      0% {
-        transform: scale(0.96);
+          #ffffff 55%
+        );
+        color: #0f172a;
+        font-weight: 700;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+        position: relative;
+        max-width: 100%;
+        transition: transform 0.12s, box-shadow 0.22s, border-color 0.2s;
+      }
+      main .statusDiv .material-icons-sharp {
+        font-size: 22px;
+        color: var(--accent);
+        filter: drop-shadow(0 1px 1px rgba(32, 100, 124, 0.15));
+      }
+      main .statusDiv .label {
+        color: #374151;
+      }
+      .value {
+        color: var(--brand);
+      }
+      @keyframes badgePop {
+        0% {
+          transform: scale(0.96);
+        }
+        60% {
+          transform: scale(1.04);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+      main .statusDiv:hover {
+        transform: translateY(-1px);
+        border-color: #b7e3c7;
+        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+      }
+      main .statusDiv:hover .material-icons-sharp {
+        animation: badgePop 0.24s ease;
       }
 
-      60% {
-        transform: scale(1.04);
+      /* ROOT FOR COURSE CARD */
+      :root {
+        --card-bg: #fff;
+        --text: #2b2b2b;
+        --muted: #6b7280;
+        --pill: #f0f2f5;
+        --green: #22c55e;
+        --green-600: #16a34a;
+        --border: #e5e7eb;
+        --shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+        --radius: 16px;
       }
 
-      100% {
-        transform: scale(1);
-      }
-    }
-
-    main .statusDiv:hover {
-      transform: translateY(-1px);
-      border-color: #b7e3c7;
-      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
-    }
-
-    main .statusDiv:hover .material-icons-sharp {
-      animation: badgePop 0.24s ease;
-    }
-
-    /* Reduced motion */
-    @media (prefers-reduced-motion: reduce) {
-
-      main .statusDiv,
-      main .statusDiv * {
-        animation: none !important;
-        transition: none !important;
-      }
-    }
-
-    /*MAIN CONTENT HERE*/
-    /*ROOT FOR COURSE CARD*/
-    :root {
-      --card-bg: #fff;
-      --text: #2b2b2b;
-      --muted: #6b7280;
-      --pill: #f0f2f5;
-      --green: #22c55e;
-      --green-600: #16a34a;
-      --border: #e5e7eb;
-      --shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
-      --radius: 16px;
-    }
-
-    /* wrapper */
-    .course-card {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-      background: var(--card-bg);
-      color: var(--text);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 14px 18px;
-      box-shadow: var(--shadow);
-    }
-
-    /* left image */
-    .course-image {
-      flex: 0 0 220px;
-      /* image column width */
-      height: 120px;
-      border-radius: 12px;
-      overflow: hidden;
-    }
-
-    .course-image img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
-    /* middle */
-    .course-content {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      min-width: 0;
-      /* enables text truncation */
-      flex: 1 1 auto;
-    }
-
-    .course-text h3 {
-      margin: 0;
-      font-size: 18px;
-      font-weight: 700;
-    }
-
-    .course-text p {
-      margin: 6px 0 0;
-      font-size: 13px;
-      line-height: 1.4;
-      color: var(--muted);
-    }
-
-    /* tags */
-    .course-tags {
-      display: flex;
-      gap: 10px;
-    }
-
-    .tag {
-      display: inline-flex;
-      align-items: center;
-      padding: 6px 12px;
-      font-size: 12px;
-      border-radius: 999px;
-      background: var(--pill);
-      color: #555;
-      white-space: nowrap;
-    }
-
-    .tag.level {
-      border: 1px solid var(--green);
-      background: #ecfdf5;
-      color: var(--green-600);
-    }
-
-    /* right actions */
-    .course-actions {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 10px;
-      margin-left: auto;
-      /* push to the far right */
-      min-width: 120px;
-    }
-
-    .duration {
-      font-size: 12px;
-      color: #7a7a7a;
-    }
-
-    .enroll-btn {
-      padding: 10px 18px;
-      font-size: 14px;
-      border-radius: 999px;
-      border: none;
-      background: #20a44c;
-      color: #fff;
-      cursor: pointer;
-    }
-
-    .enroll-btn:hover {
-      background: var(--green-600);
-    }
-
-    /* responsiveness */
-    @media (max-width: 760px) {
       .course-card {
-        flex-wrap: wrap;
-        gap: 14px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        background: var(--card-bg);
+        color: var(--text);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 14px 18px;
+        box-shadow: var(--shadow);
+        animation: cardIn 0.34s ease both;
+        transition: transform 0.12s, box-shadow 0.22s, border-color 0.2s;
+      }
+      .course-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 14px 32px rgba(0, 0, 0, 0.08);
+        border-color: #d1d5db;
       }
 
       .course-image {
-        flex: 1 1 100%;
-        height: 160px;
+        flex: 0 0 220px;
+        height: 120px;
         border-radius: 12px;
+        overflow: hidden;
+        position: relative;
+      }
+      .course-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+      }
+      .course-card:hover .course-image img {
+        transform: scale(1.04);
+      }
+      @keyframes shine {
+        to {
+          transform: translateX(250%) rotate(25deg);
+        }
+      }
+      .course-image::after {
+        content: "";
+        position: absolute;
+        top: -50%;
+        left: -60%;
+        width: 60%;
+        height: 200%;
+        background: linear-gradient(
+          120deg,
+          rgba(255, 255, 255, 0) 0,
+          rgba(255, 255, 255, 0.45) 50%,
+          rgba(255, 255, 255, 0) 100%
+        );
+        transform: translateX(-150%) rotate(25deg);
+        pointer-events: none;
+      }
+      .course-card:hover .course-image::after {
+        animation: shine 0.9s ease;
+      }
+
+      .course-content {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        min-width: 0;
+        flex: 1 1 auto;
+      }
+      .course-text h3 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 700;
+      }
+      .course-text p {
+        margin: 6px 0 0;
+        font-size: 13px;
+        line-height: 1.4;
+        color: var(--muted);
+      }
+      .course-tags {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        padding: 6px 12px;
+        font-size: 12px;
+        border-radius: 999px;
+        background: var(--pill);
+        color: #555;
+        white-space: nowrap;
+      }
+      .tag.level {
+        border: 1px solid var(--green);
+        background: #ecfdf5;
+        color: var(--green-600);
       }
 
       .course-actions {
-        width: 100%;
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-        margin-left: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 10px;
+        margin-left: auto;
+        min-width: 120px;
       }
-    }
-
-    /* ===== MAIN — ANIMATIONS ONLY ===== */
-    main {
-      --brand: #20a44c;
-      --accent: #20647c;
-      scroll-behavior: smooth;
-    }
-
-    /* Title fade-up */
-    @keyframes fadeUp {
-      from {
-        opacity: 0;
-        transform: translateY(6px);
+      .duration {
+        font-size: 12px;
+        color: #7a7a7a;
       }
-
-      to {
-        opacity: 1;
-        transform: none;
+      .enroll-btn {
+        padding: 10px 18px;
+        font-size: 14px;
+        border-radius: 999px;
+        border: none;
+        background: #20a44c;
+        color: #fff;
+        cursor: pointer;
       }
-    }
-
-    main .titlePageDiv h1 {
-      animation: fadeUp 0.28s ease both;
-    }
-
-    main .titlePageDiv p {
-      animation: fadeUp 0.28s ease 0.06s both;
-    }
-
-    /* Search bar focus glow */
-    main .searchDiv {
-      transition: box-shadow 0.2s ease, border-color 0.2s ease;
-    }
-
-    main .searchDiv:focus-within {
-      box-shadow: 0 0 0 3px rgba(32, 164, 76, 0.18);
-      border-color: #b7e3c7;
-    }
-
-    /* Dropdown: fade/slide open */
-    main .dropdown {
-      position: relative;
-    }
-
-    main .dropdown-content {
-      display: block;
-      opacity: 0;
-      transform: translateY(-6px) scale(0.98);
-      pointer-events: none;
-      visibility: hidden;
-      transition: opacity 0.18s ease, transform 0.18s ease,
-        visibility 0.18s linear;
-      z-index: 5;
-    }
-
-    main .dropdown:hover .dropdown-content {
-      opacity: 1;
-      transform: none;
-      pointer-events: auto;
-      visibility: visible;
-    }
-
-    /* Course card: staggered entrance + hover lift */
-    @keyframes cardIn {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
+      .enroll-btn:hover {
+        background: var(--green-600);
       }
 
-      to {
-        opacity: 1;
-        transform: none;
-      }
-    }
-
-    main .course-card {
-      animation: cardIn 0.34s ease both;
-      transition: transform 0.12s ease, box-shadow 0.22s ease,
-        border-color 0.2s ease;
-    }
-
-    main .course-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 14px 32px rgba(0, 0, 0, 0.08);
-      border-color: #d1d5db;
-    }
-
-    /* Image zoom + shine sweep */
-    @keyframes shine {
-      to {
-        transform: translateX(250%) rotate(25deg);
-      }
-    }
-
-    main .course-image {
-      position: relative;
-      overflow: hidden;
-    }
-
-    main .course-image img {
-      transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
-    }
-
-    main .course-card:hover .course-image img {
-      transform: scale(1.04);
-    }
-
-    main .course-image::after {
-      content: "";
-      position: absolute;
-      top: -50%;
-      left: -60%;
-      width: 60%;
-      height: 200%;
-      background: linear-gradient(120deg,
-          rgba(255, 255, 255, 0) 0,
-          rgba(255, 255, 255, 0.45) 50%,
-          rgba(255, 255, 255, 0) 100%);
-      transform: translateX(-150%) rotate(25deg);
-      pointer-events: none;
-    }
-
-    main .course-card:hover .course-image::after {
-      animation: shine 0.9s ease;
-    }
-
-    /* Tags: tiny hover pop */
-    main .tag {
-      transition: transform 0.12s ease, box-shadow 0.2s ease;
-    }
-
-    main .tag:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.06);
-    }
-
-    /* Enroll button: glow + soft ripple */
-    @keyframes glow {
-
-      0%,
-      100% {
-        box-shadow: 0 6px 18px rgba(32, 164, 76, 0.22);
+      @media (max-width: 760px) {
+        .course-card {
+          flex-wrap: wrap;
+          gap: 14px;
+        }
+        .course-image {
+          flex: 1 1 100%;
+          height: 160px;
+          border-radius: 12px;
+        }
+        .course-actions {
+          width: 100%;
+          flex-direction: row;
+          justify-content: space-between;
+          align-items: center;
+          margin-left: 0;
+        }
       }
 
-      50% {
-        box-shadow: 0 10px 28px rgba(32, 164, 76, 0.32);
-      }
-    }
-
-    main .enroll-btn {
-      position: relative;
-      overflow: hidden;
-      transition: transform 0.06s ease, box-shadow 0.22s ease,
-        background 0.2s ease;
-    }
-
-    main .enroll-btn:hover {
-      transform: translateY(-1px);
-      animation: glow 1.4s ease-in-out infinite;
-    }
-
-    main .enroll-btn::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(120px 120px at 50% 50%,
-          rgba(255, 255, 255, 0.28),
-          rgba(255, 255, 255, 0) 70%);
-      opacity: 0;
-      transform: scale(0.6);
-      transition: opacity 0.35s ease, transform 0.35s ease;
-    }
-
-    main .enroll-btn:hover::after {
-      opacity: 1;
-      transform: scale(1);
-    }
-
-    /* Progressive enhancement: scroll reveal */
-    @supports (animation-timeline: view()) {
-      @keyframes revealOnScroll {
+      @keyframes cardIn {
         from {
           opacity: 0;
-          transform: translateY(14px);
+          transform: translateY(10px);
         }
-
         to {
           opacity: 1;
           transform: none;
         }
       }
 
-      main .course-card {
-        animation: revealOnScroll linear both;
-        animation-timeline: view();
-        animation-range: entry 15% cover 30%;
+      /* Skeletons */
+      .skeleton {
+        background: linear-gradient(
+          90deg,
+          #f2f4f7 25%,
+          #e9edf2 37%,
+          #f2f4f7 63%
+        );
+        background-size: 400% 100%;
+        animation: shimmer 1.2s infinite;
       }
-    }
-
-    /* Reduced motion accessibility */
-    @media (prefers-reduced-motion: reduce) {
-      main * {
-        animation: none !important;
-        transition: none !important;
+      @keyframes shimmer {
+        0% {
+          background-position: 100% 0;
+        }
+        100% {
+          background-position: -100% 0;
+        }
       }
-    }
-  </style>
-</head>
+      .skeleton.card {
+        height: 120px;
+        border-radius: 12px;
+      }
+      .hidden {
+        display: none !important;
+      }
 
-<body>
-  <div class="container">
-    <!-- Sidebar Section -->
-    <aside>
-      <div class="toggle">
-        <div class="logo">
-          <img src="../images/STEQ Logo 3.png" />
-          <h2>SIMP<span class="danger">Project</span></h2>
-        </div>
-        <div class="close" id="close-btn">
-          <span class="material-icons-sharp">close</span>
-        </div>
-      </div>
-
-      <div class="sidebar">
-        <a href="dashboard.html">
-          <span class="material-icons-sharp">dashboard</span>
-          <h3>Dashboard</h3>
-        </a>
-        <a href="job.html">
-          <span class="material-icons-sharp">work</span>
-          <h3>Jobs</h3>
-        </a>
-        <a href="myApplication.html">
-          <span class="material-icons-sharp">receipt</span>
-          <h3>My Application</h3>
-        </a>
-        <a href="courses.html" class="active">
-          <span class="material-icons-sharp">school</span>
-          <h3>Courses</h3>
-        </a>
-        <a href="shop.html">
-          <span class="material-icons-sharp">shopping_cart</span>
-          <h3>Shop</h3>
-        </a>
-        <a href="earnings.html">
-          <span class="material-icons-sharp">account_balance</span>
-          <h3>Earnings</h3>
-        </a>
-        <a href="documents.html">
-          <span class="material-icons-sharp">file_copy</span>
-          <h3>Documents</h3>
-        </a>
-        <a href="settings.html">
-          <span class="material-icons-sharp">settings</span>
-          <h3>Settings</h3>
-        </a>
-        <a href="#" id="logout-btn">
-          <span class="material-icons-sharp">logout</span>
-          <h3>Logout</h3>
-        </a>
-      </div>
-    </aside>
-    <!-- End of Sidebar Section -->
-
-    <!--MAIN CONTENT-->
-    <main>
-      <div class="titlePageDiv">
-        <h1>Available courses</h1>
-        <p>Level up your skills and qualify for more job opportunities.</p>
-      </div>
-
-      <div class="searchBarDiv">
-        <div class="searchDiv">
-          <span class="material-icons-sharp">search</span>
-          <input type="text" placeholder="Search courses" />
-        </div>
-
-        <div class="dropdown">
-          <button class="dropbtn">Skills</button>
-          <div class="dropdown-content">
-            <a href="#">add skill</a>
-            <a href="#">add skill</a>
-            <a href="#">add skill</a>
+      /* Top search/filters layout borrowed from your page */
+      .titlePageDiv h1 {
+        animation: fadeUp 0.28s ease both;
+      }
+      .titlePageDiv p {
+        animation: fadeUp 0.28s ease 0.06s both;
+      }
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(6px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      .searchBarDiv {
+        display: grid;
+        grid-template-columns: 1fr auto auto auto;
+        gap: 0.6rem;
+        margin: 1rem 0;
+        align-items: center;
+      }
+      .searchDiv {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 8px 12px;
+      }
+      .searchDiv input {
+        border: none;
+        outline: none;
+        width: 100%;
+        font-size: 14px;
+      }
+      .dropdown {
+        position: relative;
+      }
+      .dropbtn {
+        border: 1px solid #e5e7eb;
+        background: #fff;
+        border-radius: 10px;
+        padding: 8px 12px;
+        cursor: pointer;
+      }
+      .dropdown-content {
+        display: none;
+        position: absolute;
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        min-width: 180px;
+        padding: 6px;
+        top: 110%;
+        z-index: 5;
+      }
+      .dropdown:hover .dropdown-content {
+        display: block;
+      }
+      .courses-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Sidebar Section -->
+      <aside>
+        <div class="toggle">
+          <div class="logo">
+            <img src="../images/STEQ Logo 3.png" />
+            <h2>SIMP<span class="danger">Project</span></h2>
+          </div>
+          <div class="close" id="close-btn">
+            <span class="material-icons-sharp">close</span>
           </div>
         </div>
 
-        <div class="dropdown">
-          <button class="dropbtn">Completed Courses</button>
-          <div class="dropdown-content">
-            <a href="#">Total Completed Courses</a>
-            <a href="#">To Continue</a>
+        <div class="sidebar">
+          <a href="dashboard.html"
+            ><span class="material-icons-sharp">dashboard</span>
+            <h3>Dashboard</h3></a
+          >
+          <a href="job.html"
+            ><span class="material-icons-sharp">work</span>
+            <h3>Jobs</h3></a
+          >
+          <a href="myApplication.html"
+            ><span class="material-icons-sharp">receipt</span>
+            <h3>My Application</h3></a
+          >
+          <a href="courses.html" class="active"
+            ><span class="material-icons-sharp">school</span>
+            <h3>Courses</h3></a
+          >
+          <a href="shop.html"
+            ><span class="material-icons-sharp">shopping_cart</span>
+            <h3>Shop</h3></a
+          >
+          <a href="earnings.html"
+            ><span class="material-icons-sharp">account_balance</span>
+            <h3>Earnings</h3></a
+          >
+          <a href="documents.html"
+            ><span class="material-icons-sharp">file_copy</span>
+            <h3>Documents</h3></a
+          >
+          <a href="settings.html"
+            ><span class="material-icons-sharp">settings</span>
+            <h3>Settings</h3></a
+          >
+          <a href="#" id="logout-btn"
+            ><span class="material-icons-sharp">logout</span>
+            <h3>Logout</h3></a
+          >
+        </div>
+      </aside>
+      <!-- End of Sidebar Section -->
+
+      <!-- MAIN CONTENT -->
+      <main>
+        <div class="titlePageDiv">
+          <h1>Available courses</h1>
+          <p>Level up your skills and qualify for more job opportunities.</p>
+        </div>
+
+        <div class="searchBarDiv">
+          <div class="searchDiv">
+            <span class="material-icons-sharp">search</span>
+            <input
+              id="searchInput"
+              type="text"
+              placeholder="Search courses (title/description/tags)"
+            />
+          </div>
+
+          <div class="dropdown">
+            <button class="dropbtn">Skills</button>
+            <div class="dropdown-content">
+              <a href="#" data-filter-skill="Networking">Networking</a>
+              <a href="#" data-filter-skill="Security">Security</a>
+              <a href="#" data-filter-skill="Automation">Automation</a>
+            </div>
+          </div>
+
+          <div class="dropdown">
+            <button class="dropbtn">Completed Courses</button>
+            <div class="dropdown-content">
+              <a href="#" id="filterAll">All</a>
+              <a href="#" id="filterToContinue">To Continue</a>
+            </div>
+          </div>
+
+          <div class="statusDiv" role="status" aria-label="Current skill level">
+            <span class="material-icons-sharp" aria-hidden="true"
+              >workspace_premium</span
+            >
+            <span class="label">Status:</span>
+            <strong class="value" id="levelBadge">Level 0</strong>
           </div>
         </div>
 
-        <div class="statusDiv" role="status" aria-label="Current skill level 0">
-          <span class="material-icons-sharp" aria-hidden="true">workspace_premium</span>
-          <span class="label">Status:</span>
-          <strong class="value">Level 0</strong>
-        </div>
-      </div>
+        <!-- Courses list -->
+        <div id="coursesList" class="courses-grid"></div>
 
-      <div class="course-card">
-        <!-- Left side: Image -->
-        <div class="course-image">
-          <img src="../images/profile-4.jpg" alt="Networking Fundamentals" />
-        </div>
-
-        <!-- Right side: Content -->
-        <div class="course-content">
-          <!-- Title + Description -->
-          <div class="course-text">
-            <h3>Networking Fundamentals</h3>
-            <p>
-              Learn the essential concepts, tools, and practices to set up,
-              manage, and troubleshoot computer networks with confidence.
-            </p>
+        <!-- Skeletons shown while loading -->
+        <div id="skeletons">
+          <div class="course-card">
+            <div class="course-image skeleton card"></div>
+            <div class="course-content" style="flex: 1">
+              <div
+                class="skeleton"
+                style="height: 18px; width: 40%; border-radius: 8px"
+              ></div>
+              <div
+                class="skeleton"
+                style="
+                  height: 12px;
+                  width: 90%;
+                  margin-top: 10px;
+                  border-radius: 8px;
+                "
+              ></div>
+              <div
+                class="skeleton"
+                style="
+                  height: 12px;
+                  width: 70%;
+                  margin-top: 8px;
+                  border-radius: 8px;
+                "
+              ></div>
+              <div class="course-tags" style="margin-top: 12px">
+                <div
+                  class="skeleton"
+                  style="height: 26px; width: 90px; border-radius: 999px"
+                ></div>
+                <div
+                  class="skeleton"
+                  style="height: 26px; width: 70px; border-radius: 999px"
+                ></div>
+              </div>
+            </div>
+            <div class="course-actions" style="min-width: 120px">
+              <div
+                class="skeleton"
+                style="height: 14px; width: 80px; border-radius: 6px"
+              ></div>
+              <div
+                class="skeleton"
+                style="height: 38px; width: 100px; border-radius: 999px"
+              ></div>
+            </div>
           </div>
-
-          <!-- Tags (Networking + Level 4) -->
-          <div class="course-tags">
-            <span class="tag">Networking</span>
-            <span class="tag level">Level 4</span>
+          <div class="course-card">
+            <div class="course-image skeleton card"></div>
+            <div class="course-content" style="flex: 1">
+              <div
+                class="skeleton"
+                style="height: 18px; width: 35%; border-radius: 8px"
+              ></div>
+              <div
+                class="skeleton"
+                style="
+                  height: 12px;
+                  width: 85%;
+                  margin-top: 10px;
+                  border-radius: 8px;
+                "
+              ></div>
+              <div
+                class="skeleton"
+                style="
+                  height: 12px;
+                  width: 65%;
+                  margin-top: 8px;
+                  border-radius: 8px;
+                "
+              ></div>
+              <div class="course-tags" style="margin-top: 12px">
+                <div
+                  class="skeleton"
+                  style="height: 26px; width: 100px; border-radius: 999px"
+                ></div>
+              </div>
+            </div>
+            <div class="course-actions" style="min-width: 120px">
+              <div
+                class="skeleton"
+                style="height: 14px; width: 80px; border-radius: 6px"
+              ></div>
+              <div
+                class="skeleton"
+                style="height: 38px; width: 100px; border-radius: 999px"
+              ></div>
+            </div>
           </div>
         </div>
+      </main>
+      <!-- END MAIN CONTENT -->
+    </div>
 
-        <!-- Right side: Duration + Enroll -->
-        <div class="course-actions">
-          <span class="duration">2 hour video</span>
-          <button class="enroll-btn" data-course="networking-fundamentals">Enroll</button>
-        </div>
-      </div>
+    <!-- Your existing scripts -->
+    <script src="../../general_files/index.js"></script>
+    <script type="module" src="../../general_files/session.js"></script>
 
-      <div class="course-card">
-        <!-- Left side: Image -->
-        <div class="course-image">
-          <img src="../images/profile-4.jpg" alt="Networking Fundamentals" />
-        </div>
+    <!-- Supabase client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-        <!-- Right side: Content -->
-        <div class="course-content">
-          <!-- Title + Description -->
-          <div class="course-text">
-            <h3>Networking Fundamentals</h3>
-            <p>
-              Learn the essential concepts, tools, and practices to set up,
-              manage, and troubleshoot computer networks with confidence.
-            </p>
+    <script type="module">
+      // —————————————————————————————————————————————
+      // Supabase bootstrap (auto-uses globals from session.js if present)
+      // —————————————————————————————————————————————
+      import { SUPABASE_URL, SUPABASE_ANON_KEY } from "../../../supabase.js";
+      const supabase = window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY
+      );
+      const sbCourses = window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY,
+        { db: { schema: "courses" } }
+      );
+
+      const coursesListEl = document.getElementById("coursesList");
+      const skeletonsEl = document.getElementById("skeletons");
+      const searchInput = document.getElementById("searchInput");
+      const levelBadge = document.getElementById("levelBadge");
+
+      const FALLBACK_IMG = "../images/profile-4.jpg"; // fallback if thumbnail_url is null
+      const PAGE_SIZE = 50;
+
+      // Track current user level for gating
+      let CURRENT_USER_LEVEL = 0;
+
+      // —————————————————————————————————————————————
+      // Installer level badge (optional, uses your public.installer)
+      // —————————————————————————————————————————————
+      async function loadInstallerLevel() {
+        try {
+          const {
+            data: { user },
+          } = await supabase.auth.getUser();
+          if (!user) return; // not signed in, keep default
+
+          const { data, error } = await supabase
+            .from("installer") // public.installer
+            .select("levelstatus")
+            .eq("id", user.id)
+            .single();
+
+          if (!error && data && typeof data.levelstatus === "number") {
+            CURRENT_USER_LEVEL = Number(data.levelstatus) || 0;
+            levelBadge.textContent = `Level ${data.levelstatus}`;
+            levelBadge.setAttribute(
+              "aria-label",
+              `Current skill level ${data.levelstatus}`
+            );
+          }
+        } catch (e) {
+          // silent fail; keep default Level 0
+        }
+      }
+
+      // —————————————————————————————————————————————
+      // Fetch courses from courses.course (title, slug, etc.)
+      // —————————————————————————————————————————————
+      async function fetchCourses({ q = "", tag = "" } = {}) {
+        let query = supabase
+          .schema("courses")
+          .from("course")
+          .select(
+            "id, title, slug, description, level, tags, thumbnail_url, created_at"
+          )
+          // NEW: only show published courses
+          .eq("is_published", true)
+          .order("created_at", { ascending: false })
+          .limit(PAGE_SIZE);
+
+        if (q) {
+          // search in title or description (case-insensitive)
+          query = query.or(`title.ilike.%${q}%,description.ilike.%${q}%`);
+        }
+
+        if (tag) {
+          // filter if tag is inside tags array
+          query = query.contains("tags", [tag]);
+        }
+
+        const { data, error } = await query;
+
+        if (error) throw error;
+        return data || [];
+      }
+
+      // —————————————————————————————————————————————
+      // Render helpers
+      // —————————————————————————————————————————————
+      function formatTags(tags) {
+        if (!Array.isArray(tags) || tags.length === 0) return "";
+        return tags
+          .slice(0, 4)
+          .map((t) => `<span class="tag">${escapeHtml(String(t))}</span>`)
+          .join("");
+      }
+
+      function escapeHtml(s) {
+        return s.replace(
+          /[&<>'"]/g,
+          (c) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              "'": "&#39;",
+              '"': "&quot;",
+            }[c])
+        );
+      }
+
+      function courseCardHTML(course) {
+        const img = course.thumbnail_url || FALLBACK_IMG;
+        const title = escapeHtml(course.title || "Untitled Course");
+        const desc = escapeHtml(course.description || "No description yet.");
+        const level = Number.isFinite(course.level) ? course.level : 0;
+        const tagsHtml = formatTags(course.tags);
+
+        return `
+        <div class="course-card" data-id="${escapeHtml(
+          course.id
+        )}" data-slug="${escapeHtml(course.slug)}" data-level="${level}">
+          <div class="course-image">
+            <img src="${img}" alt="${title}"/>
           </div>
-
-          <!-- Tags (Networking + Level 4) -->
-          <div class="course-tags">
-            <span class="tag">Networking</span>
-            <span class="tag level">Level 4</span>
+          <div class="course-content">
+            <div class="course-text">
+              <h3>${title}</h3>
+              <p>${desc}</p>
+            </div>
+            <div class="course-tags">
+              ${tagsHtml}
+              <span class="tag level">Level ${level}</span>
+            </div>
+          </div>
+          <div class="course-actions">
+            <span class="duration">Self-paced</span>
+            <button class="enroll-btn" data-course="${escapeHtml(
+              course.slug
+            )}">take</button>
           </div>
         </div>
+      `;
+      }
 
-        <!-- Right side: Duration + Enroll -->
-        <div class="course-actions">
-          <span class="duration">2 hour video</span>
-          <button class="enroll-btn">Enroll</button>
-        </div>
-      </div>
-
-      <div class="course-card">
-        <!-- Left side: Image -->
-        <div class="course-image">
-          <img src="../images/profile-4.jpg" alt="Networking Fundamentals" />
-        </div>
-
-        <!-- Right side: Content -->
-        <div class="course-content">
-          <!-- Title + Description -->
-          <div class="course-text">
-            <h3>Networking Fundamentals</h3>
-            <p>
-              Learn the essential concepts, tools, and practices to set up,
-              manage, and troubleshoot computer networks with confidence.
-            </p>
+      function renderCourses(courses) {
+        if (!courses || courses.length === 0) {
+          coursesListEl.innerHTML = `
+          <div class="course-card" style="justify-content:center; text-align:center;">
+            <div>
+              <h3 style="margin:0 0 6px;">No courses found</h3>
+              <p style="margin:0; color:#6b7280;">Try adjusting your search or filters.</p>
+            </div>
           </div>
+        `;
+          return;
+        }
+        coursesListEl.innerHTML = courses.map(courseCardHTML).join("");
+        attachEnrollHandlers();
+      }
 
-          <!-- Tags (Networking + Level 4) -->
-          <div class="course-tags">
-            <span class="tag">Networking</span>
-            <span class="tag level">Level 4</span>
-          </div>
-        </div>
+      function attachEnrollHandlers() {
+        document.querySelectorAll(".enroll-btn").forEach((btn) => {
+          btn.addEventListener("click", async () => {
+            const card = btn.closest(".course-card");
+            const slug = btn.getAttribute("data-course");
+            if (!slug || !card) return;
 
-        <!-- Right side: Duration + Enroll -->
-        <div class="course-actions">
-          <span class="duration">2 hour video</span>
-          <button class="enroll-btn">Enroll</button>
-        </div>
-      </div>
-      </div>
-    </main>
-    <!--END MAIN CONTENT-->
-  </div>
-  <script src="../../general_files/index.js"></script>
-  <script type="module" src="../../general_files/session.js"></script>
-  <script>
-  // Attach once DOM is ready
-  document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('.enroll-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const slug = btn.getAttribute('data-course') || 'networking-fundamentals';
-        // You can also pass a title if you want: &title=Networking%20Fundamentals
-        window.location.href = `courseMaterial.html?course=${encodeURIComponent(slug)}`;
+            // NEW: Level-gate check before navigation
+            const courseLevel = Number(card.getAttribute("data-level") || 0);
+            // rule: you can take courses up to (your level + 1)
+            if (courseLevel > CURRENT_USER_LEVEL + 1) {
+              const mustTake = CURRENT_USER_LEVEL + 1;
+              alert(`Please take Level ${mustTake} first.`);
+              return;
+            }
+
+            window.location.href = `courseMaterial.html?course=${encodeURIComponent(
+              slug
+            )}`;
+          });
+        });
+      }
+
+      // —————————————————————————————————————————————
+      // NEW: load completions for current user + total points per course
+      // —————————————————————————————————————————————
+      async function loadUserCompletions(courseIds) {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        if (!user || !courseIds.length) return new Map();
+
+        const { data, error } = await sbCourses
+          .from("completed_courses")
+          .select("course_id, score")
+          .eq("installer_id", user.id)
+          .in("course_id", courseIds);
+
+        if (error || !data) return new Map();
+        const map = new Map();
+        data.forEach((r) => map.set(r.course_id, Number(r.score) || 0));
+        return map;
+      }
+
+      async function loadTotalPointsPerCourse(courseIds) {
+        if (!courseIds.length) return new Map();
+
+        // 1) fetch quizzes for these courses
+        const { data: quizzes, error: qErr } = await sbCourses
+          .from("quiz")
+          .select("id, course_id")
+          .in("course_id", courseIds);
+
+        if (qErr || !quizzes || quizzes.length === 0) return new Map();
+
+        const quizIds = quizzes.map((q) => q.id);
+        const courseIdByQuiz = new Map(quizzes.map((q) => [q.id, q.course_id]));
+
+        // 2) fetch quiz questions and sum points
+        const { data: questions, error: qqErr } = await sbCourses
+          .from("quiz_question")
+          .select("quiz_id, points")
+          .in("quiz_id", quizIds);
+
+        if (qqErr || !questions) return new Map();
+
+        const totals = new Map(); // course_id -> totalPoints
+        questions.forEach((row) => {
+          const courseId = courseIdByQuiz.get(row.quiz_id);
+          const pts = Number(row.points || 1);
+          totals.set(courseId, (totals.get(courseId) || 0) + pts);
+        });
+
+        return totals;
+      }
+
+      function decorateCompletions(courses, completionMap, totalPointsMap) {
+        courses.forEach((c) => {
+          const card = coursesListEl.querySelector(`.course-card[data-id="${c.id}"]`);
+          if (!card) return;
+          const btn = card.querySelector(".enroll-btn");
+          const actions = card.querySelector(".course-actions");
+
+          const userPct = completionMap.get(c.id);
+          if (userPct == null) return; // not completed
+
+          // Compute points earned based on percentage * total points
+          const totalPts = Number(totalPointsMap.get(c.id) || 0);
+          let scoreText;
+          if (totalPts > 0) {
+            const earned = Math.round((userPct / 100) * totalPts);
+            scoreText = `Your score: ${earned} / ${totalPts} pts (${userPct}%)`;
+          } else {
+            // No quiz points in course
+            scoreText = `Completed • Score: ${userPct}%`;
+          }
+
+          // Hide take button, show score
+          if (btn) btn.style.display = "none";
+
+          // Add/replace a score label (idempotent)
+          let scoreEl = actions.querySelector(".my-score");
+          if (!scoreEl) {
+            scoreEl = document.createElement("span");
+            scoreEl.className = "duration my-score";
+            actions.appendChild(scoreEl);
+          }
+          scoreEl.textContent = scoreText;
+        });
+      }
+
+      // —————————————————————————————————————————————
+      // UI wiring
+      // —————————————————————————————————————————————
+      let currentTag = "";
+      let searchDebounce;
+
+      searchInput.addEventListener("input", () => {
+        clearTimeout(searchDebounce);
+        searchDebounce = setTimeout(async () => {
+          await reloadCourses();
+        }, 250);
       });
-    });
-  });
-</script>
-</body>
 
+      document.querySelectorAll("[data-filter-skill]").forEach((a) => {
+        a.addEventListener("click", async (e) => {
+          e.preventDefault();
+          currentTag = a.getAttribute("data-filter-skill") || "";
+          await reloadCourses();
+        });
+      });
+
+      document
+        .getElementById("filterAll")
+        ?.addEventListener("click", async (e) => {
+          e.preventDefault();
+          currentTag = "";
+          await reloadCourses();
+        });
+
+      async function reloadCourses() {
+        try {
+          skeletonsEl.classList.remove("hidden");
+          coursesListEl.innerHTML = "";
+          const q = searchInput.value.trim();
+          const courses = await fetchCourses({ q, tag: currentTag });
+
+          // Pre-load completion map & total points BEFORE rendering decorations
+          const courseIds = courses.map((c) => c.id);
+          const [completionMap, totalPointsMap] = await Promise.all([
+            loadUserCompletions(courseIds),
+            loadTotalPointsPerCourse(courseIds),
+          ]);
+
+          renderCourses(courses);
+
+          // After render, decorate cards (hide take + show score for completed)
+          decorateCompletions(courses, completionMap, totalPointsMap);
+        } catch (err) {
+          coursesListEl.innerHTML = `
+          <div class="course-card" style="justify-content:center; text-align:center;">
+            <div>
+              <h3 style="margin:0 0 6px; color:#b91c1c;">Failed to load courses</h3>
+              <p style="margin:0; color:#6b7280;">${escapeHtml(
+                err.message || "Unknown error"
+              )}</p>
+            </div>
+          </div>
+        `;
+        } finally {
+          skeletonsEl.classList.add("hidden");
+        }
+      }
+
+      // —————————————————————————————————————————————
+      // Initial load
+      // —————————————————————————————————————————————
+      document.addEventListener("DOMContentLoaded", async () => {
+        skeletonsEl.classList.remove("hidden");
+        await Promise.all([loadInstallerLevel(), reloadCourses()]);
+      });
+    </script>
+  </body>
 </html>

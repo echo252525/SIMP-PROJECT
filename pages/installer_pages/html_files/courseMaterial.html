@@ -1,428 +1,957 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Course Material</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css_files/sideBar.css" />
+    <style>
+      :root {
+        --ink: #1c2430;
+        --muted: #6c7a8a;
+        --line: #e7edf3;
+        --brand: #20a44c;
+        --danger: #e53935;
+        --card: #ffffff;
+        --bg: #f8fbfd;
+        --radius: 14px;
+        --border: #e5e7eb;
+      }
+      body { background: var(--bg); }
+      main { margin-top: 1.4rem; }
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet" />
-  <link rel="stylesheet" href="../css_files/sideBar.css" />
-  <title>Course</title>
-  <style>
-    /* Keep your main spacing */
-    main { margin-top: 1.4rem; --brand:#20a44c; --accent:#20647c; }
+      .page-header {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 12px; margin-bottom: 1rem;
+      }
+      .page-header h1 { color: var(--ink); margin: 0; }
+      .crumbs { font-size: 12px; color: #6b7280; }
 
-    /* Header & crumbs */
-    .course-top {
-      display:flex; align-items:center; justify-content:space-between; gap:1rem; margin-bottom:1rem;
-    }
-    .crumbs {
-      display:flex; align-items:center; gap:.5rem; color:#6b7280; font-size:.9rem;
-    }
-    .crumbs a { color:#374151; text-decoration:none; }
-    .crumbs .sep { opacity:.5; }
+      .card {
+        background: #fff; border: 1px solid var(--border); border-radius: 16px;
+        padding: 16px; box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+      }
+      .stack { display: grid; gap: 14px; }
 
-    /* Reuse your status pill from the list page */
-    .statusDiv {
-      --brand:#20a44c; --accent:#20647c;
-      display:inline-grid; grid-auto-flow:column; align-items:center; gap:.5rem;
-      padding:.6rem .9rem .9rem; border:1px solid #cfe4ea; border-radius:14px;
-      background: radial-gradient(140% 140% at -10% -10%, #eefaf2 0%, #ffffff 55%);
-      color:#0f172a; font-weight:700; box-shadow:0 2px 10px rgba(0,0,0,.04);
-    }
-    .statusDiv .material-icons-sharp { font-size:22px; color:var(--accent); }
+      .section-head {
+        font-weight: 700; color: #111827; margin: 0 0 6px;
+      }
+      .content-block { padding: 12px; border: 1px dashed #e5e7eb; border-radius: 12px; background: #fafcff; }
+      .content-block video, .content-block iframe { width: 100%; max-height: 420px; border-radius: 12px; }
 
-    /* Progress bar */
-    .progress-wrap { margin: 1rem 0 1.4rem; }
-    .progress-label { display:flex; justify-content:space-between; font-size:.9rem; color:#6b7280; margin-bottom:.4rem; }
-    .progress-bar {
-      height: 10px; background:#eef2f7; border-radius:999px; overflow:hidden; border:1px solid #e5e7eb;
-    }
-    .progress-bar .fill {
-      height:100%; width:0%; background:linear-gradient(90deg, #20a44c, #2ecc71);
-      transition: width .25s ease; border-right:1px solid rgba(0,0,0,.06);
-    }
+      .quiz-wrap { display: grid; gap: 12px; }
+      .quiz-title { font-weight: 700; margin: 0; }
+      .q-card { border: 1px solid #e5e7eb; border-radius: 12px; padding: 12px; background: #fff; }
+      .q-text { margin: 0 0 8px; font-weight: 600; }
+      .opts { display: grid; gap: 8px; }
+      .opt { display: flex; align-items: center; gap: 8px; }
+      .muted { color: #6b7280; }
+      .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+      .pill { background: #eef6ff; padding: 4px 10px; border-radius: 999px; border: 1px solid #d7e7ff; font-size: 12px; }
+      .pill.good { background: #ecfdf5; border-color: #bbf7d0; color: #065f46; }
+      .pill.bad { background: #fef2f2; border-color: #fecaca; color: #991b1b; }
 
-    /* Lesson/quiz card */
-    .course-shell {
-      background:#fff; border:1px solid #e5e7eb; border-radius:16px;
-      box-shadow:0 4px 14px rgba(0,0,0,.06); padding:18px;
-    }
+      .btn {
+        border: 1px solid var(--brand); background: var(--brand);
+        color: #fff; padding: 10px 14px; border-radius: 999px;
+        cursor: pointer;
+        text-decoration: none; /* so <a class="btn"> looks like button */
+        display: inline-block;
+      }
+      .btn.secondary { background: #fff; color: #0f172a; border-color: #d1e7db; }
+      .btn[disabled] { opacity: 0.7; cursor: not-allowed; }
 
-    .lesson-title { margin:0 0 .4rem; font-size:20px; font-weight:800; color:#1f2937; }
-    .lesson-text { color:#4b5563; font-size:14px; line-height:1.55; }
-    .video-frame {
-      width:100%; aspect-ratio:16/9; background:#000; border-radius:12px; overflow:hidden; margin:10px 0 14px;
-      border:1px solid #e5e7eb;
-    }
-    .video-frame video, .video-frame iframe { width:100%; height:100%; display:block; }
+      .result {
+        padding: 12px; border-radius: 12px; border: 1px solid #e5e7eb;
+        background: #f9fafb; display: none;
+      }
+      .result.pass { border-color: #bbf7d0; background: #ecfdf5; color: #065f46; }
+      .result.fail { border-color: #fecaca; background: #fef2f2; color: #7f1d1d; }
 
-    /* Quiz */
-    .quiz-list { display:flex; flex-direction:column; gap:16px; margin-top:10px; }
-    .q-card {
-      border:1px solid #e5e7eb; border-radius:12px; padding:14px; background:#fff;
-    }
-    .q-title { font-weight:700; margin:0 0 .6rem; color:#111827; }
-    .q-options { display:grid; gap:8px; }
-    .q-options label {
-      display:flex; align-items:flex-start; gap:10px; padding:10px 12px; border:1px solid #e5e7eb; border-radius:10px; cursor:pointer;
-      transition:transform .06s ease, box-shadow .18s ease, border-color .18s ease;
-      background:#fafafa;
-    }
-    .q-options input { margin-top:2px; }
-    .q-options label:hover { transform:translateY(-1px); box-shadow:0 8px 18px rgba(0,0,0,.06); border-color:#d1d5db; background:#ffffff; }
+      .skeleton {
+        background: linear-gradient(90deg,#f2f4f7 25%,#e9edf2 37%,#f2f4f7 63%);
+        background-size: 400% 100%; animation: shimmer 1.2s infinite;
+        border-radius: 12px; height: 18px;
+      }
+      @keyframes shimmer { 0%{background-position:100% 0} 100%{background-position:-100% 0} }
 
-    /* Nav controls */
-    .nav-row {
-      display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:16px;
-    }
-    .nav-left, .nav-right { display:flex; gap:10px; }
-    .btn {
-      appearance:none; border:1px solid #d1d5db; background:#fff; color:#111827;
-      padding:10px 16px; border-radius:999px; cursor:pointer; font-weight:600;
-      transition: transform .06s ease, box-shadow .18s ease, border-color .18s ease, background .18s ease;
-    }
-    .btn:hover { transform:translateY(-1px); box-shadow:0 10px 22px rgba(0,0,0,.06); border-color:#c7ced6; }
-    .btn-primary { background:#20a44c; border-color:#20a44c; color:#fff; }
-    .btn-primary:hover { background:#16a34a; border-color:#16a34a; }
+      /* Navigation bar below sections */
+      .section-nav {
+        display: flex; justify-content: space-between; align-items: center;
+        gap: 10px; margin-top: 10px;
+      }
+      .blur-locked {
+        filter: blur(3px);
+        pointer-events: none;
+        user-select: none;
+      }
+      .tiny { font-size: 12px; color: #6b7280; }
+      .badge {
+        padding: 2px 8px; border-radius: 999px; border: 1px solid #e5e7eb;
+        font-size: 11px; background: #fff;
+      }
 
-    .page-indicator { color:#6b7280; font-size:.9rem; }
-
-    /* Result banner */
-    .result {
-      margin-top:14px; padding:12px 14px; border-radius:12px; background:#ecfdf5; border:1px solid #bbf7d0; color:#065f46; display:none;
-    }
-
-    /* Mobile tweaks */
-    @media (max-width: 760px){
-      .course-top { flex-direction:column; align-items:flex-start; gap:.6rem; }
-      .nav-row { flex-direction:column; align-items:stretch; }
-      .nav-left, .nav-right { justify-content:space-between; }
-    }
-  </style>
-</head>
-
-<body>
-  <div class="container">
-    <!-- Sidebar -->
-    <aside>
-      <div class="toggle">
-        <div class="logo">
-          <img src="../images/STEQ Logo 3.png" />
-          <h2>SIMP<span class="danger">Project</span></h2>
-        </div>
-        <div class="close" id="close-btn">
-          <span class="material-icons-sharp">close</span>
-        </div>
-      </div>
-
-      <div class="sidebar">
-        <a href="dashboard.html">
-          <span class="material-icons-sharp">dashboard</span><h3>Dashboard</h3>
-        </a>
-        <a href="job.html">
-          <span class="material-icons-sharp">work</span><h3>Jobs</h3>
-        </a>
-        <a href="myApplication.html">
-          <span class="material-icons-sharp">receipt</span><h3>My Application</h3>
-        </a>
-        <a href="courses.html" class="active">
-          <span class="material-icons-sharp">school</span><h3>Courses</h3>
-        </a>
-        <a href="shop.html">
-          <span class="material-icons-sharp">shopping_cart</span><h3>Shop</h3>
-        </a>
-        <a href="earnings.html">
-          <span class="material-icons-sharp">account_balance</span><h3>Earnings</h3>
-        </a>
-        <a href="documents.html">
-          <span class="material-icons-sharp">file_copy</span><h3>Documents</h3>
-        </a>
-        <a href="settings.html">
-          <span class="material-icons-sharp">settings</span><h3>Settings</h3>
-        </a>
-        <a href="#" id="logout-btn">
-          <span class="material-icons-sharp">logout</span><h3>Logout</h3>
-        </a>
-      </div>
-    </aside>
-
-    <!-- Main -->
-    <main>
-      <div class="course-top">
-        <div class="crumbs">
-          <a href="courses.html"><span class="material-icons-sharp" style="font-size:18px;vertical-align:-3px;">arrow_back</span> Back to Courses</a>
-          <span class="sep">/</span>
-          <span id="courseTitleCrumb">Course</span>
+      /* Per-question points label */
+      .q-points {
+        margin-top: 6px;
+        font-size: 12px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .q-points .ok {
+        background: #ecfdf5;
+        color: #065f46;
+        border: 1px solid #bbf7d0;
+        padding: 2px 8px;
+        border-radius: 999px;
+      }
+      .q-points .miss {
+        background: #fef2f2;
+        color: #991b1b;
+        border: 1px solid #fecaca;
+        padding: 2px 8px;
+        border-radius: 999px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Sidebar -->
+      <aside>
+        <div class="toggle">
+          <div class="logo">
+            <img src="../images/STEQ Logo 3.png" />
+            <h2>SIMP<span class="danger">Project</span></h2>
+          </div>
+          <div class="close" id="close-btn">
+            <span class="material-icons-sharp">close</span>
+          </div>
         </div>
 
-        <div class="statusDiv" role="status" aria-label="Course progress">
-          <span class="material-icons-sharp" aria-hidden="true">workspace_premium</span>
-          <span class="label">Progress:</span>
-          <strong class="value" id="progressLabel">0%</strong>
+        <div class="sidebar">
+          <a href="dashboard.html">
+            <span class="material-icons-sharp">dashboard</span>
+            <h3>Dashboard</h3>
+          </a>
+          <a href="job.html">
+            <span class="material-icons-sharp">work</span>
+            <h3>Jobs</h3>
+          </a>
+          <a href="myApplication.html">
+            <span class="material-icons-sharp">receipt</span>
+            <h3>My Application</h3>
+          </a>
+          <a href="courses.html" class="active">
+            <span class="material-icons-sharp">school</span>
+            <h3>Courses</h3>
+          </a>
+          <a href="shop.html">
+            <span class="material-icons-sharp">shopping_cart</span>
+            <h3>Shop</h3>
+          </a>
+          <a href="earnings.html">
+            <span class="material-icons-sharp">account_balance</span>
+            <h3>Earnings</h3>
+          </a>
+          <a href="documents.html">
+            <span class="material-icons-sharp">file_copy</span>
+            <h3>Documents</h3>
+          </a>
+          <a href="settings.html">
+            <span class="material-icons-sharp">settings</span>
+            <h3>Settings</h3>
+          </a>
+          <a href="#" id="logout-btn">
+            <span class="material-icons-sharp">logout</span>
+            <h3>Logout</h3>
+          </a>
         </div>
-      </div>
+      </aside>
 
-      <h1 id="courseTitle" style="margin:.2rem 0 0.8rem;">Course</h1>
-
-      <div class="progress-wrap">
-        <div class="progress-label">
-          <span id="stepLabel">Step 1</span>
-          <span id="stepCount">of N</span>
+      <!-- Main -->
+      <main>
+        <div class="page-header">
+          <div>
+            <div class="crumbs"><a href="courses.html" class="muted">Courses</a> / <span id="crumbCourse">Loading…</span></div>
+            <h1 id="courseTitle">Loading course…</h1>
+            <div class="row">
+              <span id="courseLevel" class="pill">Level —</span>
+              <span id="courseTags" class="pill">Tags: —</span>
+              <!-- hidden per previous request -->
+              <span id="passingInfo" class="pill good" style="display:none;">Passing: —</span>
+              <span id="timeInfo" class="pill" style="display:none;">Time limit: —</span>
+            </div>
+          </div>
+          <div class="row">
+            <button id="backBtn" class="btn secondary" type="button">← Back</button>
+          </div>
         </div>
-        <div class="progress-bar"><div class="fill" id="progressFill"></div></div>
-      </div>
 
-      <section class="course-shell" id="courseShell" aria-live="polite">
-        <!-- Dynamic lesson/quiz content goes here -->
-      </section>
+        <!-- Course content -->
+        <div class="stack" id="contentStack">
+          <div class="card">
+            <h3 class="section-head">Overview</h3>
+            <p id="courseDesc" class="muted">Loading description…</p>
+          </div>
 
-      <div class="nav-row">
-        <div class="nav-left">
-          <button class="btn" id="btnPrev"><span class="material-icons-sharp" style="font-size:18px;vertical-align:-4px;">chevron_left</span> Back</button>
+          <div class="card" id="sectionsCard" style="display:none;">
+            <h3 class="section-head">Sections</h3>
+
+            <!-- One section page at a time -->
+            <div id="sectionPagesWrap" class="stack"></div>
+
+            <!-- Navigation bar -->
+            <div class="section-nav" id="sectionNav" style="display:none;">
+              <button id="navPrev" class="btn secondary" type="button">← Back</button>
+              <div class="tiny">
+                <span class="badge" id="pageBadge">Section 1 / 1</span>
+              </div>
+              <button id="navNext" class="btn" type="button">Next →</button>
+              <button id="navSubmit" class="btn" type="button" style="display:none;">Submit</button>
+            </div>
+          </div>
+
+          <!-- Results card (kept; submit row hidden) -->
+          <div class="card" id="quizCard" style="display:none;">
+            <div class="row" style="justify-content:space-between; align-items: baseline;">
+              <h3 class="quiz-title">Result</h3>
+              <div class="muted" id="timerLabel" style="display:none;">Time left: <strong id="timerTxt">—</strong></div>
+            </div>
+            <form id="quizForm" class="quiz-wrap"></form>
+            <div class="row" id="legacySubmitRow" style="margin-top:8px; display:none;">
+              <button id="submitBtn" class="btn" type="button">Submit Answers</button>
+              <span class="muted" id="quizNote"></span>
+            </div>
+            <div id="quizResult" class="result" role="status" aria-live="polite"></div>
+          </div>
         </div>
-        <div class="page-indicator" id="pageIndicator">Page 1</div>
-        <div class="nav-right">
-          <button class="btn btn-primary" id="btnNext">Next <span class="material-icons-sharp" style="font-size:18px;vertical-align:-4px;">chevron_right</span></button>
-          <button class="btn btn-primary" id="btnSubmit" style="display:none;">Submit Quiz</button>
-        </div>
-      </div>
+      </main>
+    </div>
 
-      <div class="result" id="resultBanner"></div>
-    </main>
-  </div>
+    <script src="../../general_files/index.js"></script>
+    <script type="module" src="../../general_files/session.js"></script>
 
-  <script>
-    /* =============================
-       1) Define your course templates here.
-       - Duplicate an entry in COURSE_TEMPLATES for each new course.
-       - Use the same slug you pass in ?course=slug
-       - Each page can be:
-         { type:'lesson', title, text, videoUrl? | embed? }
-         { type:'quiz',   title, questions:[{q, choices:[...], answer:index}] }
-       ============================= */
-    const COURSE_TEMPLATES = {
-      "networking-fundamentals": {
-        title: "Networking Fundamentals",
-        pages: [
-          {
-            type: "lesson",
-            title: "Welcome & What You’ll Learn",
-            text: "In this course you’ll build an intuitive foundation for modern networks—devices, topologies, addressing, and basic troubleshooting. Watch the quick overview video below, then hit Next.",
-            videoUrl: "" // (optional) leave empty if you plan to embed a YouTube iframe
-          },
-          {
-            type: "lesson",
-            title: "OSI Model in Plain Language",
-            text: "We’ll simplify each layer with real-world analogies so you can reason about issues quickly. Keep notes as you watch.",
-            // Example YouTube embed instead of <video>
-            embed: "https://www.youtube.com/embed/dQw4w9WgXcQ"
-          },
-          {
-            type: "lesson",
-            title: "IP Addressing & Subnets",
-            text: "Understand IPv4 basics: classes, masks, gateways, and CIDR. This will be crucial for routing and troubleshooting later.",
-            videoUrl: "" // replace with your mp4 path if needed
-          },
-          /* ---- Final page must be the quiz ---- */
-          {
-            type: "quiz",
-            title: "Final Quiz (10 items)",
-            questions: [
-              { q: "Which layer of the OSI model handles routing?", choices: ["Layer 2", "Layer 3", "Layer 4", "Layer 7"], answer: 1 },
-              { q: "What does IP stand for?", choices: ["Internet Protocol", "Internal Process", "Instance Port", "Input Packet"], answer: 0 },
-              { q: "Which device primarily operates at Layer 2?", choices: ["Router", "Switch", "Firewall", "Server"], answer: 1 },
-              { q: "Default subnet mask for a Class C network?", choices: ["255.0.0.0", "255.255.0.0", "255.255.255.0", "255.255.255.255"], answer: 2 },
-              { q: "Which record is used to map a hostname to an IP in DNS?", choices: ["MX", "CNAME", "A", "TXT"], answer: 2 },
-              { q: "Which tool is best to test reachability to a host?", choices: ["netstat", "ping", "nslookup", "ipconfig"], answer: 1 },
-              { q: "NAT is used primarily to:", choices: ["Encrypt traffic", "Block ports", "Translate addresses", "Accelerate Wi-Fi"], answer: 2 },
-              { q: "A VLAN helps to:", choices: ["Increase cable length", "Raise CPU speed", "Segment a network logically", "Boost PSU efficiency"], answer: 2 },
-              { q: "TCP differs from UDP because TCP is:", choices: ["Connectionless", "Encrypted", "Connection-oriented", "Wireless only"], answer: 2 },
-              { q: "Private IPv4 ranges include:", choices: ["8.8.8.0/24", "10.0.0.0/8", "1.1.1.0/24", "172.33.0.0/16"], answer: 1 }
-            ]
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="module">
+      import { SUPABASE_URL, SUPABASE_ANON_KEY } from "../../../supabase.js";
+      const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      const sbCourses = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { db: { schema: "courses" } });
+
+      // UI elements
+      const courseTitle = document.getElementById("courseTitle");
+      const crumbCourse = document.getElementById("crumbCourse");
+      const courseDesc = document.getElementById("courseDesc");
+      const courseLevel = document.getElementById("courseLevel");
+      const courseTags = document.getElementById("courseTags");
+      const passingInfo = document.getElementById("passingInfo");
+      const timeInfo = document.getElementById("timeInfo");
+
+      const sectionsCard = document.getElementById("sectionsCard");
+      const sectionPagesWrap = document.getElementById("sectionPagesWrap");
+      const sectionNav = document.getElementById("sectionNav");
+      const navPrev = document.getElementById("navPrev");
+      const navNext = document.getElementById("navNext");
+      const navSubmit = document.getElementById("navSubmit");
+      const pageBadge = document.getElementById("pageBadge");
+
+      // Legacy elements (kept/hidden)
+      const quizCard = document.getElementById("quizCard");
+      const quizForm = document.getElementById("quizForm");
+      const submitBtn = document.getElementById("submitBtn");
+      const quizResult = document.getElementById("quizResult");
+      const quizNote = document.getElementById("quizNote");
+      const timerLabel = document.getElementById("timerLabel");
+      const timerTxt = document.getElementById("timerTxt");
+      const backBtn = document.getElementById("backBtn");
+
+      backBtn.addEventListener("click", () => history.back());
+
+      // Helpers
+      function qs(name) {
+        const p = new URLSearchParams(location.search);
+        return p.get(name) || "";
+      }
+      function esc(s) {
+        return String(s ?? "").replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+      }
+      function el(tag, attrs={}, children=[]) {
+        const n = document.createElement(tag);
+        Object.entries(attrs).forEach(([k,v])=>{
+          if (k === "class") n.className = v;
+          else if (k === "html") n.innerHTML = v;
+          else n.setAttribute(k, v);
+        });
+        children.forEach(c => n.appendChild(c));
+        return n;
+      }
+
+      // State
+      let course = null;
+
+      // ===== NEW: track installer's current level for level-up logic =====
+      let CURRENT_USER_LEVEL = 0;
+
+      // Multi-quiz state
+      const quizzesById = new Map();                 // quizId -> quiz object
+      const questionsByQuizId = new Map();           // quizId -> questions[]
+      const timersByQuizId = new Map();              // quizId -> {deadline, intervalId, labelEl}
+      const quizStarted = new Set();                 // quizId that has started
+      let navLocked = false;
+      let sections = [];
+      let contentsBySection = {};
+      let orderedSectionIds = [];
+      let currentIdx = 0;
+
+      // Legacy single-quiz (kept, hidden)
+      let quiz = null;
+      let questions = [];
+      let timer = null;
+      let deadlineTs = 0;
+
+      async function requireUser() {
+        const { data: { user } } = await sb.auth.getUser();
+        if (!user) {
+          alert("Please sign in to take the course.");
+          window.location.href = "../auth/login.html";
+          return null;
+        }
+        return user;
+      }
+
+      async function loadCourse(slug) {
+        const { data, error } = await sbCourses
+          .from("course")
+          .select("id,title,slug,description,level,tags,is_published,created_at")
+          .eq("slug", slug)
+          .eq("is_published", true)
+          .maybeSingle();
+
+        if (error || !data) throw new Error("Course not found or not published.");
+        return data;
+      }
+
+      async function loadSections(courseId) {
+        const { data, error } = await sbCourses
+          .from("section")
+          .select("id,title,position")
+          .eq("course_id", courseId)
+          .order("position", { ascending: true });
+        if (error) throw error;
+        return data || [];
+      }
+
+      async function loadSectionContent(sectionIds) {
+        if (!sectionIds.length) return [];
+        const { data, error } = await sbCourses
+          .from("section_content")
+          .select("id,section_id,content_type,position,body,video_url,quiz_id,duration_seconds")
+          .in("section_id", sectionIds)
+          .order("position", { ascending: true });
+        if (error) throw error;
+        return data || [];
+      }
+
+      async function loadQuestions(quizId) {
+        const { data, error } = await sbCourses
+          .from("quiz_question")
+          .select("id,quiz_id,position,question,options,correct_answer,points")
+          .eq("quiz_id", quizId)
+          .order("position", { ascending: true });
+        if (error) throw error;
+        return data || [];
+      }
+
+      function toYouTubeEmbed(url) {
+        try {
+          const u = new URL(url);
+          if (u.hostname.includes("youtu.be")) {
+            return `https://www.youtube.com/embed/${u.pathname.slice(1)}`;
           }
-        ]
-      },
-
-      /* ==== Example: add more courses here and reuse the same template ==== */
-      "safety-basics": {
-        title: "Electrical Safety Basics",
-        pages: [
-          { type:"lesson", title:"Safety Mindset", text:"Learn safety frameworks and hazard identification.", embed:"https://www.youtube.com/embed/dQw4w9WgXcQ" },
-          { type:"lesson", title:"PPE Essentials", text:"Understand proper PPE selection and use.", videoUrl:"" },
-          { type:"quiz",   title:"Final Quiz (10 items)", questions:[
-              { q:"First action before working on a circuit?", choices:["Check email","Assume it’s safe","De-energize/lockout","Wear sandals"], answer:2 },
-              { q:"PPE stands for:", choices:["Personal Protective Equipment","Public Power Entity","Partial Protective Enclosure","Portable Power Extension"], answer:0 },
-              { q:"A GFCI helps prevent:", choices:["Data loss","Overheating","Ground-fault shocks","DNS leaks"], answer:2 },
-              { q:"Lockout/Tagout is used to:", choices:["Decorate tools","Control hazardous energy","Label cables","Calibrate meters"], answer:1 },
-              { q:"Insulated tools are designed to:", choices:["Make tools lighter","Withstand voltage","Look stylish","Reduce taxes"], answer:1 },
-              { q:"Wet environments increase risk of:", choices:["Noise","Electrocution","Packet loss","Rust-only"], answer:1 },
-              { q:"Rubber gloves should be:", choices:["Shared frequently","Damaged","Regularly inspected","Painted"], answer:2 },
-              { q:"When in doubt you should:", choices:["Proceed fast","Guess","Stop work and verify","Outsource immediately"], answer:2 },
-              { q:"Electrical fires should be fought with:", choices:["Water","Foam","CO2/dry chemical (rated)","Paper"], answer:2 },
-              { q:"Bare conductors should be:", choices:["Exposed","Isolated/covered","Painted","Warmed"], answer:1 }
-          ] }
-        ]
+          if (u.hostname.includes("youtube.com")) {
+            const id = u.searchParams.get("v");
+            if (id) return `https://www.youtube.com/embed/${id}`;
+          }
+        } catch {}
+        return url;
       }
-    };
 
-    /* =============================
-       2) Runtime: read ?course=, render pages, handle nav & quiz
-       ============================= */
-    const params = new URLSearchParams(location.search);
-    const courseSlug = params.get('course') || 'networking-fundamentals';
-    const course = COURSE_TEMPLATES[courseSlug] || COURSE_TEMPLATES["networking-fundamentals"];
-
-    const courseTitleEl = document.getElementById('courseTitle');
-    const crumbEl = document.getElementById('courseTitleCrumb');
-    const courseShell = document.getElementById('courseShell');
-    const progressFill = document.getElementById('progressFill');
-    const progressLabel = document.getElementById('progressLabel');
-    const stepLabel = document.getElementById('stepLabel');
-    const stepCount = document.getElementById('stepCount');
-    const pageIndicator = document.getElementById('pageIndicator');
-    const btnPrev = document.getElementById('btnPrev');
-    const btnNext = document.getElementById('btnNext');
-    const btnSubmit = document.getElementById('btnSubmit');
-    const resultBanner = document.getElementById('resultBanner');
-
-    let index = 0; // current page
-    const total = course.pages.length;
-
-    courseTitleEl.textContent = course.title;
-    crumbEl.textContent = course.title;
-    stepCount.textContent = `of ${total}`;
-
-    function render() {
-      resultBanner.style.display = 'none';
-      const page = course.pages[index];
-      const pct = Math.round((index) / (total - 1) * 100); // shows 0% on first, 100% on quiz page start
-      progressFill.style.width = pct + '%';
-      progressLabel.textContent = pct + '%';
-      stepLabel.textContent = `Step ${index + 1}`;
-      pageIndicator.textContent = `Page ${index + 1}`;
-
-      const isQuiz = page.type === 'quiz';
-      btnNext.style.display = isQuiz ? 'none' : '';
-      btnSubmit.style.display = isQuiz ? '' : 'none';
-      btnPrev.disabled = index === 0;
-
-      // Render lesson or quiz
-      if (page.type === 'lesson') {
-        courseShell.innerHTML = `
-          <h2 class="lesson-title">${escapeHTML(page.title)}</h2>
-          <div class="lesson-text">${escapeHTML(page.text)}</div>
-          ${renderVideo(page)}
-        `;
-      } else {
-        // Quiz
-        courseShell.innerHTML = `
-          <h2 class="lesson-title">${escapeHTML(page.title)}</h2>
-          <p class="lesson-text">Answer all questions below. You can only submit once.</p>
-          <div class="quiz-list">
-            ${page.questions.map((q, i) => renderQuestion(q, i)).join('')}
-          </div>
-        `;
+      // ====== NEW: Installer level helpers (non-destructive additions) ======
+      async function loadInstallerLevel() {
+        try {
+          const { data: { user } } = await sb.auth.getUser();
+          if (!user) return;
+          const { data, error } = await sb
+            .from("installer")
+            .select("levelstatus")
+            .eq("id", user.id)
+            .single();
+          if (!error && data && typeof data.levelstatus === "number") {
+            CURRENT_USER_LEVEL = Number(data.levelstatus) || 0;
+          }
+        } catch (e) {
+          console.warn("loadInstallerLevel failed:", e);
+        }
       }
-    }
 
-    function renderVideo(page) {
-      if (page.embed) {
-        return `
-          <div class="video-frame">
-            <iframe src="${page.embed}" title="Course video" frameborder="0" allowfullscreen></iframe>
-          </div>
-        `;
+      // Increment by exactly +1 AFTER inserting into completed_courses.
+      // Uses optimistic concurrency: only updates when current level equals expected "old" level.
+      async function incrementLevelAfterInsert(passedCourseLevel) {
+        try {
+          const { data: { user } } = await sb.auth.getUser();
+          if (!user) return { leveled: false };
+
+          // Read current from DB (compare-and-set)
+          const { data: row, error } = await sb
+            .from("installer")
+            .select("levelstatus")
+            .eq("id", user.id)
+            .single();
+          if (error) {
+            console.warn("Read levelstatus failed:", error);
+            return { leveled: false };
+          }
+
+          const current = Number(row?.levelstatus ?? 0);
+          const expectedNext = current + 1;
+
+          // Only level up if the course passed is exactly the next level.
+          if (Number(passedCourseLevel) !== expectedNext) {
+            return { leveled: false };
+          }
+
+          // Try to set levelstatus = current + 1, only if still at 'current'
+          const { data: upd, error: updErr } = await sb
+            .from("installer")
+            .update({ levelstatus: expectedNext })
+            .eq("id", user.id)
+            .eq("levelstatus", current) // CAS: prevents duplicate increment across refreshes
+            .select("levelstatus");
+
+          if (updErr) {
+            console.warn("Level up update failed:", updErr);
+            return { leveled: false };
+          }
+
+          const leveled = Array.isArray(upd) ? upd.length > 0 : !!upd; // PostgREST returns array
+          if (leveled) {
+            CURRENT_USER_LEVEL = expectedNext;
+          }
+          return { leveled };
+        } catch (e) {
+          console.warn("incrementLevelAfterInsert exception:", e);
+          return { leveled: false };
+        }
       }
-      if (page.videoUrl) {
-        return `
-          <div class="video-frame">
-            <video controls src="${page.videoUrl}"></video>
-          </div>
-        `;
+      // ====== /NEW helpers ======
+
+      // RENDERING ----------------------------------------------------
+
+      function renderSectionPage(sec, items) {
+        const page = el("div", { class: "stack", "data-section-id": sec.id });
+
+        page.appendChild(el("h4", { class: "section-head", html: esc(sec.title) }));
+
+        (items || []).forEach(item => {
+          if (item.content_type === "text" && item.body) {
+            const block = el("div", { class: "content-block" });
+            block.appendChild(el("div", { class: "muted", html: esc(item.body).replace(/\n/g,"<br>") }));
+            page.appendChild(block);
+          } else if (item.content_type === "video" && item.video_url) {
+            const block = el("div", { class: "content-block" });
+            if (/youtube\.com|youtu\.be/.test(item.video_url)) {
+              const iframe = el("iframe", { src: toYouTubeEmbed(item.video_url), allowfullscreen: "", style: "min-height:300px;border:0;border-radius:12px" });
+              block.appendChild(iframe);
+            } else {
+              const vid = el("video", { controls: "", src: item.video_url });
+              block.appendChild(vid);
+            }
+            page.appendChild(block);
+          } else if (item.content_type === "quiz" && item.quiz_id) {
+            const block = el("div", { class: "content-block" });
+
+            const qzId = item.quiz_id;
+            const qz = quizzesById.get(qzId);
+            const qs = questionsByQuizId.get(qzId) || [];
+
+            const header = el("div", { class: "row", style: "justify-content:space-between; align-items:center;" }, [
+              el("div", {}, [
+                el("div", { class: "quiz-title", html: esc(qz?.title || "Quiz") }),
+                /* Per-quiz passing score shown */
+                el("div", { class: "tiny", html: `Passing: ${qz?.passing_score ?? 70}% • ${qs.length} question(s)` }),
+              ]),
+              el("div", { class: "tiny" }, [
+                el("span", { class: "badge", id: `timer_label_${qzId}` , html: `Timer: —` }),
+              ])
+            ]);
+            block.appendChild(header);
+
+            const controls = el("div", { class: "row", style: "margin:8px 0;" });
+            const startBtn = el("button", { class: "btn", type: "button", id: `start_${qzId}` }, [document.createTextNode("Start Quiz")]);
+            const finishBtn = el("button", { class: "btn secondary", type: "button", id: `finish_${qzId}`, disabled: "" }, [document.createTextNode("Finish Quiz")]);
+            controls.appendChild(startBtn);
+            controls.appendChild(finishBtn);
+            block.appendChild(controls);
+
+            const blurWrap = el("div", { id: `quiz_wrap_${qzId}`, class: "quiz-wrap blur-locked" });
+            qs.forEach((q, idx) => {
+              const qDiv = el("div", { class: "q-card" });
+              qDiv.appendChild(el("div", { class: "q-text", html: `${idx + 1}. ${esc(q.question)}` }));
+
+              const optsWrap = el("div", { class: "opts" });
+              const options = q.options || {};
+              ["A","B","C","D"].forEach(letter => {
+                if (options[letter] == null) return;
+                const id = `q_${q.id}_${letter}`;
+                const row = el("label", { class: "opt", for: id });
+                const input = el("input", { type: "radio", name: `q_${q.id}`, id, value: letter });
+                const span = el("span", { html: `<strong>${letter}.</strong> ${esc(String(options[letter]))}` });
+                row.appendChild(input); row.appendChild(span);
+                optsWrap.appendChild(row);
+              });
+              qDiv.appendChild(optsWrap);
+
+              /* Per-question points result placeholder */
+              qDiv.appendChild(el("div", { class: "q-points", id: `qpts_${q.id}` }));
+
+              blurWrap.appendChild(qDiv);
+            });
+            block.appendChild(blurWrap);
+
+            page.appendChild(block);
+
+            // hook up actions
+            startBtn.addEventListener("click", () => startQuiz(item.quiz_id));
+            finishBtn.addEventListener("click", () => finishQuiz(item.quiz_id));
+          }
+        });
+
+        page.style.display = "none";
+        return page;
       }
-      // No video provided yet; placeholder frame
-      return `
-        <div class="video-frame" style="display:grid;place-items:center;color:#9ca3af;">
-          <div style="text-align:center">
-            <span class="material-icons-sharp" style="font-size:42px;">ondemand_video</span>
-            <div>Add a videoUrl or embed in COURSE_TEMPLATES</div>
-          </div>
-        </div>
-      `;
-    }
 
-    function renderQuestion(q, idx) {
-      const name = `q_${idx}`;
-      return `
-        <div class="q-card">
-          <p class="q-title">Q${idx + 1}. ${escapeHTML(q.q)}</p>
-          <div class="q-options">
-            ${q.choices.map((c, i) => `
-              <label>
-                <input type="radio" name="${name}" value="${i}" />
-                <span>${escapeHTML(c)}</span>
-              </label>
-            `).join('')}
-          </div>
-        </div>
-      `;
-    }
+      function renderAllSectionPages() {
+        sectionPagesWrap.innerHTML = "";
+        orderedSectionIds = sections.map(s => s.id);
+        sections.forEach(sec => {
+          const items = contentsBySection[sec.id] || [];
+          const page = renderSectionPage(sec, items);
+          sectionPagesWrap.appendChild(page);
+        });
 
-    function escapeHTML(s) {
-      return String(s ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-    }
+        if (sections.length) {
+          sectionNav.style.display = "";
+          currentIdx = 0;
+          syncPager();
+        }
+      }
 
-    // Nav handlers
-    btnPrev.addEventListener('click', () => {
-      if (index > 0) { index--; render(); window.scrollTo({top:0, behavior:'smooth'}); }
-    });
+      function syncPager() {
+        const total = orderedSectionIds.length;
+        for (let i = 0; i < total; i++) {
+          const secId = orderedSectionIds[i];
+          const pageEl = sectionPagesWrap.querySelector(`[data-section-id="${secId}"]`);
+          if (pageEl) pageEl.style.display = (i === currentIdx) ? "" : "none";
+        }
 
-    btnNext.addEventListener('click', () => {
-      if (index < total - 1) { index++; render(); window.scrollTo({top:0, behavior:'smooth'}); }
-    });
+        pageBadge.textContent = `Section ${total ? currentIdx + 1 : 0} / ${total || 0}`;
+        navPrev.disabled = navLocked || currentIdx === 0;
+        navNext.style.display = (currentIdx < total - 1) ? "" : "none";
+        navNext.disabled = navLocked;
+        navSubmit.style.display = (currentIdx === total - 1) ? "" : "none";
+        navSubmit.disabled = navLocked;
+      }
 
-    btnSubmit.addEventListener('click', () => {
-      const page = course.pages[index];
-      if (page.type !== 'quiz') return;
-      const answers = page.questions.map((q, i) => {
-        const checked = document.querySelector(`input[name="q_${i}"]:checked`);
-        return checked ? Number(checked.value) : null;
+      navPrev.addEventListener("click", () => {
+        if (navLocked) return;
+        if (currentIdx > 0) { currentIdx--; syncPager(); }
+      });
+      navNext.addEventListener("click", () => {
+        if (navLocked) return;
+        const total = orderedSectionIds.length;
+        if (currentIdx < total - 1) { currentIdx++; syncPager(); }
       });
 
-      // Simple validation
-      if (answers.some(a => a === null)) {
-        resultBanner.textContent = "Please answer all questions before submitting.";
-        resultBanner.style.display = 'block';
-        resultBanner.style.background = '#fef3c7';
-        resultBanner.style.borderColor = '#fde68a';
-        resultBanner.style.color = '#92400e';
-        return;
+      // QUIZ TIMING & FLOW ------------------------------------------
+
+      function startQuiz(quizId) {
+        if (quizStarted.has(quizId)) return;
+        const qz = quizzesById.get(quizId);
+        const wrap = document.getElementById(`quiz_wrap_${quizId}`);
+        const startBtn = document.getElementById(`start_${quizId}`);
+        const finishBtn = document.getElementById(`finish_${quizId}`);
+        const label = document.getElementById(`timer_label_${quizId}`);
+
+        wrap.classList.remove("blur-locked");
+        navLocked = true;
+        syncPager();
+
+        startBtn.disabled = true;
+        finishBtn.disabled = false;
+        quizStarted.add(quizId);
+
+        if (qz && qz.time_limit_seconds) {
+          const deadline = Date.now() + qz.time_limit_seconds * 1000;
+          const intervalId = setInterval(() => {
+            const left = Math.max(0, deadline - Date.now());
+            const s = Math.ceil(left / 1000);
+            const mm = Math.floor(s / 60).toString().padStart(2, "0");
+            const ss = (s % 60).toString().padStart(2, "0");
+            if (label) label.textContent = `Timer: ${mm}:${ss}`;
+            if (left <= 0) {
+              clearInterval(intervalId);
+              timersByQuizId.delete(quizId);
+              finishQuiz(quizId, /*auto*/true);
+            }
+          }, 250);
+          timersByQuizId.set(quizId, { deadline, intervalId, labelEl: label });
+        } else {
+          if (label) label.textContent = `Timer: —`;
+        }
       }
 
-      const score = answers.reduce((acc, a, i) => acc + (a === page.questions[i].answer ? 1 : 0), 0);
-      const pct = Math.round((score / page.questions.length) * 100);
-      resultBanner.innerHTML = `
-        <strong>Result:</strong> ${score}/${page.questions.length} (${pct}%)
-        <div style="margin-top:6px;display:flex;gap:8px;flex-wrap:wrap;">
-          <button class="btn" onclick="window.location.href='courses.html'">
-            <span class="material-icons-sharp" style="font-size:18px;vertical-align:-4px;">arrow_back</span> Back to Courses
-          </button>
-          <button class="btn btn-primary" onclick="alert('Marked as completed! (Hook this to your backend)')">
-            <span class="material-icons-sharp" style="font-size:18px;vertical-align:-4px;">task_alt</span> Mark as Completed
-          </button>
-        </div>
-      `;
-      resultBanner.style.display = 'block';
-      resultBanner.style.background = '#ecfdf5';
-      resultBanner.style.borderColor = '#bbf7d0';
-      resultBanner.style.color = '#065f46';
-      // TODO: Send score to backend here if needed
-    });
+      // Mark per-question points for ONE quiz (used on Finish Quiz)
+      function annotateQuizQuestionPoints(quizId) {
+        const qs = questionsByQuizId.get(quizId) || [];
+        qs.forEach(q => {
+          const pts = Number(q.points || 1);
+          const chosen = (document.querySelector(`input[name="q_${q.id}"]:checked`) || {}).value;
+          const ok = chosen && String(chosen).toUpperCase() === String(q.correct_answer).toUpperCase();
+          const target = document.getElementById(`qpts_${q.id}`);
+          if (target) {
+            target.innerHTML = ok
+              ? `<span class="ok">✓ +${pts} / ${pts} pts</span>`
+              : `<span class="miss">0 / ${pts} pts</span>`;
+          }
+        });
+      }
 
-    // Initial render
-    render();
-  </script>
-  <script src="../../general_files/index.js"></script>
-  <script type="module" src="../../general_files/session.js"></script>
-</body>
+      function finishQuiz(quizId, auto = false) {
+        const startBtn = document.getElementById(`start_${quizId}`);
+        const finishBtn = document.getElementById(`finish_${quizId}`);
+
+        const t = timersByQuizId.get(quizId);
+        if (t && t.intervalId) clearInterval(t.intervalId);
+        timersByQuizId.delete(quizId);
+
+        // Annotate per-question points immediately when finishing this quiz
+        annotateQuizQuestionPoints(quizId);
+
+        navLocked = false;
+        syncPager();
+
+        startBtn.disabled = true;
+        finishBtn.disabled = true;
+      }
+
+      // SCORING ------------------------------------------------------
+
+      function computeOverallScore() {
+        let totalPts = 0;
+        let earnedPts = 0;
+        let passingWeightedSum = 0;
+
+        quizzesById.forEach((qz, quizId) => {
+          const qs = questionsByQuizId.get(quizId) || [];
+          let quizTotal = 0;
+
+          qs.forEach(q => {
+            const pts = Number(q.points || 1);
+            quizTotal += pts;
+            totalPts += pts;
+
+            const chosen = (document.querySelector(`input[name="q_${q.id}"]:checked`) || {}).value;
+            const ok = chosen && String(chosen).toUpperCase() === String(q.correct_answer).toUpperCase();
+            if (ok) earnedPts += pts;
+
+            // Also (re)annotate per-question points when doing the final submit
+            const target = document.getElementById(`qpts_${q.id}`);
+            if (target) {
+              target.innerHTML = ok
+                ? `<span class="ok">✓ +${pts} / ${pts} pts</span>`
+                : `<span class="miss">0 / ${pts} pts</span>`;
+            }
+          });
+
+          if (quizTotal > 0) {
+            passingWeightedSum += quizTotal * (qz.passing_score ?? 70);
+          }
+        });
+
+        const pct = totalPts > 0 ? Math.round((earnedPts / totalPts) * 100) : 0;
+        const combinedPassing = totalPts > 0 ? Math.round(passingWeightedSum / totalPts) : 70;
+        return { totalPts, earnedPts, pct, combinedPassing };
+      }
+
+      // ====== MODIFIED: trigger level update *after* insert to completed_courses ======
+      async function saveCompletionIfPass(courseId, pct, combinedPassing, passedCourseLevel) {
+        if (pct < combinedPassing) return { saved: false, leveled: false };
+
+        const { data: { user } } = await sb.auth.getUser();
+        if (!user) throw new Error("Not signed in.");
+
+        // Check if a completion row already exists (to know if this is an insert)
+        const { data: existingRow, error: existErr } = await sbCourses
+          .from("completed_courses")
+          .select("course_id")
+          .eq("installer_id", user.id)
+          .eq("course_id", courseId)
+          .maybeSingle();
+
+        if (existErr) {
+          // If PostgREST returns an error that isn't "no rows", surface it.
+          console.warn("Existence check error:", existErr);
+        }
+
+        const isFirstInsert = !existingRow;
+
+        // Upsert the completion (this is the required "insert first" step)
+        const { error: upErr } = await sbCourses
+          .from("completed_courses")
+          .upsert(
+            { course_id: courseId, score: pct },
+            { onConflict: "installer_id,course_id" }
+          )
+          .select("course_id"); // forces mutation to return; not used further
+
+        if (upErr) throw upErr;
+
+        // Only trigger level increment AFTER (first) insert to completed_courses
+        let leveled = false;
+        if (isFirstInsert) {
+          const res = await incrementLevelAfterInsert(passedCourseLevel);
+          leveled = !!res?.leveled;
+        }
+
+        return { saved: true, leveled };
+      }
+      // ====== /MODIFIED ======
+
+      // Legacy single-quiz bits (hidden UI, kept for compatibility)
+      function startTimerIfNeeded(qz) {
+        if (!qz || !qz.time_limit_seconds) return;
+        timerLabel.style.display = "";
+        const seconds = qz.time_limit_seconds;
+        deadlineTs = Date.now() + seconds * 1000;
+        updateTimer();
+        timer = setInterval(updateTimer, 250);
+      }
+      function updateTimer() {
+        const left = Math.max(0, deadlineTs - Date.now());
+        const s = Math.ceil(left / 1000);
+        const mm = Math.floor(s / 60).toString().padStart(2, "0");
+        const ss = (s % 60).toString().padStart(2, "0");
+        timerTxt.textContent = `${mm}:${ss}`;
+        if (left <= 0) {
+          clearInterval(timer);
+          timer = null;
+          gradeAndSubmit(true);
+        }
+      }
+      function computeScore(qs) {
+        let total = 0;
+        let earned = 0;
+        qs.forEach(q => {
+          const pts = Number(q.points || 1);
+          total += pts;
+          const chosen = (document.querySelector(`input[name="q_${q.id}"]:checked`) || {}).value;
+          if (chosen && String(chosen).toUpperCase() === String(q.correct_answer).toUpperCase()) {
+            earned += pts;
+          }
+        });
+        const pct = total > 0 ? Math.round((earned / total) * 100) : 0;
+        return { total, earned, pct };
+      }
+      async function gradeAndSubmit(auto = false) {
+        try {
+          const { pct, total, earned } = computeScore(questions);
+          const pass = pct >= (quiz?.passing_score ?? 70);
+          quizResult.classList.remove("pass","fail");
+          quizResult.style.display = "block";
+          quizResult.innerHTML = `<div><strong>Score:</strong> ${pct}% <span class="muted">(${earned}/${total} pts)</span></div>`;
+          if (pass) {
+            const { saved, leveled } = await saveCompletionIfPass(course.id, pct, quiz.passing_score ?? 70, course.level);
+            quizResult.classList.add("pass");
+            quizResult.innerHTML += `<div class="muted">✅ Passed. ${saved ? "Your completion was recorded." : ""}${leveled ? " • Level +1" : ""}</div>`;
+          } else {
+            quizResult.classList.add("fail");
+            quizResult.innerHTML += `<div class="muted">❌ Better luck next time. Your result was not recorded.</div>`;
+          }
+        } catch(e){ alert(e.message || "Failed to submit quiz."); }
+      }
+      submitBtn?.addEventListener("click", () => gradeAndSubmit(false));
+
+      // --------- NEW: Retake functionality ---------
+      function retakeCourse() {
+        // Stop all timers
+        timersByQuizId.forEach(t => { if (t.intervalId) clearInterval(t.intervalId); });
+        timersByQuizId.clear();
+
+        // Reset per-quiz UI
+        quizzesById.forEach((qz, quizId) => {
+          // Blur/lock quiz again
+          const wrap = document.getElementById(`quiz_wrap_${quizId}`);
+          if (wrap) {
+            wrap.classList.add("blur-locked");
+            // clear answers
+            const inputs = wrap.querySelectorAll('input[type="radio"]');
+            inputs.forEach(i => (i.checked = false));
+            // clear per-question points labels
+            wrap.querySelectorAll('.q-points').forEach(p => (p.innerHTML = ""));
+          }
+          // reset buttons
+          const startBtn = document.getElementById(`start_${quizId}`);
+          const finishBtn = document.getElementById(`finish_${quizId}`);
+          if (startBtn) startBtn.disabled = false;
+          if (finishBtn) finishBtn.disabled = true;
+          // reset timer label
+          const label = document.getElementById(`timer_label_${quizId}`);
+          if (label) label.textContent = "Timer: —";
+        });
+
+        quizStarted.clear();
+        navLocked = false;
+
+        // Hide result panel and go back to first section
+        quizResult.classList.remove("pass","fail");
+        quizResult.style.display = "none";
+        quizForm.innerHTML = "";
+        currentIdx = 0;
+        syncPager();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      // Final submit (last section)
+      navSubmit.addEventListener("click", async () => {
+        if (navLocked) return;
+        timersByQuizId.forEach(t => { if (t.intervalId) clearInterval(t.intervalId); });
+        timersByQuizId.clear();
+
+        const { totalPts, earnedPts, pct, combinedPassing } = computeOverallScore();
+
+        quizCard.style.display = "";
+        quizResult.classList.remove("pass","fail");
+        quizResult.style.display = "block";
+        quizForm.innerHTML = "";
+        const legacyRow = document.getElementById("legacySubmitRow");
+        if (legacyRow) legacyRow.style.display = "none";
+        quizNote.textContent = `Combined passing: ${combinedPassing}%`;
+        quizResult.innerHTML = `<div><strong>Overall Score:</strong> ${pct}% <span class="muted">(${earnedPts}/${totalPts} pts)</span></div>`;
+
+        try {
+          if (pct >= combinedPassing) {
+            const { saved, leveled } = await saveCompletionIfPass(course.id, pct, combinedPassing, course.level);
+            quizResult.classList.add("pass");
+            quizResult.innerHTML += `<div class="muted">✅ Passed. ${saved ? "Your completion was recorded." : ""}${leveled ? " • Level +1" : ""}</div>`;
+          } else {
+            quizResult.classList.add("fail");
+            quizResult.innerHTML += `<div class="muted">❌ Better luck next time. Your result was not recorded.</div>`;
+            // NEW: Retake button on fail
+            quizResult.innerHTML += `
+              <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="btn secondary" id="retakeCourseBtn" type="button">↻ Retake Course</button>
+                <a class="btn" href="courses.html">← Back to Courses</a>
+              </div>
+            `;
+            quizResult.scrollIntoView({ behavior: "smooth", block: "center" });
+            return; // keep early return so success branch below doesn't duplicate links
+          }
+
+          /* Back to Courses button after submitting (pass case) */
+          quizResult.innerHTML += `
+            <div style="margin-top:10px;">
+              <a class="btn" href="courses.html">← Back to Courses</a>
+            </div>
+          `;
+
+          quizResult.scrollIntoView({ behavior: "smooth", block: "center" });
+        } catch (e) {
+          alert(e.message || "Failed to save completion.");
+        }
+      });
+
+      // Delegate click for retake button (added only on fail)
+      document.addEventListener("click", (e) => {
+        const tgt = e.target;
+        if (tgt && tgt.id === "retakeCourseBtn") {
+          e.preventDefault();
+          retakeCourse();
+        }
+      });
+
+      // INIT ---------------------------------------------------------
+      (async function init() {
+        const user = await requireUser();
+        if (!user) return;
+
+        // Load installer level to have CURRENT_USER_LEVEL available (used in UI elsewhere if needed)
+        await loadInstallerLevel();
+
+        const slug = qs("course");
+        if (!slug) { alert("Missing course slug."); return; }
+
+        try {
+          course = await loadCourse(slug);
+          crumbCourse.textContent = course.title;
+          courseTitle.textContent = course.title;
+          courseDesc.textContent = course.description || "No description.";
+          courseLevel.textContent = `Level ${Number.isFinite(course.level) ? course.level : 0}`;
+          courseTags.textContent = `Tags: ${(Array.isArray(course.tags) && course.tags.length) ? course.tags.join(", ") : "—"}`;
+
+          sections = await (await sbCourses
+            .from("section")
+            .select("id,title,position")
+            .eq("course_id", course.id)
+            .order("position", { ascending: true })
+          ).data || [];
+
+          if (sections.length) {
+            const allContents = (await sbCourses
+              .from("section_content")
+              .select("id,section_id,content_type,position,body,video_url,quiz_id,duration_seconds")
+              .in("section_id", sections.map(s => s.id))
+              .order("position", { ascending: true })
+            ).data || [];
+
+            contentsBySection = {};
+            sections.forEach(s => contentsBySection[s.id] = []);
+            allContents.forEach(c => { if (!contentsBySection[c.section_id]) contentsBySection[c.section_id] = []; contentsBySection[c.section_id].push(c); });
+
+            // Preload quizzes
+            const uniqueQuizIds = Array.from(new Set(allContents.filter(c => c.content_type === "quiz" && c.quiz_id).map(c => c.quiz_id)));
+            if (uniqueQuizIds.length) {
+              const { data: qzs } = await sbCourses
+                .from("quiz")
+                .select("id,course_id,title,passing_score,time_limit_seconds,created_at")
+                .in("id", uniqueQuizIds);
+              (qzs || []).forEach(qz => quizzesById.set(qz.id, qz));
+
+              for (const qid of uniqueQuizIds) {
+                const qs = await (await sbCourses
+                  .from("quiz_question")
+                  .select("id,quiz_id,position,question,options,correct_answer,points")
+                  .eq("quiz_id", qid)
+                  .order("position", { ascending: true })
+                ).data || [];
+                questionsByQuizId.set(qid, qs);
+              }
+            }
+
+            sectionsCard.style.display = "";
+            renderAllSectionPages();
+          }
+
+          // Legacy single-quiz block remains hidden by default.
+        } catch (e) {
+          alert(e.message || "Failed to load course.");
+          window.location.href = "courses.html";
+        }
+      })();
+    </script>
+  </body>
 </html>
