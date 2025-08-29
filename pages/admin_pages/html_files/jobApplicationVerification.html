@@ -1,535 +1,850 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="../css_files/sideBar.css" />
-    <link
-      href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp"
-      rel="stylesheet"
-    />
-    <title>Jobs Verification</title>
 
-    <style>
-      :root {
-        --ink: #1c2430;
-        --muted: #6c7a8a;
-        --line: #e7edf3;
-        --brand: #20a44c;
-        --warn: #f59e0b;
-        --danger: #e53935;
-        --bg: #f8fbfd;
-        --card: #ffffff;
-        --pill: #eef6ff;
-        --radius: 14px;
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="../css_files/sideBar.css" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet" />
+  <title>Choose the best applicant</title>
 
-      main {
-        margin-top: 1.4rem;
-      }
+  <style>
+    :root {
+      --ink: #1c2430;
+      --muted: #6c7a8a;
+      --line: #e7edf3;
+      --brand: #20a44c;
+      --warn: #f59e0b;
+      --danger: #e53935;
+      --bg: #f8fbfd;
+      --card: #ffffff;
+      --radius: 14px;
+    }
 
+    main {
+      margin-top: 1.4rem;
+    }
+
+    /* ===== Layout (does not touch sidebar) ===== */
+    .two-col-wrap {
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      gap: 1rem;
+    }
+
+    @media (max-width: 980px) {
       .two-col-wrap {
-        display: grid;
-        grid-template-columns: 340px 1fr;
-        gap: 1rem;
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 12px;
+    }
+
+    .panel h3 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1.1rem;
+      color: var(--ink);
+      font-weight: bold;
+    }
+
+    .search {
+      position: relative;
+      margin-bottom: 0.6rem;
+    }
+
+    .search input {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px 12px 10px 36px;
+      outline: none;
+      background: #fcfeff;
+    }
+
+    .search .material-icons-sharp {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 20px;
+      color: var(--muted);
+    }
+
+    /* ===== Jobs list (left) ===== */
+    .job-list {
+      display: grid;
+      gap: 8px;
+      max-height: 70vh;
+      overflow: auto;
+    }
+
+    .job-item {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px;
+      background: #fff;
+      cursor: pointer;
+      transition: border-color 120ms ease, box-shadow 120ms ease;
+    }
+
+    .job-item.active,
+    .job-item:hover {
+      border-color: #b9dbe6;
+      box-shadow: 0 1px 0 rgba(0, 0, 0, 0.02);
+    }
+
+    .job-item h4 {
+      margin: 0 0 2px;
+      font-size: 0.98rem;
+      color: var(--ink);
+    }
+
+    .job-meta {
+      font-size: 12px;
+      color: var(--muted);
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* ===== Details (right) ===== */
+    .detail-header {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .job-photo {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #f7fafc;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .kv {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 8px 10px;
+      background: #fff;
+    }
+
+    .kv label {
+      display: block;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .kv span {
+      font-size: 14px;
+      color: var(--ink);
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--line);
+      margin: 12px 0;
+    }
+
+    /* ===== Applicants table ===== */
+    .table-wrap {
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+    }
+
+    th,
+    td {
+      text-align: left;
+      padding: 10px;
+      border-bottom: 1px solid var(--line);
+      font-size: 14px;
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    th {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .02em;
+      color: var(--muted);
+      background: #70a381;
+      white-space: nowrap;
+      color: white;
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      font-size: 13px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      border-color: #b9dbe6;
+    }
+
+    .btn.brand {
+      background: #e9faf0;
+      border-color: #c9f0d9;
+      color: #147a35;
+    }
+
+    .btn.brand:hover {
+      border-color: #86d6a6;
+    }
+
+    .btn[disabled] {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .empty {
+      padding: 10px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .actions-row {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-top: 0;
+      border-radius: 0 0 12px 12px;
+      background: #fff;
+    }
+
+    .select-radio {
+      place-items: center;
+    }
+
+    /* ===== Single "View More" Modal (responsive) ===== */
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.35);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+      padding: 12px;
+    }
+
+    .modal.open {
+      display: flex;
+    }
+
+    .modal-card {
+      width: min(900px, 95vw);
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      display: flex;
+      flex-direction: column;
+      max-height: 92vh;
+      max-height: 92dvh;
+    }
+
+    .modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 16px 12px;
+      border-bottom: 1px solid var(--line);
+      background: #fff;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      border-top-left-radius: 16px;
+      border-top-right-radius: 16px;
+    }
+
+    .modal-head h4 {
+      margin: 0;
+      font-size: 1rem;
+      color: var(--ink);
+    }
+
+    .close-x {
+      background: transparent;
+      border: 0;
+      cursor: pointer;
+    }
+
+    .modal-body {
+      overflow: auto;
+      padding: 16px;
+    }
+
+    .profile-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    @media (max-width: 780px) {
+      .profile-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .profile-kv {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 8px 10px;
+      background: #fff;
+    }
+
+    .profile-kv label {
+      display: block;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .profile-kv span {
+      font-size: 14px;
+      color: var(--ink);
+    }
+
+    .docs-layout {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 12px;
+    }
+
+    @media (max-width: 860px) {
+      .docs-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .doc-list {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 8px;
+      background: #fff;
+      max-height: clamp(260px, 52vh, 560px);
+      overflow: auto;
+    }
+
+    .doc-item {
+      width: 100%;
+      text-align: left;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 8px 10px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .doc-item.active {
+      border-color: #b9dbe6;
+      background: #f6fbff;
+    }
+
+    .preview-pane {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      height: clamp(260px, 52vh, 560px);
+      display: grid;
+      place-items: center;
+      padding: 8px;
+    }
+
+    .preview-frame,
+    .preview-img {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      border-radius: 10px;
+      object-fit: contain;
+      background: #fff;
+    }
+
+    .preview-empty {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    /* Tiny devices: full-bleed modal */
+    @media (max-width: 420px) {
+      .modal {
+        padding: 0;
       }
 
-      @media (max-width: 980px) {
-        .two-col-wrap {
-          grid-template-columns: 1fr;
-        }
+      .modal-card {
+        width: 100vw;
+        height: 100dvh;
+        max-height: 100dvh;
+        border-radius: 0;
       }
 
-      .panel {
-        background: var(--card);
-        border: 1px solid var(--line);
-        border-radius: var(--radius);
-        padding: 12px;
+      .modal-head {
+        border-radius: 0;
       }
+    }
+  </style>
+</head>
 
-      .panel h3 {
-        margin: 0 0 0.5rem 0;
-        font-size: 1rem;
-      }
+<body>
+  <div class="container">
+    <!-- ======= SIDEBAR (unchanged) ======= -->
+    <aside>
+      <div class="toggle">
+        <div class="logo">
+          <img src="../img/simpLogo.png" alt="logo" />
+          <h2>SIMP<span class="danger">Project</span></h2>
+        </div>
+        <div class="close" id="close-btn"><span class="material-icons-sharp">close</span></div>
+      </div>
 
-      .search {
-        position: relative;
-        margin-bottom: 0.6rem;
-      }
+      <div class="sidebar">
+        <a href="dashboard.html"><span class="material-icons-sharp">dashboard</span>
+          <h3>Dashboard</h3>
+        </a>
+        <a href="workerVerification.html"><span class="material-icons-sharp">engineering</span>
+          <h3>Workers<br />Verification</h3>
+        </a>
+        <a href="jobVerification.html"><span class="material-icons-sharp">work</span>
+          <h3>Jobs<br />Verification</h3>
+        </a>
+        <a href="jobApplicationVerification.html" class="active"><span class="material-icons-sharp">approval</span>
+          <h3>Application<br />Verification</h3>
+        </a>
+        <a href="adminVerification.html"><span class="material-icons-sharp">shield</span>
+          <h3>Admin<br />Verification</h3>
+        </a>
+        <a href="courses.html"><span class="material-icons-sharp">school</span>
+          <h3>Course<br />Publisher</h3>
+        </a>
+        <a href="#"><span class="material-icons-sharp">settings</span>
+          <h3>Settings</h3>
+        </a>
+        <a href="#" id="logout-btn"><span class="material-icons-sharp">logout</span>
+          <h3>Logout</h3>
+        </a>
+      </div>
+    </aside>
 
-      .search input {
-        width: 100%;
-        border: 1px solid var(--line);
-        border-radius: 10px;
-        padding: 10px 12px 10px 36px;
-        outline: none;
-        background: #fcfeff;
-      }
-
-      .search .material-icons-sharp {
-        position: absolute;
-        left: 10px;
-        top: 50%;
-        transform: translateY(-50%);
-        font-size: 20px;
-        color: var(--muted);
-      }
-
-      .list {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        max-height: 70vh;
-        overflow: auto;
-      }
-
-      .item {
-        display: grid;
-        grid-template-columns: 48px 1fr auto;
-        align-items: center;
-        gap: 10px;
-        padding: 10px;
-        border: 1px solid var(--line);
-        border-radius: 12px;
-        cursor: pointer;
-        transition: background 0.15s ease;
-        background: #fff;
-      }
-
-      .item:hover {
-        background: #f6fafc;
-      }
-
-      .item.active {
-        outline: 2px solid var(--brand);
-        background: #f3fdf7;
-      }
-
-      .thumb {
-        width: 48px;
-        height: 48px;
-        border-radius: 8px;
-        object-fit: cover;
-        border: 1px solid var(--line);
-      }
-
-      .pill {
-        font-size: 0.75rem;
-        background: var(--pill);
-        padding: 4px 8px;
-        border-radius: 999px;
-        color: #2463a6;
-        border: 1px solid #d6e9ff;
-        white-space: nowrap;
-      }
-
-      .details {
-        background: var(--card);
-        border: 1px solid var(--line);
-        border-radius: var(--radius);
-        overflow: clip;
-      }
-
-      .details .head {
-        display: flex;
-        gap: 16px;
-        padding: 16px;
-        border-bottom: 1px solid var(--line);
-        align-items: center;
-        background: linear-gradient(180deg, #f9fbff, #ffffff);
-      }
-
-      .details .head img {
-        width: 20%;
-        height: auto;
-        border-radius: 12px;
-        object-fit: cover;
-        border: 1px solid var(--line);
-        background: #fff;
-      }
-
-      .details .head .name {
-        font-size: 1.1rem;
-        font-weight: 700;
-        margin: 0 0 2px;
-      }
-
-      .meta {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-        margin-top: 4px;
-      }
-
-      .meta .kv {
-        font-size: 0.85rem;
-        color: var(--muted);
-      }
-
-      .grid-2 {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-        padding: 16px;
-      }
-
-      @media (max-width: 980px) {
-        .grid-2 {
-          grid-template-columns: 1fr;
-        }
-      }
-
-      .card {
-        border: 1px solid var(--line);
-        border-radius: 12px;
-        padding: 12px;
-        background: #fff;
-      }
-
-      .card h4 {
-        margin: 0 0 0.6rem 0;
-        font-size: 0.95rem;
-      }
-
-      .info-list {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 8px 12px;
-        font-size: 0.95rem;
-      }
-
-      @media (max-width: 640px) {
-        .info-list {
-          grid-template-columns: 1fr;
-        }
-      }
-
-      .info-list .label {
-        color: var(--muted);
-        font-size: 0.85rem;
-        display: block;
-      }
-
-      .actions-row {
-        display: flex;
-        gap: 10px;
-        padding: 12px 16px 16px;
-        border-top: 1px solid var(--line);
-        justify-content: flex-end;
-        background: #fff;
-      }
-
-      .btn {
-        appearance: none;
-        border: 1px solid var(--line);
-        background: #fff;
-        border-radius: 10px;
-        padding: 9px 12px;
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        font-weight: 600;
-      }
-
-      .btn.primary {
-        background: var(--brand);
-        color: #fff;
-        border-color: var(--brand);
-      }
-
-      .btn.reject {
-        background: #fff5f5;
-        color: var(--danger);
-        border-color: #ffd7d7;
-      }
-
-      .btn:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-      }
-
-      .empty-state {
-        padding: 24px;
-        border: 1px dashed var(--line);
-        border-radius: 12px;
-        background: #fbfeff;
-        text-align: center;
-        color: var(--muted);
-      }
-    </style>
-  </head>
-
-  <body>
-    <div class="container">
-      <aside>
-        <div class="toggle">
-          <div class="logo">
-            <img src="../img/simpLogo.png" alt="logo" />
-            <h2>SIMP<span class="danger">Project</span></h2>
+    <!-- ======= MAIN ======= -->
+    <main>
+      <section id="tab-jobs">
+        <div class="two-col-wrap">
+          <!-- LEFT: approved jobs + search -->
+          <div class="panel">
+            <h3>Choose the best candidate for each job.</h3>
+            <div class="search">
+              <span class="material-icons-sharp">search</span>
+              <input id="jobSearchInput" type="text" placeholder="Search approved jobs…" />
+            </div>
+            <div id="jobList" class="job-list">
+              <div class="empty">Loading approved jobs…</div>
+            </div>
           </div>
-          <div class="close" id="close-btn">
-            <span class="material-icons-sharp">close</span>
+
+          <!-- RIGHT: details + applicants -->
+          <div class="panel">
+            <div id="jobDetails" class="detail">
+              <div class="empty">Select a job to see details and applicants.</div>
+            </div>
+            <div class="divider"></div>
+            <h3>List of Applicants</h3>
+            <div id="applicantsWrap" class="table-wrap">
+              <div class="empty">No job selected.</div>
+            </div>
+            <!-- Global "Hire" button (disabled until one applicant is selected) -->
+            <div id="globalActions" class="actions-row" style="display:none">
+              <button id="hireBtn" class="btn brand" type="button" disabled>
+                <span class="material-icons-sharp">badge</span> Hire Selected Applicant
+              </button>
+            </div>
           </div>
         </div>
+      </section>
+    </main>
+  </div>
 
-        <div class="sidebar">
-          <a href="dashboard.html"
-            ><span class="material-icons-sharp">dashboard</span>
-            <h3>Dashboard</h3></a
-          >
-          <a href="workerVerification.html"
-            ><span class="material-icons-sharp">engineering</span>
-            <h3>Workers<br />Verification</h3></a
-          >
-          <a href="jobVerification.html"
-            ><span class="material-icons-sharp">work</span>
-            <h3>Jobs<br />Verification</h3></a
-          >
-          <a href="jobApplicationVerification.html" class="active">
-            <span class="material-icons-sharp">approval</span>
-            <h3>Application<br />Verification</h3>
-          </a>
-          <a href="adminVerification.html"
-            ><span class="material-icons-sharp">shield</span>
-            <h3>Admin<br />Verification</h3></a
-          >
-          <a href="courses.html"
-            ><span class="material-icons-sharp">school</span>
-            <h3>Course<br />Publisher</h3></a
-          >
-          <a href="#"
-            ><span class="material-icons-sharp">settings</span>
-            <h3>Settings</h3></a
-          >
-          <a href="#" id="logout-btn"
-            ><span class="material-icons-sharp">logout</span>
-            <h3>Logout</h3></a
-          >
-        </div>
-      </aside>
-
-      <main>
-        <section id="tab-jobs">
-          <div class="two-col-wrap">
-            <div class="panel">
-              <h3>Jobs for Verification</h3>
-              <div class="search">
-                <span class="material-icons-sharp">search</span>
-                <input
-                  id="jobSearchInput"
-                  type="text"
-                  placeholder="Search title, category, location…"
-                />
-              </div>
-              <div style="margin-bottom: 0.6rem">
-                <select
-                  id="jobStatusFilter"
-                  style="
-                    width: 100%;
-                    border: 1px solid var(--line);
-                    border-radius: 10px;
-                    padding: 10px 12px;
-                    background: #fcfeff;
-                    outline: none;
-                  "
-                >
-                  <option value="">All statuses</option>
-                  <option value="pending">Pending</option>
-                  <option value="approved">Approved</option>
-                  <option value="rejected">Rejected</option>
-                </select>
-              </div>
-              <div id="jobList" class="list"></div>
-              <div id="emptyJobs" class="empty-state" style="display: none">
-                No jobs pending review.
-              </div>
-            </div>
-
-            <div class="details" id="jobDetailsPane">
-              <div class="empty-state">
-                Select a job on the left to review its details.
-              </div>
-            </div>
-          </div>
-        </section>
-      </main>
+  <!-- Single "View More" Modal -->
+  <div id="moreModal" class="modal" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="moreTitle">
+      <div class="modal-head">
+        <h4 id="moreTitle">Applicant Details & Documents</h4>
+        <button class="close-x" onclick="closeMore()"><span class="material-icons-sharp">close</span></button>
+      </div>
+      <div class="modal-body">
+        <div id="moreBody"></div>
+      </div>
     </div>
+  </div>
 
-    <script>
-      const jobs = [
-        {
-          id: "job_001",
-          photo: "https://picsum.photos/id/103/800/500",
-          title: "Install 8-Cam CCTV Package",
-          category: "CCTV",
-          difficulty: "Intermediate",
-          pay: 8500.0,
-          datetime: "2025-08-29 09:00",
-          location: "Quezon City, Metro Manila",
-          status: "pending",
-          createdAt: "2025-08-24T10:00:00+08:00",
-        },
-        {
-          id: "job_002",
-          photo: "https://picsum.photos/id/104/800/500",
-          title: "Small Office Network Setup",
-          category: "Networking",
-          difficulty: "Advanced",
-          pay: 12000.0,
-          datetime: "2025-09-01 13:30",
-          location: "Makati, Metro Manila",
-          status: "rejected",
-          createdAt: "2025-08-25T16:35:00+08:00",
-        },
-        {
-          id: "job_003",
-          photo: "https://picsum.photos/id/1050/800/500",
-          title: "Replace Damaged Power Lines",
-          category: "Electrical",
-          difficulty: "Advanced",
-          pay: 6500.0,
-          datetime: "2025-08-30 08:00",
-          location: "Pasig, Metro Manila",
-          status: "approved",
-          createdAt: "2025-08-26T09:50:00+08:00",
-        },
-      ];
+  <script>
+    // ======= Dummy Data =======
+    const SAMPLE_PDF = "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf";
+    const SAMPLE_IMG = "https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=1200&auto=format&fit=crop";
 
-      const jobSearchInput = document.getElementById("jobSearchInput");
-      const jobStatusFilter = document.getElementById("jobStatusFilter"); // ✅ ADDED
-      const jobList = document.getElementById("jobList");
-      const emptyJobs = document.getElementById("emptyJobs");
-      const jobDetailsPane = document.getElementById("jobDetailsPane");
+    const dummyJobs = [
+      { id: 101, title: "Warehouse Inventory Tagging", category: "Logistics", difficulty: "Intermediate", location: "Taguig City", scheduled_at: "2025-09-02T09:00:00+08:00", status: "approved", photo_url: "https://images.unsplash.com/photo-1586521995568-39a1d88cd3a5?q=80&w=1600&auto=format&fit=crop" },
+      { id: 102, title: "On-site Event Usher", category: "Events", difficulty: "Easy", location: "Quezon City", scheduled_at: "2025-09-05T14:00:00+08:00", status: "approved", photo_url: "https://images.unsplash.com/photo-1515165562835-c3b8c9353a2e?q=80&w=1600&auto=format&fit=crop" },
+      { id: 103, title: "Data Encoding (Backlog)", category: "Admin", difficulty: "Intermediate", location: "Remote", scheduled_at: "2025-09-03T10:00:00+08:00", status: "pending", photo_url: "https://images.unsplash.com/photo-1518085250887-2f903c200fee?q=80&w=1600&auto=format&fit=crop" }
+    ];
 
-      let activeJobId = null;
+    // Applications with previewable docs
+    let dummyApplications = [
+      { id: 5001, job_id: 101, worker_id: 9001, applied_at: "2025-08-28T11:22:00+08:00", status: "applied", docs: { resume: SAMPLE_PDF, nbi_clearance: SAMPLE_PDF, police_clearance: "", transcript_of_records: "", portfolio: SAMPLE_IMG, certificates: SAMPLE_PDF } },
+      { id: 5002, job_id: 101, worker_id: 9002, applied_at: "2025-08-28T12:10:00+08:00", status: "review", docs: { resume: SAMPLE_PDF, nbi_clearance: SAMPLE_PDF, police_clearance: SAMPLE_PDF, transcript_of_records: SAMPLE_PDF, portfolio: "", certificates: SAMPLE_PDF } },
+      { id: 5003, job_id: 101, worker_id: 9003, applied_at: "2025-08-28T12:55:00+08:00", status: "applied", docs: { resume: SAMPLE_PDF, nbi_clearance: "", police_clearance: SAMPLE_PDF, transcript_of_records: SAMPLE_PDF, portfolio: SAMPLE_IMG, certificates: "" } },
+      { id: 5004, job_id: 102, worker_id: 9004, applied_at: "2025-08-29T09:05:00+08:00", status: "applied", docs: { resume: SAMPLE_PDF, nbi_clearance: SAMPLE_PDF, police_clearance: SAMPLE_PDF, transcript_of_records: "", portfolio: SAMPLE_IMG, certificates: "" } },
+      { id: 5005, job_id: 102, worker_id: 9005, applied_at: "2025-08-29T10:20:00+08:00", status: "applied", docs: { resume: SAMPLE_PDF, nbi_clearance: "", police_clearance: "", transcript_of_records: "", portfolio: SAMPLE_IMG, certificates: SAMPLE_PDF } }
+    ];
 
-      function renderJobList(filter = "") {
-        jobList.innerHTML = "";
-        const q = filter.trim().toLowerCase();
-        const selectedStatus = (jobStatusFilter?.value || "").toLowerCase(); // ✅ ADDED
+    // Workers directory
+    const dummyWorkers = {
+      9001: { id: 9001, full_name: "Mark Reyes", profession: "Warehouse Associate", highest_qualification: "BSBA (Operations)", employment_status: "Contract", main_income_source: "Logistics Staffing", bank_name: "BPI", account_holder: "MARK REYES", account_number: "1234-5678-90", location: "Pasig" },
+      9002: { id: 9002, full_name: "Angela Cruz", profession: "Inventory Controller", highest_qualification: "BS Industrial Engineering", employment_status: "Employed", main_income_source: "Full-time Job", bank_name: "BDO", account_holder: "ANGELA S. CRUZ", account_number: "0065-2211-89", location: "Taguig" },
+      9003: { id: 9003, full_name: "Jomar Dela Cruz", profession: "Cycle Count Lead", highest_qualification: "BS Accountancy (Undergrad)", employment_status: "Freelance", main_income_source: "Gig Work", bank_name: "LANDBANK", account_holder: "JOMAR DELA CRUZ", account_number: "3210-9988-77", location: "Makati" },
+      9004: { id: 9004, full_name: "Paolo Santos", profession: "Event Marshal", highest_qualification: "BA Communication (Ongoing)", employment_status: "Part-time", main_income_source: "Events", bank_name: "UnionBank", account_holder: "PAOLO M. SANTOS", account_number: "1100-2200-33", location: "QC" },
+      9005: { id: 9005, full_name: "Rhea Tan", profession: "Tourism Student / Usher", highest_qualification: "BS Tourism (3rd Year)", employment_status: "Student", main_income_source: "Allowances + Events", bank_name: "GCash (linked to BPI)", account_holder: "RHEA A. TAN", account_number: "09xx-xxx-5555", location: "Mandaluyong" }
+    };
 
-        const filtered = jobs.filter(
-          (j) =>
-            (!q ||
-              j.title.toLowerCase().includes(q) ||
-              j.category.toLowerCase().includes(q) ||
-              j.location.toLowerCase().includes(q)) &&
-            (!selectedStatus || j.status.toLowerCase() === selectedStatus) // ✅ ADDED
-        );
+    // ======= State =======
+    let jobs = [];
+    let filteredJobs = [];
+    let activeJobId = null;
+    let selectedApplicantId = null; // <-- single selection
 
-        emptyJobs.style.display = filtered.length ? "none" : "block";
+    // ======= Helpers =======
+    const $ = (s, root = document) => root.querySelector(s);
+    const el = (tag, attrs = {}) => {
+      const n = document.createElement(tag);
+      Object.entries(attrs).forEach(([k, v]) => {
+        if (k === "class") n.className = v;
+        else if (k === "text") n.textContent = v;
+        else if (k === "html") n.innerHTML = v;
+        else n.setAttribute(k, v);
+      });
+      return n;
+    };
+    const fmtDateTime = (iso) => {
+      if (!iso) return "—";
+      const d = new Date(iso);
+      return d.toLocaleString();
+    };
+    const isImageUrl = (url = "") => /\.(png|jpe?g|gif|webp|bmp|svg)(\?.*)?$/i.test(url);
+    const isPdfUrl = (url = "") => /\.pdf(\?.*)?$/i.test(url);
 
-        filtered
-          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-          .forEach((j) => {
-            const item = document.createElement("div");
-            item.className = "item";
-            if (j.id === activeJobId) item.classList.add("active");
-            item.dataset.id = j.id;
-
-            item.innerHTML = `
-            <img class="thumb" src="${j.photo}" alt="${j.title}">
-            <div>
-              <div style="font-weight:700">${j.title}</div>
-              <div style="font-size:.85rem;color:var(--muted)">${
-                j.category
-              } · ${j.location}</div>
-            </div>
-            <span class="pill">${
-              j.status.charAt(0).toUpperCase() + j.status.slice(1)
-            }</span>
-          `;
-
-            item.addEventListener("click", () => {
-              activeJobId = j.id;
-              document
-                .querySelectorAll("#jobList .item")
-                .forEach((i) => i.classList.remove("active"));
-              item.classList.add("active");
-              renderJobDetails(j);
-            });
-
-            jobList.appendChild(item);
-          });
+    // ======= Load Approved Jobs (Dummy) =======
+    async function loadApprovedJobs() {
+      await new Promise(r => setTimeout(r, 200));
+      jobs = dummyJobs.filter(j => j.status === "approved")
+        .sort((a, b) => new Date(a.scheduled_at) - new Date(b.scheduled_at));
+      filteredJobs = jobs.slice();
+      renderJobList();
+      if (filteredJobs.length) selectJob(filteredJobs[0].id);
+      else {
+        $("#jobDetails").innerHTML = `<div class="empty">No approved jobs.</div>`;
+        $("#applicantsWrap").innerHTML = `<div class="empty">No job selected.</div>`;
+        $("#globalActions").style.display = "none";
       }
+    }
 
-      jobSearchInput?.addEventListener("input", (e) =>
-        renderJobList(e.target.value)
-      );
-      jobStatusFilter?.addEventListener("change", () =>
-        renderJobList(jobSearchInput?.value || "")
-      ); // ✅ ADDED
+    function renderJobList() {
+      const list = $("#jobList");
+      if (!filteredJobs.length) { list.innerHTML = `<div class="empty">No matching approved jobs.</div>`; return; }
+      list.innerHTML = "";
+      filteredJobs.forEach((j) => {
+        const item = el("div", { class: `job-item${activeJobId === j.id ? " active" : ""}` });
+        item.addEventListener("click", () => selectJob(j.id));
+        const h4 = el("h4", { text: j.title || "Untitled job" });
+        const meta = el("div", { class: "job-meta" });
+        meta.innerHTML = `
+          <span><strong>${j.category || "–"}</strong></span>
+          <span>• ${j.difficulty || "–"}</span>
+          <span>• ${j.location || "–"}</span>
+          <span>• ${fmtDateTime(j.scheduled_at)}</span>
+        `;
+        item.append(h4, meta);
+        list.appendChild(item);
+      });
+    }
 
-      function renderJobDetails(job) {
-        jobDetailsPane.innerHTML = `
-        <div class="head" style="display:block; padding:0;">
-          <img src="${job.photo}" alt="${
-          job.title
-        }" style="width:100%; height:240px; object-fit:cover; border-radius:12px 12px 0 0; margin-bottom:12px;">
-          <div style="padding:0 16px 12px;">
-            <div class="name">${job.title}</div>
-            <div class="meta">
-              <span class="kv"><strong>Category:</strong> ${job.category}</span>
-              <span class="kv"><strong>Difficulty:</strong> ${
-                job.difficulty
-              }</span>
-              <span class="kv"><strong>Pay:</strong> ₱${job.pay.toLocaleString(
-                undefined,
-                { minimumFractionDigits: 2, maximumFractionDigits: 2 }
-              )}</span>
-            </div>
-          </div>
+    // ======= Search =======
+    $("#jobSearchInput").addEventListener("input", (e) => {
+      const q = e.target.value.toLowerCase().trim();
+      filteredJobs = !q ? jobs.slice() :
+        jobs.filter((j) =>
+          [j.title, j.category, j.difficulty, j.location]
+            .filter(Boolean)
+            .some((v) => String(v).toLowerCase().includes(q))
+        );
+      renderJobList();
+    });
+
+    // ======= Select Job & Load Details =======
+    async function selectJob(jobId) {
+      activeJobId = jobId;
+      selectedApplicantId = null; // reset selection when changing job
+      renderJobList();
+
+      const job = jobs.find(j => j.id === jobId);
+      if (!job) {
+        $("#jobDetails").innerHTML = `<div class="empty">Failed to load job details.</div>`;
+        $("#applicantsWrap").innerHTML = `<div class="empty">Failed to load applicants.</div>`;
+        $("#globalActions").style.display = "none";
+        return;
+      }
+      renderJobDetails(job);
+      loadApplicants(job.id);
+    }
+
+    function renderJobDetails(job) {
+      $("#jobDetails").innerHTML = `
+        <div class="detail-header">
+          <img class="job-photo" src="${job.photo_url || ""}" alt="Job photo" />
+          <h3 style="margin:4px 0 0; color: var(--ink);">${job.title || "Untitled job"}</h3>
         </div>
-        <div class="grid-2">
-          <div class="card">
-            <h4>Schedule</h4>
-            <div class="info-list">
-              <div><span class="label">Date / Time</span>${job.datetime}</div>
-              <div><span class="label">Status</span><span class="pill" id="jobStatusPill">${
-                job.status.charAt(0).toUpperCase() + job.status.slice(1)
-              }</span></div>
-            </div>
-          </div>
-        <div class="card">
-            <h4>Location</h4>
-            <div class="info-list">
-              <div style="grid-column: 1 / -1;"><span class="label">Address</span>${
-                job.location
-              }</div>
-            </div>
-          </div>
-        </div>
-        <div class="actions-row">
-          <button class="btn reject" id="rejectJobBtn">Reject</button>
-          <button class="btn primary" id="approveJobBtn">Approve</button>
+
+        <div class="detail-grid">
+          <div class="kv"><label>Category</label><span>${job.category || "—"}</span></div>
+          <div class="kv"><label>Difficulty</label><span>${job.difficulty || "—"}</span></div>
+          <div class="kv"><label>Date & Time</label><span>${fmtDateTime(job.scheduled_at)}</span></div>
+          <div class="kv"><label>Location</label><span>${job.location || "—"}</span></div>
         </div>
       `;
+    }
 
-        document
-          .getElementById("approveJobBtn")
-          .addEventListener("click", () => setJobStatus(job, "approved"));
-        document
-          .getElementById("rejectJobBtn")
-          .addEventListener("click", () => setJobStatus(job, "rejected"));
+    // ======= Load Applicants (Dummy) =======
+    function loadApplicants(jobId) {
+      const apps = dummyApplications.filter(a => a.job_id === jobId);
+      const wrap = $("#applicantsWrap");
+      const actionsBar = $("#globalActions");
+      $("#hireBtn").disabled = true; // reset
+
+      if (!apps.length) {
+        wrap.innerHTML = `<div class="empty">No applicants yet for this job.</div>`;
+        actionsBar.style.display = "none";
+        return;
       }
 
-      function setJobStatus(job, status) {
-        job.status = status;
-        if (activeJobId === job.id) renderJobDetails(job);
-        renderJobList(jobSearchInput?.value || "");
-      }
+      wrap.innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th>Select</th>
+              <th>Full Name</th>
+              <th>Profession</th>
+              <th>Highest <br>Qualification</th>
+              <th>Employment <br>Status</th>
+              <th>Applied</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="appsTbody"></tbody>
+        </table>
+      `;
+      actionsBar.style.display = "flex";
 
-      renderJobList();
-      if (jobs.length) {
-        activeJobId = jobs[0].id;
-        renderJobDetails(jobs[0]);
-        setTimeout(() => {
-          document
-            .querySelector(`#jobList .item[data-id="${jobs[0].id}"]`)
-            ?.classList.add("active");
+      const tbody = $("#appsTbody");
+      tbody.innerHTML = "";
+
+      apps.forEach((a) => {
+        const w = dummyWorkers[a.worker_id] || {};
+        const tr = document.createElement("tr");
+
+        // radio selection
+        const radioId = `sel-${a.id}`;
+        const selectCell = `
+          <td class="select-radio">
+            <input type="radio" name="hireSelect" id="${radioId}" value="${a.id}" ${a.status === "hired" ? "disabled" : ""} />
+          </td>
+        `;
+
+        tr.innerHTML = `
+          ${selectCell}
+          <td>${w.full_name || "—"} ${a.status === "hired" ? '<span style="color:#147a35; font-size:12px;">(Hired)</span>' : ""}</td>
+          <td>${w.profession || "—"}</td>
+          <td>${w.highest_qualification || "—"}</td>
+          <td>${w.employment_status || "—"}</td>
+          <td>${fmtDateTime(a.applied_at)}</td>
+          <td></td>
+        `;
+
+        const actionsCell = tr.querySelector("td:last-child");
+
+        // View resume
+        const moreBtn = el("button", { class: "btn", type: "button" });
+        moreBtn.innerHTML = `view resume`;
+        moreBtn.addEventListener("click", () => showMore(w, a));
+        actionsCell.append(moreBtn);
+
+        tbody.appendChild(tr);
+
+        // wire radio
+        const radio = tr.querySelector(`#${radioId}`);
+        radio?.addEventListener("change", () => {
+          selectedApplicantId = Number(radio.value);
+          $("#hireBtn").disabled = !selectedApplicantId;
         });
+      });
+    }
+
+    // ======= Hire Flow (Dummy) via global Hire button =======
+    document.getElementById("hireBtn").addEventListener("click", () => {
+      if (!activeJobId || !selectedApplicantId) return;
+      const app = dummyApplications.find(a => a.id === selectedApplicantId && a.job_id === activeJobId);
+      if (!app) return;
+
+      const ok = confirm("Hire this applicant? This will mark others as not selected.");
+      if (!ok) return;
+
+      // mark selected as hired; others (same job) as rejected if still applied/review
+      dummyApplications = dummyApplications.map(a =>
+        a.id === app.id ? { ...a, status: "hired" } : a
+      );
+      dummyApplications = dummyApplications.map(a =>
+        a.job_id === activeJobId && a.id !== app.id && (a.status === "applied" || a.status === "review")
+          ? { ...a, status: "rejected" } : a
+      );
+
+      // refresh UI
+      loadApplicants(activeJobId);
+      selectedApplicantId = null;
+      alert("Applicant hired successfully (dummy).");
+    });
+
+    // ======= View More Modal (ALL details + previewer) =======
+    function showMore(worker, app) {
+      const body = $("#moreBody");
+      const resumeUrl = app?.docs?.resume || "";
+
+      // Set the modal title programmatically
+      const title = $("#moreTitle");
+      if (title) title.textContent = "Resume Preview";
+
+      if (!resumeUrl) {
+        body.innerHTML = `
+      <div class="preview-pane">
+        <div class="preview-empty">No resume uploaded by this applicant.</div>
+      </div>
+    `;
+      } else {
+        // Render only the resume (PDF or image)
+        const isImg = isImageUrl(resumeUrl);
+        const isPdf = isPdfUrl(resumeUrl);
+
+        body.innerHTML = `
+      <div class="preview-pane">
+        ${isImg
+            ? `<img class="preview-img" alt="Resume" src="${resumeUrl}">`
+            : isPdf
+              ? `<iframe class="preview-frame" title="Resume" src="${resumeUrl}"></iframe>`
+              : `
+                <div class="preview-empty">
+                  Cannot preview this file type here.
+                  <div style="margin-top:8px">
+                    <a class="btn" href="${resumeUrl}" target="_blank" rel="noopener">
+                      <span class="material-icons-sharp">open_in_new</span> Open Resume
+                    </a>
+                  </div>
+                </div>
+              `
+          }
+      </div>
+    `;
       }
-    </script>
-  </body>
+
+      // Open modal
+      $("#moreModal").classList.add("open");
+      $("#moreModal").setAttribute("aria-hidden", "false");
+    }
+
+    function selectDoc(buttonEl, url, label) {
+      document.querySelectorAll(".doc-item").forEach(b => b.classList.remove("active"));
+      buttonEl.classList.add("active");
+
+      const pane = document.getElementById("previewPane");
+      pane.innerHTML = "";
+
+      if (isImageUrl(url)) {
+        const img = document.createElement("img");
+        img.className = "preview-img";
+        img.alt = label;
+        img.src = url;
+        pane.appendChild(img);
+      } else if (isPdfUrl(url)) {
+        const frame = document.createElement("iframe");
+        frame.className = "preview-frame";
+        frame.src = url;
+        frame.title = label;
+        pane.appendChild(frame);
+      } else {
+        const wrapper = document.createElement("div");
+        wrapper.className = "preview-empty";
+        wrapper.innerHTML = `
+          Cannot preview this file type here.
+          <div style="margin-top:8px">
+            <a class="btn" href="${url}" target="_blank" rel="noopener">
+              <span class="material-icons-sharp">open_in_new</span> Open ${label}
+            </a>
+          </div>
+        `;
+        pane.appendChild(wrapper);
+      }
+    }
+
+    function closeMore() {
+      document.getElementById("moreModal").classList.remove("open");
+      document.getElementById("moreModal").setAttribute("aria-hidden", "true");
+    }
+
+    // Close modal on ESC / backdrop click
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") { closeMore(); } });
+    document.getElementById("moreModal").addEventListener("click", (e) => { if (e.target.id === "moreModal") closeMore(); });
+
+    // ======= Init =======
+    document.addEventListener("DOMContentLoaded", loadApprovedJobs);
+  </script>
+</body>
+
 </html>
