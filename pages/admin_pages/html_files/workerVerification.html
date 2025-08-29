@@ -4,7 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="../css_files/sideBar.css" />
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp"
+      rel="stylesheet"
+    />
     <title>Worker Verification</title>
 
     <style>
@@ -20,72 +23,315 @@
         --pill: #eef6ff;
         --radius: 14px;
       }
-      main { margin-top: 1.4rem; }
-      .workers-wrap { display: grid; grid-template-columns: 340px 1fr; gap: 1rem; }
-      @media (max-width: 980px) { .workers-wrap { grid-template-columns: 1fr; } }
+      main {
+        margin-top: 1.4rem;
+      }
+      .workers-wrap {
+        display: grid;
+        grid-template-columns: 340px 1fr;
+        gap: 1rem;
+      }
+      @media (max-width: 980px) {
+        .workers-wrap {
+          grid-template-columns: 1fr;
+        }
+      }
 
-      .panel { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px; }
-      .panel h3 { margin: 0 0 0.5rem 0; font-size: 1rem; }
+      .panel {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 12px;
+      }
+      .panel h3 {
+        margin: 0 0 0.5rem 0;
+        font-size: 1rem;
+      }
 
-      .search { position: relative; margin-bottom: 0.6rem; }
-      .search input { width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px 10px 36px; outline: none; background: #fcfeff; }
-      .search .material-icons-sharp { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 20px; color: var(--muted); }
+      .search {
+        position: relative;
+        margin-bottom: 0.6rem;
+      }
+      .search input {
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 10px 12px 10px 36px;
+        outline: none;
+        background: #fcfeff;
+      }
+      .search .material-icons-sharp {
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 20px;
+        color: var(--muted);
+      }
 
-      .worker-list { display: flex; flex-direction: column; gap: 8px; max-height: 70vh; overflow: auto; }
-      .worker-item { display: grid; grid-template-columns: 40px 1fr auto; align-items: center; gap: 10px; padding: 10px; border: 1px solid var(--line); border-radius: 12px; cursor: pointer; transition: background 0.15s ease; }
-      .worker-item:hover { background: #f6fafc; }
-      .worker-item.active { outline: 2px solid var(--brand); background: #f3fdf7; }
+      .worker-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        max-height: 70vh;
+        overflow: auto;
+      }
+      .worker-item {
+        display: grid;
+        grid-template-columns: 40px 1fr auto;
+        align-items: center;
+        gap: 10px;
+        padding: 10px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        cursor: pointer;
+        transition: background 0.15s ease;
+      }
+      .worker-item:hover {
+        background: #f6fafc;
+      }
+      .worker-item.active {
+        outline: 2px solid var(--brand);
+        background: #f3fdf7;
+      }
 
-      .avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid var(--line); }
+      .avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 1px solid var(--line);
+      }
 
-      .pill { font-size: 0.75rem; background: var(--pill); padding: 4px 8px; border-radius: 999px; color: #2463a6; border: 1px solid #d6e9ff; white-space: nowrap; }
+      .pill {
+        font-size: 0.75rem;
+        background: var(--pill);
+        padding: 4px 8px;
+        border-radius: 999px;
+        color: #2463a6;
+        border: 1px solid #d6e9ff;
+        white-space: nowrap;
+      }
 
-      .details { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); overflow: clip; }
-      .details .head { display: flex; gap: 16px; padding: 16px; border-bottom: 1px solid var(--line); align-items: center; background: linear-gradient(180deg, #f9fbff, #ffffff); }
-      .details .head img { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; border: 1px solid var(--line); background: #fff; }
-      .details .head .name { font-size: 1.1rem; font-weight: 700; margin: 0 0 2px; }
+      .details {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        overflow: clip;
+      }
+      .details .head {
+        display: flex;
+        gap: 16px;
+        padding: 16px;
+        border-bottom: 1px solid var(--line);
+        align-items: center;
+        background: linear-gradient(180deg, #f9fbff, #ffffff);
+      }
+      .details .head img {
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 1px solid var(--line);
+        background: #fff;
+      }
+      .details .head .name {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin: 0 0 2px;
+      }
 
-      .meta { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
-      .meta .kv { font-size: 0.85rem; color: var(--muted); }
+      .meta {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 4px;
+      }
+      .meta .kv {
+        font-size: 0.85rem;
+        color: var(--muted);
+      }
 
-      .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 16px; }
-      @media (max-width: 980px) { .grid-2 { grid-template-columns: 1fr; } }
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        padding: 16px;
+      }
+      @media (max-width: 980px) {
+        .grid-2 {
+          grid-template-columns: 1fr;
+        }
+      }
 
-      .card { border: 1px solid var(--line); border-radius: 12px; padding: 12px; background: #fff; }
-      .card h4 { margin: 0 0 0.6rem 0; font-size: 0.95rem; }
+      .card {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 12px;
+        background: #fff;
+      }
+      .card h4 {
+        margin: 0 0 0.6rem 0;
+        font-size: 0.95rem;
+      }
 
-      .info-list { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; font-size: 0.95rem; }
-      @media (max-width: 640px) { .info-list { grid-template-columns: 1fr; } }
-      .info-list .label { color: var(--muted); font-size: 0.85rem; display: block; }
+      .info-list {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px 12px;
+        font-size: 0.95rem;
+      }
+      @media (max-width: 640px) {
+        .info-list {
+          grid-template-columns: 1fr;
+        }
+      }
+      .info-list .label {
+        color: var(--muted);
+        font-size: 0.85rem;
+        display: block;
+      }
 
-      .doc-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; }
-      .doc { border: 1px solid var(--line); border-radius: 12px; padding: 10px; display: grid; grid-template-rows: auto auto 1fr auto; gap: 6px; background: #fcfeff; }
-      .doc .doc-title { font-weight: 600; display: flex; align-items: center; gap: 6px; }
-      .doc .actions { display: flex; gap: 8px; margin-top: 6px; }
+      .doc-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 10px;
+      }
+      .doc {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 10px;
+        display: grid;
+        grid-template-rows: auto auto 1fr auto;
+        gap: 6px;
+        background: #fcfeff;
+      }
+      .doc .doc-title {
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .doc .actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 6px;
+      }
 
-      .btn { appearance: none; border: 1px solid var(--line); background: #fff; border-radius: 10px; padding: 8px 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
-      .btn.primary { background: var(--brand); color: #fff; border-color: var(--brand); }
-      .btn.reject { background: #fff5f5; color: var(--danger); border-color: #ffd7d7; }
-      .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+      .btn {
+        appearance: none;
+        border: 1px solid var(--line);
+        background: #fff;
+        border-radius: 10px;
+        padding: 8px 10px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+      }
+      .btn.primary {
+        background: var(--brand);
+        color: #fff;
+        border-color: var(--brand);
+      }
+      .btn.reject {
+        background: #fff5f5;
+        color: var(--danger);
+        border-color: #ffd7d7;
+      }
+      .btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
 
-      .status-dot { display: inline-flex; align-items: center; gap: 6px; font-size: 0.85rem; color: var(--muted); }
-      .status-dot .dot { width: 8px; height: 8px; border-radius: 50%; background: #cbd5e1; }
-      .status-dot.approved .dot { background: var(--brand); }
-      .status-dot.rejected .dot { background: var(--danger); }
-      .status-dot.pending .dot { background: #94a3b8; }
-      .status-dot.missing .dot { background: #cbd5e1; }
+      .status-dot {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.85rem;
+        color: var(--muted);
+      }
+      .status-dot .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #cbd5e1;
+      }
+      .status-dot.approved .dot {
+        background: var(--brand);
+      }
+      .status-dot.rejected .dot {
+        background: var(--danger);
+      }
+      .status-dot.pending .dot {
+        background: #94a3b8;
+      }
+      .status-dot.missing .dot {
+        background: #cbd5e1;
+      }
 
-      .hint { font-size: 0.85rem; color: var(--muted); }
+      .hint {
+        font-size: 0.85rem;
+        color: var(--muted);
+      }
 
-      .modal { position: fixed; inset: 0; background: rgba(14, 25, 42, 0.6); display: none; align-items: center; justify-content: center; padding: 20px; z-index: 1000; }
-      .modal.open { display: flex; }
-      .modal-card { width: min(1080px, 96vw); height: min(80vh, 900px); background: #fff; border-radius: 14px; overflow: hidden; display: grid; grid-template-rows: auto 1fr; box-shadow: 0 20px 70px rgba(0,0,0,0.25); }
-      .modal-head { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border-bottom: 1px solid var(--line); background: #f7fbff; }
-      .modal-head h4 { margin: 0; font-size: 0.95rem; font-weight: 700; }
-      .modal-body { background: #fff; position: relative; }
-      .modal-body iframe, .modal-body img { width: 100%; height: 100%; border: 0; display: block; }
+      .modal {
+        position: fixed;
+        inset: 0;
+        background: rgba(14, 25, 42, 0.6);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        z-index: 1000;
+      }
+      .modal.open {
+        display: flex;
+      }
+      .modal-card {
+        width: min(1080px, 96vw);
+        height: min(80vh, 900px);
+        background: #fff;
+        border-radius: 14px;
+        overflow: hidden;
+        display: grid;
+        grid-template-rows: auto 1fr;
+        box-shadow: 0 20px 70px rgba(0, 0, 0, 0.25);
+      }
+      .modal-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 12px;
+        border-bottom: 1px solid var(--line);
+        background: #f7fbff;
+      }
+      .modal-head h4 {
+        margin: 0;
+        font-size: 0.95rem;
+        font-weight: 700;
+      }
+      .modal-body {
+        background: #fff;
+        position: relative;
+      }
+      .modal-body iframe,
+      .modal-body img {
+        width: 100%;
+        height: 100%;
+        border: 0;
+        display: block;
+      }
 
-      .empty-state { padding: 24px; border: 1px dashed var(--line); border-radius: 12px; background: #fbfeff; text-align: center; color: var(--muted); }
+      .empty-state {
+        padding: 24px;
+        border: 1px dashed var(--line);
+        border-radius: 12px;
+        background: #fbfeff;
+        text-align: center;
+        color: var(--muted);
+      }
     </style>
   </head>
 
@@ -103,13 +349,38 @@
         </div>
 
         <div class="sidebar">
-          <a href="dashboard.html"><span class="material-icons-sharp">dashboard</span><h3>Dashboard</h3></a>
-          <a href="workerVerification.html" class="active"><span class="material-icons-sharp">engineering</span><h3>Workers<br />Verification</h3></a>
-          <a href="jobVerification.html"><span class="material-icons-sharp">work</span><h3>Jobs<br />Verification</h3></a>
-          <a href="adminVerification.html"><span class="material-icons-sharp">shield</span><h3>Admin<br />Verification</h3></a>
-          <a href="courses.html"><span class="material-icons-sharp">school</span><h3>Course<br />Publisher</h3></a>
-          <a href="#"><span class="material-icons-sharp">settings</span><h3>Settings</h3></a>
-          <a href="#" id="logout-btn"><span class="material-icons-sharp">logout</span><h3>Logout</h3></a>
+          <a href="dashboard.html"
+            ><span class="material-icons-sharp">dashboard</span>
+            <h3>Dashboard</h3></a
+          >
+          <a href="workerVerification.html" class="active"
+            ><span class="material-icons-sharp">engineering</span>
+            <h3>Workers<br />Verification</h3></a
+          >
+          <a href="jobVerification.html"
+            ><span class="material-icons-sharp">work</span>
+            <h3>Jobs<br />Verification</h3></a
+          >
+          <a href="jobApplicationVerification.html">
+            <span class="material-icons-sharp">approval</span>
+            <h3>Application<br />Verification</h3>
+          </a>
+          <a href="adminVerification.html"
+            ><span class="material-icons-sharp">shield</span>
+            <h3>Admin<br />Verification</h3></a
+          >
+          <a href="courses.html"
+            ><span class="material-icons-sharp">school</span>
+            <h3>Course<br />Publisher</h3></a
+          >
+          <a href="#"
+            ><span class="material-icons-sharp">settings</span>
+            <h3>Settings</h3></a
+          >
+          <a href="#" id="logout-btn"
+            ><span class="material-icons-sharp">logout</span>
+            <h3>Logout</h3></a
+          >
         </div>
       </aside>
 
@@ -120,10 +391,24 @@
               <h3>New Sign-Ups</h3>
               <div class="search">
                 <span class="material-icons-sharp">search</span>
-                <input id="searchInput" type="text" placeholder="Search name, email, phone…" />
+                <input
+                  id="searchInput"
+                  type="text"
+                  placeholder="Search name, email, phone…"
+                />
               </div>
               <div style="margin-bottom: 0.6rem">
-                <select id="statusFilter" style="width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; background: #fcfeff; outline: none;">
+                <select
+                  id="statusFilter"
+                  style="
+                    width: 100%;
+                    border: 1px solid var(--line);
+                    border-radius: 10px;
+                    padding: 10px 12px;
+                    background: #fcfeff;
+                    outline: none;
+                  "
+                >
                   <option value="">All statuses</option>
                   <option value="pending">Pending</option>
                   <option value="approved">Approved</option>
@@ -131,11 +416,15 @@
                 </select>
               </div>
               <div id="workerList" class="worker-list"></div>
-              <div id="emptyWorkers" class="empty-state" style="display: none">No workers found.</div>
+              <div id="emptyWorkers" class="empty-state" style="display: none">
+                No workers found.
+              </div>
             </div>
 
             <div class="details" id="detailsPane">
-              <div class="empty-state">Select a worker on the left to review their profile & documents.</div>
+              <div class="empty-state">
+                Select a worker on the left to review their profile & documents.
+              </div>
             </div>
           </div>
         </section>
@@ -143,11 +432,19 @@
     </div>
 
     <!-- Document Preview Modal -->
-    <div id="docModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="docTitle">
+    <div
+      id="docModal"
+      class="modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="docTitle"
+    >
       <div class="modal-card">
         <div class="modal-head">
           <h4 id="docTitle">Document</h4>
-          <button class="btn" id="closeModal"><span class="material-icons-sharp">close</span></button>
+          <button class="btn" id="closeModal">
+            <span class="material-icons-sharp">close</span>
+          </button>
         </div>
         <div class="modal-body" id="docBody"></div>
       </div>
@@ -167,30 +464,34 @@
       /* ------------------------------ State ------------------------------ */
       const searchInput = document.getElementById("searchInput");
       const statusFilter = document.getElementById("statusFilter");
-      const workerList  = document.getElementById("workerList");
+      const workerList = document.getElementById("workerList");
       const emptyWorkers = document.getElementById("emptyWorkers");
       const detailsPane = document.getElementById("detailsPane");
       const docModal = document.getElementById("docModal");
-      const docBody  = document.getElementById("docBody");
+      const docBody = document.getElementById("docBody");
       const docTitle = document.getElementById("docTitle");
 
-      let WORKERS = [];                 // combined installer + docs
-      let ACTIVE_ID = null;             // currently focused installer id
-      const DOC_REVIEW = new Map();     // installer_id -> [{key,type,url,status}...]
+      let WORKERS = []; // combined installer + docs
+      let ACTIVE_ID = null; // currently focused installer id
+      const DOC_REVIEW = new Map(); // installer_id -> [{key,type,url,status}...]
 
       /* ------------------------------ Utilities ------------------------------ */
-      const cap = (s="") => s ? s[0].toUpperCase() + s.slice(1) : s;
+      const cap = (s = "") => (s ? s[0].toUpperCase() + s.slice(1) : s);
 
       function pravatar(id) {
-        // quick deterministic placeholder
-        const num = Math.abs([...String(id)].reduce((a,c)=>a+c.charCodeAt(0), 0)) % 70 + 1;
+        const num =
+          (Math.abs([...String(id)].reduce((a, c) => a + c.charCodeAt(0), 0)) %
+            70) +
+          1;
         return `https://i.pravatar.cc/150?img=${num}`;
       }
 
       function toPublicUrl(path) {
         if (!path) return "";
         if (/^https?:\/\//i.test(path)) return path;
-        const { data } = sb.storage.from("documents_review").getPublicUrl(String(path).replace(/^\/+/, ""));
+        const { data } = sb.storage
+          .from("documents_review")
+          .getPublicUrl(String(path).replace(/^\/+/, ""));
         return data?.publicUrl || "";
       }
 
@@ -203,10 +504,21 @@
 
       /* ------------------------------ Fetch & Build ------------------------------ */
       async function fetchWorkers() {
-        // 1) Pull all installer_documents (latest first)
+        // 1) Pull all installer_documents (latest first) — EXPANDED FIELDS
         const { data: docsRows, error: docsErr } = await sb
           .from("installer_documents")
-          .select("installer_id, nbi, police, resume, portfolio, certificates, tor, status, uploaded_at, updated_at")
+          .select(
+            `
+            installer_id,
+            nbi, nbi_status,
+            police, police_status,
+            resume, resume_status,
+            portfolio, portfolio_status,
+            certificates, certificates_status,
+            tor, tor_status,
+            status, uploaded_at, updated_at
+          `
+          )
           .order("uploaded_at", { ascending: false });
 
         if (docsErr) {
@@ -225,20 +537,22 @@
         }
 
         // 2) Pull installer profiles for those ids
-        const ids = [...new Set(docsRows.map(r => r.installer_id))];
+        const ids = [...new Set(docsRows.map((r) => r.installer_id))];
         const { data: profiles, error: profErr } = await sb
           .from("installer")
-          .select('id, email, name, birthdate, age, phone, profession, "highestQualification", "employmentStatus", "mainIncomeSource", "bankName", "accountNumber", "accountHolder", "createdAt"')
+          .select(
+            'id, email, name, birthdate, age, phone, profession, "highestQualification", "employmentStatus", "mainIncomeSource", "bankName", "accountNumber", "accountHolder", "createdAt"'
+          )
           .in("id", ids);
 
         if (profErr) {
           console.error("installer error:", profErr);
         }
 
-        const profById = new Map((profiles || []).map(p => [p.id, p]));
+        const profById = new Map((profiles || []).map((p) => [p.id, p]));
 
         // 3) Combine
-        WORKERS = docsRows.map(r => {
+        WORKERS = docsRows.map((r) => {
           const p = profById.get(r.installer_id) || {};
           return {
             id: r.installer_id,
@@ -258,7 +572,7 @@
             accountNumber: p.accountNumber || "",
             createdAt: r.uploaded_at || p.createdAt || null,
             profileStatus: String(r.status || "Pending").toLowerCase(),
-            _rawDocs: r
+            _rawDocs: r,
           };
         });
 
@@ -272,52 +586,65 @@
 
         renderWorkerList();
         if (WORKERS.length) {
-          // keep selection if same id remains
-          const keep = WORKERS.find(w => w.id === ACTIVE_ID) ? ACTIVE_ID : WORKERS[0].id;
+          const keep = WORKERS.find((w) => w.id === ACTIVE_ID)
+            ? ACTIVE_ID
+            : WORKERS[0].id;
           ACTIVE_ID = keep;
-          const found = WORKERS.find(w => w.id === ACTIVE_ID);
+          const found = WORKERS.find((w) => w.id === ACTIVE_ID);
           renderDetails(found);
           markActiveTile(ACTIVE_ID);
         }
       }
 
+      // UPDATED: read *_status + certificates_status
       function buildDocRows(raw) {
         const rows = [];
-        // map each column to a human label
         const singleDocs = [
-          ["resume", "Resume"],
-          ["nbi", "NBI Clearance"],
-          ["police", "Police Clearance"],
-          ["tor", "Transcript of Records (TOR)"],
-          ["portfolio", "Portfolio"],
+          ["resume", "Resume", "resume_status"],
+          ["nbi", "NBI Clearance", "nbi_status"],
+          ["police", "Police Clearance", "police_status"],
+          ["tor", "Transcript of Records (TOR)", "tor_status"],
+          ["portfolio", "Portfolio", "portfolio_status"],
         ];
 
-        for (const [key, label] of singleDocs) {
+        for (const [key, label, statusKey] of singleDocs) {
           const path = raw?.[key] || null;
+          const st = String(
+            raw?.[statusKey] || (path ? "pending" : "missing")
+          ).toLowerCase();
           rows.push({
-            key, type: label,
+            key,
+            type: label,
             url: path ? toPublicUrl(path) : "",
-            status: path ? "pending" : "missing" // missing if not uploaded
+            status: path ? st : "missing",
           });
         }
 
-        // certificates[] -> multiple entries
         const certs = Array.isArray(raw?.certificates) ? raw.certificates : [];
+        const certStatuses = Array.isArray(raw?.certificates_status)
+          ? raw.certificates_status
+          : [];
+
         if (certs.length === 0) {
-          rows.push({ key: "certificates", type: "Certificates (none)", url: "", status: "missing" });
+          rows.push({
+            key: "certificates",
+            type: "Certificates (none)",
+            url: "",
+            status: "missing",
+          });
         } else {
           certs.forEach((c, idx) => {
+            const st = String(certStatuses[idx] || "pending").toLowerCase();
             rows.push({
               key: `certificates[${idx}]`,
               type: `Certificate #${idx + 1}`,
               url: toPublicUrl(c),
-              status: "pending"
+              status: st,
             });
           });
         }
 
         return rows;
-        // NOTE: You can persist per-doc status in another table if you add one later.
       }
 
       /* ------------------------------ Render List ------------------------------ */
@@ -326,17 +653,25 @@
         const selectedStatus = (statusFilter?.value || "").toLowerCase();
         const q = filter.trim().toLowerCase();
 
-        const filtered = WORKERS.filter(w => {
-          const inText = !q || w.fullName.toLowerCase().includes(q) || w.email.toLowerCase().includes(q) || (w.phone||"").toLowerCase().includes(q);
-          const inStatus = !selectedStatus || (w.profileStatus || "pending").toLowerCase() === selectedStatus;
+        const filtered = WORKERS.filter((w) => {
+          const inText =
+            !q ||
+            w.fullName.toLowerCase().includes(q) ||
+            w.email.toLowerCase().includes(q) ||
+            (w.phone || "").toLowerCase().includes(q);
+          const inStatus =
+            !selectedStatus ||
+            (w.profileStatus || "pending").toLowerCase() === selectedStatus;
           return inText && inStatus;
         });
 
         emptyWorkers.style.display = filtered.length ? "none" : "block";
 
         filtered
-          .sort((a,b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))
-          .forEach(w => {
+          .sort(
+            (a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0)
+          )
+          .forEach((w) => {
             const item = document.createElement("div");
             item.className = "worker-item";
             item.dataset.id = w.id;
@@ -346,7 +681,9 @@
               <img class="avatar" src="${w.avatar}" alt="${w.fullName}">
               <div>
                 <div style="font-weight:700">${w.fullName}</div>
-                <div style="font-size:.85rem;color:var(--muted)">${w.email}</div>
+                <div style="font-size:.85rem;color:var(--muted)">${
+                  w.email
+                }</div>
               </div>
               <span class="pill">${cap(w.profileStatus || "pending")}</span>
             `;
@@ -362,13 +699,19 @@
       }
 
       function markActiveTile(id) {
-        document.querySelectorAll(".worker-item").forEach(i => i.classList.remove("active"));
+        document
+          .querySelectorAll(".worker-item")
+          .forEach((i) => i.classList.remove("active"));
         const el = document.querySelector(`.worker-item[data-id="${id}"]`);
         if (el) el.classList.add("active");
       }
 
-      searchInput.addEventListener("input", (e)=> renderWorkerList(e.target.value));
-      statusFilter.addEventListener("change", ()=> renderWorkerList(searchInput.value));
+      searchInput.addEventListener("input", (e) =>
+        renderWorkerList(e.target.value)
+      );
+      statusFilter.addEventListener("change", () =>
+        renderWorkerList(searchInput.value)
+      );
 
       /* ------------------------------ Render Details ------------------------------ */
       function renderDetails(worker) {
@@ -378,6 +721,22 @@
         }
 
         const docs = DOC_REVIEW.get(worker.id) || [];
+        const status = (worker.profileStatus || "pending").toLowerCase();
+        const isPending = status === "pending"; // <— NEW: control visibility of per-doc actions
+
+        let actionsHTML = "";
+        if (status === "pending") {
+          actionsHTML = `
+            <button class="btn reject" id="rejectProfileBtn">Reject Profile</button>
+            <button class="btn primary" id="approveProfileBtn">Approve Installer</button>
+          `;
+        } else {
+          actionsHTML = `
+            <button class="btn" id="revertPendingBtn" title="Set overall status back to Pending">
+              <span class="material-icons-sharp">history</span> Revert to Pending
+            </button>
+          `;
+        }
 
         detailsPane.innerHTML = `
           <div class="head">
@@ -390,18 +749,27 @@
                 </span>
               </div>
               <div class="meta">
-                <span class="kv"><strong>Uploaded:</strong> ${fmtDateISO(worker.createdAt) || "—"}</span>
-                <span class="kv"><strong>Birthdate:</strong> ${worker.birthdate || "—"}</span>
-                <span class="kv"><strong>Age:</strong> ${worker.age || "—"}</span>
-                <span class="kv"><strong>Phone:</strong> ${worker.phone || "—"}</span>
-                <span class="kv"><strong>Email:</strong> ${worker.email || "—"}</span>
+                <span class="kv"><strong>Uploaded:</strong> ${
+                  fmtDateISO(worker.createdAt) || "—"
+                }</span>
+                <span class="kv"><strong>Birthdate:</strong> ${
+                  worker.birthdate || "—"
+                }</span>
+                <span class="kv"><strong>Age:</strong> ${
+                  worker.age || "—"
+                }</span>
+                <span class="kv"><strong>Phone:</strong> ${
+                  worker.phone || "—"
+                }</span>
+                <span class="kv"><strong>Email:</strong> ${
+                  worker.email || "—"
+                }</span>
                 <span class="kv"><strong>Role:</strong> Worker</span>
               </div>
             </div>
 
             <div style="display:flex; gap:8px; margin-left:auto">
-              <button class="btn reject" id="rejectProfileBtn">Reject Profile</button>
-              <button class="btn primary" id="approveProfileBtn">Approve Installer</button>
+              ${actionsHTML}
             </div>
           </div>
 
@@ -409,20 +777,36 @@
             <div class="card">
               <h4>Basic Information</h4>
               <div class="info-list">
-                <div><span class="label">Full Name</span>${worker.fullName}</div>
-                <div><span class="label">Profession</span>${worker.profession || "—"}</div>
-                <div><span class="label">Highest Qualification</span>${worker.highestQualification || "—"}</div>
-                <div><span class="label">Employment Status</span>${worker.employmentStatus || "—"}</div>
-                <div><span class="label">Main Income Source</span>${worker.mainIncomeSource || "—"}</div>
+                <div><span class="label">Full Name</span>${
+                  worker.fullName
+                }</div>
+                <div><span class="label">Profession</span>${
+                  worker.profession || "—"
+                }</div>
+                <div><span class="label">Highest Qualification</span>${
+                  worker.highestQualification || "—"
+                }</div>
+                <div><span class="label">Employment Status</span>${
+                  worker.employmentStatus || "—"
+                }</div>
+                <div><span class="label">Main Income Source</span>${
+                  worker.mainIncomeSource || "—"
+                }</div>
               </div>
             </div>
 
             <div class="card">
               <h4>Bank Details</h4>
               <div class="info-list">
-                <div><span class="label">Bank Name</span>${worker.bankName || "—"}</div>
-                <div><span class="label">Account Holder</span>${worker.accountHolder || "—"}</div>
-                <div><span class="label">Account Number</span>${worker.accountNumber || "—"}</div>
+                <div><span class="label">Bank Name</span>${
+                  worker.bankName || "—"
+                }</div>
+                <div><span class="label">Account Holder</span>${
+                  worker.accountHolder || "—"
+                }</div>
+                <div><span class="label">Account Number</span>${
+                  worker.accountNumber || "—"
+                }</div>
               </div>
             </div>
           </div>
@@ -431,109 +815,302 @@
             <h4>Submitted Documents</h4>
             <p class="hint">Click a document to preview. Approve/Reject each individually. All present documents must be <b>Approved</b> to enable "Approve Installer". Missing files block approval.</p>
             <div class="doc-list">
-              ${docs.map((d, idx) => `
+              ${docs
+                .map(
+                  (d, idx) => `
                 <div class="doc" data-doc="${idx}">
                   <div class="doc-title">
-                    <span class="material-icons-sharp">description</span> ${d.type}
+                    <span class="material-icons-sharp">description</span> ${
+                      d.type
+                    }
                   </div>
-                  <button class="btn" data-view="${idx}" ${d.url ? "" : "disabled"}>
+                  <button class="btn" data-view="${idx}" ${
+                    d.url ? "" : "disabled"
+                  }>
                     <span class="material-icons-sharp" style="font-size:18px;">visibility</span> Preview
                   </button>
                   <div class="status-dot ${d.status}">
                     <span class="dot"></span>
                     <span class="label">${cap(d.status)}</span>
                   </div>
-                  <div class="actions">
-                    <button class="btn primary" data-approve="${idx}" ${d.url ? "" : "disabled"}>Approve</button>
-                    <button class="btn reject" data-reject="${idx}" ${d.url ? "" : "disabled"}>Reject</button>
+                  <div class="actions" ${
+                    isPending ? "" : 'style="display:none"'
+                  }>  <!-- NEW: hide per-doc actions when not pending -->
+                    <button class="btn primary" data-approve="${idx}" ${
+                    d.url ? "" : "disabled"
+                  }>Approve</button>
+                    <button class="btn reject" data-reject="${idx}" ${
+                    d.url ? "" : "disabled"
+                  }>Reject</button>
                   </div>
                 </div>
-              `).join("")}
+              `
+                )
+                .join("")}
             </div>
           </div>
         `;
 
-        // Wire doc actions
-        detailsPane.querySelectorAll("[data-view]").forEach(btn => {
+        // Wire doc actions (buttons exist but may be hidden when not pending)
+        detailsPane.querySelectorAll("[data-view]").forEach((btn) => {
           btn.addEventListener("click", () => {
             const idx = Number(btn.dataset.view);
             const item = docs[idx];
             openDoc(item.type, item.url);
           });
         });
-        detailsPane.querySelectorAll("[data-approve]").forEach(btn => {
-          btn.addEventListener("click", () => {
+        detailsPane.querySelectorAll("[data-approve]").forEach((btn) => {
+          btn.addEventListener("click", async () => {
             const idx = Number(btn.dataset.approve);
-            setDocStatus(worker.id, idx, "approved");
+            await setDocStatus(worker.id, idx, "approved");
           });
         });
-        detailsPane.querySelectorAll("[data-reject]").forEach(btn => {
-          btn.addEventListener("click", () => {
+        detailsPane.querySelectorAll("[data-reject]").forEach((btn) => {
+          btn.addEventListener("click", async () => {
             const idx = Number(btn.dataset.reject);
-            setDocStatus(worker.id, idx, "rejected");
+            await setDocStatus(worker.id, idx, "rejected");
           });
         });
 
-        // Wire profile Approve/Reject buttons
+        // Wire profile buttons based on status
         const approveBtn = detailsPane.querySelector("#approveProfileBtn");
-        const rejectBtn  = detailsPane.querySelector("#rejectProfileBtn");
+        const rejectBtn = detailsPane.querySelector("#rejectProfileBtn");
+        const revertBtn = detailsPane.querySelector("#revertPendingBtn");
 
-        // initial enable/disable based on current doc states
-        approveBtn.disabled = !allPresentDocsApproved(docs);
+        if (approveBtn) {
+          approveBtn.disabled = !allPresentDocsApproved(docs);
+          approveBtn.addEventListener("click", async () => {
+            if (!allPresentDocsApproved(docs)) {
+              alert("You must Approve all present documents first.");
+              return;
+            }
+            await setOverallStatus(worker.id, "approved");
+          });
+        }
 
-        rejectBtn.addEventListener("click", async () => {
-          await setOverallStatus(worker.id, "rejected");
-        });
-        approveBtn.addEventListener("click", async () => {
-          if (!allPresentDocsApproved(docs)) {
-            alert("You must Approve all present documents first.");
-            return;
-          }
-          await setOverallStatus(worker.id, "approved");
-        });
+        if (rejectBtn) {
+          rejectBtn.addEventListener("click", async () => {
+            await setOverallStatus(worker.id, "rejected");
+          });
+        }
+
+        if (revertBtn) {
+          revertBtn.addEventListener("click", async () => {
+            await setOverallStatus(worker.id, "pending");
+          });
+        }
       }
 
       function allPresentDocsApproved(docs) {
-        // If any missing OR rejected OR pending → cannot approve
         for (const d of docs) {
           if (d.status !== "approved") return false;
         }
-        return docs.length > 0; // at least one doc present/approved
+        return docs.length > 0;
       }
 
-      function setDocStatus(installerId, docIndex, status) {
+      // UPDATED: persist + refetch
+      async function setDocStatus(installerId, docIndex, status) {
         const list = DOC_REVIEW.get(installerId) || [];
-        if (!list[docIndex]) return;
-        list[docIndex].status = status;
-        DOC_REVIEW.set(installerId, list);
+        const item = list[docIndex];
+        if (!item) return;
 
-        // re-render details with updated statuses
-        const w = WORKERS.find(x => x.id === installerId);
+        // Optimistic UI
+        item.status = status;
+        DOC_REVIEW.set(installerId, list);
+        const w = WORKERS.find((x) => x.id === installerId);
         if (w) renderDetails(w);
+
+        try {
+          // Persist to DB
+          await persistDocStatus(installerId, item.key, status);
+
+          // Re-fetch that row to keep state in sync
+          const { data, error } = await sb
+            .from("installer_documents")
+            .select(
+              `
+              installer_id,
+              nbi, nbi_status,
+              police, police_status,
+              resume, resume_status,
+              portfolio, portfolio_status,
+              certificates, certificates_status,
+              tor, tor_status,
+              status, uploaded_at, updated_at
+            `
+            )
+            .eq("installer_id", installerId)
+            .maybeSingle();
+
+          if (!error && data) {
+            const freshRows = buildDocRows(data);
+            DOC_REVIEW.set(installerId, freshRows);
+            if (w) {
+              w._rawDocs = data;
+              renderDetails(w);
+            }
+          }
+        } catch (e) {
+          alert("Failed to update document status: " + (e.message || e));
+        }
       }
 
-      async function setOverallStatus(installerId, toStatus) {
-        // persist to DB
-        const { error } = await sb
-          .from("installer_documents")
-          .update({ status: toStatus, updated_at: new Date().toISOString() })
-          .eq("installer_id", installerId);
+      // NEW: handles single-doc columns and certificates_status array
+      async function persistDocStatus(installerId, docKey, toStatus) {
+        const singleStatusCols = {
+          resume: "resume_status",
+          nbi: "nbi_status",
+          police: "police_status",
+          tor: "tor_status",
+          portfolio: "portfolio_status",
+        };
 
-        if (error) {
-          alert(`Failed to set status: ${error.message}`);
+        const certMatch = String(docKey).match(/^certificates\[(\d+)\]$/);
+
+        if (singleStatusCols[docKey]) {
+          const column = singleStatusCols[docKey];
+          const payload = {};
+          payload[column] = toStatus;
+          payload["updated_at"] = new Date().toISOString();
+
+          const { error } = await sb
+            .from("installer_documents")
+            .update(payload)
+            .eq("installer_id", installerId);
+
+          if (error) throw error;
           return;
         }
 
-        // update local model
-        const w = WORKERS.find(x => x.id === installerId);
-        if (w) {
-          w.profileStatus = toStatus;
-          renderWorkerList(searchInput.value);
-          renderDetails(w);
-        } else {
-          await fetchWorkers();
+        if (certMatch) {
+          const idx = Number(certMatch[1]);
+
+          const { data, error } = await sb
+            .from("installer_documents")
+            .select("certificates_status")
+            .eq("installer_id", installerId)
+            .maybeSingle();
+
+          if (error) throw error;
+
+          const current = Array.isArray(data?.certificates_status)
+            ? data.certificates_status.slice()
+            : [];
+          while (current.length <= idx) current.push("pending");
+          current[idx] = toStatus;
+
+          const { error: upErr } = await sb
+            .from("installer_documents")
+            .update({
+              certificates_status: current,
+              updated_at: new Date().toISOString(),
+            })
+            .eq("installer_id", installerId);
+
+          if (upErr) throw upErr;
+          return;
         }
-        alert(`Installer marked as ${cap(toStatus)}.`);
+
+        // Unknown key → no-op
+      }
+
+      /* ------------------------------ UPDATED: Overall status also syncs all per-doc statuses ------------------------------ */
+      async function setOverallStatus(installerId, toStatus) {
+        try {
+          // Fetch current row to know what exists (avoid setting statuses for missing files)
+          const { data: row, error: fetchErr } = await sb
+            .from("installer_documents")
+            .select(
+              `
+              nbi, nbi_status,
+              police, police_status,
+              resume, resume_status,
+              portfolio, portfolio_status,
+              certificates, certificates_status,
+              tor, tor_status
+            `
+            )
+            .eq("installer_id", installerId)
+            .maybeSingle();
+
+          if (fetchErr) throw fetchErr;
+
+          const updatePayload = {
+            status: toStatus,
+            updated_at: new Date().toISOString(),
+          };
+
+          // Only when rejecting or reverting to pending do we bulk-set per-doc statuses
+          if (toStatus === "rejected" || toStatus === "pending") {
+            const map = [
+              ["resume", "resume_status"],
+              ["nbi", "nbi_status"],
+              ["police", "police_status"],
+              ["tor", "tor_status"],
+              ["portfolio", "portfolio_status"],
+            ];
+
+            for (const [fileCol, statusCol] of map) {
+              if (row && row[fileCol]) {
+                updatePayload[statusCol] = toStatus;
+              }
+            }
+
+            // certificates_status[] -> set each index to toStatus if certificates exist
+            if (
+              row &&
+              Array.isArray(row.certificates) &&
+              row.certificates.length > 0
+            ) {
+              const newCertStatuses = row.certificates.map(() => toStatus);
+              updatePayload["certificates_status"] = newCertStatuses;
+            }
+          }
+
+          // Persist overall + per-doc status updates
+          const { error: upErr } = await sb
+            .from("installer_documents")
+            .update(updatePayload)
+            .eq("installer_id", installerId);
+
+          if (upErr) throw upErr;
+
+          // Refresh local state
+          const { data: fresh, error: refetchErr } = await sb
+            .from("installer_documents")
+            .select(
+              `
+              installer_id,
+              nbi, nbi_status,
+              police, police_status,
+              resume, resume_status,
+              portfolio, portfolio_status,
+              certificates, certificates_status,
+              tor, tor_status,
+              status, uploaded_at, updated_at
+            `
+            )
+            .eq("installer_id", installerId)
+            .maybeSingle();
+
+          if (refetchErr) throw refetchErr;
+
+          // Update memory models + UI
+          const w = WORKERS.find((x) => x.id === installerId);
+          if (w && fresh) {
+            w.profileStatus = String(fresh.status || "pending").toLowerCase();
+            w._rawDocs = fresh;
+            DOC_REVIEW.set(installerId, buildDocRows(fresh));
+            renderWorkerList(searchInput.value);
+            renderDetails(w);
+          } else {
+            await fetchWorkers();
+          }
+
+          alert(`Installer marked as ${cap(toStatus)}.`);
+        } catch (err) {
+          alert(`Failed to set status: ${err.message || err}`);
+        }
       }
 
       /* ------------------------------ Modal ------------------------------ */
@@ -543,7 +1120,8 @@
         const isImage = /\.(png|jpe?g|gif|webp|bmp|svg)($|\?)/i.test(url);
         if (isImage) {
           const img = document.createElement("img");
-          img.src = url; img.alt = title;
+          img.src = url;
+          img.alt = title;
           docBody.appendChild(img);
         } else {
           const frame = document.createElement("iframe");
@@ -557,7 +1135,9 @@
         docBody.innerHTML = "";
       }
       document.getElementById("closeModal").addEventListener("click", closeDoc);
-      document.getElementById("docModal").addEventListener("click", (e) => { if (e.target.id === "docModal") closeDoc(); });
+      document.getElementById("docModal").addEventListener("click", (e) => {
+        if (e.target.id === "docModal") closeDoc();
+      });
 
       /* ------------------------------ Boot ------------------------------ */
       document.addEventListener("DOMContentLoaded", fetchWorkers);

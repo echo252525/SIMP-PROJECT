@@ -4,7 +4,10 @@
     <meta charset="UTF-8" />
     <title>Admin – Courses</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="../css_files/sideBar.css" />
     <style>
       :root {
@@ -18,12 +21,26 @@
         --radius: 14px;
         --border: #e5e7eb;
       }
-      body { background: var(--bg); }
-      main { margin-top: 1.4rem; }
+      body {
+        background: var(--bg);
+      }
+      main {
+        margin-top: 1.4rem;
+      }
 
-      .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
-      .page-header h1 { color: var(--ink); }
-      .page-header .actions { display: flex; gap: 10px; }
+      .page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+      }
+      .page-header h1 {
+        color: var(--ink);
+      }
+      .page-header .actions {
+        display: flex;
+        gap: 10px;
+      }
 
       .btn {
         border: 1px solid var(--brand);
@@ -33,34 +50,128 @@
         border-radius: 999px;
         cursor: pointer;
       }
-      .btn.secondary { background: #fff; color: #0f172a; border-color: #d1e7db; }
-      .btn.small { padding: 8px 12px; font-size: 13px; }
-      .btn.danger { background: #fff; color: var(--danger); border-color: #ffc9c7; }
+      .btn.secondary {
+        background: #fff;
+        color: #0f172a;
+        border-color: #d1e7db;
+      }
+      .btn.small {
+        padding: 8px 12px;
+        font-size: 13px;
+      }
+      .btn.danger {
+        background: #fff;
+        color: var(--danger);
+        border-color: #ffc9c7;
+      }
 
-      .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-      @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+      @media (max-width: 860px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
 
       .course-card {
-        display: flex; gap: 16px; align-items: center;
-        border: 1px solid var(--border); background: #fff; border-radius: 16px;
-        padding: 14px 18px; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+        display: flex;
+        gap: 16px;
+        align-items: center;
+        border: 1px solid var(--border);
+        background: #fff;
+        border-radius: 16px;
+        padding: 14px 18px;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
       }
-      .course-image { flex: 0 0 220px; height: 120px; border-radius: 12px; overflow: hidden; background: #f2f4f7; }
-      .course-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
-      .course-content { display: flex; flex-direction: column; gap: 8px; min-width: 0; flex: 1 1 auto; }
-      .course-content h3 { margin: 0; font-size: 18px; color: #1f2937; }
-      .course-content p { margin: 0; color: #6b7280; font-size: 13px; line-height: 1.4; }
-      .meta { display: flex; gap: 8px; flex-wrap: wrap; font-size: 12px; color: #6b7280; }
-      .pill { background: #eef6ff; color: #0f172a; padding: 4px 10px; border-radius: 999px; border: 1px solid #d7e7ff; }
-      .right { margin-left: auto; display: flex; flex-direction: column; gap: 8px; align-items: flex-end; }
-      .actions-col { display: flex; gap: 8px; }
-      .small { font-size: 12px; color: #7a7a7a; }
-      .link { color: var(--brand); text-decoration: none; font-weight: 600; }
-      .empty { border: 1px dashed #cbd5e1; border-radius: 16px; padding: 20px; text-align: center; color: #6b7280; }
-      .course-users { font-size: 12px; color: #555; margin-top: 4px; }
+      .course-image {
+        flex: 0 0 220px;
+        height: 120px;
+        border-radius: 12px;
+        overflow: hidden;
+        background: #f2f4f7;
+      }
+      .course-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      .course-content {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        min-width: 0;
+        flex: 1 1 auto;
+      }
+      .course-content h3 {
+        margin: 0;
+        font-size: 18px;
+        color: #1f2937;
+      }
+      .course-content p {
+        margin: 0;
+        color: #6b7280;
+        font-size: 13px;
+        line-height: 1.4;
+      }
+      .meta {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        font-size: 12px;
+        color: #6b7280;
+      }
+      .pill {
+        background: #eef6ff;
+        color: #0f172a;
+        padding: 4px 10px;
+        border-radius: 999px;
+        border: 1px solid #d7e7ff;
+      }
+      .right {
+        margin-left: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        align-items: flex-end;
+      }
+      .actions-col {
+        display: flex;
+        gap: 8px;
+      }
+      .small {
+        font-size: 12px;
+        color: #7a7a7a;
+      }
+      .link {
+        color: var(--brand);
+        text-decoration: none;
+        font-weight: 600;
+      }
+      .empty {
+        border: 1px dashed #cbd5e1;
+        border-radius: 16px;
+        padding: 20px;
+        text-align: center;
+        color: #6b7280;
+      }
+      .course-users {
+        font-size: 12px;
+        color: #555;
+        margin-top: 4px;
+      }
       .notice {
-        display:none; margin: 10px 0 0; font-size: 12px; color: #b45309; background:#fff7ed; border:1px solid #fed7aa;
-        padding:8px 10px; border-radius:10px;
+        display: none;
+        margin: 10px 0 0;
+        font-size: 12px;
+        color: #b45309;
+        background: #fff7ed;
+        border: 1px solid #fed7aa;
+        padding: 8px 10px;
+        border-radius: 10px;
       }
     </style>
   </head>
@@ -79,13 +190,38 @@
         </div>
 
         <div class="sidebar">
-          <a href="dashboard.html"><span class="material-icons-sharp">dashboard</span><h3>Dashboard</h3></a>
-          <a href="workerVerification.html"><span class="material-icons-sharp">engineering</span><h3>Workers<br>Verification</h3></a>
-          <a href="jobVerification.html"><span class="material-icons-sharp">work</span><h3>Jobs<br>Verification</h3></a>
-          <a href="adminVerification.html"><span class="material-icons-sharp">shield</span><h3>Admin<br>Verification</h3></a>
-          <a href="courses.html" class="active"><span class="material-icons-sharp">school</span><h3>Course<br>Publisher</h3></a>
-          <a href="#"><span class="material-icons-sharp">settings</span><h3>Settings</h3></a>
-          <a href="#" id="logout-btn"><span class="material-icons-sharp">logout</span><h3>Logout</h3></a>
+          <a href="dashboard.html"
+            ><span class="material-icons-sharp">dashboard</span>
+            <h3>Dashboard</h3></a
+          >
+          <a href="workerVerification.html"
+            ><span class="material-icons-sharp">engineering</span>
+            <h3>Workers<br />Verification</h3></a
+          >
+          <a href="jobVerification.html"
+            ><span class="material-icons-sharp">work</span>
+            <h3>Jobs<br />Verification</h3></a
+          >
+          <a href="jobApplicationVerification.html">
+            <span class="material-icons-sharp">approval</span>
+            <h3>Application<br />Verification</h3>
+          </a>
+          <a href="adminVerification.html"
+            ><span class="material-icons-sharp">shield</span>
+            <h3>Admin<br />Verification</h3></a
+          >
+          <a href="courses.html" class="active"
+            ><span class="material-icons-sharp">school</span>
+            <h3>Course<br />Publisher</h3></a
+          >
+          <a href="#"
+            ><span class="material-icons-sharp">settings</span>
+            <h3>Settings</h3></a
+          >
+          <a href="#" id="logout-btn"
+            ><span class="material-icons-sharp">logout</span>
+            <h3>Logout</h3></a
+          >
         </div>
       </aside>
 
@@ -105,11 +241,14 @@
         <div id="coursesGrid" class="grid"><!-- populated by JS --></div>
 
         <div id="emptyState" class="empty" style="display: none">
-          No courses yet. Click <strong>+ Add Course</strong> to create your first one.
+          No courses yet. Click <strong>+ Add Course</strong> to create your
+          first one.
         </div>
 
         <div id="nameNotice" class="notice">
-          Some creator/editor names couldn’t be loaded. If you’re seeing “Unknown,” update RLS to allow admins to SELECT name/email from <code>public.admin</code>.
+          Some creator/editor names couldn’t be loaded. If you’re seeing
+          “Unknown,” update RLS to allow admins to SELECT name/email from
+          <code>public.admin</code>.
         </div>
       </main>
     </div>
@@ -119,9 +258,17 @@
       import { SUPABASE_URL, SUPABASE_ANON_KEY } from "../../../supabase.js";
 
       // Courses schema client
-      const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { db: { schema: "courses" } });
+      const supabase = window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY,
+        { db: { schema: "courses" } }
+      );
       // Public schema client (to read public.admin)
-      const supabasePublic = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { db: { schema: "public" } });
+      const supabasePublic = window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY,
+        { db: { schema: "public" } }
+      );
 
       const ADMIN_TABLE = "admin"; // public.admin
 
@@ -131,7 +278,9 @@
       const emptyState = document.getElementById("emptyState");
       const nameNotice = document.getElementById("nameNotice");
 
-      addBtn.addEventListener("click", () => { window.location.href = "courseBuilder.html"; });
+      addBtn.addEventListener("click", () => {
+        window.location.href = "courseBuilder.html";
+      });
       refreshBtn.addEventListener("click", loadCourses);
 
       function el(tag, attrs = {}, children = []) {
@@ -146,7 +295,9 @@
       }
 
       async function deleteCourse(id, title, btnEl) {
-        const ok = confirm(`Delete course "${title}"?\nThis will also remove its sections and quizzes (cascade).`);
+        const ok = confirm(
+          `Delete course "${title}"?\nThis will also remove its sections and quizzes (cascade).`
+        );
         if (!ok) return;
 
         const card = btnEl.closest(".course-card");
@@ -190,9 +341,11 @@
         }
 
         const map = {};
-        (data || []).forEach(row => { map[row.id] = row.name || row.email || row.id; });
+        (data || []).forEach((row) => {
+          map[row.id] = row.name || row.email || row.id;
+        });
 
-        const unresolved = unique.filter(id => !map[id]);
+        const unresolved = unique.filter((id) => !map[id]);
         return { map, unresolved };
       }
 
@@ -202,12 +355,19 @@
 
         const { data, error } = await supabase
           .from("course")
-          .select("id,title,slug,description,level,tags,thumbnail_url,created_at,updated_at,created_by,last_edited_by")
+          .select(
+            "id,title,slug,description,level,tags,thumbnail_url,created_at,updated_at,created_by,last_edited_by"
+          )
           .order("created_at", { ascending: false });
 
         if (error) {
           console.error(error);
-          grid.appendChild(el("div", { class: "empty", html: `Error loading courses: ${error.message}` }));
+          grid.appendChild(
+            el("div", {
+              class: "empty",
+              html: `Error loading courses: ${error.message}`,
+            })
+          );
           return;
         }
         if (!data || data.length === 0) {
@@ -218,7 +378,7 @@
 
         // Collect all IDs to resolve
         const ids = [];
-        data.forEach(c => {
+        data.forEach((c) => {
           if (c.created_by) ids.push(c.created_by);
           if (c.last_edited_by) ids.push(c.last_edited_by);
         });
@@ -229,20 +389,35 @@
         }
 
         data.forEach((c) => {
-          const editLink = el("a", {
-            class: "btn small secondary",
-            href: `courseBuilder.html?course=${encodeURIComponent(c.id)}`
-          }, [document.createTextNode("Edit")]);
+          const editLink = el(
+            "a",
+            {
+              class: "btn small secondary",
+              href: `courseBuilder.html?course=${encodeURIComponent(c.id)}`,
+            },
+            [document.createTextNode("Edit")]
+          );
 
-          const delBtn = el("button", { class: "btn small danger", type: "button" }, [document.createTextNode("Delete")]);
-          delBtn.addEventListener("click", () => deleteCourse(c.id, c.title, delBtn));
+          const delBtn = el(
+            "button",
+            { class: "btn small danger", type: "button" },
+            [document.createTextNode("Delete")]
+          );
+          delBtn.addEventListener("click", () =>
+            deleteCourse(c.id, c.title, delBtn)
+          );
 
           const createdName = nameMap[c.created_by] || "Unknown";
-          const editedName  = c.last_edited_by ? (nameMap[c.last_edited_by] || "Unknown") : "—";
+          const editedName = c.last_edited_by
+            ? nameMap[c.last_edited_by] || "Unknown"
+            : "—";
 
           const card = el("div", { class: "course-card" }, [
             el("div", { class: "course-image" }, [
-              el("img", { src: c.thumbnail_url || "../images/profile-4.jpg", alt: c.title })
+              el("img", {
+                src: c.thumbnail_url || "../images/profile-4.jpg",
+                alt: c.title,
+              }),
             ]),
             el("div", { class: "course-content" }, [
               el("h3", { html: c.title }),
@@ -250,13 +425,22 @@
               el("div", { class: "meta" }, [
                 el("span", { class: "pill", html: `Slug: ${c.slug}` }),
                 el("span", { class: "pill", html: `Level: ${c.level ?? 0}` }),
-                el("span", { class: "pill", html: `Tags: ${(c.tags || []).join(", ") || "—"}` }),
+                el("span", {
+                  class: "pill",
+                  html: `Tags: ${(c.tags || []).join(", ") || "—"}`,
+                }),
               ]),
-              el("div", { class: "course-users", html: `Created by: ${createdName}<br>Last edited by: ${editedName}` }),
+              el("div", {
+                class: "course-users",
+                html: `Created by: ${createdName}<br>Last edited by: ${editedName}`,
+              }),
             ]),
             el("div", { class: "right" }, [
-              el("span", { class: "small", html: new Date(c.created_at).toLocaleString() }),
-              el("div", { class: "actions-col" }, [ editLink, delBtn ])
+              el("span", {
+                class: "small",
+                html: new Date(c.created_at).toLocaleString(),
+              }),
+              el("div", { class: "actions-col" }, [editLink, delBtn]),
             ]),
           ]);
           grid.appendChild(card);

@@ -4,7 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="../css_files/sideBar.css" />
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp"
+      rel="stylesheet"
+    />
     <title>Jobs Verification</title>
 
     <style>
@@ -21,73 +24,251 @@
         --radius: 14px;
       }
 
-      main { margin-top: 1.4rem; }
-
-      .two-col-wrap { display: grid; grid-template-columns: 340px 1fr; gap: 1rem; }
-      @media (max-width: 980px) { .two-col-wrap { grid-template-columns: 1fr; } }
-
-      .panel { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px; }
-      .panel h3 { margin: 0 0 0.5rem 0; font-size: 1rem; }
-
-      .search { position: relative; margin-bottom: 0.6rem; }
-      .search input {
-        width: 100%; border: 1px solid var(--line); border-radius: 10px;
-        padding: 10px 12px 10px 36px; outline: none; background: #fcfeff;
+      main {
+        margin-top: 1.4rem;
       }
-      .search .material-icons-sharp { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 20px; color: var(--muted); }
 
-      .list { display: flex; flex-direction: column; gap: 8px; max-height: 70vh; overflow: auto; }
+      .two-col-wrap {
+        display: grid;
+        grid-template-columns: 340px 1fr;
+        gap: 1rem;
+      }
+      @media (max-width: 980px) {
+        .two-col-wrap {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .panel {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 12px;
+      }
+      .panel h3 {
+        margin: 0 0 0.5rem 0;
+        font-size: 1rem;
+      }
+
+      .search {
+        position: relative;
+        margin-bottom: 0.6rem;
+      }
+      .search input {
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 10px 12px 10px 36px;
+        outline: none;
+        background: #fcfeff;
+      }
+      .search .material-icons-sharp {
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 20px;
+        color: var(--muted);
+      }
+
+      .list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        max-height: 70vh;
+        overflow: auto;
+      }
 
       .item {
-        display: grid; grid-template-columns: 48px 1fr auto; align-items: center; gap: 10px;
-        padding: 10px; border: 1px solid var(--line); border-radius: 12px; cursor: pointer;
-        transition: background 0.15s ease; background: #fff;
+        display: grid;
+        grid-template-columns: 48px 1fr auto;
+        align-items: center;
+        gap: 10px;
+        padding: 10px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        cursor: pointer;
+        transition: background 0.15s ease;
+        background: #fff;
       }
-      .item:hover { background: #f6fafc; }
-      .item.active { outline: 2px solid var(--brand); }
+      .item:hover {
+        background: #f6fafc;
+      }
+      .item.active {
+        outline: 2px solid var(--brand);
+      }
       /* viewed (white) */
-      .item.read { background: #fff !important; }
+      .item.read {
+        background: #fff !important;
+      }
       /* NEW: darker when pending */
-      .item.pending { background: #f0f4f9 !important; }
+      .item.pending {
+        background: #f0f4f9 !important;
+      }
 
-      .thumb { width: 48px; height: 48px; border-radius: 8px; object-fit: cover; border: 1px solid var(--line); }
+      .thumb {
+        width: 48px;
+        height: 48px;
+        border-radius: 8px;
+        object-fit: cover;
+        border: 1px solid var(--line);
+      }
 
-      .pill { font-size: 0.75rem; background: var(--pill); padding: 4px 8px; border-radius: 999px; color: #2463a6; border: 1px solid #d6e9ff; white-space: nowrap; }
+      .pill {
+        font-size: 0.75rem;
+        background: var(--pill);
+        padding: 4px 8px;
+        border-radius: 999px;
+        color: #2463a6;
+        border: 1px solid #d6e9ff;
+        white-space: nowrap;
+      }
 
-      .details { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); overflow: clip; }
-      .details .head { display: flex; gap: 16px; padding: 16px; border-bottom: 1px solid var(--line); align-items: center; background: linear-gradient(180deg, #f9fbff, #ffffff); }
-      .details .head img { width: 20%; height: auto; border-radius: 12px; object-fit: cover; border: 1px solid var(--line); background: #fff; }
-      .details .head .name { font-size: 1.1rem; font-weight: 700; margin: 0 0 2px; }
+      .details {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        overflow: clip;
+      }
+      .details .head {
+        display: flex;
+        gap: 16px;
+        padding: 16px;
+        border-bottom: 1px solid var(--line);
+        align-items: center;
+        background: linear-gradient(180deg, #f9fbff, #ffffff);
+      }
+      .details .head img {
+        width: 20%;
+        height: auto;
+        border-radius: 12px;
+        object-fit: cover;
+        border: 1px solid var(--line);
+        background: #fff;
+      }
+      .details .head .name {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin: 0 0 2px;
+      }
 
-      .meta { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
-      .meta .kv { font-size: 0.85rem; color: var(--muted); }
+      .meta {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 4px;
+      }
+      .meta .kv {
+        font-size: 0.85rem;
+        color: var(--muted);
+      }
 
-      .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 16px; }
-      @media (max-width: 980px) { .grid-2 { grid-template-columns: 1fr; } }
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        padding: 16px;
+      }
+      @media (max-width: 980px) {
+        .grid-2 {
+          grid-template-columns: 1fr;
+        }
+      }
 
-      .card { border: 1px solid var(--line); border-radius: 12px; padding: 12px; background: #fff; }
-      .card h4 { margin: 0 0 0.6rem 0; font-size: 0.95rem; }
+      .card {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 12px;
+        background: #fff;
+      }
+      .card h4 {
+        margin: 0 0 0.6rem 0;
+        font-size: 0.95rem;
+      }
 
-      .info-list { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; font-size: 0.95rem; }
-      @media (max-width: 640px) { .info-list { grid-template-columns: 1fr; } }
-      .info-list .label { color: var(--muted); font-size: 0.85rem; display: block; }
+      .info-list {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px 12px;
+        font-size: 0.95rem;
+      }
+      @media (max-width: 640px) {
+        .info-list {
+          grid-template-columns: 1fr;
+        }
+      }
+      .info-list .label {
+        color: var(--muted);
+        font-size: 0.85rem;
+        display: block;
+      }
 
-      .actions-row { display: flex; gap: 10px; padding: 12px 16px 16px; border-top: 1px solid var(--line); justify-content: flex-end; background: #fff; }
-      .btn { appearance: none; border: 1px solid var(--line); background: #fff; border-radius: 10px; padding: 9px 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 600; }
-      .btn.primary { background: var(--brand); color: #fff; border-color: var(--brand); }
-      .btn.reject { background: #fff5f5; color: var(--danger); border-color: #ffd7d7; }
-      .btn.warn { background: #fff8e1; color: #8a6d0a; border-color: #fde68a; }
-      .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+      .actions-row {
+        display: flex;
+        gap: 10px;
+        padding: 12px 16px 16px;
+        border-top: 1px solid var(--line);
+        justify-content: flex-end;
+        background: #fff;
+      }
+      .btn {
+        appearance: none;
+        border: 1px solid var(--line);
+        background: #fff;
+        border-radius: 10px;
+        padding: 9px 12px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 600;
+      }
+      .btn.primary {
+        background: var(--brand);
+        color: #fff;
+        border-color: var(--brand);
+      }
+      .btn.reject {
+        background: #fff5f5;
+        color: var(--danger);
+        border-color: #ffd7d7;
+      }
+      .btn.warn {
+        background: #fff8e1;
+        color: #8a6d0a;
+        border-color: #fde68a;
+      }
+      .btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
 
-      .empty-state { padding: 24px; border: 1px dashed var(--line); border-radius: 12px; background: #fbfeff; text-align: center; color: var(--muted); }
+      .empty-state {
+        padding: 24px;
+        border: 1px dashed var(--line);
+        border-radius: 12px;
+        background: #fbfeff;
+        text-align: center;
+        color: var(--muted);
+      }
 
       /* tiny toast */
       .toast {
-        position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
-        background: #111827; color: #fff; padding: 10px 14px; border-radius: 10px; font-size: .9rem;
-        display: none; z-index: 1000;
+        position: fixed;
+        bottom: 18px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #111827;
+        color: #fff;
+        padding: 10px 14px;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        display: none;
+        z-index: 1000;
       }
-      .toast.show { display: block; }
+      .toast.show {
+        display: block;
+      }
     </style>
   </head>
 
@@ -99,17 +280,44 @@
             <img src="../img/simpLogo.png" alt="logo" />
             <h2>SIMP<span class="danger">Project</span></h2>
           </div>
-          <div class="close" id="close-btn"><span class="material-icons-sharp">close</span></div>
+          <div class="close" id="close-btn">
+            <span class="material-icons-sharp">close</span>
+          </div>
         </div>
 
         <div class="sidebar">
-          <a href="dashboard.html"><span class="material-icons-sharp">dashboard</span><h3>Dashboard</h3></a>
-          <a href="workerVerification.html"><span class="material-icons-sharp">engineering</span><h3>Workers<br />Verification</h3></a>
-          <a href="jobVerification.html" class="active"><span class="material-icons-sharp">work</span><h3>Jobs<br />Verification</h3></a>
-          <a href="adminVerification.html"><span class="material-icons-sharp">shield</span><h3>Admin<br />Verification</h3></a>
-          <a href="courses.html"><span class="material-icons-sharp">school</span><h3>Course<br />Publisher</h3></a>
-          <a href="#"><span class="material-icons-sharp">settings</span><h3>Settings</h3></a>
-          <a href="#" id="logout-btn"><span class="material-icons-sharp">logout</span><h3>Logout</h3></a>
+          <a href="dashboard.html"
+            ><span class="material-icons-sharp">dashboard</span>
+            <h3>Dashboard</h3></a
+          >
+          <a href="workerVerification.html"
+            ><span class="material-icons-sharp">engineering</span>
+            <h3>Workers<br />Verification</h3></a
+          >
+          <a href="jobVerification.html" class="active"
+            ><span class="material-icons-sharp">work</span>
+            <h3>Jobs<br />Verification</h3></a
+          >
+          <a href="jobApplicationVerification.html">
+            <span class="material-icons-sharp">approval</span>
+            <h3>Application<br />Verification</h3>
+          </a>
+          <a href="adminVerification.html"
+            ><span class="material-icons-sharp">shield</span>
+            <h3>Admin<br />Verification</h3></a
+          >
+          <a href="courses.html"
+            ><span class="material-icons-sharp">school</span>
+            <h3>Course<br />Publisher</h3></a
+          >
+          <a href="#"
+            ><span class="material-icons-sharp">settings</span>
+            <h3>Settings</h3></a
+          >
+          <a href="#" id="logout-btn"
+            ><span class="material-icons-sharp">logout</span>
+            <h3>Logout</h3></a
+          >
         </div>
       </aside>
 
@@ -120,10 +328,24 @@
               <h3>Jobs for Verification</h3>
               <div class="search">
                 <span class="material-icons-sharp">search</span>
-                <input id="jobSearchInput" type="text" placeholder="Search title, category, location…" />
+                <input
+                  id="jobSearchInput"
+                  type="text"
+                  placeholder="Search title, category, location…"
+                />
               </div>
               <div style="margin-bottom: 0.6rem">
-                <select id="jobStatusFilter" style="width:100%; border:1px solid var(--line); border-radius:10px; padding:10px 12px; background:#fcfeff; outline:none;">
+                <select
+                  id="jobStatusFilter"
+                  style="
+                    width: 100%;
+                    border: 1px solid var(--line);
+                    border-radius: 10px;
+                    padding: 10px 12px;
+                    background: #fcfeff;
+                    outline: none;
+                  "
+                >
                   <option value="">All statuses</option>
                   <option value="pending">Pending</option>
                   <option value="viewed">Viewed</option>
@@ -132,11 +354,15 @@
                 </select>
               </div>
               <div id="jobList" class="list"></div>
-              <div id="emptyJobs" class="empty-state" style="display: none">No jobs pending review.</div>
+              <div id="emptyJobs" class="empty-state" style="display: none">
+                No jobs pending review.
+              </div>
             </div>
 
             <div class="details" id="jobDetailsPane">
-              <div class="empty-state">Select a job on the left to review its details.</div>
+              <div class="empty-state">
+                Select a job on the left to review its details.
+              </div>
             </div>
           </div>
         </section>
@@ -156,24 +382,44 @@
 
       const jobSearchInput = document.getElementById("jobSearchInput");
       const jobStatusFilter = document.getElementById("jobStatusFilter");
-      const jobList        = document.getElementById("jobList");
-      const emptyJobs      = document.getElementById("emptyJobs");
+      const jobList = document.getElementById("jobList");
+      const emptyJobs = document.getElementById("emptyJobs");
       const jobDetailsPane = document.getElementById("jobDetailsPane");
-      const toastEl        = document.getElementById("toast");
+      const toastEl = document.getElementById("toast");
 
       let ALL_JOBS = [];
       let activeJobId = null;
 
       // utils
-      const showToast = (msg, ms=2400) => {
+      const showToast = (msg, ms = 2400) => {
         toastEl.textContent = msg;
         toastEl.classList.add("show");
-        setTimeout(()=>toastEl.classList.remove("show"), ms);
+        setTimeout(() => toastEl.classList.remove("show"), ms);
       };
-      const esc = (s) => String(s ?? "").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-      const peso = (n) => { const v = typeof n === "string" ? parseFloat(n) : n; return isNaN(v) ? "0.00" : v.toLocaleString("en-PH",{minimumFractionDigits:2,maximumFractionDigits:2}); };
-      const fmtDate = (d) => d ? new Date(d + "T00:00:00").toLocaleDateString() : "";
-      const fmtTime = (t) => t ? String(t).slice(0,5) : "";
+      const esc = (s) =>
+        String(s ?? "").replace(
+          /[&<>"']/g,
+          (c) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            }[c])
+        );
+      const peso = (n) => {
+        const v = typeof n === "string" ? parseFloat(n) : n;
+        return isNaN(v)
+          ? "0.00"
+          : v.toLocaleString("en-PH", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            });
+      };
+      const fmtDate = (d) =>
+        d ? new Date(d + "T00:00:00").toLocaleDateString() : "";
+      const fmtTime = (t) => (t ? String(t).slice(0, 5) : "");
       const nice = (status) => {
         const s = (status ?? "").toLowerCase();
         if (!s) return "Pending";
@@ -182,15 +428,20 @@
       function publicJobImageUrl(rawPath, postedBy) {
         if (!rawPath) return "";
         if (/^https?:\/\//i.test(rawPath)) return rawPath;
-        let clean = String(rawPath).replace(/^\/+/, "").replace(/^jobs\//, "");
-        if (clean && !clean.includes("/") && postedBy) clean = `${postedBy}/${clean}`;
+        let clean = String(rawPath)
+          .replace(/^\/+/, "")
+          .replace(/^jobs\//, "");
+        if (clean && !clean.includes("/") && postedBy)
+          clean = `${postedBy}/${clean}`;
         const { data } = sb.storage.from("jobs").getPublicUrl(clean);
         return data?.publicUrl || "";
       }
 
       // Try to set enum value; if enum rejects (e.g., 'viewed' not allowed), fallback to NULL
       async function updateJobStatus(jobId, desiredStatus) {
-        const payload = desiredStatus ? { job_status: desiredStatus, updated_at: new Date().toISOString() } : { job_status: null, updated_at: new Date().toISOString() };
+        const payload = desiredStatus
+          ? { job_status: desiredStatus, updated_at: new Date().toISOString() }
+          : { job_status: null, updated_at: new Date().toISOString() };
 
         // First attempt: use desiredStatus (even for 'viewed'/'pending')
         const { error: e1 } = await sb
@@ -203,7 +454,9 @@
 
         // If enum doesn't include that value, try NULL fallback for 'viewed'/'pending'
         const enumErr = /enum|invalid input value/i.test(e1.message || "");
-        const wantsFallback = desiredStatus && (desiredStatus === "viewed" || desiredStatus === "pending");
+        const wantsFallback =
+          desiredStatus &&
+          (desiredStatus === "viewed" || desiredStatus === "pending");
         if (enumErr && wantsFallback) {
           const { error: e2 } = await sb
             .schema("jobs")
@@ -226,7 +479,8 @@
         const { data, error } = await sb
           .schema("jobs")
           .from("job")
-          .select(`
+          .select(
+            `
             job_id,
             posted_by,
             job_title,
@@ -240,28 +494,32 @@
             job_picture_url,
             job_status,
             created_at
-          `)
+          `
+          )
           .order("created_at", { ascending: false });
 
         if (error) {
           console.error(error);
-          jobDetailsPane.innerHTML = '<div class="empty-state">Failed to load jobs.</div>';
+          jobDetailsPane.innerHTML =
+            '<div class="empty-state">Failed to load jobs.</div>';
           emptyJobs.style.display = "block";
           showToast(error.message || "Load error");
           return;
         }
 
-        ALL_JOBS = (data || []).map(j => ({
+        ALL_JOBS = (data || []).map((j) => ({
           id: j.job_id,
-          photo: publicJobImageUrl(j.job_picture_url, j.posted_by) || "../images/profile-4.jpg",
+          photo:
+            publicJobImageUrl(j.job_picture_url, j.posted_by) ||
+            "../images/profile-4.jpg",
           title: j.job_title,
           category: j.job_category,
           difficulty: j.job_difficulty,
           pay: j.job_pay,
           datetime: `${fmtDate(j.job_date)} ${fmtTime(j.job_time)}`,
           location: j.job_location,
-          status: (j.job_status ?? ""), // "" = pending for UI
-          createdAt: j.created_at
+          status: j.job_status ?? "", // "" = pending for UI
+          createdAt: j.created_at,
         }));
 
         renderJobList();
@@ -274,10 +532,13 @@
 
           renderJobDetails(first);
           setTimeout(() => {
-            document.querySelector(`#jobList .item[data-id="${first.id}"]`)?.classList.add("active","read");
+            document
+              .querySelector(`#jobList .item[data-id="${first.id}"]`)
+              ?.classList.add("active", "read");
           });
         } else {
-          jobDetailsPane.innerHTML = '<div class="empty-state">No jobs found.</div>';
+          jobDetailsPane.innerHTML =
+            '<div class="empty-state">No jobs found.</div>';
         }
       }
 
@@ -286,17 +547,20 @@
         const q = (filter || "").trim().toLowerCase();
         const selectedStatus = (jobStatusFilter?.value || "").toLowerCase();
 
-        const filtered = (ALL_JOBS || []).filter(j => {
-          const hay = `${(j.title||"").toLowerCase()}|${(j.category||"").toLowerCase()}|${(j.location||"").toLowerCase()}`;
+        const filtered = (ALL_JOBS || []).filter((j) => {
+          const hay = `${(j.title || "").toLowerCase()}|${(
+            j.category || ""
+          ).toLowerCase()}|${(j.location || "").toLowerCase()}`;
           const hit = !q || hay.includes(q);
           const statusForFilter = (j.status || "pending").toLowerCase(); // empty means pending
-          const statusOk = !selectedStatus || statusForFilter === selectedStatus;
+          const statusOk =
+            !selectedStatus || statusForFilter === selectedStatus;
           return hit && statusOk;
         });
 
         emptyJobs.style.display = filtered.length ? "none" : "block";
 
-        filtered.forEach(j => {
+        filtered.forEach((j) => {
           const item = document.createElement("div");
           item.className = "item";
           item.dataset.id = j.id;
@@ -305,29 +569,40 @@
           // status → class
           if ((j.status || "").toLowerCase() === "viewed") {
             item.classList.add("read");
-          } else if (!(j.status) || (j.status || "").toLowerCase() === "pending") {
+          } else if (
+            !j.status ||
+            (j.status || "").toLowerCase() === "pending"
+          ) {
             item.classList.add("pending");
           }
 
           item.innerHTML = `
-            <img class="thumb" src="${j.photo}" alt="${esc(j.title)}" onerror="this.onerror=null;this.src='../images/profile-4.jpg';">
+            <img class="thumb" src="${j.photo}" alt="${esc(
+            j.title
+          )}" onerror="this.onerror=null;this.src='../images/profile-4.jpg';">
             <div>
               <div style="font-weight:700">${esc(j.title)}</div>
-              <div style="font-size:.85rem;color:var(--muted)">${esc(j.category || "Uncategorized")} · ${esc(j.location || "—")}</div>
+              <div style="font-size:.85rem;color:var(--muted)">${esc(
+                j.category || "Uncategorized"
+              )} · ${esc(j.location || "—")}</div>
             </div>
             <span class="pill">${esc(nice(j.status || "pending"))}</span>
           `;
 
           item.addEventListener("click", async () => {
             activeJobId = j.id;
-            document.querySelectorAll("#jobList .item").forEach(i => i.classList.remove("active"));
+            document
+              .querySelectorAll("#jobList .item")
+              .forEach((i) => i.classList.remove("active"));
             item.classList.add("active");
 
             // Mark as viewed (UI + DB)
             await ensureViewed(j);
             item.classList.remove("pending");
             item.classList.add("read");
-            item.querySelector(".pill").textContent = nice(j.status || "pending");
+            item.querySelector(".pill").textContent = nice(
+              j.status || "pending"
+            );
 
             renderJobDetails(j);
           });
@@ -336,7 +611,8 @@
         });
 
         if (!filtered.length) {
-          jobDetailsPane.innerHTML = '<div class="empty-state">Nothing matches your filters.</div>';
+          jobDetailsPane.innerHTML =
+            '<div class="empty-state">Nothing matches your filters.</div>';
         }
       }
 
@@ -349,8 +625,12 @@
             <div style="padding:0 16px 12px;">
               <div class="name">${esc(job.title)}</div>
               <div class="meta">
-                <span class="kv"><strong>Category:</strong> ${esc(job.category || "Uncategorized")}</span>
-                <span class="kv"><strong>Difficulty:</strong> ${esc(job.difficulty ?? "—")}</span>
+                <span class="kv"><strong>Category:</strong> ${esc(
+                  job.category || "Uncategorized"
+                )}</span>
+                <span class="kv"><strong>Difficulty:</strong> ${esc(
+                  job.difficulty ?? "—"
+                )}</span>
                 <span class="kv"><strong>Pay:</strong> ₱${peso(job.pay)}</span>
               </div>
             </div>
@@ -360,15 +640,21 @@
             <div class="card">
               <h4>Schedule</h4>
               <div class="info-list">
-                <div><span class="label">Date / Time</span>${esc(job.datetime || "—")}</div>
-                <div><span class="label">Status</span><span class="pill" id="jobStatusPill">${esc(nice(job.status || "pending"))}</span></div>
+                <div><span class="label">Date / Time</span>${esc(
+                  job.datetime || "—"
+                )}</div>
+                <div><span class="label">Status</span><span class="pill" id="jobStatusPill">${esc(
+                  nice(job.status || "pending")
+                )}</span></div>
               </div>
             </div>
 
             <div class="card">
               <h4>Location</h4>
               <div class="info-list">
-                <div style="grid-column: 1 / -1;"><span class="label">Address</span>${esc(job.location || "Not specified")}</div>
+                <div style="grid-column: 1 / -1;"><span class="label">Address</span>${esc(
+                  job.location || "Not specified"
+                )}</div>
               </div>
             </div>
           </div>
@@ -385,7 +671,9 @@
           const approveBtn = document.createElement("button");
           approveBtn.className = "btn primary";
           approveBtn.textContent = "Approve";
-          approveBtn.addEventListener("click", () => changeStatus(job, "approved"));
+          approveBtn.addEventListener("click", () =>
+            changeStatus(job, "approved")
+          );
           actionsRow.appendChild(approveBtn);
         }
 
@@ -393,7 +681,9 @@
           const rejectBtn = document.createElement("button");
           rejectBtn.className = "btn reject";
           rejectBtn.textContent = "Reject";
-          rejectBtn.addEventListener("click", () => changeStatus(job, "rejected"));
+          rejectBtn.addEventListener("click", () =>
+            changeStatus(job, "rejected")
+          );
           actionsRow.appendChild(rejectBtn);
         }
 
@@ -401,20 +691,22 @@
           const revertBtn = document.createElement("button");
           revertBtn.className = "btn warn";
           revertBtn.textContent = "Revert to Viewed";
-          revertBtn.addEventListener("click", () => changeStatus(job, "viewed")); // falls back to NULL if enum doesn't allow
+          revertBtn.addEventListener("click", () =>
+            changeStatus(job, "viewed")
+          ); // falls back to NULL if enum doesn't allow
           actionsRow.appendChild(revertBtn);
         }
       }
 
       async function changeStatus(job, target) {
         const prev = job.status;
-        job.status = target;                // optimistic UI
+        job.status = target; // optimistic UI
         updateActiveRowBadge(job);
         renderJobDetails(job);
 
         const res = await updateJobStatus(job.id, target);
         if (!res.ok) {
-          job.status = prev;               // rollback on error
+          job.status = prev; // rollback on error
           updateActiveRowBadge(job);
           renderJobDetails(job);
           const msg = res.error?.message || "Update failed (check RLS/enum)";
@@ -434,10 +726,14 @@
       }
 
       function updateActiveRowBadge(job) {
-        const row = document.querySelector(`#jobList .item[data-id="${job.id}"]`);
+        const row = document.querySelector(
+          `#jobList .item[data-id="${job.id}"]`
+        );
         if (row) {
-          row.querySelector(".pill").textContent = nice(job.status || "pending");
-          row.classList.remove("pending","read");
+          row.querySelector(".pill").textContent = nice(
+            job.status || "pending"
+          );
+          row.classList.remove("pending", "read");
           const s = (job.status || "").toLowerCase();
           if (s === "viewed") {
             row.classList.add("read");
@@ -461,13 +757,20 @@
           if (!res.ok) {
             job.status = prev;
             updateActiveRowBadge(job);
-            console.warn("Could not set viewed:", res.error?.message || res.error);
+            console.warn(
+              "Could not set viewed:",
+              res.error?.message || res.error
+            );
           }
         }
       }
 
-      jobSearchInput?.addEventListener("input", (e) => renderJobList(e.target.value));
-      jobStatusFilter?.addEventListener("change", () => renderJobList(jobSearchInput?.value || ""));
+      jobSearchInput?.addEventListener("input", (e) =>
+        renderJobList(e.target.value)
+      );
+      jobStatusFilter?.addEventListener("change", () =>
+        renderJobList(jobSearchInput?.value || "")
+      );
 
       document.addEventListener("DOMContentLoaded", loadJobs);
     </script>
