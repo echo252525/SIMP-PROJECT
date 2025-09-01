@@ -31,8 +31,8 @@ body {
   margin: 0;
   background: linear-gradient(
       to right,
-      rgba(32, 164, 76, 0.7),
-      rgba(32, 100, 124, 0.7)
+      rgba(32, 164, 76, 0.8),
+      rgba(32, 100, 124, 0.8)
     ),
     url("img/bgg.jpg") center/cover no-repeat;
 }
@@ -56,7 +56,8 @@ nav {
 }
 
 .nav_links img {
-  max-width: 100px;
+  width: 100%;
+  max-width: 150px;
 }
 
 .nav_links a {
@@ -203,13 +204,10 @@ nav {
 
 /* Second Page */
 .secondPage {
-  min-height: 100vh;
+  min-height: 60vh;
 }
 
 .container2 {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2rem;
   justify-content: center;
   max-width: var(--max-width);
   margin: 0 auto;
@@ -224,26 +222,72 @@ h1 {
   padding-top: 4rem;
 }
 
-.createProfile,
-.levelUp,
-.findApply,
-.getHired {
+.hiw-subtitle {
+  text-align: center;
+  color: #6b7280;
+  margin-top: 0.6rem;
+  max-width: 720px;
+  margin-inline: auto;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+.hiw-steps {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(220px, 1fr));
+  gap: 2.5rem;
+  justify-items: center;
+}
+
+.hiw-step { 
+  text-align: center;
+  max-width: 280px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  text-align: center;
-  border: 1px solid var(--green);
-  border-radius: 10px;
-  padding: 3rem 2rem;
-  flex: 1 1 calc(50% - 2rem);
-  max-width: calc(50% - 2rem);
 }
 
-.createProfile img,
-.levelUp img,
-.findApply img,
-.getHired img {
-  width: 50px;
+.hiw-step h4 {
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+  color: var(--green);
+}
+
+.hiw-step p {
+  color: #6b7280;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+.hiw-icon {
+  width: 84px;
+  height: 84px;
+  border-radius: 18px;
+  background: #fff;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+  border: 1px solid rgba(0,0,0,0.06);
+}
+
+.hiw-icon img { 
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+  filter: none;
+}
+
+@media (max-width: 1024px) {
+  .hiw-steps {
+    grid-template-columns: repeat(2, minmax(220px, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .hiw-path { display: none; }
+  .hiw-steps { grid-template-columns: 1fr; }
+  .hiw-step { max-width: 100%; }
 }
 
 /* Third Page */
@@ -393,18 +437,6 @@ h1 {
   opacity: 0;
 }
 
-/* ==== Card Hover Animation ==== */
-.container2 > div,
-.container3 > div {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.container2 > div:hover,
-.container3 > div:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-}
-
 /* ==== Social Icon Hover Animation ==== */
 .socials a {
   transition: transform 0.3s ease, background-color 0.3s ease;
@@ -492,3 +524,4 @@ h1 {
   height: 90vh;
   border: none;
 }
+

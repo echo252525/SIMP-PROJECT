@@ -14,13 +14,19 @@
 		<nav>
 			<ul class="nav_links">
 				<div>
-					<li>
-						<img src="img/simpHappyMascotLogo.png" alt="logo" />
-					</li>
-					<li><a href="#">HOME</a></li>
-					<li><a href="#">ABOUT US</a></li>
-					<li><a href="#">HOW IT WORKS</a></li>
-					<li><a href="#">CONTACT US</a></li>
+					<li><img src="img/logowhitebold.png" alt="logo" /></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li><a href="#">Home</a></li>
+					<li></li>
+					<li><a href="#how-it-works">About Us</a></li>
+					<!-- CHANGED: made link point to a section id for in-page flow -->
+					<li></li>
+					<li><a href="#how-it-works">How It Works</a></li> <!-- CHANGED: anchor link -->
+					<li></li>
+					<li><a href="#contact">Contact Us</a></li> <!-- CHANGED: anchor link -->
 				</div>
 				<li><a href="login.html">Log in</a></li>
 				<li><a href="signup.html">Sign up</a></li>
@@ -31,195 +37,197 @@
 			<h2>Connect with Expert Technicians & Installers Across the Philippines!</h2>
 			<button>View Job Postings<span><i class="ri-arrow-right-line"></i></span></button>
 			<div class="scroll_bottom">
-				<a href="#">
+				<a href="#how-it-works"> <!-- CHANGED: scroll now targets second page -->
 					<span><i class="ri-mouse-fill"></i></span>
 					SCROLL
 				</a>
 			</div>
 			<div class="socials">
-				<a href="#"><i class="ri-dribbble-fill"></i></a>
-				<a href="#"><i class="ri-instagram-line"></i></a>
-				<a href="#"><i class="ri-youtube-fill"></i></a>
-				<a href="adminLogin.html"><i class="ri-user-settings-line"></i></a>
+				<a href="adminLogin.html" aria-label="Admin"><i class="ri-user-settings-line"></i></a>
 			</div>
 		</section>
 	</div>
 
-	<div class="secondPage">
+	<!-- =================== SECOND PAGE =================== -->
+	<div class="secondPage hiw" id="how-it-works">
 		<div>
 			<h1>How It Works</h1>
+			<p class="hiw-subtitle">
+				Mobile hiring made simple—post, learn, apply, and get hired with a seamless workflow.
+			</p>
 		</div>
-		<div class="container2">
-			<div class="createProfile">
-				<img src="img/createProfile.svg" alt="Pic" />
+
+		<div class="hiw-steps container2">
+			<div class="hiw-step">
+				<div class="hiw-icon">
+					<img src="img/createProfile.svg" alt="Create profile icon" />
+				</div>
 				<h4>Create Your Profile</h4>
 				<p>
-					Sign up and build your professional
-					portfolio to showcase your skills
-					and expertise to potential clients.
+					Sign up and build your professional portfolio to showcase your skills to clients.
 				</p>
 			</div>
-			<div class="levelUp">
-				<img src="img/levelUp.svg" alt="Pic">
+
+			<div class="hiw-step">
+				<div class="hiw-icon">
+					<img src="img/levelUp.svg" alt="Level up icon" />
+				</div>
 				<h4>Level Up with Courses</h4>
 				<p>
-					Enroll in our specialized courses to
-					enhance your expertise and gain access
-					to more complex and higher paying projects.
+					Take specialized courses to sharpen your expertise and unlock higher-paying work.
 				</p>
 			</div>
-			<div class="findApply">
-				<img src="img/find&apply.svg" alt="Pic">
-				<h4>Find & Apply for Jobs</h4>
+
+			<div class="hiw-step">
+				<div class="hiw-icon">
+					<img src="img/find&apply.svg" alt="Find and apply icon" />
+				</div>
+				<h4>Find &amp; Apply for Jobs</h4>
 				<p>
-					Browse a wide range of job opportunities
-					across the Philippines and apply for the
-					ones that match your skillset and level.
+					Browse nationwide roles and apply to the ones that fit your skills and level.
 				</p>
 			</div>
-			<div class="getHired">
-				<img src="img/getHired.svg" alt="Pic">
-				<h4>Get Hired & Suceed</h4>
+
+			<div class="hiw-step">
+				<div class="hiw-icon">
+					<img src="img/getHired.svg" alt="Get hired icon" />
+				</div>
+				<h4>Get Hired &amp; Succeed</h4>
 				<p>
-					Sign up and build your professional
-					portfolio to showcase your skills and
-					expertise and experience to potential
-					clients.
+					Deliver great work, earn reviews, and grow your reputation to win even better projects.
 				</p>
 			</div>
 		</div>
 	</div>
 
-	<div class="thirdPage">
+	<!-- =================== THIRD PAGE =================== -->
+	<div class="thirdPage" id="jobs"> <!-- CHANGED: id for deep linking -->
 		<div class="thirdPageTitle">
 			<h1>Recent Job Postings</h1>
 		</div>
+
+		<!-- CHANGED: cards kept; improved alt text and spacing consistency -->
 		<div class="container3">
 			<div>
-				<img src="#" alt="logo">
+				<img src="#" alt="Company logo">
 				<h3>Job Title</h3>
 				<h4>Company Name</h4>
 				<h5>Location</h5><br>
 				<p>
-					Lorem ipsum dolor sit amet, consectetur
-					adipiscing elit, sed do eiusmod tempor
-					incididunt ut labore et dolore magna aliqua.
-					Ut enim ad minim veniam, quis nostrud exercitation
+					Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+					incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.
 				</p>
 			</div>
 			<div>
-				<img src="#" alt="logo">
+				<img src="#" alt="Company logo">
 				<h3>Job Title</h3>
 				<h4>Company Name</h4>
 				<h5>Location</h5><br>
 				<p>
-					Lorem ipsum dolor sit amet, consectetur
-					adipiscing elit, sed do eiusmod tempor
-					incididunt ut labore et dolore magna aliqua.
-					Ut enim ad minim veniam, quis nostrud exercitation
+					Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+					incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.
 				</p>
 			</div>
 			<div>
-				<img src="#" alt="logo">
+				<img src="#" alt="Company logo">
 				<h3>Job Title</h3>
 				<h4>Company Name</h4>
 				<h5>Location</h5><br>
 				<p>
-					Lorem ipsum dolor sit amet, consectetur
-					adipiscing elit, sed do eiusmod tempor
-					incididunt ut labore et dolore magna aliqua.
-					Ut enim ad minim veniam, quis nostrud exercitation
+					Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+					incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.
 				</p>
 			</div>
 			<div>
-				<img src="#" alt="logo">
+				<img src="#" alt="Company logo">
 				<h3>Job Title</h3>
 				<h4>Company Name</h4>
 				<h5>Location</h5><br>
 				<p>
-					Lorem ipsum dolor sit amet, consectetur
-					adipiscing elit, sed do eiusmod tempor
-					incididunt ut labore et dolore magna aliqua.
-					Ut enim ad minim veniam, quis nostrud exercitation
+					Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+					incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.
 				</p>
 			</div>
 			<div>
-				<img src="#" alt="logo">
+				<img src="#" alt="Company logo">
 				<h3>Job Title</h3>
 				<h4>Company Name</h4>
 				<h5>Location</h5><br>
 				<p>
-					Lorem ipsum dolor sit amet, consectetur
-					adipiscing elit, sed do eiusmod tempor
-					incididunt ut labore et dolore magna aliqua.
-					Ut enim ad minim veniam, quis nostrud exercitation
+					Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+					incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.
 				</p>
 			</div>
 			<div>
-				<img src="#" alt="logo">
+				<img src="#" alt="Company logo">
 				<h3>Job Title</h3>
 				<h4>Company Name</h4>
 				<h5>Location</h5><br>
 				<p>
-					Lorem ipsum dolor sit amet, consectetur
-					adipiscing elit, sed do eiusmod tempor
-					incididunt ut labore et dolore magna aliqua.
-					Ut enim ad minim veniam, quis nostrud exercitation
+					Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+					incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.
 				</p>
 			</div>
 		</div>
 	</div>
 
+	<!-- =================== FOURTH PAGE =================== -->
 	<div class="fourthPage">
 		<div class="container4">
 			<p class="p1">Ready to Start Your Journey?</p>
 			<p class="p2">
-				Join our community of elite technicians
-				and take control of your career today.
+				Join our community of elite technicians and take control of your career today.
 			</p>
-			<button>View Job Postings</button>
+			<button aria-label="View job postings from CTA">View Job Postings</button>
 		</div>
 	</div>
 
-	<div class="fifthPage">
+	<!-- =================== FIFTH PAGE =================== -->
+	<div class="fifthPage" id="contact"> <!-- CHANGED: added id for nav targets -->
 		<div class="aboutDiv">
 			<p class="aboutText">ABOUT</p>
 			<p class="aboutDescription">
-				An "About Us" page provides a brief
-				introduction to a company, organization,
-				or individual, often including its mission,
-				history, team, and values. It's a place to
-				share your brand story, explain what you do,
-				and connect with your audience on a personal
-				level.</p>
+				An “About Us” page introduces your company—your mission, story, team, and values.
+				Use it to explain what you do and connect with your audience on a personal level.
+				<!-- CHANGED: tightened copy; same structure to match tone -->
+			</p>
 		</div>
 		<div class="contactDiv">
 			<p class="contactText">CONTACT US</p>
 			<ul>
-				<li>Address: Street, Brgy, Metro Manila, PHilippines.</li>
+				<li>Address: Street, Brgy, Metro Manila, Philippines.</li> <!-- CHANGED: fixed capitalization -->
 				<li>Email: simpProject@email.com</li>
 				<li>Phone: 0980 090 0099</li>
-
 			</ul>
+			<!-- CHANGED: added small, accessible quick link row using existing icon font (no CSS edits required) -->
+			<p style="margin-top:0.8rem;">
+				<a href="mailto:simpProject@email.com" style="text-decoration:none;">
+					<i class="ri-mail-line"></i> Email Us
+				</a>
+				&nbsp;&nbsp;|&nbsp;&nbsp;
+				<a href="tel:+639800900099" style="text-decoration:none;">
+					<i class="ri-phone-line"></i> Call
+				</a>
+			</p>
 		</div>
 	</div>
+
+	<script src="https://unpkg.com/scrollreveal"></script>
+	<script>
+		const scrollRevealOption = {
+			distance: "50px",
+			origin: "bottom",
+			duration: 1000,
+		};
+		ScrollReveal().reveal(".section_container h3", { ...scrollRevealOption });
+		ScrollReveal().reveal(".section_container h2", { ...scrollRevealOption, origin: "right", delay: 200 });
+		ScrollReveal().reveal(".section_container button", { ...scrollRevealOption, delay: 400 });
+		ScrollReveal().reveal(".nav_links li", { ...scrollRevealOption, origin: "top", interval: 100 });
+		ScrollReveal().reveal(".container2 > div", { ...scrollRevealOption, interval: 200 });
+		ScrollReveal().reveal(".container3 > div", { ...scrollRevealOption, origin: "left", interval: 150 });
+		ScrollReveal().reveal(".fourthPage", { ...scrollRevealOption, origin: "bottom" });
+		ScrollReveal().reveal(".fifthPage > div", { ...scrollRevealOption, origin: "right", interval: 200 });
+	</script>
 </body>
 
 </html>
-
-<script src="https://unpkg.com/scrollreveal"></script>
-<script>
-	const scrollRevealOption = {
-		distance: "50px",
-		origin: "bottom",
-		duration: 1000,
-	};
-	ScrollReveal().reveal(".section_container h3", { ...scrollRevealOption });
-	ScrollReveal().reveal(".section_container h2", { ...scrollRevealOption, origin: "right", delay: 200 });
-	ScrollReveal().reveal(".section_container button", { ...scrollRevealOption, delay: 400 });
-	ScrollReveal().reveal(".nav_links li", { ...scrollRevealOption, origin: "top", interval: 100 });
-	ScrollReveal().reveal(".container2 > div", { ...scrollRevealOption, interval: 200 });
-	ScrollReveal().reveal(".container3 > div", { ...scrollRevealOption, origin: "left", interval: 150 });
-	ScrollReveal().reveal(".fourthPage", { ...scrollRevealOption, origin: "bottom" });
-	ScrollReveal().reveal(".fifthPage > div", { ...scrollRevealOption, origin: "right", interval: 200 });
-</script>
