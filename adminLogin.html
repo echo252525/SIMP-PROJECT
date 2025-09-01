@@ -222,8 +222,7 @@
           }
 
           if (row.role === "pending") {
-            await supabase.auth.signOut();
-            showNotice("Your account is pending approval. Please wait for a superadmin to approve your access.", "error");
+            window.location.href = "pages/admin_pages/html_files/waiting.html";
             return;
           }
 

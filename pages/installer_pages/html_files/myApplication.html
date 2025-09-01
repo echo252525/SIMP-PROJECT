@@ -256,11 +256,6 @@
       .status .material-icons {
         font-size: 16px;
       }
-      .status-submitted {
-        background: #eef2ff;
-        color: #4338ca;
-        border-color: #e0e7ff;
-      } /* not used */
       .status-viewed {
         background: #fff7ed;
         color: #c2410c;
@@ -280,6 +275,17 @@
         background: #f1f5f9;
         color: #334155;
         border-color: #e2e8f0;
+      }
+      /* NEW: overdue + done */
+      .status-overdue {
+        background: #fff1f2;
+        color: #be123c;
+        border-color: #ffe4e6;
+      }
+      .status-done {
+        background: #ecfdf5;
+        color: #065f46;
+        border-color: #a7f3d0;
       }
 
       /* Animations & micro-interactions (unchanged) */
@@ -529,6 +535,15 @@
                 ><span class="material-icons" aria-hidden="true">pending</span
                 >Pending</a
               >
+              <!-- NEW options for filtering if you like (not required for buttons) -->
+              <a href="#" data-status="overdue"
+                ><span class="material-icons" aria-hidden="true">event_busy</span
+                >Overdue</a
+              >
+              <a href="#" data-status="done"
+                ><span class="material-icons" aria-hidden="true">check_circle</span
+                >Done</a
+              >
             </div>
           </div>
         </div>
@@ -559,7 +574,7 @@
       const statusLabel = document.getElementById("statusLabel");
       const searchInput = document.getElementById("searchInput");
 
-      // Status presentation map
+      // Status presentation map (EXTENDED with overdue + done)
       const STATUS_MAP = Object.freeze({
         pending: {
           class: "status-pending",
@@ -576,6 +591,16 @@
           class: "status-rejected",
           label: "Rejected",
           icon: "close",
+        },
+        overdue: {
+          class: "status-overdue",
+          label: "Overdue",
+          icon: "event_busy",
+        },
+        done: {
+          class: "status-done",
+          label: "Done",
+          icon: "check_circle",
         },
       });
 
@@ -662,9 +687,35 @@
 
         for (const app of rows) {
           const job = app.job || {};
-          const statusInfo = STATUS_MAP[app.status] || STATUS_MAP["pending"];
+          const st = String(app.status || "").toLowerCase();
+          const statusInfo = STATUS_MAP[st] || STATUS_MAP["pending"];
           const imgUrl =
             publicJobImageUrl(job.job_picture_url) || "../images/profile-4.jpg";
+
+          // Decide button label/visibility based on application status
+          // - approved  -> "Mark as Done"
+          // - overdue   -> "Delete"
+          // - rejected  -> "Delete Application"
+          // - viewed    -> "Cancel Application"
+          // - pending   -> "Cancel Application"
+          // - done      -> NO BUTTON
+          let actionLabel = null;
+          let actionIcon = null;
+          if (st === "approved") {
+            actionLabel = "Mark as Done";
+            actionIcon = "done_all";
+          } else if (st === "overdue") {
+            actionLabel = "Delete";
+            actionIcon = "delete";
+          } else if (st === "rejected") {
+            actionLabel = "Delete Application";
+            actionIcon = "delete";
+          } else if (st === "viewed" || st === "pending") {
+            actionLabel = "Cancel Application";
+            actionIcon = "cancel";
+          } else if (st === "done") {
+            actionLabel = null; // hide button
+          }
 
           const card = document.createElement("article");
           card.className = "applicationsDiv";
@@ -692,9 +743,7 @@
                   </span>
                 </div>
                 <span class="status ${statusInfo.class}">
-                  <span class="material-icons" aria-hidden="true">${
-                    statusInfo.icon
-                  }</span>
+                  <span class="material-icons" aria-hidden="true">${statusInfo.icon}</span>
                   ${statusInfo.label}
                 </span>
               </div>
@@ -724,7 +773,14 @@
                 job.job_description || "No description provided."
               )}</div>
             </div>
-            <button class="apply"><span class="material-icons" aria-hidden="true">cancel</span>Cancel Application</button>
+            ${
+              actionLabel
+                ? `<button class="apply">
+                     <span class="material-icons" aria-hidden="true">${actionIcon}</span>
+                     ${actionLabel}
+                   </button>`
+                : ``
+            }
           `;
 
           container.appendChild(card);
@@ -749,7 +805,7 @@
           return;
         }
 
-        // 2) Load the jobs those apps reference (from public schema)
+        // 2) Load the jobs those apps reference (from jobs schema)
         const jobIds = [
           ...new Set((apps || []).map((a) => a.job_id).filter(Boolean)),
         ];
@@ -757,21 +813,21 @@
         let jobsById = {};
         if (jobIds.length) {
           const { data: jobs, error: jobErr } = await sb
-          .schema("jobs")
-            .from("job") // public schema by default
+            .schema("jobs")
+            .from("job")
             .select(
               `
-        job_id,
-        job_title,
-        job_category,
-        job_difficulty,
-        job_location,
-        job_date,
-        job_time,
-        job_pay,
-        job_description,
-        job_picture_url
-      `
+              job_id,
+              job_title,
+              job_category,
+              job_difficulty,
+              job_location,
+              job_date,
+              job_time,
+              job_pay,
+              job_description,
+              job_picture_url
+            `
             )
             .in("job_id", jobIds);
 

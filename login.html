@@ -85,6 +85,17 @@
         return !!data;
       }
 
+      // ✅ NEW: check if user exists in public.installer table
+      async function isInstaller(userId) {
+        const { data, error } = await supabase
+          .from("installer")
+          .select("id")
+          .eq("id", userId)
+          .maybeSingle();
+        if (error) throw error;
+        return !!data;
+      }
+
       window.login = async () => {
         const email = document.getElementById("email").value.trim();
         const password = document.getElementById("password").value;
@@ -99,6 +110,17 @@
           const userId = signInData.user.id;
 
           if (role === "installer") {
+            // ✅ First, ensure this user is actually an installer
+            const installerExists = await isInstaller(userId);
+            if (!installerExists) {
+              alert(
+                "No installer profile found for this account. Please register as an installer first."
+              );
+              // Do NOT redirect to upload; stop here.
+              return;
+            }
+
+            // Proceed with document status routing only for real installers
             const doc = await getLatestInstallerDoc(userId);
 
             if (doc) {
@@ -149,6 +171,7 @@
               window.location.href = INSTALLER_UPLOAD;
               return;
             } else {
+              // Installer exists but has no documents yet → upload
               alert(
                 "No installer documents found. Please upload your documents."
               );

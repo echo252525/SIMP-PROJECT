@@ -209,16 +209,18 @@
         return;
       }
 
-      applications = appRows || [];
+      // Filter OUT applications whose own status is 'overdue'
+      applications = (appRows || []).filter(a => String(a.status).toLowerCase() !== "overdue");
+
       if (!applications.length) {
-        $("#jobList").innerHTML = `<div class="empty">No job applications yet.</div>`;
+        $("#jobList").innerHTML = `<div class="empty">No job applications (excluding overdue) to show.</div>`;
         $("#jobDetails").innerHTML = `<div class="empty">No jobs to display.</div>`;
         $("#applicantsWrap").innerHTML = `<div class="empty">No job selected.</div>`;
         $("#globalActions").style.display = "none";
         return;
       }
 
-      // 2) Collect distinct job_ids and installer_ids
+      // 2) Collect distinct job_ids and installer_ids (based on the filtered applications)
       const jobIds = [...new Set(applications.map(a => a.job_id))];
       const installerIds = [...new Set(applications.map(a => a.installer_id))];
 
@@ -270,7 +272,7 @@
         return m;
       }, new Map());
 
-      // 7) UI: render job list (only jobs that actually have applications)
+      // 7) UI: render job list (only jobs that actually have applications after filtering out overdue ones)
       filteredJobs = jobs
         .filter(j => appsByJob.has(j.job_id))
         .sort((a, b) => {
@@ -359,6 +361,9 @@
         return;
       }
 
+      // NEW: detect if this job already has an approved applicant
+      const alreadyApproved = apps.some(a => String(a.status).toLowerCase() === "approved");
+
       wrap.innerHTML = `
         <table>
           <thead>
@@ -385,18 +390,24 @@
         const tr = document.createElement("tr");
 
         const radioId = `sel-${a.application_id}`;
-        const disabled = a.status === "approved" ? "disabled" : "";
+        // NEW: make radios permanently unclickable once a hire exists,
+        // and also disable any non-pending/non-viewed statuses (e.g., rejected/approved).
+        const statusLower = String(a.status).toLowerCase();
+        const selectable = !alreadyApproved && (statusLower === "pending" || statusLower === "viewed");
+        const disabledAttr = selectable ? "" : "disabled";
+
         tr.innerHTML = `
           <td class="select-radio">
-            <input type="radio" name="hireSelect" id="${radioId}" value="${a.application_id}" ${disabled}/>
+            <input type="radio" name="hireSelect" id="${radioId}" value="${a.application_id}" ${disabledAttr}/>
           </td>
-          <td>${w.name || "—"} ${a.status === "approved" ? '<span style="color:#147a35; font-size:12px;">(Approved)</span>' : ""}</td>
+          <td>${w.name || "—"} ${statusLower === "approved" ? '<span style="color:#147a35; font-size:12px;">(Approved)</span>' : ""}</td>
           <td>${w.profession || "—"}</td>
           <td>${w.highestQualification || "—"}</td>
           <td>${w.employmentStatus || "—"}</td>
           <td>${new Date(a.applied_at).toLocaleString()}</td>
           <td></td>
         `;
+
         const actionsCell = tr.querySelector("td:last-child");
         const moreBtn = el("button", { class: "btn", type: "button", text: "view resume" });
         moreBtn.addEventListener("click", () => showMore(a));
@@ -409,14 +420,32 @@
           $("#hireBtn").disabled = !selectedApplicationId;
         });
       });
+
+      // NEW: if already approved, block the Approve button and show a small hint.
+      if (alreadyApproved) {
+        $("#hireBtn").disabled = true;
+        const hint = document.createElement("div");
+        hint.className = "empty";
+        hint.textContent = "An applicant has already been approved for this job. Further changes are disabled.";
+        wrap.appendChild(hint);
+      }
     }
 
     // ======= Approve Flow (jobs schema updates) =======
     document.getElementById("hireBtn").addEventListener("click", async () => {
       if (!activeJobId || !selectedApplicationId) return;
 
-      const ok = confirm("Approve this applicant? Others with status pending/viewed will be marked as rejected.");
-      if (!ok) return;
+      // FIRST confirm
+      const first = confirm("Are you sure you want to approve this applicant? This will reject other pending/viewed applications for this job.");
+      if (!first) return;
+
+      // SECOND confirm (type-to-confirm)
+      const job = jobMap.get(activeJobId);
+      const typed = prompt(`Double-check: type HIRE to confirm hiring for "${job?.job_title || "this job"}".`);
+      if (!typed || typed.trim().toUpperCase() !== "HIRE") {
+        alert("Hiring cancelled.");
+        return;
+      }
 
       // Mark selected as approved
       const { error: approveErr } = await supabase
