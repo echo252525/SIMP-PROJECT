@@ -649,6 +649,12 @@
         level: "",
       };
 
+      // === ADDED: helper to detect if a job already has an assigned installer ===
+      function hasAssignedInstaller(row) {
+        const v = row?.installer_id_assigned;
+        return v !== null && v !== undefined && String(v).trim() !== "";
+      }
+
       // ---------- UI renderers ----------
       function renderJobs(list) {
         const container = $(".cards");
@@ -709,8 +715,8 @@
             )
             .join("");
         };
-        fillMenu($("#categoryMenu"), FIXED_CATEGORIES);
-        fillMenu($("#levelMenu"), FIXED_LEVELS);
+        $("#categoryMenu") && fillMenu($("#categoryMenu"), FIXED_CATEGORIES);
+        $("#levelMenu") && fillMenu($("#levelMenu"), FIXED_LEVELS);
         updateButtonLabels();
       }
 
@@ -719,13 +725,15 @@
           FILTERS.minPrice != null || FILTERS.maxPrice != null
             ? `${FILTERS.minPrice ?? 0}–${FILTERS.maxPrice ?? "∞"}`
             : "";
-        $("#priceLabel").textContent = priceText;
-        $("#categoryLabel").textContent = FILTERS.category
-          ? ` (${FILTERS.category})`
-          : "";
-        $("#levelLabel").textContent = FILTERS.level
-          ? ` (${FILTERS.level})`
-          : "";
+        $("#priceLabel") && ($("#priceLabel").textContent = priceText);
+        $("#categoryLabel") &&
+          ($("#categoryLabel").textContent = FILTERS.category
+            ? ` (${FILTERS.category})`
+            : "");
+        $("#levelLabel") &&
+          ($("#levelLabel").textContent = FILTERS.level
+            ? ` (${FILTERS.level})`
+            : "");
       }
 
       function applyFilters() {
@@ -774,7 +782,8 @@
           .schema("jobs")
           .from("job")
           .select(
-            "job_id, posted_by, job_title, job_description, job_difficulty, job_category, job_location, job_date, job_time, job_pay, job_picture_url, created_at, job_status"
+            // ADDED installer_id_assigned so we can hide jobs that already have an installer
+            "job_id, posted_by, job_title, job_description, job_difficulty, job_category, job_location, job_date, job_time, job_pay, job_picture_url, created_at, job_status, installer_id_assigned"
           )
           .eq("job_status", "approved")
           .order("created_at", { ascending: false });
@@ -787,7 +796,10 @@
           return;
         }
 
-        ALL_JOBS = jobs || [];
+        // ADDED: filter out jobs that already have an assigned installer
+        const visible = (jobs || []).filter((j) => !hasAssignedInstaller(j));
+
+        ALL_JOBS = visible;
         populateMenus();
         applyFilters();
 
@@ -822,7 +834,13 @@
       });
 
       function upsertApprovedJob(row) {
+        // ADDED: ensure not assigned and approved
         if (!row || row.job_status !== "approved") return;
+        if (hasAssignedInstaller(row)) {
+          // if it's assigned, make sure it isn't in our list
+          removeIfNoLongerApproved(row);
+          return;
+        }
         const idx = ALL_JOBS.findIndex(
           (j) => String(j.job_id) === String(row.job_id)
         );
@@ -850,7 +868,7 @@
         jobsChannel = sb
           .channel("jobs-approved-feed")
 
-          // INSERT: if a row is created already approved, add it
+          // INSERT
           .on(
             "postgres_changes",
             { event: "INSERT", schema: "jobs", table: "job" },
@@ -860,26 +878,22 @@
             }
           )
 
-          // UPDATE: add/refresh if approved; otherwise remove if it exists
+          // UPDATE
           .on(
             "postgres_changes",
             { event: "UPDATE", schema: "jobs", table: "job" },
             (payload) => {
               const n = payload.new;
-
-              if (n?.job_status === "approved") {
+              // ADDED: if approved but gets an assigned installer -> remove; if approved & unassigned -> upsert; else remove
+              if (n?.job_status === "approved" && !hasAssignedInstaller(n)) {
                 upsertApprovedJob(n);
               } else {
-                // Regardless of old, if it's in our approved list, drop it
-                const idx = ALL_JOBS.findIndex(
-                  (j) => String(j.job_id) === String(n?.job_id)
-                );
-                if (idx !== -1) removeIfNoLongerApproved(n);
+                removeIfNoLongerApproved(n);
               }
             }
           )
 
-          // DELETE: if it existed in our list, remove it
+          // DELETE
           .on(
             "postgres_changes",
             { event: "DELETE", schema: "jobs", table: "job" },
@@ -1075,7 +1089,7 @@
       modal.addEventListener("click", (e) => {
         if (e.target === modal) closeApplyModal();
       });
-      modalBtnCancel.addEventListener("click", closeApplyModal);
+      document.getElementById("modalCancelBtn").addEventListener("click", closeApplyModal);
 
       document.addEventListener("click", (e) => {
         const btn = e.target.closest(".apply[data-job-id]");

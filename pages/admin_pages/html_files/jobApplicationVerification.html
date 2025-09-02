@@ -1,543 +1,722 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="../css_files/sideBar.css" />
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet" />
-  <title>Choose the best applicant</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../css_files/sideBar.css" />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp"
+      rel="stylesheet"
+    />
+    <title>Choose the best applicant</title>
 
-  <style>
-    :root{--ink:#1c2430;--muted:#6c7a8a;--line:#e7edf3;--brand:#20a44c;--warn:#f59e0b;--danger:#e53935;--bg:#f8fbfd;--card:#ffffff;--radius:14px;}
-    body{background:var(--bg);}
-    main{margin-top:1.4rem;}
-    .two-col-wrap{display:grid;grid-template-columns:340px 1fr;gap:1rem;}
-    @media (max-width:980px){.two-col-wrap{grid-template-columns:1fr;}}
-    .panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:12px;}
-    .panel h3{margin:0 0 .5rem 0;font-size:1.1rem;color:var(--ink);font-weight:bold;}
-    .search{position:relative;margin-bottom:.6rem;}
-    .search input{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 12px 10px 36px;outline:none;background:#fcfeff;}
-    .search .material-icons-sharp{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:20px;color:var(--muted);}
-    .job-list{display:grid;gap:8px;max-height:70vh;overflow:auto;}
-    .job-item{border:1px solid var(--line);border-radius:12px;padding:10px;background:#fff;cursor:pointer;transition:border-color 120ms ease,box-shadow 120ms ease;}
-    .job-item.active,.job-item:hover{border-color:#b9dbe6;box-shadow:0 1px 0 rgba(0,0,0,.02);}
-    .job-item h4{margin:0 0 2px;font-size:.98rem;color:var(--ink);}
-    .job-meta{font-size:12px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap;}
-    .detail-header{display:grid;gap:8px;margin-bottom:10px;}
-    .job-photo{width:100%;height:140px;object-fit:cover;border:1px solid var(--line);border-radius:12px;background:#f7fafc;}
-    .detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:4px;}
-    .kv{border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:#fff;}
-    .kv label{display:block;font-size:11px;color:var(--muted);}
-    .kv span{font-size:14px;color:var(--ink);}
-    .divider{height:1px;background:var(--line);margin:12px 0;}
-    .table-wrap{overflow:auto;border:1px solid var(--line);border-radius:12px;}
-    table{width:100%;border-collapse:collapse;background:#fff;}
-    th,td{text-align:center;padding:10px;border-bottom:1px solid var(--line);font-size:14px;vertical-align:middle;}
-    th{font-size:12px;text-transform:uppercase;letter-spacing:.02em;background:#70a381;color:#fff;white-space:nowrap;}
-    tr:last-child td{border-bottom:0;}
-    .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:#fff;color:var(--ink);font-size:13px;cursor:pointer;white-space:nowrap;}
-    .btn:hover{border-color:#b9dbe6;}
-    .btn.brand{background:#e9faf0;border-color:#c9f0d9;color:#147a35;}
-    .btn.brand:hover{border-color:#86d6a6;}
-    .btn[disabled]{opacity:.6;cursor:not-allowed;}
-    .empty{padding:10px;font-size:14px;color:var(--muted);}
-    .actions-row{display:flex;justify-content:flex-end;gap:8px;padding:10px;border:1px solid var(--line);border-top:0;border-radius:0 0 12px 12px;background:#fff;}
-    .select-radio{place-items:center;}
-    /* Modal */
-    .modal{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;align-items:center;justify-content:center;z-index:50;padding:12px;}
-    .modal.open{display:flex;}
-    .modal-card{width:min(900px,95vw);background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.08);display:flex;flex-direction:column;max-height:92vh;max-height:92dvh;}
-    .modal-head{display:flex;align-items:center;justify-content:space-between;padding:16px 16px 12px;border-bottom:1px solid var(--line);background:#fff;position:sticky;top:0;z-index:1;border-top-left-radius:16px;border-top-right-radius:16px;}
-    .modal-head h4{margin:0;font-size:1rem;color:var(--ink);}
-    .close-x{background:transparent;border:0;cursor:pointer;}
-    .modal-body{overflow:auto;padding:16px;}
-    .preview-pane{border:1px solid var(--line);border-radius:12px;background:#fff;height:clamp(260px,52vh,560px);display:grid;place-items:center;padding:8px;}
-    .preview-frame,.preview-img{width:100%;height:100%;border:0;border-radius:10px;object-fit:contain;background:#fff;}
-    .preview-empty{color:var(--muted);font-size:14px;}
-    @media (max-width:420px){.modal{padding:0}.modal-card{width:100vw;height:100dvh;max-height:100dvh;border-radius:0}.modal-head{border-radius:0}}
-  </style>
-</head>
+    <style>
+      :root {
+        --ink: #1c2430;
+        --muted: #6c7a8a;
+        --line: #e7edf3;
+        --brand: #20a44c;
+        --warn: #f59e0b;
+        --danger: #e53935;
+        --bg: #f8fbfd;
+        --card: #ffffff;
+        --radius: 14px;
+      }
+      body { background: var(--bg); }
+      main { margin-top: 1.4rem; }
+      .two-col-wrap { display: grid; grid-template-columns: 340px 1fr; gap: 1rem; }
+      @media (max-width: 980px) { .two-col-wrap { grid-template-columns: 1fr; } }
+      .panel { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px; }
+      .panel h3 { margin: 0 0 0.5rem 0; font-size: 1.1rem; color: var(--ink); font-weight: bold; }
+      .search { position: relative; margin-bottom: 0.6rem; }
+      .search input { width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px 10px 36px; outline: none; background: #fcfeff; }
+      .search .material-icons-sharp { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 20px; color: var(--muted); }
+      .job-list { display: grid; gap: 8px; max-height: 70vh; overflow: auto; }
+      .job-item { border: 1px solid var(--line); border-radius: 12px; padding: 10px; background: #fff; cursor: pointer; transition: border-color 120ms ease, box-shadow 120ms ease; }
+      .job-item.active, .job-item:hover { border-color: #b9dbe6; box-shadow: 0 1px 0 rgba(0, 0, 0, 0.02); }
+      .job-item h4 { margin: 0 0 2px; font-size: 0.98rem; color: var(--ink); }
+      .job-meta { font-size: 12px; color: var(--muted); display: flex; gap: 8px; flex-wrap: wrap; }
+      .detail-header { display: grid; gap: 8px; margin-bottom: 10px; }
+      .job-photo { width: 100%; height: 140px; object-fit: cover; border: 1px solid var(--line); border-radius: 12px; background: #f7fafc; }
+      .detail-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 4px; }
+      .kv { border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; background: #fff; }
+      .kv label { display: block; font-size: 11px; color: var(--muted); }
+      .kv span { font-size: 14px; color: var(--ink); }
+      .divider { height: 1px; background: var(--line); margin: 12px 0; }
+      .table-wrap { overflow: auto; border: 1px solid var(--line); border-radius: 12px; }
+      table { width: 100%; border-collapse: collapse; background: #fff; }
+      th, td { text-align: center; padding: 10px; border-bottom: 1px solid var(--line); font-size: 14px; vertical-align: middle; }
+      th { font-size: 12px; text-transform: uppercase; letter-spacing: 0.02em; background: #70a381; color: #fff; white-space: nowrap; }
+      tr:last-child td { border-bottom: 0; }
+      .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--line); background: #fff; color: var(--ink); font-size: 13px; cursor: pointer; white-space: nowrap; }
+      .btn:hover { border-color: #b9dbe6; }
+      .btn.brand { background: #e9faf0; border-color: #c9f0d9; color: #147a35; }
+      .btn.brand:hover { border-color: #86d6a6; }
+      .btn[disabled] { opacity: 0.6; cursor: not-allowed; }
+      .empty { padding: 10px; font-size: 14px; color: var(--muted); }
+      .actions-row { display: flex; justify-content: flex-end; gap: 8px; padding: 10px; border: 1px solid var(--line); border-top: 0; border-radius: 0 0 12px 12px; background: #fff; }
+      .select-radio { place-items: center; }
 
-<body>
-  <div class="container">
-    <!-- ======= SIDEBAR (unchanged) ======= -->
-    <aside>
-      <div class="toggle">
-        <div class="logo">
-          <img src="../img/simpLogo.png" alt="logo" />
-          <h2>SIMP<span class="danger">Project</span></h2>
-        </div>
-        <div class="close" id="close-btn"><span class="material-icons-sharp">close</span></div>
-      </div>
+      /* Modal */
+      .modal { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.35); display: none; align-items: center; justify-content: center; z-index: 50; padding: 12px; }
+      .modal.open { display: flex; }
+      .modal-card { width: min(900px, 95vw); background: #fff; border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); display: flex; flex-direction: column; max-height: 92vh; max-height: 92dvh; }
+      .modal-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 16px 12px; border-bottom: 1px solid var(--line); background: #fff; position: sticky; top: 0; z-index: 1; border-top-left-radius: 16px; border-top-right-radius: 16px; }
+      .modal-head h4 { margin: 0; font-size: 1rem; color: var(--ink); }
+      .close-x { background: transparent; border: 0; cursor: pointer; }
+      .modal-body { overflow: auto; padding: 16px; }
+      .preview-pane { border: 1px solid var(--line); border-radius: 12px; background: #fff; height: clamp(260px, 52vh, 560px); display: grid; place-items: center; padding: 8px; }
+      .preview-frame, .preview-img { width: 100%; height: 100%; border: 0; border-radius: 10px; object-fit: contain; background: #fff; }
+      .preview-empty { color: var(--muted); font-size: 14px; }
 
-      <div class="sidebar">
-        <a href="dashboard.html"><span class="material-icons-sharp">dashboard</span><h3>Dashboard</h3></a>
-        <a href="workerVerification.html"><span class="material-icons-sharp">engineering</span><h3>Workers<br/>Verification</h3></a>
-        <a href="jobVerification.html"><span class="material-icons-sharp">work</span><h3>Jobs<br/>Verification</h3></a>
-        <a href="jobApplicationVerification.html" class="active"><span class="material-icons-sharp">approval</span><h3>Application<br/>Verification</h3></a>
-        <a href="adminVerification.html"><span class="material-icons-sharp">shield</span><h3>Admin<br/>Verification</h3></a>
-        <a href="courses.html"><span class="material-icons-sharp">school</span><h3>Course<br/>Publisher</h3></a>
-        <a href="#"><span class="material-icons-sharp">settings</span><h3>Settings</h3></a>
-        <a href="#" id="logout-btn"><span class="material-icons-sharp">logout</span><h3>Logout</h3></a>
-      </div>
-    </aside>
+      /* NEW row styles */
+      tbody tr.clickable { cursor: pointer; transition: background .15s ease, box-shadow .15s ease; }
+      tbody tr.clickable:hover { background: #f6fafc; }
+      tbody tr.is-viewed { background: #fafcff; }
+      tbody tr.row-selected { outline: 2px solid #70a381; background: #f0faf4; box-shadow: inset 0 0 0 1px rgba(112,163,129,.15); }
 
-    <!-- ======= MAIN ======= -->
-    <main>
-      <section id="tab-jobs">
-        <div class="two-col-wrap">
-          <!-- LEFT: jobs (derived from job_application) + search -->
-          <div class="panel">
-            <h3>Choose the best candidate for each job.</h3>
-            <div class="search">
-              <span class="material-icons-sharp">search</span>
-              <input id="jobSearchInput" type="text" placeholder="Search jobs with applications…" />
-            </div>
-            <div id="jobList" class="job-list">
-              <div class="empty">Loading job applications…</div>
-            </div>
+      @media (max-width: 420px) {
+        .modal { padding: 0; }
+        .modal-card { width: 100vw; height: 100dvh; max-height: 100dvh; border-radius: 0; }
+        .modal-head { border-radius: 0; }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <!-- ======= SIDEBAR (unchanged) ======= -->
+      <aside>
+        <div class="toggle">
+          <div class="logo">
+            <img src="../img/simpLogo.png" alt="logo" />
+            <h2>SIMP<span class="danger">Project</span></h2>
           </div>
-
-          <!-- RIGHT: details + applicants -->
-          <div class="panel">
-            <div id="jobDetails" class="detail">
-              <div class="empty">Select a job to see details and applicants.</div>
-            </div>
-            <div class="divider"></div>
-            <h3>List of Applicants</h3>
-            <div id="applicantsWrap" class="table-wrap">
-              <div class="empty">No job selected.</div>
-            </div>
-            <div id="globalActions" class="actions-row" style="display:none">
-              <button id="hireBtn" class="btn brand" type="button" disabled>
-                <span class="material-icons-sharp">badge</span> Approve Selected Applicant
-              </button>
-            </div>
+          <div class="close" id="close-btn">
+            <span class="material-icons-sharp">close</span>
           </div>
         </div>
-      </section>
-    </main>
-  </div>
 
-  <!-- Single "View More" Modal -->
-  <div id="moreModal" class="modal" aria-hidden="true">
-    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="moreTitle">
-      <div class="modal-head">
-        <h4 id="moreTitle">Resume Preview</h4>
-        <button class="close-x" onclick="closeMore()"><span class="material-icons-sharp">close</span></button>
-      </div>
-      <div class="modal-body">
-        <div id="moreBody">
-          <div class="preview-pane"><div class="preview-empty">No resume selected.</div></div>
+        <div class="sidebar">
+          <a href="dashboard.html"><span class="material-icons-sharp">dashboard</span><h3>Dashboard</h3></a>
+          <a href="workerVerification.html"><span class="material-icons-sharp">engineering</span><h3>Workers<br />Verification</h3></a>
+          <a href="jobVerification.html"><span class="material-icons-sharp">work</span><h3>Jobs<br />Verification</h3></a>
+          <a href="jobApplicationVerification.html" class="active"><span class="material-icons-sharp">approval</span><h3>Application<br />Verification</h3></a>
+          <a href="adminVerification.html"><span class="material-icons-sharp">shield</span><h3>Admin<br />Verification</h3></a>
+          <a href="courses.html"><span class="material-icons-sharp">school</span><h3>Course<br />Publisher</h3></a>
+          <a href="#"><span class="material-icons-sharp">settings</span><h3>Settings</h3></a>
+          <a href="#" id="logout-btn"><span class="material-icons-sharp">logout</span><h3>Logout</h3></a>
+        </div>
+      </aside>
+
+      <!-- ======= MAIN ======= -->
+      <main>
+        <section id="tab-jobs">
+          <div class="two-col-wrap">
+            <!-- LEFT: jobs (derived from job_application) + search -->
+            <div class="panel">
+              <h3>Choose the best candidate for each job.</h3>
+              <div class="search">
+                <span class="material-icons-sharp">search</span>
+                <input id="jobSearchInput" type="text" placeholder="Search jobs with applications…" />
+              </div>
+              <div id="jobList" class="job-list">
+                <div class="empty">Loading job applications…</div>
+              </div>
+            </div>
+
+            <!-- RIGHT: details + applicants -->
+            <div class="panel">
+              <div id="jobDetails" class="detail">
+                <div class="empty">Select a job to see details and applicants.</div>
+              </div>
+              <div class="divider"></div>
+              <h3>List of Applicants</h3>
+              <div id="applicantsWrap" class="table-wrap">
+                <div class="empty">No job selected.</div>
+              </div>
+              <div id="globalActions" class="actions-row" style="display: none">
+                <button id="hireBtn" class="btn brand" type="button" disabled>
+                  <span class="material-icons-sharp">badge</span> Approve Selected Applicant
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- Single "View More" Modal -->
+    <div id="moreModal" class="modal" aria-hidden="true">
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="moreTitle">
+        <div class="modal-head">
+          <h4 id="moreTitle">Resume Preview</h4>
+          <button class="close-x" onclick="closeMore()">
+            <span class="material-icons-sharp">close</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div id="moreBody">
+            <div class="preview-pane"><div class="preview-empty">No resume selected.</div></div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Supabase JS v2 -->
-  <script type="module">
-    import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.4";
+    <!-- Supabase JS v2 -->
+    <script src="../../general_files/index.js"></script>
+    <script type="module" src="../../general_files/session.js"></script>
+    <script type="module">
+      import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.4";
 
-    // ---- Configure Supabase ----
-    import { SUPABASE_URL, SUPABASE_ANON_KEY } from "../../../supabase.js";
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      // ---- Configure Supabase ----
+      import { SUPABASE_URL, SUPABASE_ANON_KEY } from "../../../supabase.js";
+      const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // ---- Storage bucket for installer documents ----
-    const STORAGE_BUCKET = "documents_review";
+      // ---- Storage bucket for installer documents ----
+      const STORAGE_BUCKET = "documents_review";
 
-    // ======= State =======
-    let applications = [];      // jobs.job_application rows
-    let jobs = [];              // jobs referenced by applications
-    let installers = [];        // installers referenced by applications
-    let installerDocs = [];     // public.installer_documents rows
+      // ======= State =======
+      let applications = [];      // jobs.job_application rows
+      let jobs = [];              // jobs referenced by applications
+      let installers = [];        // installers referenced by applications
+      let installerDocs = [];     // public.installer_documents rows
 
-    let jobMap = new Map();         // job_id -> job
-    let installerMap = new Map();   // id -> installer
-    let docsMap = new Map();        // installer_id -> installer_documents
-    let appsByJob = new Map();      // job_id -> application[]
+      let jobMap = new Map();         // job_id -> job
+      let installerMap = new Map();   // id -> installer
+      let docsMap = new Map();        // installer_id -> installer_documents
+      let appsByJob = new Map();      // job_id -> application[]
 
-    let filteredJobs = [];
-    let activeJobId = null;
-    let selectedApplicationId = null;
+      let filteredJobs = [];
+      let activeJobId = null;
+      let selectedApplicationId = null;
 
-    // ======= Helpers =======
-    const $ = (s, root = document) => root.querySelector(s);
-    const el = (tag, attrs = {}) => {
-      const n = document.createElement(tag);
-      Object.entries(attrs).forEach(([k, v]) => {
-        if (k === "class") n.className = v;
-        else if (k === "text") n.textContent = v;
-        else if (k === "html") n.innerHTML = v;
-        else n.setAttribute(k, v);
-      });
-      return n;
-    };
-    const fmtDateTime = (dateStr, timeStr) => {
-      if (!dateStr || !timeStr) return "—";
-      const [y, m, d] = dateStr.split("-").map(Number);
-      const [hh, mm, ss] = timeStr.split(":").map(Number);
-      const dt = new Date(y, (m - 1), d, hh, mm ?? 0, ss ?? 0);
-      return dt.toLocaleString();
-    };
-    const difficultyLabel = (n) => ({1:"Easy",2:"Intermediate",3:"Hard"}[n] || String(n ?? "—"));
-    const isImageUrl = (url = "") => /\.(png|jpe?g|gif|webp|bmp|svg)(\?.*)?$/i.test(url);
-    const isPdfUrl = (url = "") => /\.pdf(\?.*)?$/i.test(url);
-
-    async function urlFor(path) {
-      if (!path) return null;
-      const clean = String(path).trim();
-      // Create a signed URL (works for private buckets). Adjust expiry as needed.
-      const { data, error } = await supabase.storage.from(STORAGE_BUCKET).createSignedUrl(clean, 600);
-      if (!error && data?.signedUrl) return data.signedUrl;
-      // Fallback to public URL if bucket is public
-      const pub = supabase.storage.from(STORAGE_BUCKET).getPublicUrl(clean);
-      return pub.data?.publicUrl || null;
-    }
-
-    // ======= Load flow: job_application -> installer + job + installer_documents =======
-    async function loadFromApplications() {
-      // 1) Get all job applications
-      const { data: appRows, error: appErr } = await supabase
-        .schema("jobs")
-        .from("job_application")
-        .select("application_id, job_id, installer_id, status, applied_at, updated_at")
-        .order("applied_at", { ascending: true });
-
-      if (appErr) {
-        console.error(appErr);
-        $("#jobList").innerHTML = `<div class="empty">Failed to load applications: ${appErr.message}</div>`;
-        return;
-      }
-
-      // Filter OUT applications whose own status is 'overdue'
-      applications = (appRows || []).filter(a => String(a.status).toLowerCase() !== "overdue");
-
-      if (!applications.length) {
-        $("#jobList").innerHTML = `<div class="empty">No job applications (excluding overdue) to show.</div>`;
-        $("#jobDetails").innerHTML = `<div class="empty">No jobs to display.</div>`;
-        $("#applicantsWrap").innerHTML = `<div class="empty">No job selected.</div>`;
-        $("#globalActions").style.display = "none";
-        return;
-      }
-
-      // 2) Collect distinct job_ids and installer_ids (based on the filtered applications)
-      const jobIds = [...new Set(applications.map(a => a.job_id))];
-      const installerIds = [...new Set(applications.map(a => a.installer_id))];
-
-      // 3) Fetch jobs by id (jobs schema)
-      const { data: jobRows, error: jobErr } = await supabase
-        .schema("jobs")
-        .from("job")
-        .select("job_id, job_title, job_category, job_difficulty, job_location, job_date, job_time, job_picture_url, job_status")
-        .in("job_id", jobIds);
-
-      if (jobErr) {
-        console.error(jobErr);
-        $("#jobList").innerHTML = `<div class="empty">Failed to load jobs: ${jobErr.message}</div>`;
-        return;
-      }
-      jobs = jobRows || [];
-
-      // 4) Fetch installers by id (public schema)
-      let instRows = [];
-      if (installerIds.length) {
-        const { data: _inst, error: instErr } = await supabase
-          .from("installer")
-          .select("id, name, profession, highestQualification, employmentStatus, mainIncomeSource, bankName, accountHolder, accountNumber")
-          .in("id", installerIds);
-        if (instErr) console.error(instErr);
-        instRows = _inst || [];
-      }
-      installers = instRows;
-
-      // 5) Fetch installer_documents by installer_id (public schema)
-      let docRows = [];
-      if (installerIds.length) {
-        const { data: _docs, error: docsErr } = await supabase
-          .from("installer_documents")
-          .select("installer_id, resume, nbi, police, portfolio, certificates, tor, resume_status")
-          .in("installer_id", installerIds);
-        if (docsErr) console.error(docsErr);
-        docRows = _docs || [];
-      }
-      installerDocs = docRows;
-
-      // 6) Build maps and groupings
-      jobMap = new Map(jobs.map(j => [j.job_id, j]));
-      installerMap = new Map(installers.map(i => [i.id, i]));
-      docsMap = new Map(installerDocs.map(d => [d.installer_id, d]));
-      appsByJob = applications.reduce((m, a) => {
-        if (!m.has(a.job_id)) m.set(a.job_id, []);
-        m.get(a.job_id).push(a);
-        return m;
-      }, new Map());
-
-      // 7) UI: render job list (only jobs that actually have applications after filtering out overdue ones)
-      filteredJobs = jobs
-        .filter(j => appsByJob.has(j.job_id))
-        .sort((a, b) => {
-          const da = new Date(`${a.job_date}T${a.job_time}`);
-          const db = new Date(`${b.job_date}T${b.job_time}`);
-          return da - db;
+      // ======= Helpers =======
+      const $ = (s, root = document) => root.querySelector(s);
+      const el = (tag, attrs = {}) => {
+        const n = document.createElement(tag);
+        Object.entries(attrs).forEach(([k, v]) => {
+          if (k === "class") n.className = v;
+          else if (k === "text") n.textContent = v;
+          else if (k === "html") n.innerHTML = v;
+          else n.setAttribute(k, v);
         });
+        return n;
+      };
+      const fmtDateTime = (dateStr, timeStr) => {
+        if (!dateStr || !timeStr) return "—";
+        const [y, m, d] = dateStr.split("-").map(Number);
+        const [hh, mm, ss] = timeStr.split(":").map(Number);
+        const dt = new Date(y, m - 1, d, hh, mm ?? 0, ss ?? 0);
+        return dt.toLocaleString();
+      };
+      const difficultyLabel = (n) =>
+        ({ 1: "Easy", 2: "Intermediate", 3: "Hard" }[n] || String(n ?? "—"));
+      const isImageUrl = (url = "") => /\.(png|jpe?g|gif|webp|bmp|svg)(\?.*)?$/i.test(url);
+      const isPdfUrl = (url = "") => /\.pdf(\?.*)?$/i.test(url);
 
-      renderJobList();
-      if (filteredJobs.length) selectJob(filteredJobs[0].job_id);
-    }
+      async function urlFor(path) {
+        if (!path) return null;
+        const clean = String(path).trim();
+        const { data, error } = await supabase.storage.from(STORAGE_BUCKET).createSignedUrl(clean, 600);
+        if (!error && data?.signedUrl) return data.signedUrl;
+        const pub = supabase.storage.from(STORAGE_BUCKET).getPublicUrl(clean);
+        return pub.data?.publicUrl || null;
+      }
 
-    function renderJobList() {
-      const list = $("#jobList");
-      if (!filteredJobs.length) { list.innerHTML = `<div class="empty">No matching jobs.</div>`; return; }
-      list.innerHTML = "";
-      filteredJobs.forEach((j) => {
-        const item = el("div", { class: `job-item${activeJobId === j.job_id ? " active" : ""}` });
-        item.addEventListener("click", () => selectJob(j.job_id));
-        const h4 = el("h4", { text: j.job_title || "Untitled job" });
-        const meta = el("div", { class: "job-meta" });
-        meta.innerHTML = `
-          <span><strong>${j.job_category || "–"}</strong></span>
-          <span>• ${difficultyLabel(j.job_difficulty)}</span>
-          <span>• ${j.job_location || "–"}</span>
-          <span>• ${fmtDateTime(j.job_date, j.job_time)}</span>
-        `;
-        item.append(h4, meta);
-        list.appendChild(item);
-      });
-    }
+      // ======= Load flow: job_application -> installer + job + installer_documents =======
+      async function loadFromApplications() {
+        // 1) Get all job applications
+        const { data: appRows, error: appErr } = await supabase
+          .schema("jobs")
+          .from("job_application")
+          .select("application_id, job_id, installer_id, status, applied_at, updated_at")
+          .order("applied_at", { ascending: true });
 
-    // Search across left job list
-    $("#jobSearchInput").addEventListener("input", (e) => {
-      const q = e.target.value.toLowerCase().trim();
-      const base = jobs.filter(j => appsByJob.has(j.job_id));
-      filteredJobs = !q ? base.slice() :
-        base.filter((j) =>
-          [j.job_title, j.job_category, difficultyLabel(j.job_difficulty), j.job_location]
-            .filter(Boolean)
-            .some((v) => String(v).toLowerCase().includes(q))
+        if (appErr) {
+          console.error(appErr);
+          $("#jobList").innerHTML = `<div class="empty">Failed to load applications: ${appErr.message}</div>`;
+          return;
+        }
+
+        // Filter OUT applications whose own status is 'overdue'
+        applications = (appRows || []).filter(a => String(a.status).toLowerCase() !== "overdue");
+
+        if (!applications.length) {
+          $("#jobList").innerHTML = `<div class="empty">No job applications (excluding overdue) to show.</div>`;
+          $("#jobDetails").innerHTML = `<div class="empty">No jobs to display.</div>`;
+          $("#applicantsWrap").innerHTML = `<div class="empty">No job selected.</div>`;
+          $("#globalActions").style.display = "none";
+          return;
+        }
+
+        // 2) Collect distinct job_ids and installer_ids (based on the filtered applications)
+        const jobIds = [...new Set(applications.map(a => a.job_id))];
+        const installerIds = [...new Set(applications.map(a => a.installer_id))];
+
+        // 3) Fetch jobs by id (jobs schema)
+        const { data: jobRows, error: jobErr } = await supabase
+          .schema("jobs")
+          .from("job")
+          .select("job_id, job_title, job_category, job_difficulty, job_location, job_date, job_time, job_picture_url, job_status")
+          .in("job_id", jobIds);
+
+        if (jobErr) {
+          console.error(jobErr);
+          $("#jobList").innerHTML = `<div class="empty">Failed to load jobs: ${jobErr.message}</div>`;
+          return;
+        }
+        jobs = jobRows || [];
+
+        // 4) Fetch installers by id (public schema)
+        let instRows = [];
+        if (installerIds.length) {
+          const { data: _inst, error: instErr } = await supabase
+            .from("installer")
+            .select("id, name, profession, highestQualification, employmentStatus, mainIncomeSource, bankName, accountHolder, accountNumber")
+            .in("id", installerIds);
+          if (instErr) console.error(instErr);
+          instRows = _inst || [];
+        }
+        installers = instRows;
+
+        // 5) Fetch installer_documents by installer_id (public schema)
+        let docRows = [];
+        if (installerIds.length) {
+          const { data: _docs, error: docsErr } = await supabase
+            .from("installer_documents")
+            .select("installer_id, resume, nbi, police, portfolio, certificates, tor, resume_status")
+            .in("installer_id", installerIds);
+          if (docsErr) console.error(docsErr);
+          docRows = _docs || [];
+        }
+        installerDocs = docRows;
+
+        // 6) Build maps and groupings
+        jobMap = new Map(jobs.map(j => [j.job_id, j]));
+        installerMap = new Map(installers.map(i => [i.id, i]));
+        docsMap = new Map(installerDocs.map(d => [d.installer_id, d]));
+        appsByJob = applications.reduce((m, a) => {
+          if (!m.has(a.job_id)) m.set(a.job_id, []);
+          m.get(a.job_id).push(a);
+          return m;
+        }, new Map());
+
+        // 7) UI: render job list (only jobs with applications, and NOT done)
+        filteredJobs = jobs
+          .filter(j =>
+            appsByJob.has(j.job_id) &&
+            String(j.job_status || "").toLowerCase() !== "done"
+          )
+          .sort((a, b) => {
+            const da = new Date(`${a.job_date}T${a.job_time}`);
+            const db = new Date(`${b.job_date}T${b.job_time}`);
+            return da - db;
+          });
+
+        renderJobList();
+        if (filteredJobs.length) selectJob(filteredJobs[0].job_id);
+      }
+
+      function renderJobList() {
+        const list = $("#jobList");
+        if (!filteredJobs.length) {
+          list.innerHTML = `<div class="empty">No matching jobs.</div>`;
+          return;
+        }
+        list.innerHTML = "";
+        filteredJobs.forEach((j) => {
+          const item = el("div", { class: `job-item${activeJobId === j.job_id ? " active" : ""}` });
+          item.addEventListener("click", () => selectJob(j.job_id));
+          const h4 = el("h4", { text: j.job_title || "Untitled job" });
+          const meta = el("div", { class: "job-meta" });
+          meta.innerHTML = `
+            <span><strong>${j.job_category || "–"}</strong></span>
+            <span>• ${difficultyLabel(j.job_difficulty)}</span>
+            <span>• ${j.job_location || "–"}</span>
+            <span>• ${fmtDateTime(j.job_date, j.job_time)}</span>
+          `;
+          item.append(h4, meta);
+          list.appendChild(item);
+        });
+      }
+
+      // Search across left job list (also excludes 'done')
+      $("#jobSearchInput").addEventListener("input", (e) => {
+        const q = e.target.value.toLowerCase().trim();
+        const base = jobs.filter(j =>
+          appsByJob.has(j.job_id) &&
+          String(j.job_status || "").toLowerCase() !== "done"
         );
-      renderJobList();
-    });
-
-    async function selectJob(jobId) {
-      activeJobId = jobId;
-      selectedApplicationId = null;
-      renderJobList();
-
-      const job = jobMap.get(jobId);
-      if (!job) {
-        $("#jobDetails").innerHTML = `<div class="empty">Failed to load job details.</div>`;
-        $("#applicantsWrap").innerHTML = `<div class="empty">Failed to load applicants.</div>`;
-        $("#globalActions").style.display = "none";
-        return;
-      }
-      renderJobDetails(job);
-      renderApplicants(job.job_id);
-    }
-
-    function renderJobDetails(job) {
-      $("#jobDetails").innerHTML = `
-        <div class="detail-header">
-          <img class="job-photo" src="${job.job_picture_url || ""}" alt="Job photo" />
-          <h3 style="margin:4px 0 0; color: var(--ink);">${job.job_title || "Untitled job"}</h3>
-        </div>
-        <div class="detail-grid">
-          <div class="kv"><label>Category</label><span>${job.job_category || "—"}</span></div>
-          <div class="kv"><label>Difficulty</label><span>${difficultyLabel(job.job_difficulty)}</span></div>
-          <div class="kv"><label>Date & Time</label><span>${fmtDateTime(job.job_date, job.job_time)}</span></div>
-          <div class="kv"><label>Location</label><span>${job.job_location || "—"}</span></div>
-        </div>
-      `;
-    }
-
-    function renderApplicants(jobId) {
-      const wrap = $("#applicantsWrap");
-      const actionsBar = $("#globalActions");
-      $("#hireBtn").disabled = true;
-
-      const apps = appsByJob.get(jobId) || [];
-      if (!apps.length) {
-        wrap.innerHTML = `<div class="empty">No applicants yet for this job.</div>`;
-        actionsBar.style.display = "none";
-        return;
-      }
-
-      // NEW: detect if this job already has an approved applicant
-      const alreadyApproved = apps.some(a => String(a.status).toLowerCase() === "approved");
-
-      wrap.innerHTML = `
-        <table>
-          <thead>
-            <tr>
-              <th>Select</th>
-              <th>Full Name</th>
-              <th>Profession</th>
-              <th>Highest <br>Qualification</th>
-              <th>Employment <br>Status</th>
-              <th>Applied</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="appsTbody"></tbody>
-        </table>
-      `;
-      actionsBar.style.display = "flex";
-
-      const tbody = $("#appsTbody");
-      tbody.innerHTML = "";
-
-      apps.forEach((a) => {
-        const w = installerMap.get(a.installer_id) || {};
-        const tr = document.createElement("tr");
-
-        const radioId = `sel-${a.application_id}`;
-        // NEW: make radios permanently unclickable once a hire exists,
-        // and also disable any non-pending/non-viewed statuses (e.g., rejected/approved).
-        const statusLower = String(a.status).toLowerCase();
-        const selectable = !alreadyApproved && (statusLower === "pending" || statusLower === "viewed");
-        const disabledAttr = selectable ? "" : "disabled";
-
-        tr.innerHTML = `
-          <td class="select-radio">
-            <input type="radio" name="hireSelect" id="${radioId}" value="${a.application_id}" ${disabledAttr}/>
-          </td>
-          <td>${w.name || "—"} ${statusLower === "approved" ? '<span style="color:#147a35; font-size:12px;">(Approved)</span>' : ""}</td>
-          <td>${w.profession || "—"}</td>
-          <td>${w.highestQualification || "—"}</td>
-          <td>${w.employmentStatus || "—"}</td>
-          <td>${new Date(a.applied_at).toLocaleString()}</td>
-          <td></td>
-        `;
-
-        const actionsCell = tr.querySelector("td:last-child");
-        const moreBtn = el("button", { class: "btn", type: "button", text: "view resume" });
-        moreBtn.addEventListener("click", () => showMore(a));
-        actionsCell.append(moreBtn);
-        tbody.appendChild(tr);
-
-        const radio = tr.querySelector(`#${radioId}`);
-        radio?.addEventListener("change", () => {
-          selectedApplicationId = String(radio.value);
-          $("#hireBtn").disabled = !selectedApplicationId;
-        });
+        filteredJobs = !q ? base.slice() :
+          base.filter((j) =>
+            [j.job_title, j.job_category, difficultyLabel(j.job_difficulty), j.job_location]
+              .filter(Boolean)
+              .some((v) => String(v).toLowerCase().includes(q))
+          );
+        renderJobList();
       });
 
-      // NEW: if already approved, block the Approve button and show a small hint.
-      if (alreadyApproved) {
-        $("#hireBtn").disabled = true;
-        const hint = document.createElement("div");
-        hint.className = "empty";
-        hint.textContent = "An applicant has already been approved for this job. Further changes are disabled.";
-        wrap.appendChild(hint);
-      }
-    }
+      // mark applications as 'viewed' when a job is opened
+      async function markApplicationsViewed(jobId) {
+        const { error } = await supabase
+          .schema("jobs")
+          .from("job_application")
+          .update({ status: "viewed" })
+          .eq("job_id", jobId)
+          .eq("status", "pending");
 
-    // ======= Approve Flow (jobs schema updates) =======
-    document.getElementById("hireBtn").addEventListener("click", async () => {
-      if (!activeJobId || !selectedApplicationId) return;
+        if (error) {
+          console.error("Failed to mark applications viewed:", error);
+          return;
+        }
 
-      // FIRST confirm
-      const first = confirm("Are you sure you want to approve this applicant? This will reject other pending/viewed applications for this job.");
-      if (!first) return;
-
-      // SECOND confirm (type-to-confirm)
-      const job = jobMap.get(activeJobId);
-      const typed = prompt(`Double-check: type HIRE to confirm hiring for "${job?.job_title || "this job"}".`);
-      if (!typed || typed.trim().toUpperCase() !== "HIRE") {
-        alert("Hiring cancelled.");
-        return;
-      }
-
-      // Mark selected as approved
-      const { error: approveErr } = await supabase
-        .schema("jobs")
-        .from("job_application")
-        .update({ status: "approved" })
-        .eq("application_id", selectedApplicationId);
-
-      if (approveErr) {
-        alert("Failed to approve: " + approveErr.message);
-        return;
+        // Update local cache
+        let touched = false;
+        applications.forEach(a => {
+          if (a.job_id === jobId && String(a.status).toLowerCase() === "pending") {
+            a.status = "viewed";
+            touched = true;
+          }
+        });
+        if (touched) {
+          appsByJob = applications.reduce((m, a) => {
+            if (!m.has(a.job_id)) m.set(a.job_id, []);
+            m.get(a.job_id).push(a);
+            return m;
+          }, new Map());
+        }
       }
 
-      // Mark other apps for the same job as rejected if still pending/viewed
-      const { error: rejErr } = await supabase
-        .schema("jobs")
-        .from("job_application")
-        .update({ status: "rejected" })
-        .eq("job_id", activeJobId)
-        .neq("application_id", selectedApplicationId)
-        .in("status", ["pending", "viewed"]);
+      async function selectJob(jobId) {
+        activeJobId = jobId;
+        selectedApplicationId = null;
+        renderJobList();
 
-      if (rejErr) {
-        alert("Approved, but failed to update others: " + rejErr.message);
-      } else {
-        alert("Applicant approved successfully.");
+        const job = jobMap.get(jobId);
+        if (!job) {
+          $("#jobDetails").innerHTML = `<div class="empty">Failed to load job details.</div>`;
+          $("#applicantsWrap").innerHTML = `<div class="empty">Failed to load applicants.</div>`;
+          $("#globalActions").style.display = "none";
+          return;
+        }
+
+        // mark apps as viewed (pending -> viewed) for this job
+        await markApplicationsViewed(jobId);
+
+        renderJobDetails(job);
+        renderApplicants(job.job_id);
       }
 
-      // Refresh local data
-      await loadFromApplications();
-      selectedApplicationId = null;
-      if (jobMap.has(activeJobId)) selectJob(activeJobId);
-    });
+      function renderJobDetails(job) {
+        $("#jobDetails").innerHTML = `
+          <div class="detail-header">
+            <img class="job-photo" src="${job.job_picture_url || ""}" alt="Job photo" />
+            <h3 style="margin:4px 0 0; color: var(--ink);">${job.job_title || "Untitled job"}</h3>
+          </div>
+          <div class="detail-grid">
+            <div class="kv"><label>Category</label><span>${job.job_category || "—"}</span></div>
+            <div class="kv"><label>Difficulty</label><span>${difficultyLabel(job.job_difficulty)}</span></div>
+            <div class="kv"><label>Date & Time</label><span>${fmtDateTime(job.job_date, job.job_time)}</span></div>
+            <div class="kv"><label>Location</label><span>${job.job_location || "—"}</span></div>
+          </div>
+        `;
+      }
 
-    // ======= View More (Resume from public.installer_documents) =======
-    async function showMore(appRow) {
-      const body = $("#moreBody");
-      const doc = docsMap.get(appRow.installer_id);
-      const resumePath = (doc?.resume || "").trim();
+      // NEW: applicant profile modal (row click)
+      async function showApplicantProfile(appRow) {
+        const body = $("#moreBody");
+        const inst = installerMap.get(appRow.installer_id) || {};
+        const docs = docsMap.get(appRow.installer_id);
+        const resumePath = (docs?.resume || "").trim();
 
-      $("#moreTitle").textContent = "Resume Preview";
+        $("#moreTitle").textContent = "Applicant Profile";
 
-      if (!resumePath) {
-        body.innerHTML = `
+        const infoGrid = `
+          <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:12px">
+            <div class="kv"><label>Full Name</label><span>${inst.name || "—"}</span></div>
+            <div class="kv"><label>Profession</label><span>${inst.profession || "—"}</span></div>
+            <div class="kv"><label>Highest Qualification</label><span>${inst.highestQualification || "—"}</span></div>
+            <div class="kv"><label>Employment Status</label><span>${inst.employmentStatus || "—"}</span></div>
+            <div class="kv"><label>Applied</label><span>${new Date(appRow.applied_at).toLocaleString()}</span></div>
+            <div class="kv"><label>Application Status</label><span>${String(appRow.status).toUpperCase()}</span></div>
+          </div>
+        `;
+
+        let resumeBlock = `
           <div class="preview-pane">
             <div class="preview-empty">No resume uploaded by this applicant.</div>
           </div>
         `;
-      } else {
-        const url = await urlFor(resumePath);
-        if (url && (isImageUrl(resumePath) || isPdfUrl(resumePath))) {
-          body.innerHTML = `
-            <div class="preview-pane">
-              ${
-                isImageUrl(resumePath)
-                  ? `<img class="preview-img" alt="Resume" src="${url}">`
-                  : `<iframe class="preview-frame" title="Resume" src="${url}"></iframe>`
-              }
-            </div>
-          `;
-        } else if (url) {
-          body.innerHTML = `
-            <div class="preview-pane">
-              <div class="preview-empty">
-                Cannot preview this file type here.
-                <div style="margin-top:8px">
-                  <a class="btn" href="${url}" target="_blank" rel="noopener">
-                    <span class="material-icons-sharp">open_in_new</span> Open Resume
-                  </a>
+
+        if (resumePath) {
+          const url = await urlFor(resumePath);
+          if (url && (isImageUrl(resumePath) || isPdfUrl(resumePath))) {
+            resumeBlock = `
+              <div class="preview-pane">
+                ${
+                  isImageUrl(resumePath)
+                    ? `<img class="preview-img" alt="Resume" src="${url}">`
+                    : `<iframe class="preview-frame" title="Resume" src="${url}"></iframe>`
+                }
+              </div>
+            `;
+          } else if (url) {
+            resumeBlock = `
+              <div class="preview-pane">
+                <div class="preview-empty">
+                  Cannot preview this file type here.
+                  <div style="margin-top:8px">
+                    <a class="btn" href="${url}" target="_blank" rel="noopener">
+                      <span class="material-icons-sharp">open_in_new</span> Open Resume
+                    </a>
+                  </div>
                 </div>
               </div>
-            </div>
+            `;
+          }
+        }
+
+        body.innerHTML = `
+          ${infoGrid}
+          <h4 style="margin:8px 0 6px; font-size:.95rem; color:var(--ink);">Resume</h4>
+          ${resumeBlock}
+        `;
+
+        $("#moreModal").classList.add("open");
+        $("#moreModal").setAttribute("aria-hidden", "false");
+      }
+
+      function renderApplicants(jobId) {
+        const wrap = $("#applicantsWrap");
+        const actionsBar = $("#globalActions");
+        $("#hireBtn").disabled = true;
+
+        const apps = appsByJob.get(jobId) || [];
+        if (!apps.length) {
+          wrap.innerHTML = `<div class="empty">No applicants yet for this job.</div>`;
+          actionsBar.style.display = "none";
+          return;
+        }
+
+        const alreadyApproved = apps.some(a => String(a.status).toLowerCase() === "approved");
+
+        wrap.innerHTML = `
+          <table>
+            <thead>
+              <tr>
+                <th>Select</th>
+                <th>Full Name</th>
+                <th>Profession</th>
+                <th>Highest <br>Qualification</th>
+                <th>Employment <br>Status</th>
+                <th>Applied</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="appsTbody"></tbody>
+          </table>
+        `;
+        actionsBar.style.display = "flex";
+
+        const tbody = $("#appsTbody");
+        tbody.innerHTML = "";
+
+        apps.forEach((a) => {
+          const w = installerMap.get(a.installer_id) || {};
+          const tr = document.createElement("tr");
+          tr.classList.add("clickable");
+
+          const radioId = `sel-${a.application_id}`;
+          const statusLower = String(a.status).toLowerCase();
+          const selectable = !alreadyApproved && (statusLower === "pending" || statusLower === "viewed");
+          const disabledAttr = selectable ? "" : "disabled";
+
+          if (statusLower === "viewed") {
+            tr.classList.add("is-viewed");
+          }
+          if (selectedApplicationId && selectedApplicationId === a.application_id) {
+            tr.classList.add("row-selected");
+          }
+
+          tr.innerHTML = `
+            <td class="select-radio">
+              <input type="radio" name="hireSelect" id="${radioId}" value="${a.application_id}" ${disabledAttr}/>
+            </td>
+            <td>${w.name || "—"} ${statusLower === "approved" ? '<span style="color:#147a35; font-size:12px;">(Approved)</span>' : ""}</td>
+            <td>${w.profession || "—"}</td>
+            <td>${w.highestQualification || "—"}</td>
+            <td>${w.employmentStatus || "—"}</td>
+            <td>${new Date(a.applied_at).toLocaleString()}</td>
+            <td></td>
           `;
-        } else {
-          body.innerHTML = `
-            <div class="preview-pane">
-              <div class="preview-empty">Unable to generate a URL for this resume.</div>
-            </div>
-          `;
+
+          const actionsCell = tr.querySelector("td:last-child");
+
+          // Keep original code path intact but DON'T render the button (row click opens modal instead)
+          const USE_ROW_PROFILE_MODAL = true;
+          if (!USE_ROW_PROFILE_MODAL) {
+            const moreBtn = el("button", { class: "btn", type: "button", text: "view resume" });
+            moreBtn.addEventListener("click", () => showMore(a));
+            actionsCell.append(moreBtn);
+          }
+
+          // Row click -> open Applicant Profile modal
+          tr.addEventListener("click", async (evt) => {
+            if (evt.target.closest("input,button,a")) return;
+            await showApplicantProfile(a);
+          });
+
+          tbody.appendChild(tr);
+
+          const radio = tr.querySelector(`#${radioId}`);
+          radio?.addEventListener("change", () => {
+            selectedApplicationId = String(radio.value);
+            $("#hireBtn").disabled = !selectedApplicationId;
+            // highlight selected row
+            tbody.querySelectorAll("tr").forEach(r => r.classList.remove("row-selected"));
+            tr.classList.add("row-selected");
+          });
+        });
+
+        if (alreadyApproved) {
+          $("#hireBtn").disabled = true;
+          const hint = document.createElement("div");
+          hint.className = "empty";
+          hint.textContent = "An applicant has already been approved for this job. Further changes are disabled.";
+          wrap.appendChild(hint);
         }
       }
 
-      $("#moreModal").classList.add("open");
-      $("#moreModal").setAttribute("aria-hidden", "false");
-    }
+      // ======= Approve Flow (jobs schema updates) =======
+      document.getElementById("hireBtn").addEventListener("click", async () => {
+        if (!activeJobId || !selectedApplicationId) return;
 
-    function closeMore(){ $("#moreModal").classList.remove("open"); $("#moreModal").setAttribute("aria-hidden","true"); }
-    document.addEventListener("keydown",(e)=>{ if(e.key==="Escape"){ closeMore(); }});
-    document.getElementById("moreModal").addEventListener("click",(e)=>{ if(e.target.id==="moreModal") closeMore(); });
+        const first = confirm("Are you sure you want to approve this applicant? This will reject other pending/viewed applications for this job.");
+        if (!first) return;
 
-    // ======= Init =======
-    document.addEventListener("DOMContentLoaded", loadFromApplications);
-  </script>
-</body>
+        const job = jobMap.get(activeJobId);
+        const typed = prompt(`Double-check: type HIRE to confirm hiring for "${job?.job_title || "this job"}".`);
+        if (!typed || typed.trim().toUpperCase() !== "HIRE") {
+          alert("Hiring cancelled.");
+          return;
+        }
+
+        const { error: approveErr } = await supabase
+          .schema("jobs")
+          .from("job_application")
+          .update({ status: "approved" })
+          .eq("application_id", selectedApplicationId);
+
+        if (approveErr) {
+          alert("Failed to approve: " + approveErr.message);
+          return;
+        }
+
+        const selectedAppRow = applications.find(a => String(a.application_id) === String(selectedApplicationId));
+        const installerIdToAssign = selectedAppRow?.installer_id;
+
+        if (installerIdToAssign) {
+          const { error: assignErr } = await supabase
+            .schema("jobs")
+            .from("job")
+            .update({ installer_id_assigned: installerIdToAssign })
+            .eq("job_id", activeJobId);
+
+          if (assignErr) {
+            alert("Approved, but failed to assign installer to the job: " + assignErr.message);
+          }
+        } else {
+          console.warn("No installer_id found for selected application; job assignment skipped.");
+        }
+
+        const { error: rejErr } = await supabase
+          .schema("jobs")
+          .from("job_application")
+          .update({ status: "rejected" })
+          .eq("job_id", activeJobId)
+          .neq("application_id", selectedApplicationId)
+          .in("status", ["pending", "viewed"]);
+
+        if (rejErr) {
+          alert("Approved, but failed to update other applications: " + rejErr.message);
+        } else {
+          alert("Applicant approved successfully.");
+        }
+
+        await loadFromApplications();
+        selectedApplicationId = null;
+        if (jobMap.has(activeJobId)) selectJob(activeJobId);
+      });
+
+      // Existing resume preview (kept for compatibility; unused now)
+      async function showMore(appRow) {
+        const body = $("#moreBody");
+        const doc = docsMap.get(appRow.installer_id);
+        const resumePath = (doc?.resume || "").trim();
+
+        $("#moreTitle").textContent = "Resume Preview";
+
+        if (!resumePath) {
+          body.innerHTML = `
+            <div class="preview-pane">
+              <div class="preview-empty">No resume uploaded by this applicant.</div>
+            </div>
+          `;
+        } else {
+          const url = await urlFor(resumePath);
+          if (url && (isImageUrl(resumePath) || isPdfUrl(resumePath))) {
+            body.innerHTML = `
+              <div class="preview-pane">
+                ${
+                  isImageUrl(resumePath)
+                    ? `<img class="preview-img" alt="Resume" src="${url}">`
+                    : `<iframe class="preview-frame" title="Resume" src="${url}"></iframe>`
+                }
+              </div>
+            `;
+          } else if (url) {
+            body.innerHTML = `
+              <div class="preview-pane">
+                <div class="preview-empty">
+                  Cannot preview this file type here.
+                  <div style="margin-top:8px">
+                    <a class="btn" href="${url}" target="_blank" rel="noopener">
+                      <span class="material-icons-sharp">open_in_new</span> Open Resume
+                    </a>
+                  </div>
+                </div>
+              </div>
+            `;
+          } else {
+            body.innerHTML = `
+              <div class="preview-pane">
+                <div class="preview-empty">Unable to generate a URL for this resume.</div>
+              </div>
+            `;
+          }
+        }
+
+        $("#moreModal").classList.add("open");
+        $("#moreModal").setAttribute("aria-hidden", "false");
+      }
+
+      function closeMore() {
+        $("#moreModal").classList.remove("open");
+        $("#moreModal").setAttribute("aria-hidden", "true");
+      }
+      // Make closeMore available to inline onclick in module context
+      window.closeMore = closeMore;
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeMore();
+      });
+      document.getElementById("moreModal").addEventListener("click", (e) => {
+        if (e.target.id === "moreModal") closeMore();
+      });
+
+      // Init
+      document.addEventListener("DOMContentLoaded", loadFromApplications);
+    </script>
+  </body>
 </html>

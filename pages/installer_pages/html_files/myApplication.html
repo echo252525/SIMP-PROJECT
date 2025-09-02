@@ -719,6 +719,9 @@
 
           const card = document.createElement("article");
           card.className = "applicationsDiv";
+          card.setAttribute("data-app-id", app.application_id);
+          card.setAttribute("data-status", st);
+
           card.innerHTML = `
             <div class="thumb">
               <img src="${imgUrl}" alt="Job image" onerror="this.onerror=null;this.src='../images/profile-4.jpg';" />
@@ -784,6 +787,103 @@
           `;
 
           container.appendChild(card);
+
+          // ADD: wire up the action button to perform the proper DB action
+          if (actionLabel) {
+            const btn = card.querySelector(".apply");
+            btn?.addEventListener("click", async () => {
+              await handleAction(app, st);
+            });
+          }
+        }
+      }
+
+      // === ADDED: centralized handler for card button actions ===
+      async function handleAction(app, status) {
+        try {
+          const id = app.application_id;
+          if (!id) return;
+
+          if (status === "approved") {
+            const ok = confirm(
+              "Mark this application as DONE? This will set its status to 'done' and mark the job as 'done'."
+            );
+            if (!ok) return;
+
+            // 1) Update application status -> done
+            const { error } = await sb
+              .schema("jobs")
+              .from("job_application")
+              .update({ status: "done" })
+              .eq("application_id", id);
+
+            if (error) throw error;
+
+            // 2) ALSO update the related job.job_status -> done
+            if (app.job_id) {
+              const { error: jobErr } = await sb
+                .schema("jobs")
+                .from("job")
+                .update({ job_status: "done" })
+                .eq("job_id", app.job_id);
+
+              if (jobErr) throw jobErr;
+            }
+
+            alert("Application marked as Done. Job marked as Done.");
+          } else if (status === "pending" || status === "viewed") {
+            const ok = confirm(
+              "Cancel this application? This will permanently delete it."
+            );
+            if (!ok) return;
+
+            const { error } = await sb
+              .schema("jobs")
+              .from("job_application")
+              .delete()
+              .eq("application_id", id);
+
+            if (error) throw error;
+            alert("Application cancelled and deleted.");
+          } else if (status === "overdue") {
+            const ok = confirm(
+              "Delete this overdue application? This will permanently delete it."
+            );
+            if (!ok) return;
+
+            const { error } = await sb
+              .schema("jobs")
+              .from("job_application")
+              .delete()
+              .eq("application_id", id);
+
+            if (error) throw error;
+            alert("Overdue application deleted.");
+          } else if (status === "rejected") {
+            const ok = confirm(
+              "Delete this rejected application? This will permanently delete it."
+            );
+            if (!ok) return;
+
+            const { error } = await sb
+              .schema("jobs")
+              .from("job_application")
+              .delete()
+              .eq("application_id", id);
+
+            if (error) throw error;
+            alert("Rejected application deleted.");
+          } else if (status === "done") {
+            // No button shown for done; guard just in case.
+            alert("This application is already done.");
+            return;
+          }
+
+          // Refresh list
+          await loadApplications();
+        } catch (err) {
+          console.error(err);
+          alert("Operation failed: " + (err?.message || "Unknown error"));
         }
       }
 

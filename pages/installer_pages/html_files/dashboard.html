@@ -654,7 +654,8 @@
           <table>
             <thead>
               <tr>
-                <th>Job ID</th>
+                <!-- CHANGED: Job Code instead of Job ID -->
+                <th>Job Code</th>
                 <th>Job Title</th>
                 <th>Date/Time</th>
                 <th>Location</th>
@@ -704,51 +705,9 @@
         <div class="reminders">
           <div class="header"><h2>Take Courses</h2></div>
 
-          <div class="notification">
-            <div class="icon">
-              <span class="material-icons-sharp"> volume_up </span>
-            </div>
-            <div class="content">
-              <div class="info">
-                <h3>Job Title</h3>
-                <small class="text_muted"> Job Level to achieve </small>
-              </div>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                height="24px"
-                viewBox="0 -960 960 960"
-                width="24px"
-                fill="#434343"
-              >
-                <path
-                  d="M504-480 320-664l56-56 240 240-240 240-56-56 184-184Z"
-                />
-              </svg>
-            </div>
-          </div>
+          <!-- (Placeholders removed at runtime) -->
 
-          <div class="notification deactive">
-            <div class="icon">
-              <span class="material-icons-sharp"> edit </span>
-            </div>
-            <div class="content">
-              <div class="info">
-                <h3>Job Title</h3>
-                <small class="text_muted"> Job Level to achieve </small>
-              </div>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                height="24px"
-                viewBox="0 -960 960 960"
-                width="24px"
-                fill="#434343"
-              >
-                <path
-                  d="M504-480 320-664l56-56 240 240-240 240-56-56 184-184Z"
-                />
-              </svg>
-            </div>
-          </div>
+          <!-- Dynamic published courses will be injected above the link below -->
           <a href="#">Show All</a>
         </div>
       </div>
@@ -829,6 +788,10 @@
         const days = Math.floor(hrs / 24);
         return `${days} day${days > 1 ? "s" : ""} ago`;
       }
+      const esc = (str) =>
+        String(str ?? "").replace(/[&<>"']/g, (s) => (
+          { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[s]
+        ));
 
       async function resolveInstaller() {
         const {
@@ -922,7 +885,7 @@
         setCircleProgress(circle2, pct);
       }
 
-      /* ============= Latest Jobs (APPROVED only) ============= */
+      /* ============= Latest Jobs (APPROVED only & not assigned) ============= */
       let LATEST_IDS = []; // keep track of currently shown job_ids (strings)
       let latestJobsChannel = null;
       let latestRefreshTimer = null;
@@ -935,13 +898,15 @@
         const wrap = document.getElementById("latestJobsWrap");
         wrap.innerHTML = "<p>Loading…</p>";
 
+        // ✅ Only APPROVED and NOT assigned (installer_id_assigned is null)
         const { data: jobs, error } = await sb
           .schema("jobs")
           .from("job")
           .select(
-            "job_id, job_title, job_picture_url, posted_by, created_at, job_status"
+            "job_id, job_title, job_picture_url, posted_by, created_at, job_status, installer_id_assigned"
           )
-          .eq("job_status", "approved") // ✅ approved only
+          .eq("job_status", "approved")
+          .is("installer_id_assigned", null)
           .order("created_at", { ascending: false })
           .limit(4);
 
@@ -999,42 +964,43 @@
             { event: "*", schema: "jobs", table: "job" },
             (payload) => {
               const ev = payload.eventType;
-              const row = payload.new || payload.old || {};
-              const newStatus = payload.new?.job_status;
-              const idStr = String(row.job_id ?? "");
+              const rowNew = payload.new;
+              const rowOld = payload.old;
+              const idStr = String((rowNew || rowOld)?.job_id ?? "");
+              const approvedAndUnassigned =
+                rowNew?.job_status === "approved" &&
+                (rowNew?.installer_id_assigned === null ||
+                  typeof rowNew?.installer_id_assigned === "undefined");
 
-              // INSERT: if now approved → refresh
               if (ev === "INSERT") {
-                if (newStatus === "approved") refreshLatestJobsThrottled();
+                if (approvedAndUnassigned) refreshLatestJobsThrottled();
                 return;
               }
 
-              // UPDATE:
               if (ev === "UPDATE") {
-                // If it just became approved → refresh
-                if (newStatus === "approved") {
+                // Became approved & unassigned → refresh
+                if (approvedAndUnassigned) {
                   refreshLatestJobsThrottled();
                   return;
                 }
-                // If it is now NOT approved and it was visible → refresh (removal)
-                if (newStatus !== "approved" && LATEST_IDS.includes(idStr)) {
+                // If it is now NOT eligible (overdue or assigned or not approved) and was visible → refresh
+                const notEligible =
+                  rowNew?.job_status !== "approved" ||
+                  (rowNew?.installer_id_assigned !== null &&
+                    typeof rowNew?.installer_id_assigned !== "undefined");
+                if (notEligible && LATEST_IDS.includes(idStr)) {
                   refreshLatestJobsThrottled();
                 }
                 return;
               }
 
-              // DELETE: if the deleted row was visible → refresh
               if (ev === "DELETE") {
                 if (LATEST_IDS.includes(idStr)) refreshLatestJobsThrottled();
                 return;
               }
             }
           )
-          .subscribe((status) => {
-            if (status === "SUBSCRIBED") {
-              // console.log("[Realtime] Subscribed dashboard-latest-jobs");
-            }
-          });
+          .subscribe(() => {});
       }
 
       sb.auth.onAuthStateChange((_evt, session) => {
@@ -1048,8 +1014,199 @@
         initLatestJobsRealtime();
       });
 
+      /* ============= Upcoming Work (uses job_code) ============= */
+      function renderUpcomingWork(rows) {
+        const tbody = document.querySelector(".recent-orders tbody");
+        if (!tbody) return;
+        tbody.innerHTML = "";
+
+        if (!rows || rows.length === 0) {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `<td colspan="5" style="padding:12px;color:#7d8da1;">No approved work yet.</td>`;
+          tbody.appendChild(tr);
+          return;
+        }
+
+        for (const r of rows) {
+          const dt =
+            (r.job_date
+              ? new Date(r.job_date + "T00:00:00").toLocaleDateString()
+              : "-") +
+            " " +
+            (r.job_time ? String(r.job_time).slice(0, 5) : "");
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${r.job_code || "-"}</td>
+            <td>${r.job_title || "Untitled Job"}</td>
+            <td>${dt}</td>
+            <td>${r.job_location || "-"}</td>
+            <td>₱${fmtPeso(r.job_pay ?? 0)}</td>
+          `;
+          tbody.appendChild(tr);
+        }
+      }
+
+      async function loadUpcomingWork(installerId) {
+        try {
+          // 1) Approved applications for this installer
+          const { data: apps, error: appErr } = await sb
+            .schema("jobs")
+            .from("job_application")
+            .select("application_id, job_id, status")
+            .eq("installer_id", installerId)
+            .eq("status", "approved");
+
+          if (appErr) {
+            console.warn("Failed to fetch approved applications:", appErr);
+            renderUpcomingWork([]);
+            return;
+          }
+
+          const jobIds = [...new Set((apps || []).map((a) => a.job_id))];
+          if (jobIds.length === 0) {
+            renderUpcomingWork([]);
+            return;
+          }
+
+          // 2) Fetch those jobs INCLUDING job_code
+          const { data: jobs, error: jobErr } = await sb
+            .schema("jobs")
+            .from("job")
+            .select(
+              "job_id, job_code, job_title, job_date, job_time, job_location, job_pay"
+            )
+            .in("job_id", jobIds);
+
+          if (jobErr) {
+            console.warn("Failed to fetch jobs for approved apps:", jobErr);
+            renderUpcomingWork([]);
+            return;
+          }
+
+          // 3) Sort by date/time
+          const sorted = (jobs || []).sort((a, b) => {
+            const ad = new Date(`${a.job_date || ""}T${a.job_time || "00:00"}`);
+            const bd = new Date(`${b.job_date || ""}T${b.job_time || "00:00"}`);
+            return ad - bd;
+          });
+
+          renderUpcomingWork(sorted);
+        } catch (e) {
+          console.error("Unexpected error in loadUpcomingWork:", e);
+          renderUpcomingWork([]);
+        }
+      }
+
+      /* ============= Published Courses (dynamic; remove placeholders) ============= */
+      function removeCoursePlaceholders() {
+        // Remove any static templates that don't have our marker attribute
+        document
+          .querySelectorAll('.reminders .notification:not([data-course-id])')
+          .forEach((el) => el.remove());
+      }
+
+      function renderCoursesList(courses) {
+        const reminders = document.querySelector(".reminders");
+        if (!reminders) return;
+
+        // Insert before the trailing "Show All" link
+        const anchor = Array.from(reminders.querySelectorAll("a")).pop() || null;
+
+        // Remove previously injected course rows (only ones we created)
+        reminders
+          .querySelectorAll('.notification[data-course-id]')
+          .forEach((el) => el.remove());
+
+        if (!courses || courses.length === 0) {
+          const empty = document.createElement("div");
+          empty.className = "notification";
+          empty.setAttribute("data-course-id", "empty");
+          empty.innerHTML = `
+            <div class="icon">
+              <span class="material-icons-sharp">menu_book</span>
+            </div>
+            <div class="content">
+              <div class="info">
+                <h3>No published courses yet</h3>
+                <small class="text_muted">Please check back later</small>
+              </div>
+              <svg xmlns="http://www.w3.org/2000/svg" height="24px"
+                   viewBox="0 -960 960 960" width="24px" fill="#434343">
+                <path d="M504-480 320-664l56-56 240 240-240 240-56-56 184-184Z"/>
+              </svg>
+            </div>
+          `;
+          reminders.insertBefore(empty, anchor);
+          return;
+        }
+
+        for (const c of courses) {
+          const row = document.createElement("div");
+          row.className = "notification";
+          row.setAttribute("data-course-id", c.id);
+          row.style.cursor = "pointer";
+
+          const tagsText =
+            Array.isArray(c.tags) && c.tags.length
+              ? c.tags.slice(0, 3).join(", ")
+              : "";
+
+          row.innerHTML = `
+            <div class="icon">
+              <span class="material-icons-sharp">school</span>
+            </div>
+            <div class="content">
+              <div class="info">
+                <h3>${esc(c.title)}</h3>
+                <small class="text_muted">
+                  Level ${Number.isFinite(c.level) ? c.level : 0}
+                  ${tagsText ? " • " + esc(tagsText) : ""}
+                </small>
+              </div>
+              <svg xmlns="http://www.w3.org/2000/svg" height="24px"
+                   viewBox="0 -960 960 960" width="24px" fill="#434343">
+                <path d="M504-480 320-664l56-56 240 240-240 240-56-56 184-184Z"/>
+              </svg>
+            </div>
+          `;
+
+          row.addEventListener("click", () => {
+            window.location.href = `courses.html?slug=${encodeURIComponent(
+              c.slug
+            )}`;
+          });
+
+          reminders.insertBefore(row, anchor);
+        }
+      }
+
+      async function loadPublishedCourses(limit = 6) {
+        try {
+          const { data, error } = await sb
+            .schema("courses")
+            .from("course")
+            .select("id, title, slug, description, level, tags, thumbnail_url, created_at")
+            .eq("is_published", true)
+            .order("created_at", { ascending: false })
+            .limit(limit);
+
+          if (error) {
+            console.warn("Could not load published courses:", error);
+            renderCoursesList([]);
+            return;
+          }
+          renderCoursesList(data || []);
+        } catch (e) {
+          console.error("Unexpected error loading courses:", e);
+          renderCoursesList([]);
+        }
+      }
+
       /* ============= Dashboard boot ============= */
       async function loadDashboard() {
+        // Remove the old "Job Title / Job Level to achieve" templates
+        removeCoursePlaceholders();
+
         const inst = await resolveInstaller();
         if (!inst) {
           updateLevelUI({
@@ -1059,6 +1216,7 @@
           });
           updateAppliedCard({ applied: 0, totalJobs: 0 });
           updateApprovedCard({ approved: 0, pending: 0 });
+          renderUpcomingWork([]);
         } else {
           updateLevelUI(inst);
           const { totalJobs, applied, approved, pending } = await fetchCounts(
@@ -1066,11 +1224,14 @@
           );
           updateAppliedCard({ applied, totalJobs });
           updateApprovedCard({ approved, pending });
+
+          await loadUpcomingWork(inst.id); // <-- uses job_code
         }
 
-        await loadLatestJobs(); // initial render
-        await ensureRealtimeAuth(); // make sure socket token matches
-        initLatestJobsRealtime(); // wire realtime
+        await loadLatestJobs();        // recent approved & unassigned jobs
+        await loadPublishedCourses();  // published courses into Take Courses
+        await ensureRealtimeAuth();    // make sure socket token matches
+        initLatestJobsRealtime();      // wire realtime
       }
 
       document.addEventListener("DOMContentLoaded", loadDashboard);
