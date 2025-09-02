@@ -495,6 +495,18 @@
         return data?.publicUrl || "";
       }
 
+      /* === NEW: Ensure paths for previews include the installer's folder === */
+      function toPublicUrlWithOwner(path, ownerId) {
+        if (!path) return "";
+        if (/^https?:\/\//i.test(path)) return path;
+        let key = String(path).replace(/^\/+/, "");
+        if (ownerId && !key.startsWith(ownerId + "/")) {
+          key = `${ownerId}/${key}`;
+        }
+        const { data } = sb.storage.from("documents_review").getPublicUrl(key);
+        return data?.publicUrl || "";
+      }
+
       function fmtDateISO(d) {
         if (!d) return "";
         const dt = new Date(d);
@@ -579,7 +591,7 @@
         // 4) Initialize per-doc review state if needed
         for (const w of WORKERS) {
           if (!DOC_REVIEW.has(w.id)) {
-            const rows = buildDocRows(w._rawDocs);
+            const rows = buildDocRows(w._rawDocs); // uses installer_id internally now
             DOC_REVIEW.set(w.id, rows);
           }
         }
@@ -596,8 +608,9 @@
         }
       }
 
-      // UPDATED: read *_status + certificates_status
+      // UPDATED: build rows using owner's id to construct correct public URLs for EVERY certificate
       function buildDocRows(raw) {
+        const ownerId = raw?.installer_id || "";
         const rows = [];
         const singleDocs = [
           ["resume", "Resume", "resume_status"],
@@ -615,7 +628,7 @@
           rows.push({
             key,
             type: label,
-            url: path ? toPublicUrl(path) : "",
+            url: path ? toPublicUrlWithOwner(path, ownerId) : "",
             status: path ? st : "missing",
           });
         }
@@ -638,7 +651,7 @@
             rows.push({
               key: `certificates[${idx}]`,
               type: `Certificate #${idx + 1}`,
-              url: toPublicUrl(c),
+              url: toPublicUrlWithOwner(c, ownerId),
               status: st,
             });
           });
@@ -722,7 +735,7 @@
 
         const docs = DOC_REVIEW.get(worker.id) || [];
         const status = (worker.profileStatus || "pending").toLowerCase();
-        const isPending = status === "pending"; // <— NEW: control visibility of per-doc actions
+        const isPending = status === "pending"; // <— control visibility of per-doc actions
 
         let actionsHTML = "";
         if (status === "pending") {
@@ -835,7 +848,7 @@
                   </div>
                   <div class="actions" ${
                     isPending ? "" : 'style="display:none"'
-                  }>  <!-- NEW: hide per-doc actions when not pending -->
+                  }>
                     <button class="btn primary" data-approve="${idx}" ${
                     d.url ? "" : "disabled"
                   }>Approve</button>
@@ -851,7 +864,7 @@
           </div>
         `;
 
-        // Wire doc actions (buttons exist but may be hidden when not pending)
+        // Wire doc actions
         detailsPane.querySelectorAll("[data-view]").forEach((btn) => {
           btn.addEventListener("click", () => {
             const idx = Number(btn.dataset.view);
@@ -908,7 +921,7 @@
         return docs.length > 0;
       }
 
-      // UPDATED: persist + refetch
+      // Persist + refetch
       async function setDocStatus(installerId, docIndex, status) {
         const list = DOC_REVIEW.get(installerId) || [];
         const item = list[docIndex];
@@ -943,7 +956,7 @@
             .maybeSingle();
 
           if (!error && data) {
-            const freshRows = buildDocRows(data);
+            const freshRows = buildDocRows(data); // uses owner id for URLs
             DOC_REVIEW.set(installerId, freshRows);
             if (w) {
               w._rawDocs = data;
@@ -955,7 +968,7 @@
         }
       }
 
-      // NEW: handles single-doc columns and certificates_status array
+      // Handles single-doc columns and certificates_status array
       async function persistDocStatus(installerId, docKey, toStatus) {
         const singleStatusCols = {
           resume: "resume_status",
@@ -1014,10 +1027,10 @@
         // Unknown key → no-op
       }
 
-      /* ------------------------------ UPDATED: Overall status also syncs all per-doc statuses ------------------------------ */
+      /* Overall status sync */
       async function setOverallStatus(installerId, toStatus) {
         try {
-          // Fetch current row to know what exists (avoid setting statuses for missing files)
+          // Fetch current row to know what exists
           const { data: row, error: fetchErr } = await sb
             .from("installer_documents")
             .select(
@@ -1040,7 +1053,7 @@
             updated_at: new Date().toISOString(),
           };
 
-          // Only when rejecting or reverting to pending do we bulk-set per-doc statuses
+          // When rejecting or reverting to pending, bulk-set per-doc statuses (for present docs)
           if (toStatus === "rejected" || toStatus === "pending") {
             const map = [
               ["resume", "resume_status"],
@@ -1056,18 +1069,12 @@
               }
             }
 
-            // certificates_status[] -> set each index to toStatus if certificates exist
-            if (
-              row &&
-              Array.isArray(row.certificates) &&
-              row.certificates.length > 0
-            ) {
-              const newCertStatuses = row.certificates.map(() => toStatus);
-              updatePayload["certificates_status"] = newCertStatuses;
+            if (row && Array.isArray(row.certificates) && row.certificates.length) {
+              updatePayload["certificates_status"] = row.certificates.map(() => toStatus);
             }
           }
 
-          // Persist overall + per-doc status updates
+          // Persist
           const { error: upErr } = await sb
             .from("installer_documents")
             .update(updatePayload)
@@ -1095,7 +1102,6 @@
 
           if (refetchErr) throw refetchErr;
 
-          // Update memory models + UI
           const w = WORKERS.find((x) => x.id === installerId);
           if (w && fresh) {
             w.profileStatus = String(fresh.status || "pending").toLowerCase();

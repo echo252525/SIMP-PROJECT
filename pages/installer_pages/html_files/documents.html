@@ -1,323 +1,1012 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css_files/sideBar.css" />
+    <title>Documents</title>
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet" />
-  <link rel="stylesheet" href="../css_files/sideBar.css" />
-  <title>Document</title>
-  <style>
-    main {
-      margin-top: 1.4rem;
-    }
-
-    .titlePageDiv p {
-      margin-bottom: 10px;
-    }
-
-
-    /* === Documents UI (scoped to main) === */
-    main .docs-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1.5rem;
-      align-items: start;
-    }
-
-    main .doc-list {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    main .doc-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 1.3rem 2.5rem;
-      border: 1.5px solid #bfe8c6;
-      /* light green border like the picture */
-      border-radius: 14px;
-      background: #fff;
-      box-shadow: 0 1px 0 rgba(0, 0, 0, 0.02);
-      transition: box-shadow .15s ease, transform .05s ease, border-color .15s ease;
-      cursor: pointer;
-    }
-
-    main .doc-item:hover {
-      box-shadow: 0 6px 18px rgba(0, 0, 0, .06);
-      border-color: #9fddb0
-    }
-
-    main .doc-item:active {
-      transform: translateY(1px)
-    }
-
-    main .doc-meta {
-      display: flex;
-      align-items: center;
-      text-align: start;
-      gap: 1rem;
-    }
-
-    main .doc-icon {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      display: grid;
-      place-items: center;
-      flex: 0 0 32px;
-      background: #eaf9ed;
-      color: #1ea44b;
-      /* green */
-      border: 1px solid #ccefd6;
-      font-size: 20px;
-    }
-
-    main .doc-item.pending .doc-icon {
-      /* orange for pending items */
-      background: #fff4e8;
-      color: #f59e0b;
-      border-color: #fde7c8;
-    }
-
-    main .doc-text h4 {
-      margin: 0;
-      font-size: .98rem;
-      line-height: 1.15;
-      color: #0f172a;
-    }
-
-    main .doc-text p {
-      margin: .15rem 0 0;
-      font-size: .82rem;
-      color: #6b7280;
-    }
-
-    main .attach {
-      display: flex;
-      align-items: center;
-      gap: .35rem;
-      color: #334155;
-      opacity: .8;
-    }
-
-    main .attach .material-icons-sharp {
-      font-size: 20px
-    }
-
-    /* Right preview pane */
-    main .doc-preview {
-      min-height: 360px;
-      border: 1.5px solid #e5e7eb;
-      border-radius: 14px;
-      background: #fff;
-      display: grid;
-      place-items: center;
-      padding: 1rem;
-      color: #6b7280;
-      text-align: center;
-      box-shadow: 0 1px 0 rgba(0, 0, 0, 0.02);
-    }
-
-    /* Dropzone look (static only) */
-    main .dropzone {
-      display: flex;
-      align-items: center;
-      gap: .5rem;
-      border: 1.5px dashed #cbd5e1;
-      border-radius: 10px;
-      padding: 1rem 1rem;
-      color: #334155;
-      opacity: .9;
-      background: #f8fafc;
-      user-select: none;
-      pointer-events: none;
-      /* makes it non-interactive */
-    }
-
-    main .dropzone .material-icons-sharp {
-      font-size: 20px;
-    }
-
-    @media (max-width: 980px) {
-      main .docs-grid {
-        grid-template-columns: 1fr;
+    <style>
+      main {
+        margin-top: 1.4rem;
       }
-    }
-  </style>
-</head>
+      .titlePageDiv p {
+        margin-bottom: 10px;
+      }
 
-<body>
-  <div class="container">
-    <!-- Sidebar Section -->
-    <aside>
-      <div class="toggle">
-        <div class="logo">
-          <img src="../images/STEQ Logo 3.png" />
-          <h2>SIMP<span class="danger">Project</span></h2>
+      /* === Documents UI (scoped to main) === */
+      main .docs-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        align-items: start;
+      }
+      main .doc-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      main .doc-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1.3rem 2.5rem;
+        border: 1.5px solid #bfe8c6;
+        border-radius: 14px;
+        background: #fff;
+        box-shadow: 0 1px 0 rgba(0, 0, 0, 0.02);
+        transition: box-shadow 0.15s ease, transform 0.05s ease,
+          border-color 0.15s ease, background 0.12s ease;
+        cursor: pointer;
+      }
+      main .doc-item:hover {
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+        border-color: #9fddb0;
+      }
+      main .doc-item:active {
+        transform: translateY(1px);
+      }
+
+      main .doc-meta {
+        display: flex;
+        align-items: center;
+        text-align: start;
+        gap: 1rem;
+      }
+
+      main .doc-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        flex: 0 0 32px;
+        background: #eaf9ed;
+        color: #1ea44b;
+        border: 1px solid #ccefd6;
+        font-size: 20px;
+      }
+      /* orange for pending items */
+      main .doc-item.pending .doc-icon {
+        background: #fff4e8;
+        color: #f59e0b;
+        border-color: #fde7c8;
+      }
+      /* red for rejected items */
+      main .doc-item.rejected {
+        border-color: #f5c2c7;
+      }
+      main .doc-item.rejected .doc-icon {
+        background: #fde7eb;
+        color: #e11d48;
+        border-color: #f5c2c7;
+      }
+
+      main .doc-text h4 {
+        margin: 0;
+        font-size: 0.98rem;
+        line-height: 1.15;
+        color: #0f172a;
+      }
+      main .doc-text p {
+        margin: 0.15rem 0 0;
+        font-size: 0.82rem;
+        color: #6b7280;
+      }
+
+      /* Right preview pane */
+      main .doc-preview {
+        min-height: 600px;
+        border: 1.5px solid #e5e7eb;
+        border-radius: 14px;
+        background: #fff;
+        display: grid;
+        grid-template-rows: auto 1fr;
+        padding: 0;
+        color: #6b7280;
+        text-align: left;
+        box-shadow: 0 1px 0 rgba(0, 0, 0, 0.02);
+        overflow: hidden;
+      }
+      .preview-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 10px 14px;
+        border-bottom: 1px solid #e5e7eb;
+        background: #f8fafc;
+      }
+      .preview-header h3 {
+        margin: 0;
+        color: #0f172a;
+        font-size: 1rem;
+        font-weight: 600;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .preview-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .icon-btn {
+        display: inline-grid;
+        place-items: center;
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        border: 1px solid #e5e7eb;
+        background: #fff;
+        color: #334155;
+        cursor: pointer;
+        transition: background 0.12s ease, transform 0.05s ease;
+        text-decoration: none;
+      }
+      .icon-btn:hover {
+        background: #f1f5f9;
+      }
+      .icon-btn:active {
+        transform: translateY(1px);
+      }
+      .icon-btn .material-icons-sharp {
+        font-size: 20px;
+      }
+
+      .preview-body {
+        padding: 10px;
+        overflow: auto;
+        display: grid;
+        place-items: center;
+        background: #fff;
+      }
+      .preview-body iframe,
+      .preview-body embed,
+      .preview-body img {
+        width: 100%;
+        height: 100%;
+        border: 0;
+        border-radius: 8px;
+        max-height: 72vh;
+      }
+      .preview-placeholder {
+        color: #64748b;
+        text-align: center;
+      }
+
+      /* Dropzone (interactive) */
+      main .dropzone {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        border: 1.5px dashed #cbd5e1;
+        border-radius: 10px;
+        padding: 1rem 1rem;
+        color: #334155;
+        opacity: 0.9;
+        background: #f8fafc;
+        user-select: none;
+      }
+      main .dropzone .material-icons-sharp {
+        font-size: 20px;
+      }
+      .dropzone.is-over {
+        background: #eef6ff;
+        border-color: #93c5fd;
+      }
+
+      /* Modal */
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.5);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        padding: 16px;
+      }
+      .modal-overlay.show {
+        display: flex;
+      }
+      .modal-sheet {
+        width: 100%;
+        max-width: 520px;
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 24px 48px rgba(0, 0, 0, 0.25);
+        overflow: hidden;
+        animation: pop 0.12s ease-out;
+      }
+      @keyframes pop {
+        from {
+          transform: scale(0.98);
+          opacity: 0.6;
+        }
+        to {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+      .modal-head {
+        padding: 14px 16px;
+        border-bottom: 1px solid #e5e7eb;
+        background: #f8fafc;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .modal-head .material-icons-sharp {
+        color: #0ea5e9;
+      }
+      .modal-title {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 600;
+        color: #0f172a;
+      }
+      .modal-body {
+        padding: 16px;
+        color: #334155;
+      }
+      .modal-actions {
+        padding: 12px 16px;
+        border-top: 1px solid #e5e7eb;
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 12px;
+        border-radius: 10px;
+        border: 1px solid #e5e7eb;
+        background: #fff;
+        color: #0f172a;
+        cursor: pointer;
+        text-decoration: none;
+        transition: background 0.12s ease, transform 0.05s ease;
+      }
+      .btn:hover {
+        background: #f1f5f9;
+      }
+      .btn:active {
+        transform: translateY(1px);
+      }
+      .btn.primary {
+        background: #0ea5e9;
+        border-color: #0ea5e9;
+        color: #fff;
+      }
+      .btn.primary:hover {
+        background: #0284c7;
+        border-color: #0284c7;
+      }
+
+      @media (max-width: 980px) {
+        main .docs-grid {
+          grid-template-columns: 1fr;
+        }
+        .preview-body iframe,
+        .preview-body embed,
+        .preview-body img {
+          max-height: 60vh;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <!-- Sidebar Section -->
+      <aside>
+        <div class="toggle">
+          <div class="logo">
+            <img src="../images/STEQ Logo 3.png" alt="logo" />
+            <h2>SIMP<span class="danger">Project</span></h2>
+          </div>
+          <div class="close" id="close-btn">
+            <span class="material-icons-sharp">close</span>
+          </div>
         </div>
-        <div class="close" id="close-btn">
-          <span class="material-icons-sharp">close</span>
+
+        <div class="sidebar">
+          <a href="dashboard.html">
+            <span class="material-icons-sharp">dashboard</span>
+            <h3>Dashboard</h3>
+          </a>
+          <a href="job.html">
+            <span class="material-icons-sharp">work</span>
+            <h3>Jobs</h3>
+          </a>
+          <a href="myApplication.html">
+            <span class="material-icons-sharp">receipt</span>
+            <h3>My Application</h3>
+          </a>
+          <a href="courses.html">
+            <span class="material-icons-sharp">school</span>
+            <h3>Courses</h3>
+          </a>
+          <a href="shop.html">
+            <span class="material-icons-sharp">shopping_cart</span>
+            <h3>Shop</h3>
+          </a>
+          <a href="earnings.html">
+            <span class="material-icons-sharp">account_balance</span>
+            <h3>Earnings</h3>
+          </a>
+          <a href="documents.html" class="active">
+            <span class="material-icons-sharp">file_copy</span>
+            <h3>Documents</h3>
+          </a>
+          <a href="settings.html">
+            <span class="material-icons-sharp">settings</span>
+            <h3>Settings</h3>
+          </a>
+          <a href="#" id="logout-btn">
+            <span class="material-icons-sharp">logout</span>
+            <h3>Logout</h3>
+          </a>
+        </div>
+      </aside>
+      <!-- End of Sidebar Section -->
+
+      <!-- MAIN CONTENT -->
+      <main>
+        <div class="titlePageDiv">
+          <h1>Upload your documents here</h1>
+          <p>Supported formats: PDF and DOCX, up to 300mb.</p>
+        </div>
+
+        <div class="docs-grid">
+          <div class="doc-list" id="docList">
+            <!-- Dynamically injected -->
+          </div>
+
+          <div class="doc-preview">
+            <div class="preview-header">
+              <h3 id="previewTitle">Preview</h3>
+              <div class="preview-actions">
+                <a
+                  id="previewOpen"
+                  class="icon-btn"
+                  href="#"
+                  target="_blank"
+                  rel="noopener"
+                  style="display: none"
+                  title="Open in new tab"
+                >
+                  <span class="material-icons-sharp">open_in_new</span>
+                </a>
+                <a
+                  id="previewDownload"
+                  class="icon-btn"
+                  href="#"
+                  download
+                  style="display: none"
+                  title="Download"
+                >
+                  <span class="material-icons-sharp">download</span>
+                </a>
+              </div>
+            </div>
+            <div class="preview-body" id="previewBody">
+              <div class="preview-placeholder">
+                <span>No file selected.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Approval Hold Modal -->
+    <div
+      id="reviewModal"
+      class="modal-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="reviewTitleModal"
+      aria-describedby="reviewDesc"
+    >
+      <div class="modal-sheet">
+        <div class="modal-head">
+          <span class="material-icons-sharp" aria-hidden="true">info</span>
+          <h3 id="reviewTitleModal" class="modal-title">
+            Account on hold for review
+          </h3>
+        </div>
+        <div class="modal-body" id="reviewDesc">
+          We’ll temporarily hold your access until an admin approves your new
+          document. You’ll be redirected to the review page.
+        </div>
+        <div class="modal-actions">
+          <button id="modalClose" class="btn" type="button">
+            <span class="material-icons-sharp">close</span> Close
+          </button>
+          <a id="modalGoReview" class="btn primary" href="review.html">
+            <span class="material-icons-sharp">arrow_forward</span> Go to review
+          </a>
         </div>
       </div>
+    </div>
 
-      <div class="sidebar">
-        <a href="dashboard.html">
-          <span class="material-icons-sharp">dashboard</span>
-          <h3>Dashboard</h3>
-        </a>
-        <a href="job.html">
-          <span class="material-icons-sharp">work</span>
-          <h3>Jobs</h3>
-        </a>
-        <a href="myApplication.html">
-          <span class="material-icons-sharp">receipt</span>
-          <h3>My Application</h3>
-        </a>
-        <a href="courses.html">
-          <span class="material-icons-sharp">school</span>
-          <h3>Courses</h3>
-        </a>
-        <a href="shop.html">
-          <span class="material-icons-sharp">shopping_cart</span>
-          <h3>Shop</h3>
-        </a>
-        <a href="earnings.html">
-          <span class="material-icons-sharp">account_balance</span>
-          <h3>Earnings</h3>
-        </a>
-        <a href="documents.html" class="active">
-          <span class="material-icons-sharp">file_copy</span>
-          <h3>Documents</h3>
-        </a>
-        <a href="settings.html">
-          <span class="material-icons-sharp">settings</span>
-          <h3>Settings</h3>
-        </a>
-        <a href="#" id="logout-btn">
-          <span class="material-icons-sharp">logout</span>
-          <h3>Logout</h3>
-        </a>
-      </div>
-    </aside>
-    <!-- End of Sidebar Section -->
+    <!-- Supabase UMD -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+    <!-- Your shared scripts (if any control the sidebar/menu) -->
+    <script src="../../general_files/index.js"></script>
+    <script type="module" src="../../general_files/session.js"></script>
 
-    <!--MAIN CONTENT-->
-    <main>
-      <div class="titlePageDiv">
-        <h1>Upload your documents here</h1>
-        <p>Supported formats: PDF and DOCX, up to 300mb.</p>
-      </div>
+    <!-- Page logic -->
+    <script type="module">
+      const { createClient } = supabase;
+      import { SUPABASE_URL, SUPABASE_ANON_KEY } from "../../../supabase.js";
+      const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-      <!--insert here-->
-      <div class="docs-grid">
-        <div class="doc-list">
-          <button class="doc-item uploaded">
-            <div class="doc-meta">
-              <span class="doc-icon">
-                <span class="material-icons-sharp">check</span>
-              </span>
-              <div class="doc-text">
-                <h4>Resume</h4>
-                <p>File name uploaded here.</p>
-              </div>
-            </div>
-            <div class="dropzone">
-              <span class="material-icons-sharp">file_upload</span>
-              <span>drag & drop files here</span>
-            </div>
-          </button>
+      const BUCKET = "documents_review"; // storage bucket
 
-          <button class="doc-item pending">
-            <div class="doc-meta">
-              <span class="doc-icon">
-                <span class="material-icons-sharp">pending</span>
-              </span>
-              <div class="doc-text">
-                <h4>NBI Clearance</h4>
-                <p>File name uploaded here.</p>
-              </div>
-            </div>
-            <div class="dropzone">
-              <span class="material-icons-sharp">file_upload</span>
-              <span>drag & drop files here</span>
-            </div>
-          </button>
+      const docListEl = document.getElementById("docList");
+      const previewTitleEl = document.getElementById("previewTitle");
+      const previewBodyEl = document.getElementById("previewBody");
+      const previewOpenEl = document.getElementById("previewOpen");
+      const previewDownloadEl = document.getElementById("previewDownload");
 
-          <button class="doc-item pending">
-            <div class="doc-meta">
-              <span class="doc-icon">
-                <span class="material-icons-sharp">pending</span>
-              </span>
-              <div class="doc-text">
-                <h4>Police Clearance</h4>
-                <p>File name uploaded here.</p>
-              </div>
-            </div>
-            <div class="dropzone">
-              <span class="material-icons-sharp">file_upload</span>
-              <span>drag & drop files here</span>
-            </div>
-          </button>
+      const modalEl = document.getElementById("reviewModal");
+      const modalCloseEl = document.getElementById("modalClose");
+      const modalGoReviewEl = document.getElementById("modalGoReview");
+      let autoRedirectTimer = null;
 
-          <button class="doc-item pending">
-            <div class="doc-meta">
-              <span class="doc-icon">
-                <span class="material-icons-sharp">pending</span>
-              </span>
-              <div class="doc-text">
-                <h4>Transcript of Records (TOR)</h4>
-                <p>File name uploaded here.</p>
-              </div>
-            </div>
-            <div class="dropzone">
-              <span class="material-icons-sharp">file_upload</span>
-              <span>drag & drop files here</span>
-            </div>
-          </button>
+      function showReviewHoldModal() {
+        modalEl.classList.add("show");
+        // auto-redirect after 2 seconds
+        clearTimeout(autoRedirectTimer);
+        autoRedirectTimer = setTimeout(() => {
+          window.location.href = "review.html";
+        }, 2000);
+      }
+      function hideReviewHoldModal() {
+        modalEl.classList.remove("show");
+        clearTimeout(autoRedirectTimer);
+      }
+      modalCloseEl.addEventListener("click", hideReviewHoldModal);
 
-          <button class="doc-item pending">
-            <div class="doc-meta">
-              <span class="doc-icon">
-                <span class="material-icons-sharp">pending</span>
-              </span>
-              <div class="doc-text">
-                <h4>Portfolio</h4>
-                <p>File name uploaded here.</p>
-              </div>
-            </div>
-            <div class="dropzone">
-              <span class="material-icons-sharp">file_upload</span>
-              <span>drag & drop files here</span>
-            </div>
-          </button>
+      // Utility: extract a nice filename from a path or URL
+      function friendlyName(pathOrUrl) {
+        if (!pathOrUrl) return "";
+        try {
+          const u = new URL(pathOrUrl);
+          const parts = u.pathname.split("/");
+          return decodeURIComponent(parts.pop() || parts.pop() || pathOrUrl);
+        } catch {
+          const parts = String(pathOrUrl).split("/");
+          return decodeURIComponent(parts.pop() || pathOrUrl);
+        }
+      }
 
-          <button class="doc-item pending">
-            <div class="doc-meta">
-              <span class="doc-icon">
-                <span class="material-icons-sharp">pending</span>
-              </span>
-              <div class="doc-text">
-                <h4>Certificates</h4>
-                <p>File name uploaded here.</p>
-              </div>
-            </div>
-            <div class="dropzone">
-              <span class="material-icons-sharp">file_upload</span>
-              <span>drag & drop files here</span>
-            </div>
-          </button>
+      function isUrl(v) {
+        return /^https?:\/\//i.test(v || "");
+      }
+
+      function extOf(v) {
+        const m = String(v || "")
+          .toLowerCase()
+          .match(/\.([a-z0-9]+)(?:\?|#|$)/i);
+        return m ? m[1] : "";
+      }
+
+      // Resolve value (URL or key) to a public URL in documents_review/<installer_id>/<file or subpath>
+      function publicDocUrl(value, installerId) {
+        if (!value) return "";
+        if (isUrl(value)) return value;
+
+        let key = String(value).replace(/^\/+/, "");
+        // Always prefix with installer folder if missing
+        if (!key.startsWith(installerId + "/")) {
+          key = `${installerId}/${key}`;
+        }
+
+        const { data } = sb.storage.from(BUCKET).getPublicUrl(key);
+        return data?.publicUrl || "";
+      }
+
+      function statusToClass(status) {
+        const s = String(status || "").toLowerCase();
+        if (["approved", "verified", "accepted"].includes(s)) return "uploaded";
+        if (["rejected", "declined"].includes(s)) return "rejected";
+        return "pending";
+      }
+
+      function statusToIcon(status) {
+        const s = String(status || "").toLowerCase();
+        if (["approved", "verified", "accepted"].includes(s)) return "check";
+        if (["rejected", "declined"].includes(s)) return "error";
+        return "pending";
+      }
+
+      function clearPreview() {
+        previewTitleEl.textContent = "Preview";
+        previewBodyEl.innerHTML =
+          '<div class="preview-placeholder"><span>No file selected.</span></div>';
+        previewOpenEl.style.display = "none";
+        previewDownloadEl.style.display = "none";
+        previewOpenEl.removeAttribute("href");
+        previewDownloadEl.removeAttribute("href");
+        previewDownloadEl.removeAttribute("download");
+      }
+
+      function renderPreviewFromUrl(label, url) {
+        previewTitleEl.textContent = label;
+
+        if (!url) {
+          previewBodyEl.innerHTML =
+            '<div class="preview-placeholder"><span>No file uploaded.</span></div>';
+          previewOpenEl.style.display = "none";
+          previewDownloadEl.style.display = "none";
+          return;
+        }
+
+        const filename = friendlyName(url);
+        const ext = extOf(url);
+        const safeUrl = encodeURI(url);
+
+        previewOpenEl.href = safeUrl;
+        previewOpenEl.style.display = "inline-grid";
+        previewDownloadEl.href = safeUrl;
+        previewDownloadEl.setAttribute("download", filename || "file");
+        previewDownloadEl.style.display = "inline-grid";
+
+        const isImage = ["png", "jpg", "jpeg", "gif", "webp"].includes(ext);
+        const isPdf = ext === "pdf";
+        const isOffice = ["doc", "docx", "xls", "xlsx", "ppt", "pptx"].includes(
+          ext
+        );
+
+        if (isImage) {
+          previewBodyEl.innerHTML = `<img src="${safeUrl}" alt="${filename}">`;
+        } else if (isPdf) {
+          previewBodyEl.innerHTML = `<embed src="${safeUrl}#toolbar=1&navpanes=0&scrollbar=1" type="application/pdf">`;
+        } else if (isOffice) {
+          const viewerSrc =
+            "https://view.officeapps.live.com/op/embed.aspx?src=" +
+            encodeURIComponent(safeUrl);
+          previewBodyEl.innerHTML = `<iframe src="${viewerSrc}" allowfullscreen></iframe>`;
+        } else {
+          previewBodyEl.innerHTML = `
+          <div class="preview-placeholder">
+            <p style="margin:0 0 8px 0;">Cannot preview this file type.</p>
+            <a href="${safeUrl}" target="_blank" rel="noopener">Open in new tab</a>
+          </div>`;
+        }
+      }
+
+      function setPreview({ label, value, installerId }) {
+        clearPreview();
+        const url = publicDocUrl(value, installerId);
+        renderPreviewFromUrl(label, url);
+      }
+
+      // ---------- Upload helpers ----------
+      function uniqueName(original) {
+        const ts = Date.now();
+        const clean = original.replace(/[^\w.\-]+/g, "_");
+        return `${ts}-${clean}`;
+      }
+
+      async function ensureRow(installerId) {
+        const { data } = await sb
+          .from("installer_documents")
+          .select("installer_id")
+          .eq("installer_id", installerId)
+          .maybeSingle();
+        if (!data) {
+          await sb
+            .from("installer_documents")
+            .insert({ installer_id: installerId });
+        }
+      }
+
+      // Upload to root of installer's folder: <id>/<name>
+      async function uploadFileToBucket(installerId, file) {
+        const name = uniqueName(file.name);
+        const key = `${installerId}/${name}`;
+        const { error } = await sb.storage
+          .from(BUCKET)
+          .upload(key, file, { upsert: true });
+        if (error) throw error;
+        return name; // store filename only
+      }
+
+      // Upload to specified subdirectory: <id>/<subdir>/<name>
+      async function uploadFileToBucketAt(installerId, file, subdir = "") {
+        const name = uniqueName(file.name);
+        const cleanSub = String(subdir || "").replace(/^\/+|\/+$/g, "");
+        const key = cleanSub
+          ? `${installerId}/${cleanSub}/${name}`
+          : `${installerId}/${name}`;
+        const { error } = await sb.storage
+          .from(BUCKET)
+          .upload(key, file, { upsert: true });
+        if (error) throw error;
+        return name; // return filename; caller can store with subpath
+      }
+
+      async function upsertSingleDoc(
+        installerId,
+        fieldKey,
+        statusKey,
+        storedName
+      ) {
+        const payload = {
+          installer_id: installerId,
+          [fieldKey]: storedName,
+          [statusKey]: "pending",
+          status: "pending", // overall status → pending
+          updated_at: new Date().toISOString(),
+        };
+        const { error } = await sb
+          .from("installer_documents")
+          .upsert(payload, { onConflict: "installer_id" });
+        if (error) throw error;
+      }
+
+      async function upsertCertificates(installerId, newNames = []) {
+        const { data: row, error: fetchErr } = await sb
+          .from("installer_documents")
+          .select("certificates, certificates_status")
+          .eq("installer_id", installerId)
+          .maybeSingle();
+        if (fetchErr) throw fetchErr;
+
+        const oldCerts = Array.isArray(row?.certificates)
+          ? row.certificates
+          : [];
+        const oldStatuses = Array.isArray(row?.certificates_status)
+          ? row.certificates_status
+          : [];
+
+        // Store with subpath so previews resolve to <id>/certificates/<name>
+        const newWithSubpath = newNames.map((nm) => `certificates/${nm}`);
+
+        const appended = [...oldCerts, ...newWithSubpath];
+        const appendedStatuses = [
+          ...oldStatuses,
+          ...newWithSubpath.map(() => "pending"),
+        ];
+
+        const { error } = await sb.from("installer_documents").upsert(
+          {
+            installer_id: installerId,
+            certificates: appended,
+            certificates_status: appendedStatuses,
+            status: "pending", // overall status → pending
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: "installer_id" }
+        );
+        if (error) throw error;
+      }
+
+      function attachUploader(dropEl, inputEl, { multiple = false, onFiles }) {
+        dropEl.addEventListener("click", (e) => {
+          e.stopPropagation();
+          inputEl.multiple = !!multiple;
+          inputEl.click();
+        });
+        inputEl.addEventListener("change", () => {
+          const files = Array.from(inputEl.files || []);
+          if (files.length) onFiles(files);
+          inputEl.value = "";
+        });
+        ["dragenter", "dragover"].forEach((evt) =>
+          dropEl.addEventListener(evt, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            dropEl.classList.add("is-over");
+          })
+        );
+        ["dragleave", "dragend", "drop"].forEach((evt) =>
+          dropEl.addEventListener(evt, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (evt !== "drop") dropEl.classList.remove("is-over");
+          })
+        );
+        dropEl.addEventListener("drop", (e) => {
+          dropEl.classList.remove("is-over");
+          const dt = e.dataTransfer;
+          const files = Array.from(dt?.files || []);
+          if (files.length) onFiles(multiple ? files : [files[0]]);
+        });
+      }
+
+      // ---------- Rendering ----------
+      function makeDocButton({
+        label,
+        value,
+        status,
+        onClick,
+        onUpload,
+        multiple = false,
+      }) {
+        const cls = statusToClass(status);
+        const icon = statusToIcon(status);
+        const subtitle = value ? friendlyName(value) : "No file uploaded.";
+        const wrapper = document.createElement("div");
+        wrapper.className = `doc-item ${cls}`;
+        wrapper.setAttribute("role", "button");
+        wrapper.innerHTML = `
+        <div class="doc-meta">
+          <span class="doc-icon">
+            <span class="material-icons-sharp">${icon}</span>
+          </span>
+          <div class="doc-text">
+            <h4>${label}</h4>
+            <p>${subtitle}</p>
+          </div>
         </div>
-
-        <div class="doc-preview">
-          <span>Preview of documents here.</span>
+        <div class="dropzone" aria-label="Upload ${label}">
+          <span class="material-icons-sharp">file_upload</span>
+          <span>Drag & drop here to upload</span>
         </div>
-      </div>
-    </main>
+      `;
 
-  </div>
-</body>
+        const meta = wrapper.querySelector(".doc-meta");
+        meta.addEventListener("click", () => onClick?.());
 
+        const dz = wrapper.querySelector(".dropzone");
+        const input = document.createElement("input");
+        input.type = "file";
+        input.style.display = "none";
+        wrapper.appendChild(input);
+
+        attachUploader(dz, input, { multiple, onFiles: onUpload });
+
+        return wrapper;
+      }
+
+      async function getUserId() {
+        const {
+          data: { user },
+          error,
+        } = await sb.auth.getUser();
+        if (error) {
+          console.warn("auth.getUser error:", error);
+          return null;
+        }
+        return user?.id ?? null;
+      }
+
+      async function fetchInstallerDocuments(installerId) {
+        if (!installerId) return null;
+        const { data, error } = await sb
+          .from("installer_documents")
+          .select("*")
+          .eq("installer_id", installerId)
+          .maybeSingle();
+        if (error) {
+          console.warn("installer_documents fetch error:", error);
+          return null;
+        }
+        return data;
+      }
+
+      function renderDocuments(row, installerId) {
+        const items = [
+          {
+            label: "Resume",
+            fieldKey: "resume",
+            statusKey: "resume_status",
+            value: row?.resume || "",
+            status: row?.resume_status || "pending",
+          },
+          {
+            label: "NBI Clearance",
+            fieldKey: "nbi",
+            statusKey: "nbi_status",
+            value: row?.nbi || "",
+            status: row?.nbi_status || "pending",
+          },
+          {
+            label: "Police Clearance",
+            fieldKey: "police",
+            statusKey: "police_status",
+            value: row?.police || "",
+            status: row?.police_status || "pending",
+          },
+          {
+            label: "Transcript of Records (TOR)",
+            fieldKey: "tor",
+            statusKey: "tor_status",
+            value: row?.tor || "",
+            status: row?.tor_status || "pending",
+          },
+          {
+            label: "Portfolio",
+            fieldKey: "portfolio",
+            statusKey: "portfolio_status",
+            value: row?.portfolio || "",
+            status: row?.portfolio_status || "pending",
+          },
+        ];
+
+        docListEl.innerHTML = "";
+
+        for (const it of items) {
+          const card = makeDocButton({
+            label: it.label,
+            value: it.value,
+            status: it.status,
+            onClick: () =>
+              setPreview({ label: it.label, value: it.value, installerId }),
+            onUpload: async (files) => {
+              try {
+                await ensureRow(installerId);
+                const file = files[0];
+                const storedName = await uploadFileToBucket(installerId, file);
+                await upsertSingleDoc(
+                  installerId,
+                  it.fieldKey,
+                  it.statusKey,
+                  storedName
+                );
+
+                // optional: refresh list & preview
+                const updated = await fetchInstallerDocuments(installerId);
+                renderDocuments(updated, installerId);
+                setPreview({ label: it.label, value: storedName, installerId });
+
+                // show hold modal & redirect
+                showReviewHoldModal();
+              } catch (e) {
+                console.error("Upload failed:", e);
+                alert("Upload failed. Please try again.");
+              }
+            },
+            multiple: false,
+          });
+          docListEl.appendChild(card);
+        }
+
+        // Certificates (multiple)
+        const certs = Array.isArray(row?.certificates) ? row.certificates : [];
+        const certStatuses = Array.isArray(row?.certificates_status)
+          ? row.certificates_status
+          : [];
+        let certOverall = "pending";
+        if (certs.length) {
+          const anyRejected = certStatuses.some(
+            (s) => String(s).toLowerCase() === "rejected"
+          );
+          const allApproved =
+            certStatuses.length &&
+            certStatuses.every((s) => String(s).toLowerCase() === "approved");
+          certOverall = anyRejected
+            ? "rejected"
+            : allApproved
+            ? "approved"
+            : "pending";
+        }
+        const certSubtitle = certs.length
+          ? `${certs.length} file${
+              certs.length > 1 ? "s" : ""
+            } • ${friendlyName(certs[0])}`
+          : "No file uploaded.";
+
+        const certCard = makeDocButton({
+          label: "Certificates",
+          value: certs.length ? certs[0] : "",
+          status: certOverall,
+          onClick: () => {
+            previewTitleEl.textContent = "Certificates";
+            if (!certs.length) {
+              previewBodyEl.innerHTML = `<div class="preview-placeholder"><span>No file uploaded.</span></div>`;
+              previewOpenEl.style.display = "none";
+              previewDownloadEl.style.display = "none";
+              return;
+            }
+            const ul = document.createElement("ul");
+            ul.style.margin = "6px 0 0";
+            ul.style.padding = "0 16px";
+            ul.style.width = "100%";
+            ul.style.maxWidth = "640px";
+            ul.style.color = "#475569";
+            certs.forEach((c, i) => {
+              const nm = friendlyName(c);
+              const st = certStatuses[i] ? ` • ${certStatuses[i]}` : "";
+              const li = document.createElement("li");
+              li.style.margin = "6px 0";
+              li.style.cursor = "pointer";
+              li.textContent = nm + st;
+              li.addEventListener("click", () => {
+                const url = publicDocUrl(c, installerId);
+                renderPreviewFromUrl(nm, url);
+              });
+              ul.appendChild(li);
+            });
+            previewBodyEl.innerHTML = "";
+            previewBodyEl.appendChild(ul);
+            previewOpenEl.style.display = "none";
+            previewDownloadEl.style.display = "none";
+          },
+          onUpload: async (files) => {
+            try {
+              await ensureRow(installerId);
+              const uploadedNames = [];
+              for (const f of files) {
+                // Upload to subfolder: <uuid>/certificates/<file>
+                const storedName = await uploadFileToBucketAt(
+                  installerId,
+                  f,
+                  "certificates"
+                );
+                uploadedNames.push(storedName); // just the filename; we'll store with 'certificates/<name>'
+              }
+              await upsertCertificates(installerId, uploadedNames);
+
+              const updated = await fetchInstallerDocuments(installerId);
+              renderDocuments(updated, installerId);
+
+              // Preview first uploaded cert
+              const first = uploadedNames[0];
+              if (first) {
+                const url = publicDocUrl(`certificates/${first}`, installerId);
+                renderPreviewFromUrl(friendlyName(first), url);
+              }
+
+              // show hold modal & redirect
+              showReviewHoldModal();
+            } catch (e) {
+              console.error("Upload failed:", e);
+              alert("Upload failed. Please try again.");
+            }
+          },
+          multiple: true,
+        });
+
+        // Change ONLY the Certificates dropzone label text
+        const dzSpans = certCard.querySelectorAll(".dropzone span");
+        if (dzSpans.length >= 2) {
+          dzSpans[1].textContent = "Drag & drop here to add certificates";
+        }
+
+        certCard.querySelector(".doc-text p").textContent = certSubtitle;
+        docListEl.appendChild(certCard);
+      }
+
+      async function bootstrap() {
+        docListEl.innerHTML = `
+        <div class="doc-item pending">
+          <div class="doc-meta">
+            <span class="doc-icon"><span class="material-icons-sharp">pending</span></span>
+            <div class="doc-text"><h4>Loading…</h4><p>Please wait</p></div>
+          </div>
+          <div class="dropzone">
+            <span class="material-icons-sharp">file_upload</span>
+            <span>Drag & drop here to upload</span>
+          </div>
+        </div>`;
+
+        const installerId = await getUserId();
+        if (!installerId) {
+          renderDocuments(null, "");
+          clearPreview();
+          return;
+        }
+
+        const row = await fetchInstallerDocuments(installerId);
+        renderDocuments(row, installerId);
+        clearPreview();
+      }
+
+      document.addEventListener("DOMContentLoaded", bootstrap);
+    </script>
+  </body>
 </html>

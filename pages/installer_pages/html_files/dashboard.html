@@ -282,22 +282,28 @@
         justify-content: space-between;
       }
       .section-header .see-all {
-        display: inline-flex;
+        display: flex;
         align-items: center;
-        justify-content: center;
+        gap: 0.6rem;
         padding: 0.45rem 0.7rem;
         border-radius: 12px;
         background: var(--color-white);
         box-shadow: var(--box-shadow);
         color: var(--color-dark);
+        min-width: 124px;
         transition: transform 0.12s ease, box-shadow 0.22s ease;
+      }
+      /* push arrow to the right inside the button */
+      .section-header .see-all .label {
+        font-weight: 500;
+      }
+      .section-header .see-all .material-icons-sharp {
+        margin-left: auto;
+        font-size: 20px;
       }
       .section-header .see-all:hover {
         transform: translateX(2px);
         box-shadow: none;
-      }
-      .section-header .see-all .material-icons-sharp {
-        font-size: 20px;
       }
 
       .new-users {
@@ -310,34 +316,49 @@
         margin-top: 0.8rem;
         box-shadow: var(--box-shadow);
         display: flex;
-        justify-content: space-around;
         flex-wrap: wrap;
-        gap: 1.4rem;
+        /* Most recent stays left, then next, etc. */
+        justify-content: flex-start;
+        gap: 1.1rem;
         transition: all 0.3s ease;
       }
       .new-users .user-list:hover {
         box-shadow: none;
       }
+
       .new-users .user-list a.user {
+        position: relative;
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: center;
-        width: 160px;
+        width: 180px;
+        padding: 0.6rem 0.6rem 0.8rem;
+        border-radius: 12px;
         text-align: center;
+        background: var(--color-white);
+        box-shadow: 0 0.5rem 1rem var(--color-light);
+        transition: transform 0.15s ease, box-shadow 0.22s ease;
+      }
+      .new-users .user-list a.user:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0.6rem 1.1rem var(--color-light);
       }
       .new-users .user-list a.user img {
-        width: 5rem;
-        height: 5rem;
-        margin-bottom: 0.4rem;
-        border-radius: 12px;
+        width: 100%;
+        height: 100px;
+        margin-bottom: 0.5rem;
+        border-radius: 10px;
         object-fit: cover;
       }
       .new-users .user-list a.user h2 {
-        font-size: 1rem;
+        font-size: 0.95rem;
+        line-height: 1.25rem;
+        max-height: 2.5rem;
+        overflow: hidden;
       }
       .new-users .user-list a.user p {
-        font-size: 0.8rem;
+        font-size: 0.78rem;
+        margin-top: 0.2rem;
       }
 
       /* ====== Upcoming Work ====== */
@@ -637,9 +658,8 @@
         <div class="section-header">
           <h2>New Jobs Posted</h2>
           <a class="see-all" href="job.html" title="View all jobs">
-            <span class="material-icons-sharp" aria-hidden="true"
-              >arrow_forward</span
-            >
+            <span class="label">See all</span>
+            <span class="material-icons-sharp" aria-hidden="true">arrow_forward</span>
           </a>
         </div>
         <div class="new-users">
@@ -934,8 +954,8 @@
           a.innerHTML = `
             <img src="${imgUrl}" alt="Job image" onerror="this.onerror=null;this.src='images/profile-4.jpg';" />
             <h2 title="${(j.job_title || "").replace(/"/g, "&quot;")}">${
-            j.job_title || "Untitled Job"
-          }</h2>
+              j.job_title || "Untitled Job"
+            }</h2>
             <p>${timeAgo(j.created_at)}</p>
           `;
           wrap.appendChild(a);
@@ -1146,7 +1166,7 @@
           row.setAttribute("data-course-id", c.id);
           row.style.cursor = "pointer";
 
-          const tagsText =
+        const tagsText =
             Array.isArray(c.tags) && c.tags.length
               ? c.tags.slice(0, 3).join(", ")
               : "";
@@ -1180,22 +1200,47 @@
         }
       }
 
-      async function loadPublishedCourses(limit = 6) {
+      // Completed courses → filter
+      async function fetchCompletedCourseIds(installerId) {
+        if (!installerId) return [];
+        const { data, error } = await sb
+          .schema("courses")
+          .from("completed_courses")
+          .select("course_id")
+          .eq("installer_id", installerId);
+
+        if (error) {
+          console.warn("Could not load completed courses:", error);
+          return [];
+        }
+        return (data || []).map((r) => r.course_id);
+      }
+
+      async function loadPublishedCourses(limit = 6, installerId = null) {
         try {
+          const completedIds = await fetchCompletedCourseIds(installerId);
+          const fetchCount = limit + (completedIds.length || 0) + 6;
+
           const { data, error } = await sb
             .schema("courses")
             .from("course")
-            .select("id, title, slug, description, level, tags, thumbnail_url, created_at")
+            .select(
+              "id, title, slug, description, level, tags, thumbnail_url, created_at"
+            )
             .eq("is_published", true)
             .order("created_at", { ascending: false })
-            .limit(limit);
+            .limit(fetchCount);
 
           if (error) {
             console.warn("Could not load published courses:", error);
             renderCoursesList([]);
             return;
           }
-          renderCoursesList(data || []);
+
+          const filtered =
+            (data || []).filter((c) => !completedIds.includes(c.id)) || [];
+
+          renderCoursesList(filtered.slice(0, limit));
         } catch (e) {
           console.error("Unexpected error loading courses:", e);
           renderCoursesList([]);
@@ -1217,6 +1262,7 @@
           updateAppliedCard({ applied: 0, totalJobs: 0 });
           updateApprovedCard({ approved: 0, pending: 0 });
           renderUpcomingWork([]);
+          await loadPublishedCourses(6, null);
         } else {
           updateLevelUI(inst);
           const { totalJobs, applied, approved, pending } = await fetchCounts(
@@ -1225,11 +1271,11 @@
           updateAppliedCard({ applied, totalJobs });
           updateApprovedCard({ approved, pending });
 
-          await loadUpcomingWork(inst.id); // <-- uses job_code
+          await loadUpcomingWork(inst.id);
+          await loadPublishedCourses(6, inst.id);
         }
 
-        await loadLatestJobs();        // recent approved & unassigned jobs
-        await loadPublishedCourses();  // published courses into Take Courses
+        await loadLatestJobs();        // recent approved & unassigned jobs (most recent appears left)
         await ensureRealtimeAuth();    // make sure socket token matches
         initLatestJobsRealtime();      // wire realtime
       }
