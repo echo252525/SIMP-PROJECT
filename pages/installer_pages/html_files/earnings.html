@@ -2,11 +2,12 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet" />
   <link rel="stylesheet" href="../css_files/sideBar.css" />
   <title>Earnings</title>
+
   <style>
     :root{
       --ink:#1c2430; --muted:#6c7a8a; --line:#e7edf3; --brand:#20a44c; --danger:#e53935; --warn:#f59e0b;
@@ -19,50 +20,31 @@
 
     /* Summary cards */
     .summary-grid{
-      margin-top:1rem;
-      display:grid;
-      grid-template-columns: repeat(4, minmax(0,1fr));
-      gap: .9rem;
+      margin-top:1rem; display:grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: .9rem;
     }
     @media (max-width:1100px){ .summary-grid{ grid-template-columns: repeat(2, minmax(0,1fr)); } }
     @media (max-width:580px){ .summary-grid{ grid-template-columns: 1fr; } }
-    .card{
-      background:var(--card);
-      border:1px solid var(--line);
-      border-radius:var(--radius);
-      padding:1rem;
-      display:grid; gap:.3rem;
-    }
+
+    .card{ background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:1rem; display:grid; gap:.3rem; }
     .card .label{ color:var(--muted); font-size:.9rem; }
     .card .value{ color:var(--ink); font-size:1.4rem; font-weight:600; }
     .sub{ color:var(--muted); font-size:.85rem; }
-
-    .bar{
-      height:8px; border-radius:8px; background:#eef3f7; overflow:hidden; margin-top:.4rem;
-    }
-    .bar > span{
-      display:block; height:100%; background:linear-gradient(90deg, var(--brand), #25c06e);
-      width:0%;
-      transition: width .4s ease;
-    }
+    .bar{ height:8px; border-radius:8px; background:#eef3f7; overflow:hidden; margin-top:.4rem; }
+    .bar > span{ display:block; height:100%; background:linear-gradient(90deg, var(--brand), #25c06e); width:0%; transition: width .4s ease; }
 
     /* Controls */
     .controls{
-      margin-top:1rem; display:grid; gap:.6rem;
-      grid-template-columns: 1.2fr repeat(2, .9fr) auto auto;
-      align-items:end;
+      margin-top:1rem; display:grid; gap:.6rem; grid-template-columns: 1.2fr repeat(2, .9fr) auto auto; align-items:end;
     }
-    @media (max-width:980px){
-      .controls{ grid-template-columns: 1fr 1fr; }
-    }
+    @media (max-width:980px){ .controls{ grid-template-columns: 1fr 1fr; } }
     .field{display:grid; gap:.3rem;}
     .field label{font-size:.85rem; color:var(--muted);}
     .field input[type="text"], .field input[type="date"], .field select{
       border:1px solid var(--line); background:#fff; border-radius:10px; padding:.55rem .7rem; outline:none;
     }
     .btn{
-      display:inline-grid; grid-auto-flow:column; gap:.4rem; align-items:center;
-      background:var(--ink); color:#fff; border:none; border-radius:10px; padding:.6rem .9rem; cursor:pointer;
+      display:inline-grid; grid-auto-flow:column; gap:.4rem; align-items:center; background:var(--ink); color:#fff;
+      border:none; border-radius:10px; padding:.6rem .9rem; cursor:pointer;
     }
     .btn.secondary{ background:#1f6d86; }
     .btn.ghost{ background:transparent; color:var(--ink); border:1px solid var(--line); }
@@ -70,66 +52,47 @@
 
     /* Tabs */
     .tabs{ margin-top:1.2rem; display:grid; gap:.8rem; }
-    .tabbar{
-      display:grid; grid-auto-flow:column; justify-content:start; gap:.4rem;
-      border-bottom:1px solid var(--line);
-    }
+    .tabbar{ display:grid; grid-auto-flow:column; justify-content:start; gap:.4rem; border-bottom:1px solid var(--line); }
     .tabbar button{
       background:transparent; border:none; padding:.7rem 1rem; cursor:pointer; color:var(--muted);
       border-bottom:3px solid transparent; font-weight:600;
     }
-    .tabbar button.active{
-      color:var(--ink); border-color:var(--brand);
-    }
+    .tabbar button.active{ color:var(--ink); border-color:var(--brand); }
 
     /* Tables */
-    .tablewrap{
-      background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
-      overflow:auto;
-    }
+    .tablewrap{ background:var(--card); border:1px solid var(--line); border-radius:var(--radius); overflow:auto; }
     table{ width:100%; border-collapse:collapse; font-size:.95rem; }
     thead th{
-      text-align:left; background:#fbfdff; color:var(--muted); font-weight:600;
-      position:sticky; top:0; z-index:1;
-      border-bottom:1px solid var(--line);
-      padding:.8rem .9rem;
+      text-align:left; background:#fbfdff; color:var(--muted); font-weight:600; position:sticky; top:0; z-index:1;
+      border-bottom:1px solid var(--line); padding:.8rem .9rem;
     }
-    tbody td{
-      padding:.75rem .9rem; border-bottom:1px solid #f0f4f7; color:var(--ink);
-      vertical-align:middle;
-    }
+    tbody td{ padding:.75rem .9rem; border-bottom:1px solid #f0f4f7; color:var(--ink); vertical-align:middle; }
     tbody tr:hover{ background:#fcfdfd; }
-    .pill{
-      display:inline-block; padding:.25rem .5rem; border-radius:999px; font-size:.78rem; font-weight:600;
-      border:1px solid;
-    }
+    .pill{ display:inline-block; padding:.25rem .5rem; border-radius:999px; font-size:.78rem; font-weight:600; border:1px solid; }
     .pill.paid{ color:#136d3c; border-color:#cfe9db; background:#ecf9f2; }
     .pill.unpaid{ color:#8a2c0f; border-color:#f7d8c6; background:#fff4ec; }
+    .pill.approved{ color:#1f4f86; border-color:#cfe0f3; background:#eef5ff; }
     .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; }
 
     /* Footer helper box */
-    .helper{
-      margin-top:1rem; padding:1rem; background:#fff; border:1px dashed #d7e3ea; border-radius:12px; color:var(--muted);
-    }
+    .helper{ margin-top:1rem; padding:1rem; background:#fff; border:1px dashed #d7e3ea; border-radius:12px; color:var(--muted); }
     .helper strong{ color:var(--ink); }
 
     /* Modal */
-    .modal{
-      position:fixed; inset:0; display:none; place-items:center; background:rgba(28,36,48,.22);
-      padding:1rem; z-index: 50;
-    }
+    .modal{ position:fixed; inset:0; display:none; place-items:center; background:rgba(28,36,48,.22); padding:1rem; z-index: 50; }
     .modal.open{ display:grid; }
-    .modal-card{
-      width:min(720px, 100%); background:#fff; border-radius:16px; border:1px solid var(--line);
-      box-shadow:0 20px 60px rgba(0,0,0,.08);
-      overflow:hidden;
-    }
-    .modal-head{
-      display:flex; justify-content:space-between; align-items:center; padding:1rem 1rem .8rem; border-bottom:1px solid var(--line);
-    }
+    .modal-card{ width:min(720px, 100%); background:#fff; border-radius:16px; border:1px solid var(--line); box-shadow:0 20px 60px rgba(0,0,0,.08); overflow:hidden; }
+    .modal-head{ display:flex; justify-content:space-between; align-items:center; padding:1rem 1rem .8rem; border-bottom:1px solid var(--line); }
     .modal-head h3{ margin:0; color:var(--ink); }
     .modal-body{ padding:1rem; display:grid; gap:.6rem; }
     .modal-foot{ padding:1rem; display:flex; justify-content:flex-end; gap:.6rem; border-top:1px solid var(--line); }
+
+    /* Tiny legend */
+    .legend{ display:grid; grid-auto-flow:column; gap:1rem; align-items:center; color:var(--muted); font-size:.85rem; }
+    .dot{ width:10px; height:10px; border-radius:999px; display:inline-block; }
+    .dot.approved{ background:#20a44c; }
+    .dot.pending{ background:#f59e0b; }
+    .dot.payouted{ background:#1f6d86; }
   </style>
 </head>
 
@@ -195,59 +158,68 @@
         <p>View your income details and payout status below.</p>
       </div>
 
-      <!-- Earnings Summary -->
-      <section class="summary-grid" id="summary">
+      <!-- ===== Payments Summary (live from earnings.payments x jobs.job) ===== -->
+      <section class="summary-grid" id="payments-summary">
         <div class="card">
-          <div class="label">Total Earnings</div>
-          <div class="value" id="sum-total">₱0.00</div>
-          <div class="sub">All time (paid + unpaid)</div>
-          <div class="bar"><span id="bar-total"></span></div>
+          <div class="label">Total Payments that are approved by admin but don't payout yet (to payout) — Balance</div>
+          <div class="value" id="sum-approved-balance">₱0.00</div>
+          <div class="sub">Filter: <code>earnings.payments.payment_status = 'paid'</code></div>
+          <div class="bar"><span id="bar-approved"></span></div>
         </div>
         <div class="card">
-          <div class="label">Paid Out</div>
-          <div class="value" id="sum-paid">₱0.00</div>
-          <div class="sub"><span id="count-paid">0</span> jobs paid</div>
-          <div class="bar"><span id="bar-paid"></span></div>
+          <div class="label">Total Payments that are pending because the job is not yet done (assigned to installer)</div>
+          <div class="value" id="sum-pending">₱0.00</div>
+          <div class="sub">Filter: <code>earnings.payments.payment_status = 'unpaid'</code></div>
+          <div class="bar"><span id="bar-pending"></span></div>
         </div>
         <div class="card">
-          <div class="label">Unpaid (to collect)</div>
-          <div class="value" id="sum-unpaid">₱0.00</div>
-          <div class="sub"><span id="count-unpaid">0</span> jobs pending</div>
-          <div class="bar"><span id="bar-unpaid"></span></div>
+          <div class="label">Total Payments that are already payouted</div>
+          <div class="value" id="sum-payouted">₱0.00</div>
+          <div class="sub">Filter: <code>earnings.payments.payment_status = 'payouted'</code></div>
+          <div class="bar"><span id="bar-payouted"></span></div>
         </div>
         <div class="card">
-          <div class="label">Next Payout (est.)</div>
-          <div class="value" id="next-payout">—</div>
-          <div class="sub">Method: <strong id="payout-method">GCash (**** 1123)</strong></div>
+          <div class="label">Legend</div>
+          <div class="legend">
+            <span><span class="dot approved"></span> Approved (to payout)</span>
+            <span><span class="dot pending"></span> Pending (unpaid)</span>
+            <span><span class="dot payouted"></span> Payouted</span>
+          </div>
+          <div class="sub">Amounts use <code>jobs.job.job_pay</code> via <code>earnings.payments.job_id</code>.</div>
         </div>
       </section>
 
-      <!-- Controls -->
+      <!-- ===== Controls ===== -->
       <section class="controls">
         <div class="field">
-          <label for="search">Search (code, title, client)</label>
-          <input type="text" id="search" placeholder="e.g. JOB-2025-001, ACME, CCTV install...">
+          <label for="search">Search (code, title)</label>
+          <input type="text" id="search" placeholder="e.g. JOB-2025-001, CCTV install..." />
         </div>
         <div class="field">
           <label for="dateFrom">From</label>
-          <input type="date" id="dateFrom">
+          <input type="date" id="dateFrom" />
         </div>
         <div class="field">
           <label for="dateTo">To</label>
-          <input type="date" id="dateTo">
+          <input type="date" id="dateTo" />
         </div>
-        <button class="btn" id="btnExport"><span class="material-icons-sharp">file_download</span> Export CSV</button>
-        <button class="btn secondary" id="btnRequestPayout"><span class="material-icons-sharp">payments</span> Request Payout</button>
+
+        <button class="btn" id="btnExport">
+          <span class="material-icons-sharp">file_download</span> Export CSV
+        </button>
+        <button class="btn secondary" id="btnRequestPayout">
+          <span class="material-icons-sharp">payments</span> Request Payout
+        </button>
       </section>
 
-      <!-- Tabs -->
+      <!-- ===== Tabs and Tables ===== -->
       <section class="tabs">
         <div class="tabbar">
-          <button class="active" data-tab="unpaid">Unpaid Jobs</button>
-          <button data-tab="paid">Paid Jobs</button>
+          <button class="active" data-tab="unpaid">Unpaid / Approved (not yet payouted)</button>
+          <button data-tab="paid">Payouted</button>
         </div>
 
-        <!-- Unpaid Table -->
+        <!-- Unpaid & Approved -->
         <div class="tablewrap" id="tab-unpaid">
           <table>
             <thead>
@@ -255,7 +227,6 @@
                 <th>Job Code</th>
                 <th>Title</th>
                 <th>Date</th>
-                <th>Client</th>
                 <th class="mono">Amount (₱)</th>
                 <th>Status</th>
                 <th style="width:1%; white-space:nowrap;">Actions</th>
@@ -265,7 +236,7 @@
           </table>
         </div>
 
-        <!-- Paid Table -->
+        <!-- Payouted -->
         <div class="tablewrap" id="tab-paid" style="display:none;">
           <table>
             <thead>
@@ -273,7 +244,6 @@
                 <th>Job Code</th>
                 <th>Title</th>
                 <th>Date</th>
-                <th>Client</th>
                 <th class="mono">Amount (₱)</th>
                 <th>Status</th>
                 <th>Payout Ref</th>
@@ -284,14 +254,13 @@
         </div>
       </section>
 
-      <!-- Helpful tips -->
-      <div class="helper">
-        <strong>Pro tip:</strong> Use the date range and search to narrow results. “Export CSV” downloads only the rows that match your current filters. Connect payout details in <em>Settings → Payouts</em> to change your preferred method.
+      <div class="helper" id="helperBox">
+        <strong>Tip:</strong> Sign in to your Supabase session, or pass <code>?installer=&lt;uuid&gt;</code> in the URL to view a specific installer. Export respects current filters.
       </div>
     </main>
   </div>
 
-  <!-- Request Payout Modal -->
+  <!-- ===== Request Payout Modal ===== -->
   <div class="modal" id="modalPayout">
     <div class="modal-card">
       <div class="modal-head">
@@ -299,19 +268,21 @@
         <button class="btn ghost" id="closeModal"><span class="material-icons-sharp">close</span> Close</button>
       </div>
       <div class="modal-body">
-        <div class="sub">You’re requesting a payout for current <strong>unpaid</strong> jobs that meet your payout rules (e.g., completed & approved).</div>
+        <div class="sub">You’re requesting a payout for current <strong>approved + unpaid</strong> jobs that meet your payout rules.</div>
+
         <div class="card" style="grid-template-columns:1fr 1fr; gap:.6rem;">
           <div>
-            <div class="label">Eligible Unpaid Total</div>
+            <div class="label">Eligible Total</div>
             <div class="value" id="modal-eligible">₱0.00</div>
             <div class="sub">Threshold: ₱1,000.00</div>
           </div>
           <div>
             <div class="label">Payout Method</div>
-            <div class="value" id="modal-method">GCash (**** 1123)</div>
+            <div class="value" id="modal-method">GCash (** 1123)</div>
             <div class="sub">Change in Settings → Payouts</div>
           </div>
         </div>
+
         <div class="sub" id="modal-note" style="margin-top:.3rem;"></div>
       </div>
       <div class="modal-foot">
@@ -321,49 +292,48 @@
     </div>
   </div>
 
-  <script>
-    // -------- Demo data (replace with API fetch) --------
-    /** Each item represents a job earning.
-     * status: 'paid' | 'unpaid'
-     * paid_ref present only when paid
-     */
-    const EARNINGS = [
-      { code:'JOB-2025-001', title:'CCTV Install – Warehouse', date:'2025-08-26', client:'ACME Foods', amount: 5200, status:'paid', paid_ref:'P-8Y29KJ', updated_at:'2025-08-28' },
-      { code:'JOB-2025-002', title:'Door Access – Office B', date:'2025-08-29', client:'Nordic Labs', amount: 3100, status:'unpaid', updated_at:'2025-08-30' },
-      { code:'JOB-2025-003', title:'Network Setup – Branch 3', date:'2025-08-30', client:'EduTech PH', amount: 4500, status:'paid', paid_ref:'P-8Y30ZZ', updated_at:'2025-08-31' },
-      { code:'JOB-2025-004', title:'CCTV Maintenance', date:'2025-09-01', client:'Cafe Uno', amount: 1600, status:'unpaid', updated_at:'2025-09-01' },
-      { code:'JOB-2025-005', title:'Home Automation – Lights', date:'2025-09-02', client:'Ramos Residence', amount: 3800, status:'unpaid', updated_at:'2025-09-02' }
-    ];
+  <!-- Supabase JS -->
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <!-- (Optional) your global scripts -->
+  <script src="../../general_files/index.js"></script>
+  <script type="module" src="../../general_files/session.js"></script>
+
+  <!-- Main Page Logic -->
+  <script type="module">
+    // ========= CONFIG =========
+    import { SUPABASE_URL, SUPABASE_ANON_KEY } from "../../../supabase.js";
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // ========= STATE =========
+    let JOBS = [];      // [{ job_id, job_code, job_title, job_pay, job_date }]
+    let PAYMENTS = [];  // [{ id, installer_id, job_id, payment_status, first_created_at, updated_at }]
+    let EARNINGS = [];  // UI rows
+
+    // ========= ELEMS =========
     const CURRENCY = '₱';
-    const PAYOUT_METHOD = 'GCash (**** 1123)';
-    const PAYOUT_THRESHOLD = 1000; // demo
+    const PAYOUT_METHOD = 'GCash (** 1123)';  // replace from settings
+    const PAYOUT_THRESHOLD = 1000;
 
-    // -------- Elements --------
-    const sumTotalEl = document.getElementById('sum-total');
-    const sumPaidEl = document.getElementById('sum-paid');
-    const sumUnpaidEl = document.getElementById('sum-unpaid');
-    const countPaidEl = document.getElementById('count-paid');
-    const countUnpaidEl = document.getElementById('count-unpaid');
-    const nextPayoutEl = document.getElementById('next-payout');
-    const payoutMethodEl = document.getElementById('payout-method');
+    // Summary
+    const sumApprovedBalanceEl = document.getElementById('sum-approved-balance');
+    const sumPendingEl = document.getElementById('sum-pending');
+    const sumPayoutedEl = document.getElementById('sum-payouted');
+    const barApproved = document.getElementById('bar-approved');
+    const barPending = document.getElementById('bar-pending');
+    const barPayouted = document.getElementById('bar-payouted');
 
-    const barTotal = document.getElementById('bar-total');
-    const barPaid = document.getElementById('bar-paid');
-    const barUnpaid = document.getElementById('bar-unpaid');
-
+    // Tables / controls / modal
     const tbodyUnpaid = document.getElementById('tbody-unpaid');
     const tbodyPaid = document.getElementById('tbody-paid');
-
     const searchEl = document.getElementById('search');
     const dateFromEl = document.getElementById('dateFrom');
     const dateToEl = document.getElementById('dateTo');
     const btnExport = document.getElementById('btnExport');
-
     const tabs = document.querySelectorAll('.tabbar button');
     const tabUnpaidWrap = document.getElementById('tab-unpaid');
     const tabPaidWrap = document.getElementById('tab-paid');
+    const helperBox = document.getElementById('helperBox');
 
-    // Modal
     const modal = document.getElementById('modalPayout');
     const btnRequestPayout = document.getElementById('btnRequestPayout');
     const closeModal = document.getElementById('closeModal');
@@ -373,8 +343,8 @@
     const modalMethod = document.getElementById('modal-method');
     const modalNote = document.getElementById('modal-note');
 
-    // -------- Utils --------
-    const fmt = (n)=> CURRENCY + n.toLocaleString('en-PH', {minimumFractionDigits:2, maximumFractionDigits:2});
+    // ========= UTILS =========
+    const fmt = (n)=> CURRENCY + (Number(n)||0).toLocaleString('en-PH', {minimumFractionDigits:2, maximumFractionDigits:2});
     const inRange = (d, from, to)=>{
       if(!from && !to) return true;
       const x = new Date(d).setHours(0,0,0,0);
@@ -383,50 +353,102 @@
       return true;
     };
 
-    // -------- Render --------
-    function computeSummary(rows){
-      const total = rows.reduce((s,r)=>s+r.amount,0);
-      const paidRows = rows.filter(r=>r.status==='paid');
-      const unpaidRows = rows.filter(r=>r.status==='unpaid');
-      const paid = paidRows.reduce((s,r)=>s+r.amount,0);
-      const unpaid = unpaidRows.reduce((s,r)=>s+r.amount,0);
-
-      sumTotalEl.textContent = fmt(total);
-      sumPaidEl.textContent = fmt(paid);
-      sumUnpaidEl.textContent = fmt(unpaid);
-      countPaidEl.textContent = paidRows.length;
-      countUnpaidEl.textContent = unpaidRows.length;
-
-      // Bars relative to total
-      const t = total || 1;
-      barTotal.style.width = '100%';
-      barPaid.style.width = (paid / t * 100).toFixed(1) + '%';
-      barUnpaid.style.width = (unpaid / t * 100).toFixed(1) + '%';
-
-      // Next payout estimate (demo rule: every Friday)
-      const today = new Date();
-      const day = today.getDay(); // 0 Sun .. 6 Sat
-      const daysToFri = (5 - day + 7) % 7 || 7;
-      const next = new Date(today);
-      next.setDate(today.getDate() + daysToFri);
-      nextPayoutEl.textContent = next.toLocaleDateString('en-PH', {year:'numeric', month:'short', day:'numeric'});
-      payoutMethodEl.textContent = PAYOUT_METHOD;
+    async function getInstallerId(){
+      const param = new URLSearchParams(location.search).get('installer');
+      if (param) return param;
+      const { data: { session } } = await supabase.auth.getSession();
+      return session?.user?.id ?? null;
     }
 
+    // ========= DATA LOAD =========
+    async function loadFromSupabase(installerId){
+      // Fetch payments for installer
+      const { data: payments, error: payErr } = await supabase
+      .schema("earnings")
+        .from('payments')
+        .select('id, installer_id, job_id, payment_status, first_created_at, updated_at')
+        .eq('installer_id', installerId);
+
+      if (payErr) throw payErr;
+
+      const jobIds = Array.from(new Set((payments || []).map(p=>p.job_id)));
+      let jobs = [];
+      if (jobIds.length){
+        const { data: jobRows, error: jobErr } = await supabase
+        .schema("jobs")
+          .from('job')
+          .select('job_id, job_code, job_title, job_pay, job_date')
+          .in('job_id', jobIds);
+        if (jobErr) throw jobErr;
+        jobs = jobRows || [];
+      }
+
+      // Build maps & UI rows
+      const jobById = new Map(jobs.map(j=>[j.job_id, j]));
+
+      EARNINGS = (payments || []).map(p=>{
+        const j = jobById.get(p.job_id) || {};
+        const status =
+          p.payment_status === 'payouted' ? 'paid' :
+          p.payment_status === 'paid'     ? 'approved' : 'unpaid';
+        return {
+          code: j.job_code || '—',
+          title: j.job_title || '—',
+          date: j.job_date || null,
+          amount: Number(j.job_pay) || 0,
+          status,
+          paid_ref: p.payment_status === 'payouted' ? (p.id || '').slice(0,8).toUpperCase() : null,
+          updated_at: p.updated_at
+        };
+      });
+
+      JOBS = jobs;
+      PAYMENTS = payments || [];
+    }
+
+    // ========= SUMMARY =========
+    function computePaymentsSummary(){
+      const jobById = new Map(JOBS.map(j=>[j.job_id, j]));
+      const sums = { unpaid:0, paid:0, payouted:0 };
+
+      for (const p of PAYMENTS){
+        const j = jobById.get(p.job_id);
+        if (!j) continue;
+        const amt = Number(j.job_pay) || 0;
+        if (p.payment_status === 'unpaid') sums.unpaid += amt;
+        else if (p.payment_status === 'paid') sums.paid += amt;        // approved, not payouted
+        else if (p.payment_status === 'payouted') sums.payouted += amt;
+      }
+
+      const total = (sums.unpaid + sums.paid + sums.payouted) || 1;
+
+      sumApprovedBalanceEl.textContent = fmt(sums.paid);
+      sumPendingEl.textContent = fmt(sums.unpaid);
+      sumPayoutedEl.textContent = fmt(sums.payouted);
+
+      barApproved.style.width = (sums.paid / total * 100).toFixed(1) + '%';
+      barPending.style.width = (sums.unpaid / total * 100).toFixed(1) + '%';
+      barPayouted.style.width = (sums.payouted / total * 100).toFixed(1) + '%';
+    }
+
+    // ========= TABLES =========
     function rowHTML(r){
-      const statusPill = r.status==='paid' ? '<span class="pill paid">Paid</span>' : '<span class="pill unpaid">Unpaid</span>';
+      let pill = '';
+      if (r.status === 'paid') pill = '<span class="pill paid">Paid</span>';
+      else if (r.status === 'approved') pill = '<span class="pill approved">Approved</span>';
+      else pill = '<span class="pill unpaid">Unpaid</span>';
+
       return `
         <tr>
           <td class="mono">${r.code}</td>
           <td>${r.title}</td>
-          <td>${new Date(r.date).toLocaleDateString('en-PH', {year:'numeric', month:'short', day:'numeric'})}</td>
-          <td>${r.client}</td>
+          <td>${r.date ? new Date(r.date).toLocaleDateString('en-PH', {year:'numeric', month:'short', day:'numeric'}) : '—'}</td>
           <td class="mono">${fmt(r.amount)}</td>
-          <td>${statusPill}</td>
+          <td>${pill}</td>
           ${
             r.status==='paid'
-            ? `<td class="mono">${r.paid_ref ?? '-'}</td>`
-            : `<td><button class="btn ghost" data-invoice="${r.code}"><span class="material-icons-sharp">picture_as_pdf</span> Invoice</button></td>`
+              ? `<td class="mono">${r.paid_ref ?? '-'}</td>`
+              : `<td><button class="btn ghost" data-invoice="${r.code}"><span class="material-icons-sharp">picture_as_pdf</span> Invoice</button></td>`
           }
         </tr>
       `;
@@ -438,24 +460,29 @@
       const t = dateToEl.value || null;
 
       const filtered = EARNINGS.filter(e=>{
-        const hit = [e.code, e.title, e.client].some(v => (v||'').toLowerCase().includes(q));
-        return hit && inRange(e.date, f, t);
+        const hay = [e.code, e.title].join(' ').toLowerCase();
+        const hit = hay.includes(q);
+        const okDate = e.date ? inRange(e.date, f, t) : true;
+        return hit && okDate;
       });
 
-      // Render unpaid
-      const unpaid = filtered.filter(r=>r.status==='unpaid');
-      tbodyUnpaid.innerHTML = unpaid.map(rowHTML).join('') || `<tr><td colspan="7" class="sub" style="padding:1rem;">No unpaid jobs match your filters.</td></tr>`;
+      // Not payouted = unpaid + approved
+      const notPayouted = filtered.filter(r => r.status === 'unpaid' || r.status === 'approved');
+      tbodyUnpaid.innerHTML = notPayouted.length
+        ? notPayouted.map(rowHTML).join('')
+        : `<tr><td colspan="6" class="sub" style="padding:1rem;">No records match your filters.</td></tr>`;
 
-      // Render paid
-      const paid = filtered.filter(r=>r.status==='paid');
-      tbodyPaid.innerHTML = paid.map(rowHTML).join('') || `<tr><td colspan="7" class="sub" style="padding:1rem;">No paid jobs match your filters.</td></tr>`;
+      // Payouted
+      const payoutedRows = filtered.filter(r => r.status === 'paid');
+      tbodyPaid.innerHTML = payoutedRows.length
+        ? payoutedRows.map(rowHTML).join('')
+        : `<tr><td colspan="6" class="sub" style="padding:1rem;">No payouted records match your filters.</td></tr>`;
 
-      computeSummary(filtered);
-      updatePayoutButton(unpaid);
+      updatePayoutButton(notPayouted);
     }
 
-    function updatePayoutButton(unpaidRows){
-      const eligible = unpaidRows.reduce((s,r)=>s+r.amount,0);
+    function updatePayoutButton(rows){
+      const eligible = rows.reduce((s,r)=>s+r.amount,0);
       btnRequestPayout.disabled = eligible < PAYOUT_THRESHOLD;
       btnRequestPayout.title = eligible < PAYOUT_THRESHOLD
         ? `Need at least ${fmt(PAYOUT_THRESHOLD)} to request payout`
@@ -463,28 +490,29 @@
     }
 
     function exportCSV(){
-      // Export only currently visible (filtered) rows from the active tab
       const activeTab = document.querySelector('.tabbar button.active').dataset.tab;
-      const rows = Array.from((activeTab==='unpaid'? tbodyUnpaid : tbodyPaid).querySelectorAll('tr'))
-        .filter(tr => tr.querySelector('td')); // skip headers/placeholders
+      const tableBody = (activeTab === 'unpaid') ? tbodyUnpaid : tbodyPaid;
 
-      const headers = activeTab==='unpaid'
-        ? ['Job Code','Title','Date','Client','Amount','Status']
-        : ['Job Code','Title','Date','Client','Amount','Status','Payout Ref'];
+      const rows = Array.from(tableBody.querySelectorAll('tr'))
+        .filter(tr => tr.querySelector('td'));
+
+      const headers = (activeTab==='unpaid')
+        ? ['Job Code','Title','Date','Amount','Status']
+        : ['Job Code','Title','Date','Amount','Status','Payout Ref'];
 
       const records = rows.map(tr=>{
         const cells = Array.from(tr.querySelectorAll('td'));
-        // strip HTML from status cell, take text only
-        const text = cells.map(td=>td.innerText.replace(/\n/g,' ').trim());
-        // Drop last cell (actions) for unpaid table
-        if(activeTab==='unpaid'){ text.pop(); }
+        const text = cells.map(td => td.innerText.replace(/\n/g,' ').trim());
+        if (activeTab==='unpaid') text.pop(); // drop actions
         return text;
       });
 
-      const csv = [headers, ...records].map(r=>r.map(v=>{
-        const s = String(v ?? '');
-        return /[",\n]/.test(s) ? `"${s.replace(/"/g,'""')}"` : s;
-      }).join(',')).join('\n');
+      const csv = [headers, ...records]
+        .map(r => r.map(v => {
+          const s = String(v ?? '');
+          return /[",\n]/.test(s) ? `"${s.replace(/"/g,'""')}"` : s;
+        }).join(','))
+        .join('\n');
 
       const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
       const url = URL.createObjectURL(blob);
@@ -497,65 +525,90 @@
       URL.revokeObjectURL(url);
     }
 
-    // -------- Events --------
+    // ========= MODAL =========
+    function openPayout(){
+      const q = (searchEl.value || '').trim().toLowerCase();
+      const f = dateFromEl.value || null;
+      const t = dateToEl.value || null;
+
+      const eligibleRows = EARNINGS
+        .filter(r => r.status==='unpaid' || r.status==='approved')
+        .filter(e=>{
+          const hay = [e.code, e.title].join(' ').toLowerCase();
+          const hit = hay.includes(q);
+          const okDate = e.date ? inRange(e.date, f, t) : true;
+          return hit && okDate;
+        });
+
+      const eligible = eligibleRows.reduce((s,r)=>s+r.amount,0);
+      modalEligible.textContent = fmt(eligible);
+      modalMethod.textContent = PAYOUT_METHOD;
+      modalNote.textContent = (eligible < PAYOUT_THRESHOLD)
+        ? `You currently don't meet the payout threshold of ${fmt(PAYOUT_THRESHOLD)}.`
+        : `A payout request will be created for ${eligibleRows.length} job(s). You'll receive a reference in the Payouted tab once processed.`;
+
+      confirmPayout.disabled = eligible < PAYOUT_THRESHOLD;
+      modal.classList.add('open');
+    }
+    function closePayout(){ modal.classList.remove('open'); }
+
+    // ========= EVENTS =========
+    document.getElementById('btnExport').addEventListener('click', exportCSV);
+
     searchEl.addEventListener('input', applyFilters);
     dateFromEl.addEventListener('change', applyFilters);
     dateToEl.addEventListener('change', applyFilters);
-    btnExport.addEventListener('click', exportCSV);
 
     tabs.forEach(b=>{
       b.addEventListener('click', ()=>{
         tabs.forEach(x=>x.classList.remove('active'));
         b.classList.add('active');
         const tab = b.dataset.tab;
-        if(tab==='unpaid'){ tabUnpaidWrap.style.display='block'; tabPaidWrap.style.display='none'; }
-        else { tabUnpaidWrap.style.display='none'; tabPaidWrap.style.display='block'; }
+        if(tab==='unpaid'){
+          tabUnpaidWrap.style.display='block';
+          tabPaidWrap.style.display='none';
+        } else {
+          tabUnpaidWrap.style.display='none';
+          tabPaidWrap.style.display='block';
+        }
       });
     });
-
-    // Payout modal handlers
-    function openPayout(){
-      const q = (searchEl.value || '').trim().toLowerCase();
-      const f = dateFromEl.value || null;
-      const t = dateToEl.value || null;
-      const unpaid = EARNINGS.filter(r=>r.status==='unpaid')
-        .filter(e=>{
-          const hit = [e.code, e.title, e.client].some(v => (v||'').toLowerCase().includes(q));
-          return hit && inRange(e.date, f, t);
-        });
-      const eligible = unpaid.reduce((s,r)=>s+r.amount,0);
-      modalEligible.textContent = fmt(eligible);
-      modalMethod.textContent = PAYOUT_METHOD;
-      modalNote.textContent = eligible < PAYOUT_THRESHOLD
-        ? `You currently don't meet the payout threshold of ${fmt(PAYOUT_THRESHOLD)}.`
-        : `A payout request will be created for ${unpaid.length} job(s). You’ll receive a reference in the Paid tab once processed.`;
-      confirmPayout.disabled = eligible < PAYOUT_THRESHOLD;
-      modal.classList.add('open');
-    }
-    function closePayout(){ modal.classList.remove('open'); }
 
     btnRequestPayout.addEventListener('click', openPayout);
     closeModal.addEventListener('click', closePayout);
     cancelPayout.addEventListener('click', closePayout);
     confirmPayout.addEventListener('click', ()=>{
-      // ---- Hook your backend request here ----
-      // e.g., POST /api/payouts { jobs: [codes...] }
-      alert('Payout request submitted! (Demo)');
+      // TODO: POST /api/payouts with selected eligible rows
+      alert('Payout request submitted! (Wire this to your backend)');
       closePayout();
     });
 
-    // Invoice button (demo)
+    // Invoice button (hook)
     document.addEventListener('click', (e)=>{
       const btn = e.target.closest('button[data-invoice]');
       if(!btn) return;
       const code = btn.getAttribute('data-invoice');
-      // ---- Hook your invoice download here ----
-      alert('Generate/Download invoice for ' + code + ' (Demo)');
+      // TODO: generate/download invoice for job code
+      alert('Generate/Download invoice for ' + code);
     });
 
-    // -------- Init --------
-    (function init(){
-      applyFilters();
+    // ========= INIT =========
+    (async function init(){
+      try{
+        const installerId = await getInstallerId();
+        if (!installerId){
+          helperBox.innerHTML = `<strong>Heads up:</strong> No installer ID found. Sign in or append <code>?installer=&lt;uuid&gt;</code> to the URL.`;
+        } else {
+          helperBox.innerHTML = `<strong>Viewing installer:</strong> <code>${installerId}</code>`;
+          await loadFromSupabase(installerId);
+        }
+      } catch (err){
+        console.error(err);
+        helperBox.innerHTML = `<strong>Error:</strong> ${err.message || err}`;
+      } finally {
+        computePaymentsSummary();
+        applyFilters();
+      }
     })();
   </script>
 </body>

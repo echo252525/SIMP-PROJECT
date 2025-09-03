@@ -161,10 +161,19 @@
 
       .preview-body {
         padding: 10px;
-        overflow: auto;
+        overflow: hidden; /* fill the pane; inner scroller handles scroll */
         display: grid;
-        place-items: center;
+        place-items: stretch; /* make children stretch to full size */
         background: #fff;
+      }
+      /* when we add toolbar + content */
+      .preview-body.with-toolbar {
+        grid-template-rows: auto 1fr;
+      }
+      .preview-body .preview-embed {
+        width: 100%;
+        height: 100%;
+        overflow: auto; /* scroll inside the embed container */
       }
       .preview-body iframe,
       .preview-body embed,
@@ -173,11 +182,13 @@
         height: 100%;
         border: 0;
         border-radius: 8px;
-        max-height: 72vh;
+        max-height: none; /* allow full height inside the pane */
       }
       .preview-placeholder {
         color: #64748b;
         text-align: center;
+        display: grid;
+        place-items: center;
       }
 
       /* Dropzone (interactive) */
@@ -291,14 +302,98 @@
         border-color: #0284c7;
       }
 
+      /* ===== Certificates chooser + toolbar ===== */
+      .cert-chooser {
+        width: 100%;
+        max-width: 680px;
+        margin: 4px auto 0;
+        padding: 0 6px;
+      }
+      .cert-chooser h4 {
+        margin: 0 0 8px;
+        color: #0f172a;
+        font-size: 0.98rem;
+      }
+      .cert-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        width: 100%;
+        display: grid;
+        gap: 8px;
+      }
+      .cert-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 10px 12px;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        background: #fff;
+        cursor: pointer;
+        transition: background 0.12s ease, border-color 0.12s ease;
+      }
+      .cert-item:hover {
+        background: #f8fafc;
+        border-color: #dbe7f3;
+      }
+      .cert-name {
+        color: #0f172a;
+        font-size: 0.92rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .cert-status {
+        font-size: 0.75rem;
+        padding: 2px 8px;
+        border-radius: 999px;
+        border: 1px solid #e5e7eb;
+        color: #475569;
+        background: #f8fafc;
+        white-space: nowrap;
+      }
+      .cert-status.approved {
+        color: #0f5132;
+        border-color: #bcd0c7;
+        background: #e8f5ee;
+      }
+      .cert-status.rejected {
+        color: #842029;
+        border-color: #f1c0c5;
+        background: #fdecef;
+      }
+      .cert-status.pending {
+        color: #92400e;
+        border-color: #f7d9a0;
+        background: #fff7e6;
+      }
+
+      .preview-toolbar {
+        width: 100%;
+        max-width: 100%;
+        padding-bottom: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 8px;
+      }
+      .preview-toolbar .group {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .btn.small {
+        padding: 6px 10px;
+        font-size: 0.85rem;
+        border-radius: 8px;
+      }
+
       @media (max-width: 980px) {
         main .docs-grid {
           grid-template-columns: 1fr;
-        }
-        .preview-body iframe,
-        .preview-body embed,
-        .preview-body img {
-          max-height: 60vh;
         }
       }
     </style>
@@ -466,7 +561,6 @@
 
       function showReviewHoldModal() {
         modalEl.classList.add("show");
-        // auto-redirect after 2 seconds
         clearTimeout(autoRedirectTimer);
         autoRedirectTimer = setTimeout(() => {
           window.location.href = "review.html";
@@ -508,11 +602,9 @@
         if (isUrl(value)) return value;
 
         let key = String(value).replace(/^\/+/, "");
-        // Always prefix with installer folder if missing
         if (!key.startsWith(installerId + "/")) {
           key = `${installerId}/${key}`;
         }
-
         const { data } = sb.storage.from(BUCKET).getPublicUrl(key);
         return data?.publicUrl || "";
       }
@@ -533,6 +625,7 @@
 
       function clearPreview() {
         previewTitleEl.textContent = "Preview";
+        previewBodyEl.classList.remove("with-toolbar");
         previewBodyEl.innerHTML =
           '<div class="preview-placeholder"><span>No file selected.</span></div>';
         previewOpenEl.style.display = "none";
@@ -546,6 +639,7 @@
         previewTitleEl.textContent = label;
 
         if (!url) {
+          previewBodyEl.classList.remove("with-toolbar");
           previewBodyEl.innerHTML =
             '<div class="preview-placeholder"><span>No file uploaded.</span></div>';
           previewOpenEl.style.display = "none";
@@ -648,7 +742,7 @@
           installer_id: installerId,
           [fieldKey]: storedName,
           [statusKey]: "pending",
-          status: "pending", // overall status → pending
+          status: "pending",
           updated_at: new Date().toISOString(),
         };
         const { error } = await sb
@@ -672,7 +766,6 @@
           ? row.certificates_status
           : [];
 
-        // Store with subpath so previews resolve to <id>/certificates/<name>
         const newWithSubpath = newNames.map((nm) => `certificates/${nm}`);
 
         const appended = [...oldCerts, ...newWithSubpath];
@@ -686,7 +779,7 @@
             installer_id: installerId,
             certificates: appended,
             certificates_status: appendedStatuses,
-            status: "pending", // overall status → pending
+            status: "pending",
             updated_at: new Date().toISOString(),
           },
           { onConflict: "installer_id" }
@@ -725,6 +818,112 @@
           const files = Array.from(dt?.files || []);
           if (files.length) onFiles(multiple ? files : [files[0]]);
         });
+      }
+
+      // ---------- Certificates preview helpers ----------
+      function showCertificatesChooser(installerId, certs, certStatuses) {
+        previewTitleEl.textContent = "Certificates";
+        previewOpenEl.style.display = "none";
+        previewDownloadEl.style.display = "none";
+
+        previewBodyEl.classList.remove("with-toolbar");
+
+        const container = document.createElement("div");
+        container.className = "cert-chooser";
+        container.innerHTML = `
+          <h4>Select a certificate to preview</h4>
+          <ul class="cert-list"></ul>
+        `;
+
+        const ul = container.querySelector(".cert-list");
+        certs.forEach((c, i) => {
+          const li = document.createElement("li");
+          const status = String(certStatuses[i] || "pending").toLowerCase();
+          li.className = "cert-item";
+          li.innerHTML = `
+            <span class="cert-name">${friendlyName(c)}</span>
+            <span class="cert-status ${status}">${
+            status[0].toUpperCase() + status.slice(1)
+          }</span>
+          `;
+          li.addEventListener("click", () =>
+            showCertificatePreview(installerId, certs, certStatuses, i)
+          );
+          ul.appendChild(li);
+        });
+
+        previewBodyEl.innerHTML = "";
+        previewBodyEl.appendChild(container);
+      }
+
+      function showCertificatePreview(
+        installerId,
+        certs,
+        certStatuses,
+        index
+      ) {
+        const total = certs.length;
+        const path = certs[index];
+        const url = publicDocUrl(path, installerId);
+        const name = friendlyName(path);
+
+        // Draw the actual file first
+        renderPreviewFromUrl(name, url);
+
+        // Then wrap it with a toolbar and make the body fill the pane
+        const currentEmbed = previewBodyEl.innerHTML;
+        const canPrev = index > 0;
+        const canNext = index < total - 1;
+
+        previewTitleEl.textContent = `Certificate (${index + 1}/${total})`;
+        previewBodyEl.classList.add("with-toolbar");
+        previewBodyEl.innerHTML = `
+          <div class="preview-toolbar">
+            <div class="group">
+              <button class="btn small" id="prevCertBtn" ${
+                canPrev ? "" : "disabled"
+              }>
+                <span class="material-icons-sharp">chevron_left</span> Prev
+              </button>
+              <button class="btn small" id="nextCertBtn" ${
+                canNext ? "" : "disabled"
+              }>
+                Next <span class="material-icons-sharp">chevron_right</span>
+              </button>
+            </div>
+          </div>
+          <div class="preview-embed">
+            ${currentEmbed}
+          </div>
+        `;
+
+        // Wire prev/next only
+        const prevBtn = previewBodyEl.querySelector("#prevCertBtn");
+        const nextBtn = previewBodyEl.querySelector("#nextCertBtn");
+        if (prevBtn) {
+          prevBtn.addEventListener("click", () => {
+            if (index > 0) {
+              showCertificatePreview(
+                installerId,
+                certs,
+                certStatuses,
+                index - 1
+              );
+            }
+          });
+        }
+        if (nextBtn) {
+          nextBtn.addEventListener("click", () => {
+            if (index < total - 1) {
+              showCertificatePreview(
+                installerId,
+                certs,
+                certStatuses,
+                index + 1
+              );
+            }
+          });
+        }
       }
 
       // ---------- Rendering ----------
@@ -858,12 +1057,10 @@
                   storedName
                 );
 
-                // optional: refresh list & preview
                 const updated = await fetchInstallerDocuments(installerId);
                 renderDocuments(updated, installerId);
                 setPreview({ label: it.label, value: storedName, installerId });
 
-                // show hold modal & redirect
                 showReviewHoldModal();
               } catch (e) {
                 console.error("Upload failed:", e);
@@ -907,61 +1104,49 @@
           onClick: () => {
             previewTitleEl.textContent = "Certificates";
             if (!certs.length) {
+              previewBodyEl.classList.remove("with-toolbar");
               previewBodyEl.innerHTML = `<div class="preview-placeholder"><span>No file uploaded.</span></div>`;
               previewOpenEl.style.display = "none";
               previewDownloadEl.style.display = "none";
               return;
             }
-            const ul = document.createElement("ul");
-            ul.style.margin = "6px 0 0";
-            ul.style.padding = "0 16px";
-            ul.style.width = "100%";
-            ul.style.maxWidth = "640px";
-            ul.style.color = "#475569";
-            certs.forEach((c, i) => {
-              const nm = friendlyName(c);
-              const st = certStatuses[i] ? ` • ${certStatuses[i]}` : "";
-              const li = document.createElement("li");
-              li.style.margin = "6px 0";
-              li.style.cursor = "pointer";
-              li.textContent = nm + st;
-              li.addEventListener("click", () => {
-                const url = publicDocUrl(c, installerId);
-                renderPreviewFromUrl(nm, url);
-              });
-              ul.appendChild(li);
-            });
-            previewBodyEl.innerHTML = "";
-            previewBodyEl.appendChild(ul);
-            previewOpenEl.style.display = "none";
-            previewDownloadEl.style.display = "none";
+            showCertificatesChooser(installerId, certs, certStatuses);
           },
           onUpload: async (files) => {
             try {
               await ensureRow(installerId);
               const uploadedNames = [];
               for (const f of files) {
-                // Upload to subfolder: <uuid>/certificates/<file>
                 const storedName = await uploadFileToBucketAt(
                   installerId,
                   f,
                   "certificates"
                 );
-                uploadedNames.push(storedName); // just the filename; we'll store with 'certificates/<name>'
+                uploadedNames.push(storedName);
               }
               await upsertCertificates(installerId, uploadedNames);
 
               const updated = await fetchInstallerDocuments(installerId);
               renderDocuments(updated, installerId);
 
-              // Preview first uploaded cert
-              const first = uploadedNames[0];
-              if (first) {
-                const url = publicDocUrl(`certificates/${first}`, installerId);
-                renderPreviewFromUrl(friendlyName(first), url);
+              const updatedCerts = Array.isArray(updated?.certificates)
+                ? updated.certificates
+                : [];
+              const updatedStatuses = Array.isArray(
+                updated?.certificates_status
+              )
+                ? updated.certificates_status
+                : [];
+              if (updatedCerts.length) {
+                // Start preview at the first newly added
+                showCertificatePreview(
+                  installerId,
+                  updatedCerts,
+                  updatedStatuses,
+                  updatedCerts.length - uploadedNames.length
+                );
               }
 
-              // show hold modal & redirect
               showReviewHoldModal();
             } catch (e) {
               console.error("Upload failed:", e);
@@ -971,7 +1156,6 @@
           multiple: true,
         });
 
-        // Change ONLY the Certificates dropzone label text
         const dzSpans = certCard.querySelectorAll(".dropzone span");
         if (dzSpans.length >= 2) {
           dzSpans[1].textContent = "Drag & drop here to add certificates";
