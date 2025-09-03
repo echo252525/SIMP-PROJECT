@@ -93,6 +93,16 @@
     .dot.approved{ background:#20a44c; }
     .dot.pending{ background:#f59e0b; }
     .dot.payouted{ background:#1f6d86; }
+
+    /* Select Mode toolbar (appears when Request Payout is pressed first) */
+    .select-toolbar{
+      display:none; align-items:center; gap:.8rem; padding:.6rem .8rem; border:1px dashed var(--line);
+      border-radius:12px; background:#fff; margin:.6rem 0;
+    }
+    .select-toolbar.show{ display:flex; }
+    .select-toolbar .count{ color:var(--muted); }
+    .row-check{ margin-right:.5rem; }
+    .row-check[disabled]{ opacity:.45; cursor:not-allowed; }
   </style>
 </head>
 
@@ -219,6 +229,13 @@
           <button data-tab="paid">Payouted</button>
         </div>
 
+        <!-- Select toolbar (only shows in Select Mode on the Unpaid tab) -->
+        <div id="selectToolbar" class="select-toolbar" aria-live="polite">
+          <label><input type="checkbox" id="chkSelectAll" /> Select All</label>
+          <span class="count" id="selCount">0 selected</span>
+          <span class="sub">Tip: Only <strong>Approved</strong> rows (status <code>paid</code>) are eligible.</span>
+        </div>
+
         <!-- Unpaid & Approved -->
         <div class="tablewrap" id="tab-unpaid">
           <table>
@@ -268,11 +285,11 @@
         <button class="btn ghost" id="closeModal"><span class="material-icons-sharp">close</span> Close</button>
       </div>
       <div class="modal-body">
-        <div class="sub">You’re requesting a payout for current <strong>approved + unpaid</strong> jobs that meet your payout rules.</div>
+        <div class="sub">You’re requesting a payout for your <strong>selected</strong> Approved jobs.</div>
 
         <div class="card" style="grid-template-columns:1fr 1fr; gap:.6rem;">
           <div>
-            <div class="label">Eligible Total</div>
+            <div class="label">Eligible Total (selected)</div>
             <div class="value" id="modal-eligible">₱0.00</div>
             <div class="sub">Threshold: ₱1,000.00</div>
           </div>
@@ -309,6 +326,11 @@
     let PAYMENTS = [];  // [{ id, installer_id, job_id, payment_status, first_created_at, updated_at }]
     let EARNINGS = [];  // UI rows
 
+    // Select Mode
+    let SELECT_MODE = false;
+    const SELECTED = new Set(); // payment ids
+    const ELIGIBLE = new Set(); // ids eligible to select (payment_status === 'paid')
+
     // ========= ELEMS =========
     const CURRENCY = '₱';
     const PAYOUT_METHOD = 'GCash (** 1123)';  // replace from settings
@@ -343,6 +365,11 @@
     const modalMethod = document.getElementById('modal-method');
     const modalNote = document.getElementById('modal-note');
 
+    // Select toolbar
+    const selectToolbar = document.getElementById('selectToolbar');
+    const chkSelectAll = document.getElementById('chkSelectAll');
+    const selCount = document.getElementById('selCount');
+
     // ========= UTILS =========
     const fmt = (n)=> CURRENCY + (Number(n)||0).toLocaleString('en-PH', {minimumFractionDigits:2, maximumFractionDigits:2});
     const inRange = (d, from, to)=>{
@@ -362,9 +389,8 @@
 
     // ========= DATA LOAD =========
     async function loadFromSupabase(installerId){
-      // Fetch payments for installer
       const { data: payments, error: payErr } = await supabase
-      .schema("earnings")
+        .schema("earnings")
         .from('payments')
         .select('id, installer_id, job_id, payment_status, first_created_at, updated_at')
         .eq('installer_id', installerId);
@@ -375,7 +401,7 @@
       let jobs = [];
       if (jobIds.length){
         const { data: jobRows, error: jobErr } = await supabase
-        .schema("jobs")
+          .schema("jobs")
           .from('job')
           .select('job_id, job_code, job_title, job_pay, job_date')
           .in('job_id', jobIds);
@@ -388,15 +414,21 @@
 
       EARNINGS = (payments || []).map(p=>{
         const j = jobById.get(p.job_id) || {};
-        const status =
-          p.payment_status === 'payouted' ? 'paid' :
-          p.payment_status === 'paid'     ? 'approved' : 'unpaid';
+        const uiStatus =
+          p.payment_status === 'payouted'       ? 'paid' :
+          p.payment_status === 'paid'           ? 'approved' :
+          p.payment_status === 'pending_payout' ? 'approved' :
+                                                  'unpaid';
+
         return {
+          payment_id: p.id,
+          payment_status: p.payment_status,
+          job_id: p.job_id,
           code: j.job_code || '—',
           title: j.job_title || '—',
           date: j.job_date || null,
           amount: Number(j.job_pay) || 0,
-          status,
+          status: uiStatus,
           paid_ref: p.payment_status === 'payouted' ? (p.id || '').slice(0,8).toUpperCase() : null,
           updated_at: p.updated_at
         };
@@ -404,6 +436,12 @@
 
       JOBS = jobs;
       PAYMENTS = payments || [];
+
+      // Eligibility set (only exact 'paid' may be requested)
+      ELIGIBLE.clear();
+      for (const p of PAYMENTS){
+        if (p.payment_status === 'paid') ELIGIBLE.add(p.id);
+      }
     }
 
     // ========= SUMMARY =========
@@ -438,9 +476,14 @@
       else if (r.status === 'approved') pill = '<span class="pill approved">Approved</span>';
       else pill = '<span class="pill unpaid">Unpaid</span>';
 
+      const canSelect = ELIGIBLE.has(r.payment_id);
+      const checkHTML = SELECT_MODE
+        ? `<input type="checkbox" class="row-check" data-payid="${r.payment_id}" ${canSelect ? '' : 'disabled title="Only Approved rows are eligible"'} ${SELECTED.has(r.payment_id)?'checked':''}/>`
+        : '';
+
       return `
-        <tr>
-          <td class="mono">${r.code}</td>
+        <tr data-payid="${r.payment_id}">
+          <td class="mono">${checkHTML}${r.code}</td>
           <td>${r.title}</td>
           <td>${r.date ? new Date(r.date).toLocaleDateString('en-PH', {year:'numeric', month:'short', day:'numeric'}) : '—'}</td>
           <td class="mono">${fmt(r.amount)}</td>
@@ -479,14 +522,18 @@
         : `<tr><td colspan="6" class="sub" style="padding:1rem;">No payouted records match your filters.</td></tr>`;
 
       updatePayoutButton(notPayouted);
+      updateSelectToolbarCount();
+      wireRowCheckboxes();
     }
 
     function updatePayoutButton(rows){
       const eligible = rows.reduce((s,r)=>s+r.amount,0);
-      btnRequestPayout.disabled = eligible < PAYOUT_THRESHOLD;
-      btnRequestPayout.title = eligible < PAYOUT_THRESHOLD
-        ? `Need at least ${fmt(PAYOUT_THRESHOLD)} to request payout`
-        : 'Request payout for eligible jobs';
+      document.getElementById('btnRequestPayout').title =
+        SELECT_MODE
+          ? 'Review selected items'
+          : (eligible < PAYOUT_THRESHOLD
+                ? `Need at least ${fmt(PAYOUT_THRESHOLD)} to request payout`
+                : 'Select which jobs to include in this payout');
     }
 
     function exportCSV(){
@@ -525,32 +572,131 @@
       URL.revokeObjectURL(url);
     }
 
-    // ========= MODAL =========
+    // ========= MODAL & REQUEST FLOW =========
     function openPayout(){
-      const q = (searchEl.value || '').trim().toLowerCase();
-      const f = dateFromEl.value || null;
-      const t = dateToEl.value || null;
+      // First click → enter Select Mode
+      if (!SELECT_MODE){
+        setSelectMode(true);
+        btnRequestPayout.innerHTML = '<span class="material-icons-sharp">playlist_add_check</span> Review Selection';
+        helperBox.innerHTML = `<strong>Select Mode:</strong> Choose the approved jobs to include, then click <em>Review Selection</em>.`;
+        return;
+      }
 
-      const eligibleRows = EARNINGS
-        .filter(r => r.status==='unpaid' || r.status==='approved')
-        .filter(e=>{
-          const hay = [e.code, e.title].join(' ').toLowerCase();
-          const hit = hay.includes(q);
-          const okDate = e.date ? inRange(e.date, f, t) : true;
-          return hit && okDate;
-        });
+      // Second click → review selection in modal
+      const chosen = EARNINGS.filter(r => SELECTED.has(r.payment_id));
+      const eligibleChosen = chosen.filter(r => ELIGIBLE.has(r.payment_id)); // safety
+      const total = eligibleChosen.reduce((s,r)=>s + (Number(r.amount)||0), 0);
 
-      const eligible = eligibleRows.reduce((s,r)=>s+r.amount,0);
-      modalEligible.textContent = fmt(eligible);
+      modalEligible.textContent = fmt(total);
       modalMethod.textContent = PAYOUT_METHOD;
-      modalNote.textContent = (eligible < PAYOUT_THRESHOLD)
-        ? `You currently don't meet the payout threshold of ${fmt(PAYOUT_THRESHOLD)}.`
-        : `A payout request will be created for ${eligibleRows.length} job(s). You'll receive a reference in the Payouted tab once processed.`;
 
-      confirmPayout.disabled = eligible < PAYOUT_THRESHOLD;
+      if (eligibleChosen.length === 0){
+        modalNote.textContent = `No eligible (Approved) rows selected. Select at least one to proceed.`;
+        confirmPayout.disabled = true;
+      } else if (total < PAYOUT_THRESHOLD){
+        modalNote.textContent = `You currently don't meet the payout threshold of ${fmt(PAYOUT_THRESHOLD)} for the selected items.`;
+        confirmPayout.disabled = true;
+      } else {
+        modalNote.textContent = `A payout request will be created for ${eligibleChosen.length} job(s). You’ll see them move to “pending_payout”.`;
+        confirmPayout.disabled = false;
+      }
+
       modal.classList.add('open');
     }
     function closePayout(){ modal.classList.remove('open'); }
+    async function confirmPayoutRequest(){
+      // Update selected eligible rows to pending_payout
+      const ids = Array.from(SELECTED).filter(id => ELIGIBLE.has(id));
+      if (!ids.length) return;
+
+      confirmPayout.disabled = true;
+      confirmPayout.innerHTML = '<span class="material-icons-sharp">hourglass_top</span> Working...';
+
+      try{
+        const { error } = await supabase
+          .schema('earnings')
+          .from('payments')
+          .update({ payment_status: 'pending_payout' })
+          .in('id', ids);
+        if (error) throw error;
+
+        // Mutate local PAYMENTS and derived EARNINGS
+        for (const p of PAYMENTS){
+          if (ids.includes(p.id)) p.payment_status = 'pending_payout';
+        }
+        EARNINGS = EARNINGS.map(r => ids.includes(r.payment_id)
+          ? { ...r, payment_status: 'pending_payout', status: 'approved' }
+          : r
+        );
+
+        // Recompute eligibility (pending_payout is no longer eligible)
+        ELIGIBLE.clear();
+        for (const p of PAYMENTS){
+          if (p.payment_status === 'paid') ELIGIBLE.add(p.id);
+        }
+
+        // Exit select mode, refresh UI
+        setSelectMode(false);
+        btnRequestPayout.innerHTML = '<span class="material-icons-sharp">payments</span> Request Payout';
+        computePaymentsSummary();
+        applyFilters();
+        closePayout();
+        alert(`Request submitted for ${ids.length} job(s).`);
+      }catch(err){
+        console.error(err);
+        alert('Failed to submit payout request: ' + (err?.message || 'Unknown error'));
+      }finally{
+        confirmPayout.disabled = false;
+        confirmPayout.innerHTML = '<span class="material-icons-sharp">check_circle</span> Confirm Request';
+      }
+    }
+
+    // ========= SELECT MODE =========
+    function setSelectMode(on){
+      SELECT_MODE = !!on;
+      if (!SELECT_MODE){
+        SELECTED.clear();
+        chkSelectAll.checked = false;
+        selectToolbar.classList.remove('show');
+        helperBox.innerHTML = `<strong>Tip:</strong> Sign in to your Supabase session, or pass <code>?installer=&lt;uuid&gt;</code> in the URL to view a specific installer. Export respects current filters.`;
+      } else {
+        selectToolbar.classList.add('show');
+      }
+      applyFilters();
+    }
+
+    function updateSelectToolbarCount(){
+      selCount.textContent = `${SELECTED.size} selected`;
+    }
+
+    function wireRowCheckboxes(){
+      if (!SELECT_MODE) return;
+      // Only in Unpaid tab
+      tbodyUnpaid.querySelectorAll('.row-check').forEach(chk=>{
+        chk.addEventListener('change', ()=>{
+          const id = chk.getAttribute('data-payid');
+          if (!id || chk.disabled) return;
+          if (chk.checked) SELECTED.add(id);
+          else SELECTED.delete(id);
+          updateSelectToolbarCount();
+        });
+      });
+    }
+
+    chkSelectAll.addEventListener('change', ()=>{
+      if (!SELECT_MODE) return;
+      SELECTED.clear();
+      tbodyUnpaid.querySelectorAll('.row-check').forEach(chk=>{
+        if (!chk.disabled){
+          chk.checked = chkSelectAll.checked;
+          if (chk.checked){
+            const id = chk.getAttribute('data-payid');
+            if (id) SELECTED.add(id);
+          }
+        }
+      });
+      updateSelectToolbarCount();
+    });
 
     // ========= EVENTS =========
     document.getElementById('btnExport').addEventListener('click', exportCSV);
@@ -567,9 +713,11 @@
         if(tab==='unpaid'){
           tabUnpaidWrap.style.display='block';
           tabPaidWrap.style.display='none';
+          selectToolbar.style.display = SELECT_MODE ? 'flex' : 'none';
         } else {
           tabUnpaidWrap.style.display='none';
           tabPaidWrap.style.display='block';
+          selectToolbar.style.display = 'none';
         }
       });
     });
@@ -577,18 +725,13 @@
     btnRequestPayout.addEventListener('click', openPayout);
     closeModal.addEventListener('click', closePayout);
     cancelPayout.addEventListener('click', closePayout);
-    confirmPayout.addEventListener('click', ()=>{
-      // TODO: POST /api/payouts with selected eligible rows
-      alert('Payout request submitted! (Wire this to your backend)');
-      closePayout();
-    });
+    confirmPayout.addEventListener('click', confirmPayoutRequest);
 
     // Invoice button (hook)
     document.addEventListener('click', (e)=>{
       const btn = e.target.closest('button[data-invoice]');
       if(!btn) return;
       const code = btn.getAttribute('data-invoice');
-      // TODO: generate/download invoice for job code
       alert('Generate/Download invoice for ' + code);
     });
 
