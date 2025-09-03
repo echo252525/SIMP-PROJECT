@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet" />
+  <link rel="stylesheet" href="../css_files/sideBar.css" />
+  <title>PaymentsRequest</title>
+  <style>
+    main {
+      margin-top: 1.4rem;
+    }
+
+    /* Header */
+    main .payments-header h1 {
+      margin: 0;
+      color: #1c2430;
+      font-weight: 700;
+    }
+
+    main .payments-header p {
+      margin: 0.2rem 0 1rem;
+      color: #6c7a8a;
+    }
+
+    main .search-filter input {
+      width: 40%;
+    }
+
+    /* Search & Filter */
+    main .search-filter {
+      display: flex;
+      gap: 0.8rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+
+    main .search-filter input,
+    main .search-filter select,
+    main .search-filter button {
+      padding: 0.6rem 0.75rem;
+      border: 1px solid #e7edf3;
+      border-radius: 8px;
+      font-size: 0.9rem;
+    }
+
+    main .search-filter button {
+      background: #20a44c;
+      color: #fff;
+      cursor: pointer;
+      border: none;
+    }
+
+    main .search-filter button:hover {
+      background: #188a3e;
+    }
+
+    main .search-filter .clear {
+      background: #e7edf3;
+      color: #1c2430;
+    }
+
+    main .search-filter .clear:hover {
+      background: #d7e6ee;
+    }
+
+    /* Summary Cards */
+    main .summary-cards {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    main .summary-cards .card {
+      background: #fff;
+      padding: 1rem;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+      text-align: center;
+    }
+
+    main .summary-cards .card h3 {
+      margin: 0;
+      font-size: 0.9rem;
+      color: #6c7a8a;
+      font-weight: 600;
+    }
+
+    main .summary-cards .card p {
+      margin: 0.4rem 0 0;
+      font-size: 1.25rem;
+      font-weight: 800;
+      letter-spacing: 0.2px;
+    }
+
+    main .summary-cards .paid p {
+      color: #20a44c;
+    }
+
+    main .summary-cards .unpaid p {
+      color: #e53935;
+    }
+
+    /* Table */
+    main .payments-table table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    main .payments-table th,
+    main .payments-table td {
+      padding: 0.9rem;
+      text-align: left;
+      border-bottom: 1px solid #f0f0f0;
+      white-space: nowrap;
+    }
+
+    main .payments-table th {
+      background: #f8fbfd;
+      color: #1c2430;
+      font-weight: 700;
+    }
+
+    main .status {
+      padding: 0.3rem 0.6rem;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    main .status.paid {
+      background: #e6f6ec;
+      color: #1d8e45;
+    }
+
+    main .status.not-paid {
+      background: #fdecea;
+      color: #c62828;
+    }
+
+    main .mark-paid {
+      background: #20a44c;
+      color: #fff;
+      padding: 0.4rem 0.8rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    main .mark-paid:hover {
+      background: #188a3e;
+    }
+
+    main button[disabled] {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    @media (max-width: 980px) {
+      main .payments-table table {
+        display: block;
+        overflow-x: auto;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <!-- Sidebar Section -->
+    <aside>
+      <div class="toggle">
+        <div class="logo">
+          <img src="../../../img/simpLogo.png" />
+          <h2>SIMP<span class="danger">Project</span></h2>
+        </div>
+        <div class="close" id="close-btn">
+          <span class="material-icons-sharp">close</span>
+        </div>
+      </div>
+
+      <div class="sidebar">
+        <a href="dashboard.html">
+          <span class="material-icons-sharp">dashboard</span>
+          <h3>Dashboard</h3>
+        </a>
+        <a href="workerVerification.html">
+          <span class="material-icons-sharp">engineering</span>
+          <h3>Workers<br>Verification</h3>
+        </a>
+        <a href="jobVerification.html">
+          <span class="material-icons-sharp">work</span>
+          <h3>Jobs<br>Verification</h3>
+        </a>
+        <a href="jobApplicationVerification.html">
+          <span class="material-icons-sharp">approval</span>
+          <h3>Application<br>Verification</h3>
+        </a>
+        <a href="adminVerification.html">
+          <span class="material-icons-sharp">shield</span>
+          <h3>Admin<br>Verification</h3>
+        </a>
+        <a href="paymentsRequest.html" class="active">
+          <span class="material-icons-sharp">paid</span>
+          <h3>Payments<br>Request</h3>
+        </a>
+        <a href="courses.html">
+          <span class="material-icons-sharp">school</span>
+          <h3>Course<br>Publisher</h3>
+        </a>
+        <a href="#">
+          <span class="material-icons-sharp">settings</span>
+          <h3>Settings</h3>
+        </a>
+        <a href="#" id="logout-btn">
+          <span class="material-icons-sharp">logout</span>
+          <h3>Logout</h3>
+        </a>
+      </div>
+    </aside>
+    <!-- End of Sidebar Section -->
+
+    <!-- Main Content, insert here-->
+    <main>
+      <div class="payments-header">
+        <h1>Payments Request</h1>
+        <p>Manage and verify all payment requests from workers after job completion.</p>
+      </div>
+
+      <!-- Search & Filter -->
+      <div class="search-filter">
+        <input id="searchInput" type="text" placeholder="Search by Job ID, Worker, or Job Title..." />
+        <select id="statusFilter">
+          <option value="all">All</option>
+          <option value="paid">Paid</option>
+          <option value="not-paid">Not Paid</option>
+        </select>
+        <button id="searchBtn">Search</button>
+        <button id="clearBtn" class="clear">Clear</button>
+      </div>
+
+      <!-- Summary Cards (dynamic) -->
+      <div class="summary-cards">
+        <div class="card total">
+          <h3>Total (visible)</h3>
+          <p id="totalCount">0</p>
+        </div>
+        <div class="card paid">
+          <h3>Paid (visible)</h3>
+          <p id="paidCount">0</p>
+        </div>
+        <div class="card unpaid">
+          <h3>Not Paid (visible)</h3>
+          <p id="unpaidCount">0</p>
+        </div>
+      </div>
+
+      <!-- Payments Table -->
+      <div class="payments-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Job ID</th>
+              <th>Worker</th>
+              <th>Job Title</th>
+              <th>Amount</th>
+              <th>Requested Date</th>
+              <th>Status</th>
+              <th style="width: 1%;">Action</th>
+            </tr>
+          </thead>
+          <tbody id="paymentsTbody">
+            <!-- Sample rows. Add more or render server-side as needed. -->
+            <tr data-status="not-paid">
+              <td class="col-jobid">#J1023</td>
+              <td class="col-worker">Juan Dela Cruz</td>
+              <td class="col-title">House Painting</td>
+              <td>₱5,000</td>
+              <td>2025-09-01</td>
+              <td><span class="status not-paid">Not Paid</span></td>
+              <td><button class="mark-paid">Mark as Paid</button></td>
+            </tr>
+            <tr data-status="paid">
+              <td class="col-jobid">#J1022</td>
+              <td class="col-worker">Maria Santos</td>
+              <td class="col-title">Plumbing Fix</td>
+              <td>₱3,200</td>
+              <td>2025-08-29</td>
+              <td><span class="status paid">Paid</span></td>
+              <td><button disabled>Paid</button></td>
+            </tr>
+            <tr data-status="not-paid">
+              <td class="col-jobid">#J1019</td>
+              <td class="col-worker">Carlos Reyes</td>
+              <td class="col-title">Electrical Wiring</td>
+              <td>₱7,800</td>
+              <td>2025-08-28</td>
+              <td><span class="status not-paid">Not Paid</span></td>
+              <td><button class="mark-paid">Mark as Paid</button></td>
+            </tr>
+            <tr data-status="paid">
+              <td class="col-jobid">#J1017</td>
+              <td class="col-worker">Ana Dizon</td>
+              <td class="col-title">Deep Cleaning</td>
+              <td>₱2,900</td>
+              <td>2025-08-26</td>
+              <td><span class="status paid">Paid</span></td>
+              <td><button disabled>Paid</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Inline JS for filtering/search + mark-as-paid -->
+      <script>
+        (function () {
+          const searchInput = document.getElementById('searchInput');
+          const statusFilter = document.getElementById('statusFilter');
+          const searchBtn = document.getElementById('searchBtn');
+          const clearBtn = document.getElementById('clearBtn');
+          const tbody = document.getElementById('paymentsTbody');
+
+          const totalCount = document.getElementById('totalCount');
+          const paidCount = document.getElementById('paidCount');
+          const unpaidCount = document.getElementById('unpaidCount');
+
+          function rows() {
+            return Array.from(tbody.querySelectorAll('tr'));
+          }
+
+          function normalize(s) {
+            return (s || '').toString().trim().toLowerCase();
+          }
+
+          function rowMatchesSearch(row, q) {
+            if (!q) return true;
+            const job = row.querySelector('.col-jobid')?.textContent || '';
+            const worker = row.querySelector('.col-worker')?.textContent || '';
+            const title = row.querySelector('.col-title')?.textContent || '';
+            const haystack = normalize(job + ' ' + worker + ' ' + title);
+            return haystack.includes(normalize(q));
+          }
+
+          function rowMatchesStatus(row, status) {
+            if (status === 'all') return true;
+            return row.dataset.status === status;
+          }
+
+          function applyFilters() {
+            const q = searchInput.value;
+            const f = statusFilter.value;
+            let visible = 0, visPaid = 0, visUnpaid = 0;
+
+            rows().forEach(row => {
+              const show = rowMatchesSearch(row, q) && rowMatchesStatus(row, f);
+              row.style.display = show ? '' : 'none';
+              if (show) {
+                visible++;
+                if (row.dataset.status === 'paid') visPaid++;
+                if (row.dataset.status === 'not-paid') visUnpaid++;
+              }
+            });
+
+            totalCount.textContent = visible;
+            paidCount.textContent = visPaid;
+            unpaidCount.textContent = visUnpaid;
+          }
+
+          function onMarkPaidClick(e) {
+            const btn = e.target.closest('.mark-paid');
+            if (!btn) return;
+            const row = btn.closest('tr');
+            if (!row || row.dataset.status === 'paid') return;
+
+            // Update dataset + badge
+            row.dataset.status = 'paid';
+            const statusEl = row.querySelector('.status');
+            statusEl.textContent = 'Paid';
+            statusEl.classList.remove('not-paid');
+            statusEl.classList.add('paid');
+
+            // Disable button
+            btn.textContent = 'Paid';
+            btn.disabled = true;
+
+            // Re-apply filters to respect current view
+            applyFilters();
+          }
+
+          // Events
+          tbody.addEventListener('click', onMarkPaidClick);
+          searchInput.addEventListener('input', applyFilters);
+          statusFilter.addEventListener('change', applyFilters);
+          searchBtn.addEventListener('click', applyFilters);
+          clearBtn.addEventListener('click', () => {
+            searchInput.value = '';
+            statusFilter.value = 'all';
+            applyFilters();
+          });
+
+          // Initial compute
+          applyFilters();
+        })();
+      </script>
+    </main>
+</body>
+
+</html>
