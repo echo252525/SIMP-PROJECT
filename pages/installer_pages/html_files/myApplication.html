@@ -798,6 +798,13 @@
         }
       }
 
+      // === Helper: current logged-in installer id ===
+      async function getCurrentUserId() {
+        const { data, error } = await sb.auth.getUser();
+        if (error) return null;
+        return data?.user?.id ?? null;
+      }
+
       // === ADDED: centralized handler for card button actions ===
       async function handleAction(app, status) {
         try {
@@ -806,7 +813,7 @@
 
           if (status === "approved") {
             const ok = confirm(
-              "Mark this application as DONE? This will set its status to 'done' and mark the job as 'done'."
+              "Mark this application as DONE? This will set its status to 'done', mark the job as 'done', and create a payment record."
             );
             if (!ok) return;
 
@@ -819,7 +826,7 @@
 
             if (error) throw error;
 
-            // 2) ALSO update the related job.job_status -> done
+            // 2) Update the related job.job_status -> done
             if (app.job_id) {
               const { error: jobErr } = await sb
                 .schema("jobs")
@@ -830,7 +837,48 @@
               if (jobErr) throw jobErr;
             }
 
-            alert("Application marked as Done. Job marked as Done.");
+            // 3) INSERT / UPSERT into earnings.payments (defaults to 'unpaid')
+            //    - Uses current auth user's id as installer_id
+            //    - Uses ON CONFLICT to avoid duplicate rows for same installer+job
+            const installerId = await getCurrentUserId();
+            if (!installerId) {
+              alert(
+                "Done status saved, but unable to identify current user for payment record."
+              );
+            } else if (!app.job_id) {
+              alert(
+                "Done status saved, but no job_id found to create payment record."
+              );
+            } else {
+              const payload = {
+                installer_id: installerId,
+                job_id: app.job_id,
+                // payment_status will default to 'unpaid' in DB
+              };
+
+              const { error: payErr } = await sb
+                .schema("earnings")
+                .from("payments")
+                .upsert([payload], {
+                  onConflict: "installer_id,job_id",
+                  ignoreDuplicates: false, // upsert will update timestamps via trigger
+                });
+
+              if (payErr) {
+                // Common case if RLS forbids INSERT for installers
+                console.error("payments upsert error:", payErr);
+                const msg =
+                  payErr.code === "42501"
+                    ? "Payment record could not be created due to permissions. Please contact an administrator."
+                    : `Payment record could not be created: ${payErr.message}`;
+                alert(msg);
+              } else {
+                // Success
+                alert(
+                  "Application marked as Done. Job marked as Done. Payment record created/updated."
+                );
+              }
+            }
           } else if (status === "pending" || status === "viewed") {
             const ok = confirm(
               "Cancel this application? This will permanently delete it."

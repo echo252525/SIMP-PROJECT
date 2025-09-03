@@ -22,63 +22,305 @@
         --card: #ffffff;
         --radius: 14px;
       }
-      body { background: var(--bg); }
-      main { margin-top: 1.4rem; }
-      .two-col-wrap { display: grid; grid-template-columns: 340px 1fr; gap: 1rem; }
-      @media (max-width: 980px) { .two-col-wrap { grid-template-columns: 1fr; } }
-      .panel { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px; }
-      .panel h3 { margin: 0 0 0.5rem 0; font-size: 1.1rem; color: var(--ink); font-weight: bold; }
-      .search { position: relative; margin-bottom: 0.6rem; }
-      .search input { width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px 10px 36px; outline: none; background: #fcfeff; }
-      .search .material-icons-sharp { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 20px; color: var(--muted); }
-      .job-list { display: grid; gap: 8px; max-height: 70vh; overflow: auto; }
-      .job-item { border: 1px solid var(--line); border-radius: 12px; padding: 10px; background: #fff; cursor: pointer; transition: border-color 120ms ease, box-shadow 120ms ease; }
-      .job-item.active, .job-item:hover { border-color: #b9dbe6; box-shadow: 0 1px 0 rgba(0, 0, 0, 0.02); }
-      .job-item h4 { margin: 0 0 2px; font-size: 0.98rem; color: var(--ink); }
-      .job-meta { font-size: 12px; color: var(--muted); display: flex; gap: 8px; flex-wrap: wrap; }
-      .detail-header { display: grid; gap: 8px; margin-bottom: 10px; }
-      .job-photo { width: 100%; height: 140px; object-fit: cover; border: 1px solid var(--line); border-radius: 12px; background: #f7fafc; }
-      .detail-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 4px; }
-      .kv { border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; background: #fff; }
-      .kv label { display: block; font-size: 11px; color: var(--muted); }
-      .kv span { font-size: 14px; color: var(--ink); }
-      .divider { height: 1px; background: var(--line); margin: 12px 0; }
-      .table-wrap { overflow: auto; border: 1px solid var(--line); border-radius: 12px; }
-      table { width: 100%; border-collapse: collapse; background: #fff; }
-      th, td { text-align: center; padding: 10px; border-bottom: 1px solid var(--line); font-size: 14px; vertical-align: middle; }
-      th { font-size: 12px; text-transform: uppercase; letter-spacing: 0.02em; background: #70a381; color: #fff; white-space: nowrap; }
-      tr:last-child td { border-bottom: 0; }
-      .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--line); background: #fff; color: var(--ink); font-size: 13px; cursor: pointer; white-space: nowrap; }
-      .btn:hover { border-color: #b9dbe6; }
-      .btn.brand { background: #e9faf0; border-color: #c9f0d9; color: #147a35; }
-      .btn.brand:hover { border-color: #86d6a6; }
-      .btn[disabled] { opacity: 0.6; cursor: not-allowed; }
-      .empty { padding: 10px; font-size: 14px; color: var(--muted); }
-      .actions-row { display: flex; justify-content: flex-end; gap: 8px; padding: 10px; border: 1px solid var(--line); border-top: 0; border-radius: 0 0 12px 12px; background: #fff; }
-      .select-radio { place-items: center; }
+      body {
+        background: var(--bg);
+      }
+      main {
+        margin-top: 1.4rem;
+      }
+      .two-col-wrap {
+        display: grid;
+        grid-template-columns: 340px 1fr;
+        gap: 1rem;
+      }
+      @media (max-width: 980px) {
+        .two-col-wrap {
+          grid-template-columns: 1fr;
+        }
+      }
+      .panel {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 12px;
+      }
+      .panel h3 {
+        margin: 0 0 0.5rem 0;
+        font-size: 1.1rem;
+        color: var(--ink);
+        font-weight: bold;
+      }
+      .search {
+        position: relative;
+        margin-bottom: 0.6rem;
+      }
+      .search input {
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 10px 12px 10px 36px;
+        outline: none;
+        background: #fcfeff;
+      }
+      .search .material-icons-sharp {
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 20px;
+        color: var(--muted);
+      }
+      .job-list {
+        display: grid;
+        gap: 8px;
+        max-height: 70vh;
+        overflow: auto;
+      }
+      .job-item {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 10px;
+        background: #fff;
+        cursor: pointer;
+        transition: border-color 120ms ease, box-shadow 120ms ease;
+      }
+      .job-item.active,
+      .job-item:hover {
+        border-color: #b9dbe6;
+        box-shadow: 0 1px 0 rgba(0, 0, 0, 0.02);
+      }
+      .job-item h4 {
+        margin: 0 0 2px;
+        font-size: 0.98rem;
+        color: var(--ink);
+      }
+      .job-meta {
+        font-size: 12px;
+        color: var(--muted);
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .detail-header {
+        display: grid;
+        gap: 8px;
+        margin-bottom: 10px;
+      }
+      .job-photo {
+        width: 100%;
+        height: 140px;
+        object-fit: cover;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: #f7fafc;
+      }
+      .detail-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+        margin-top: 4px;
+      }
+      .kv {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 8px 10px;
+        background: #fff;
+      }
+      .kv label {
+        display: block;
+        font-size: 11px;
+        color: var(--muted);
+      }
+      .kv span {
+        font-size: 14px;
+        color: var(--ink);
+      }
+      .divider {
+        height: 1px;
+        background: var(--line);
+        margin: 12px 0;
+      }
+      .table-wrap {
+        overflow: auto;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #fff;
+      }
+      th,
+      td {
+        text-align: center;
+        padding: 10px;
+        border-bottom: 1px solid var(--line);
+        font-size: 14px;
+        vertical-align: middle;
+      }
+      th {
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+        background: #70a381;
+        color: #fff;
+        white-space: nowrap;
+      }
+      tr:last-child td {
+        border-bottom: 0;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 10px;
+        border-radius: 10px;
+        border: 1px solid var(--line);
+        background: #fff;
+        color: var(--ink);
+        font-size: 13px;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      .btn:hover {
+        border-color: #b9dbe6;
+      }
+      .btn.brand {
+        background: #e9faf0;
+        border-color: #c9f0d9;
+        color: #147a35;
+      }
+      .btn.brand:hover {
+        border-color: #86d6a6;
+      }
+      .btn[disabled] {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+      .empty {
+        padding: 10px;
+        font-size: 14px;
+        color: var(--muted);
+      }
+      .actions-row {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        padding: 10px;
+        border: 1px solid var(--line);
+        border-top: 0;
+        border-radius: 0 0 12px 12px;
+        background: #fff;
+      }
+      .select-radio {
+        place-items: center;
+      }
 
       /* Modal */
-      .modal { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.35); display: none; align-items: center; justify-content: center; z-index: 50; padding: 12px; }
-      .modal.open { display: flex; }
-      .modal-card { width: min(900px, 95vw); background: #fff; border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); display: flex; flex-direction: column; max-height: 92vh; max-height: 92dvh; }
-      .modal-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 16px 12px; border-bottom: 1px solid var(--line); background: #fff; position: sticky; top: 0; z-index: 1; border-top-left-radius: 16px; border-top-right-radius: 16px; }
-      .modal-head h4 { margin: 0; font-size: 1rem; color: var(--ink); }
-      .close-x { background: transparent; border: 0; cursor: pointer; }
-      .modal-body { overflow: auto; padding: 16px; }
-      .preview-pane { border: 1px solid var(--line); border-radius: 12px; background: #fff; height: clamp(260px, 52vh, 560px); display: grid; place-items: center; padding: 8px; }
-      .preview-frame, .preview-img { width: 100%; height: 100%; border: 0; border-radius: 10px; object-fit: contain; background: #fff; }
-      .preview-empty { color: var(--muted); font-size: 14px; }
+      .modal {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.35);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 50;
+        padding: 12px;
+      }
+      .modal.open {
+        display: flex;
+      }
+      .modal-card {
+        width: min(900px, 95vw);
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        display: flex;
+        flex-direction: column;
+        max-height: 92vh;
+        max-height: 92dvh;
+      }
+      .modal-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 16px 12px;
+        border-bottom: 1px solid var(--line);
+        background: #fff;
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        border-top-left-radius: 16px;
+        border-top-right-radius: 16px;
+      }
+      .modal-head h4 {
+        margin: 0;
+        font-size: 1rem;
+        color: var(--ink);
+      }
+      .close-x {
+        background: transparent;
+        border: 0;
+        cursor: pointer;
+      }
+      .modal-body {
+        overflow: auto;
+        padding: 16px;
+      }
+      .preview-pane {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: #fff;
+        height: clamp(260px, 52vh, 560px);
+        display: grid;
+        place-items: center;
+        padding: 8px;
+      }
+      .preview-frame,
+      .preview-img {
+        width: 100%;
+        height: 100%;
+        border: 0;
+        border-radius: 10px;
+        object-fit: contain;
+        background: #fff;
+      }
+      .preview-empty {
+        color: var(--muted);
+        font-size: 14px;
+      }
 
       /* NEW row styles */
-      tbody tr.clickable { cursor: pointer; transition: background .15s ease, box-shadow .15s ease; }
-      tbody tr.clickable:hover { background: #f6fafc; }
-      tbody tr.is-viewed { background: #fafcff; }
-      tbody tr.row-selected { outline: 2px solid #70a381; background: #f0faf4; box-shadow: inset 0 0 0 1px rgba(112,163,129,.15); }
+      tbody tr.clickable {
+        cursor: pointer;
+        transition: background 0.15s ease, box-shadow 0.15s ease;
+      }
+      tbody tr.clickable:hover {
+        background: #f6fafc;
+      }
+      tbody tr.is-viewed {
+        background: #fafcff;
+      }
+      tbody tr.row-selected {
+        outline: 2px solid #70a381;
+        background: #f0faf4;
+        box-shadow: inset 0 0 0 1px rgba(112, 163, 129, 0.15);
+      }
 
       @media (max-width: 420px) {
-        .modal { padding: 0; }
-        .modal-card { width: 100vw; height: 100dvh; max-height: 100dvh; border-radius: 0; }
-        .modal-head { border-radius: 0; }
+        .modal {
+          padding: 0;
+        }
+        .modal-card {
+          width: 100vw;
+          height: 100dvh;
+          max-height: 100dvh;
+          border-radius: 0;
+        }
+        .modal-head {
+          border-radius: 0;
+        }
       }
     </style>
   </head>
@@ -98,14 +340,42 @@
         </div>
 
         <div class="sidebar">
-          <a href="dashboard.html"><span class="material-icons-sharp">dashboard</span><h3>Dashboard</h3></a>
-          <a href="workerVerification.html"><span class="material-icons-sharp">engineering</span><h3>Workers<br />Verification</h3></a>
-          <a href="jobVerification.html"><span class="material-icons-sharp">work</span><h3>Jobs<br />Verification</h3></a>
-          <a href="jobApplicationVerification.html" class="active"><span class="material-icons-sharp">approval</span><h3>Application<br />Verification</h3></a>
-          <a href="adminVerification.html"><span class="material-icons-sharp">shield</span><h3>Admin<br />Verification</h3></a>
-          <a href="courses.html"><span class="material-icons-sharp">school</span><h3>Course<br />Publisher</h3></a>
-          <a href="#"><span class="material-icons-sharp">settings</span><h3>Settings</h3></a>
-          <a href="#" id="logout-btn"><span class="material-icons-sharp">logout</span><h3>Logout</h3></a>
+          <a href="dashboard.html"
+            ><span class="material-icons-sharp">dashboard</span>
+            <h3>Dashboard</h3></a
+          >
+          <a href="workerVerification.html"
+            ><span class="material-icons-sharp">engineering</span>
+            <h3>Workers<br />Verification</h3></a
+          >
+          <a href="jobVerification.html"
+            ><span class="material-icons-sharp">work</span>
+            <h3>Jobs<br />Verification</h3></a
+          >
+          <a href="jobApplicationVerification.html" class="active"
+            ><span class="material-icons-sharp">approval</span>
+            <h3>Application<br />Verification</h3></a
+          >
+          <a href="adminVerification.html"
+            ><span class="material-icons-sharp">shield</span>
+            <h3>Admin<br />Verification</h3></a
+          >
+          <a href="paymentsRequest.html">
+            <span class="material-icons-sharp">payments</span>
+            <h3>Payments<br>Request</h3>
+          </a>
+          <a href="courses.html"
+            ><span class="material-icons-sharp">school</span>
+            <h3>Course<br />Publisher</h3></a
+          >
+          <a href="#"
+            ><span class="material-icons-sharp">settings</span>
+            <h3>Settings</h3></a
+          >
+          <a href="#" id="logout-btn"
+            ><span class="material-icons-sharp">logout</span>
+            <h3>Logout</h3></a
+          >
         </div>
       </aside>
 
@@ -118,7 +388,11 @@
               <h3>Choose the best candidate for each job.</h3>
               <div class="search">
                 <span class="material-icons-sharp">search</span>
-                <input id="jobSearchInput" type="text" placeholder="Search jobs with applications…" />
+                <input
+                  id="jobSearchInput"
+                  type="text"
+                  placeholder="Search jobs with applications…"
+                />
               </div>
               <div id="jobList" class="job-list">
                 <div class="empty">Loading job applications…</div>
@@ -128,7 +402,9 @@
             <!-- RIGHT: details + applicants -->
             <div class="panel">
               <div id="jobDetails" class="detail">
-                <div class="empty">Select a job to see details and applicants.</div>
+                <div class="empty">
+                  Select a job to see details and applicants.
+                </div>
               </div>
               <div class="divider"></div>
               <h3>List of Applicants</h3>
@@ -137,7 +413,8 @@
               </div>
               <div id="globalActions" class="actions-row" style="display: none">
                 <button id="hireBtn" class="btn brand" type="button" disabled>
-                  <span class="material-icons-sharp">badge</span> Approve Selected Applicant
+                  <span class="material-icons-sharp">badge</span> Approve
+                  Selected Applicant
                 </button>
               </div>
             </div>
@@ -148,7 +425,12 @@
 
     <!-- Single "View More" Modal -->
     <div id="moreModal" class="modal" aria-hidden="true">
-      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="moreTitle">
+      <div
+        class="modal-card"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="moreTitle"
+      >
         <div class="modal-head">
           <h4 id="moreTitle">Resume Preview</h4>
           <button class="close-x" onclick="closeMore()">
@@ -157,7 +439,9 @@
         </div>
         <div class="modal-body">
           <div id="moreBody">
-            <div class="preview-pane"><div class="preview-empty">No resume selected.</div></div>
+            <div class="preview-pane">
+              <div class="preview-empty">No resume selected.</div>
+            </div>
           </div>
         </div>
       </div>
@@ -177,15 +461,15 @@
       const STORAGE_BUCKET = "documents_review";
 
       // ======= State =======
-      let applications = [];      // jobs.job_application rows
-      let jobs = [];              // jobs referenced by applications
-      let installers = [];        // installers referenced by applications
-      let installerDocs = [];     // public.installer_documents rows
+      let applications = []; // jobs.job_application rows
+      let jobs = []; // jobs referenced by applications
+      let installers = []; // installers referenced by applications
+      let installerDocs = []; // public.installer_documents rows
 
-      let jobMap = new Map();         // job_id -> job
-      let installerMap = new Map();   // id -> installer
-      let docsMap = new Map();        // installer_id -> installer_documents
-      let appsByJob = new Map();      // job_id -> application[]
+      let jobMap = new Map(); // job_id -> job
+      let installerMap = new Map(); // id -> installer
+      let docsMap = new Map(); // installer_id -> installer_documents
+      let appsByJob = new Map(); // job_id -> application[]
 
       let filteredJobs = [];
       let activeJobId = null;
@@ -212,13 +496,16 @@
       };
       const difficultyLabel = (n) =>
         ({ 1: "Easy", 2: "Intermediate", 3: "Hard" }[n] || String(n ?? "—"));
-      const isImageUrl = (url = "") => /\.(png|jpe?g|gif|webp|bmp|svg)(\?.*)?$/i.test(url);
+      const isImageUrl = (url = "") =>
+        /\.(png|jpe?g|gif|webp|bmp|svg)(\?.*)?$/i.test(url);
       const isPdfUrl = (url = "") => /\.pdf(\?.*)?$/i.test(url);
 
       async function urlFor(path) {
         if (!path) return null;
         const clean = String(path).trim();
-        const { data, error } = await supabase.storage.from(STORAGE_BUCKET).createSignedUrl(clean, 600);
+        const { data, error } = await supabase.storage
+          .from(STORAGE_BUCKET)
+          .createSignedUrl(clean, 600);
         if (!error && data?.signedUrl) return data.signedUrl;
         const pub = supabase.storage.from(STORAGE_BUCKET).getPublicUrl(clean);
         return pub.data?.publicUrl || null;
@@ -230,40 +517,58 @@
         const { data: appRows, error: appErr } = await supabase
           .schema("jobs")
           .from("job_application")
-          .select("application_id, job_id, installer_id, status, applied_at, updated_at")
+          .select(
+            "application_id, job_id, installer_id, status, applied_at, updated_at"
+          )
           .order("applied_at", { ascending: true });
 
         if (appErr) {
           console.error(appErr);
-          $("#jobList").innerHTML = `<div class="empty">Failed to load applications: ${appErr.message}</div>`;
+          $(
+            "#jobList"
+          ).innerHTML = `<div class="empty">Failed to load applications: ${appErr.message}</div>`;
           return;
         }
 
         // Filter OUT applications whose own status is 'overdue'
-        applications = (appRows || []).filter(a => String(a.status).toLowerCase() !== "overdue");
+        applications = (appRows || []).filter(
+          (a) => String(a.status).toLowerCase() !== "overdue"
+        );
 
         if (!applications.length) {
-          $("#jobList").innerHTML = `<div class="empty">No job applications (excluding overdue) to show.</div>`;
-          $("#jobDetails").innerHTML = `<div class="empty">No jobs to display.</div>`;
-          $("#applicantsWrap").innerHTML = `<div class="empty">No job selected.</div>`;
+          $(
+            "#jobList"
+          ).innerHTML = `<div class="empty">No job applications (excluding overdue) to show.</div>`;
+          $(
+            "#jobDetails"
+          ).innerHTML = `<div class="empty">No jobs to display.</div>`;
+          $(
+            "#applicantsWrap"
+          ).innerHTML = `<div class="empty">No job selected.</div>`;
           $("#globalActions").style.display = "none";
           return;
         }
 
         // 2) Collect distinct job_ids and installer_ids (based on the filtered applications)
-        const jobIds = [...new Set(applications.map(a => a.job_id))];
-        const installerIds = [...new Set(applications.map(a => a.installer_id))];
+        const jobIds = [...new Set(applications.map((a) => a.job_id))];
+        const installerIds = [
+          ...new Set(applications.map((a) => a.installer_id)),
+        ];
 
         // 3) Fetch jobs by id (jobs schema)
         const { data: jobRows, error: jobErr } = await supabase
           .schema("jobs")
           .from("job")
-          .select("job_id, job_title, job_category, job_difficulty, job_location, job_date, job_time, job_picture_url, job_status")
+          .select(
+            "job_id, job_title, job_category, job_difficulty, job_location, job_date, job_time, job_picture_url, job_status"
+          )
           .in("job_id", jobIds);
 
         if (jobErr) {
           console.error(jobErr);
-          $("#jobList").innerHTML = `<div class="empty">Failed to load jobs: ${jobErr.message}</div>`;
+          $(
+            "#jobList"
+          ).innerHTML = `<div class="empty">Failed to load jobs: ${jobErr.message}</div>`;
           return;
         }
         jobs = jobRows || [];
@@ -273,7 +578,9 @@
         if (installerIds.length) {
           const { data: _inst, error: instErr } = await supabase
             .from("installer")
-            .select("id, name, profession, highestQualification, employmentStatus, mainIncomeSource, bankName, accountHolder, accountNumber")
+            .select(
+              "id, name, profession, highestQualification, employmentStatus, mainIncomeSource, bankName, accountHolder, accountNumber"
+            )
             .in("id", installerIds);
           if (instErr) console.error(instErr);
           instRows = _inst || [];
@@ -285,7 +592,9 @@
         if (installerIds.length) {
           const { data: _docs, error: docsErr } = await supabase
             .from("installer_documents")
-            .select("installer_id, resume, nbi, police, portfolio, certificates, tor, resume_status")
+            .select(
+              "installer_id, resume, nbi, police, portfolio, certificates, tor, resume_status"
+            )
             .in("installer_id", installerIds);
           if (docsErr) console.error(docsErr);
           docRows = _docs || [];
@@ -293,9 +602,9 @@
         installerDocs = docRows;
 
         // 6) Build maps and groupings
-        jobMap = new Map(jobs.map(j => [j.job_id, j]));
-        installerMap = new Map(installers.map(i => [i.id, i]));
-        docsMap = new Map(installerDocs.map(d => [d.installer_id, d]));
+        jobMap = new Map(jobs.map((j) => [j.job_id, j]));
+        installerMap = new Map(installers.map((i) => [i.id, i]));
+        docsMap = new Map(installerDocs.map((d) => [d.installer_id, d]));
         appsByJob = applications.reduce((m, a) => {
           if (!m.has(a.job_id)) m.set(a.job_id, []);
           m.get(a.job_id).push(a);
@@ -304,9 +613,10 @@
 
         // 7) UI: render job list (only jobs with applications, and NOT done)
         filteredJobs = jobs
-          .filter(j =>
-            appsByJob.has(j.job_id) &&
-            String(j.job_status || "").toLowerCase() !== "done"
+          .filter(
+            (j) =>
+              appsByJob.has(j.job_id) &&
+              String(j.job_status || "").toLowerCase() !== "done"
           )
           .sort((a, b) => {
             const da = new Date(`${a.job_date}T${a.job_time}`);
@@ -326,7 +636,9 @@
         }
         list.innerHTML = "";
         filteredJobs.forEach((j) => {
-          const item = el("div", { class: `job-item${activeJobId === j.job_id ? " active" : ""}` });
+          const item = el("div", {
+            class: `job-item${activeJobId === j.job_id ? " active" : ""}`,
+          });
           item.addEventListener("click", () => selectJob(j.job_id));
           const h4 = el("h4", { text: j.job_title || "Untitled job" });
           const meta = el("div", { class: "job-meta" });
@@ -344,16 +656,23 @@
       // Search across left job list (also excludes 'done')
       $("#jobSearchInput").addEventListener("input", (e) => {
         const q = e.target.value.toLowerCase().trim();
-        const base = jobs.filter(j =>
-          appsByJob.has(j.job_id) &&
-          String(j.job_status || "").toLowerCase() !== "done"
+        const base = jobs.filter(
+          (j) =>
+            appsByJob.has(j.job_id) &&
+            String(j.job_status || "").toLowerCase() !== "done"
         );
-        filteredJobs = !q ? base.slice() :
-          base.filter((j) =>
-            [j.job_title, j.job_category, difficultyLabel(j.job_difficulty), j.job_location]
-              .filter(Boolean)
-              .some((v) => String(v).toLowerCase().includes(q))
-          );
+        filteredJobs = !q
+          ? base.slice()
+          : base.filter((j) =>
+              [
+                j.job_title,
+                j.job_category,
+                difficultyLabel(j.job_difficulty),
+                j.job_location,
+              ]
+                .filter(Boolean)
+                .some((v) => String(v).toLowerCase().includes(q))
+            );
         renderJobList();
       });
 
@@ -373,8 +692,11 @@
 
         // Update local cache
         let touched = false;
-        applications.forEach(a => {
-          if (a.job_id === jobId && String(a.status).toLowerCase() === "pending") {
+        applications.forEach((a) => {
+          if (
+            a.job_id === jobId &&
+            String(a.status).toLowerCase() === "pending"
+          ) {
             a.status = "viewed";
             touched = true;
           }
@@ -395,8 +717,12 @@
 
         const job = jobMap.get(jobId);
         if (!job) {
-          $("#jobDetails").innerHTML = `<div class="empty">Failed to load job details.</div>`;
-          $("#applicantsWrap").innerHTML = `<div class="empty">Failed to load applicants.</div>`;
+          $(
+            "#jobDetails"
+          ).innerHTML = `<div class="empty">Failed to load job details.</div>`;
+          $(
+            "#applicantsWrap"
+          ).innerHTML = `<div class="empty">Failed to load applicants.</div>`;
           $("#globalActions").style.display = "none";
           return;
         }
@@ -411,14 +737,27 @@
       function renderJobDetails(job) {
         $("#jobDetails").innerHTML = `
           <div class="detail-header">
-            <img class="job-photo" src="${job.job_picture_url || ""}" alt="Job photo" />
-            <h3 style="margin:4px 0 0; color: var(--ink);">${job.job_title || "Untitled job"}</h3>
+            <img class="job-photo" src="${
+              job.job_picture_url || ""
+            }" alt="Job photo" />
+            <h3 style="margin:4px 0 0; color: var(--ink);">${
+              job.job_title || "Untitled job"
+            }</h3>
           </div>
           <div class="detail-grid">
-            <div class="kv"><label>Category</label><span>${job.job_category || "—"}</span></div>
-            <div class="kv"><label>Difficulty</label><span>${difficultyLabel(job.job_difficulty)}</span></div>
-            <div class="kv"><label>Date & Time</label><span>${fmtDateTime(job.job_date, job.job_time)}</span></div>
-            <div class="kv"><label>Location</label><span>${job.job_location || "—"}</span></div>
+            <div class="kv"><label>Category</label><span>${
+              job.job_category || "—"
+            }</span></div>
+            <div class="kv"><label>Difficulty</label><span>${difficultyLabel(
+              job.job_difficulty
+            )}</span></div>
+            <div class="kv"><label>Date & Time</label><span>${fmtDateTime(
+              job.job_date,
+              job.job_time
+            )}</span></div>
+            <div class="kv"><label>Location</label><span>${
+              job.job_location || "—"
+            }</span></div>
           </div>
         `;
       }
@@ -434,12 +773,24 @@
 
         const infoGrid = `
           <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:12px">
-            <div class="kv"><label>Full Name</label><span>${inst.name || "—"}</span></div>
-            <div class="kv"><label>Profession</label><span>${inst.profession || "—"}</span></div>
-            <div class="kv"><label>Highest Qualification</label><span>${inst.highestQualification || "—"}</span></div>
-            <div class="kv"><label>Employment Status</label><span>${inst.employmentStatus || "—"}</span></div>
-            <div class="kv"><label>Applied</label><span>${new Date(appRow.applied_at).toLocaleString()}</span></div>
-            <div class="kv"><label>Application Status</label><span>${String(appRow.status).toUpperCase()}</span></div>
+            <div class="kv"><label>Full Name</label><span>${
+              inst.name || "—"
+            }</span></div>
+            <div class="kv"><label>Profession</label><span>${
+              inst.profession || "—"
+            }</span></div>
+            <div class="kv"><label>Highest Qualification</label><span>${
+              inst.highestQualification || "—"
+            }</span></div>
+            <div class="kv"><label>Employment Status</label><span>${
+              inst.employmentStatus || "—"
+            }</span></div>
+            <div class="kv"><label>Applied</label><span>${new Date(
+              appRow.applied_at
+            ).toLocaleString()}</span></div>
+            <div class="kv"><label>Application Status</label><span>${String(
+              appRow.status
+            ).toUpperCase()}</span></div>
           </div>
         `;
 
@@ -499,7 +850,9 @@
           return;
         }
 
-        const alreadyApproved = apps.some(a => String(a.status).toLowerCase() === "approved");
+        const alreadyApproved = apps.some(
+          (a) => String(a.status).toLowerCase() === "approved"
+        );
 
         wrap.innerHTML = `
           <table>
@@ -529,21 +882,32 @@
 
           const radioId = `sel-${a.application_id}`;
           const statusLower = String(a.status).toLowerCase();
-          const selectable = !alreadyApproved && (statusLower === "pending" || statusLower === "viewed");
+          const selectable =
+            !alreadyApproved &&
+            (statusLower === "pending" || statusLower === "viewed");
           const disabledAttr = selectable ? "" : "disabled";
 
           if (statusLower === "viewed") {
             tr.classList.add("is-viewed");
           }
-          if (selectedApplicationId && selectedApplicationId === a.application_id) {
+          if (
+            selectedApplicationId &&
+            selectedApplicationId === a.application_id
+          ) {
             tr.classList.add("row-selected");
           }
 
           tr.innerHTML = `
             <td class="select-radio">
-              <input type="radio" name="hireSelect" id="${radioId}" value="${a.application_id}" ${disabledAttr}/>
+              <input type="radio" name="hireSelect" id="${radioId}" value="${
+            a.application_id
+          }" ${disabledAttr}/>
             </td>
-            <td>${w.name || "—"} ${statusLower === "approved" ? '<span style="color:#147a35; font-size:12px;">(Approved)</span>' : ""}</td>
+            <td>${w.name || "—"} ${
+            statusLower === "approved"
+              ? '<span style="color:#147a35; font-size:12px;">(Approved)</span>'
+              : ""
+          }</td>
             <td>${w.profession || "—"}</td>
             <td>${w.highestQualification || "—"}</td>
             <td>${w.employmentStatus || "—"}</td>
@@ -556,7 +920,11 @@
           // Keep original code path intact but DON'T render the button (row click opens modal instead)
           const USE_ROW_PROFILE_MODAL = true;
           if (!USE_ROW_PROFILE_MODAL) {
-            const moreBtn = el("button", { class: "btn", type: "button", text: "view resume" });
+            const moreBtn = el("button", {
+              class: "btn",
+              type: "button",
+              text: "view resume",
+            });
             moreBtn.addEventListener("click", () => showMore(a));
             actionsCell.append(moreBtn);
           }
@@ -574,7 +942,9 @@
             selectedApplicationId = String(radio.value);
             $("#hireBtn").disabled = !selectedApplicationId;
             // highlight selected row
-            tbody.querySelectorAll("tr").forEach(r => r.classList.remove("row-selected"));
+            tbody
+              .querySelectorAll("tr")
+              .forEach((r) => r.classList.remove("row-selected"));
             tr.classList.add("row-selected");
           });
         });
@@ -583,7 +953,8 @@
           $("#hireBtn").disabled = true;
           const hint = document.createElement("div");
           hint.className = "empty";
-          hint.textContent = "An applicant has already been approved for this job. Further changes are disabled.";
+          hint.textContent =
+            "An applicant has already been approved for this job. Further changes are disabled.";
           wrap.appendChild(hint);
         }
       }
@@ -592,11 +963,17 @@
       document.getElementById("hireBtn").addEventListener("click", async () => {
         if (!activeJobId || !selectedApplicationId) return;
 
-        const first = confirm("Are you sure you want to approve this applicant? This will reject other pending/viewed applications for this job.");
+        const first = confirm(
+          "Are you sure you want to approve this applicant? This will reject other pending/viewed applications for this job."
+        );
         if (!first) return;
 
         const job = jobMap.get(activeJobId);
-        const typed = prompt(`Double-check: type HIRE to confirm hiring for "${job?.job_title || "this job"}".`);
+        const typed = prompt(
+          `Double-check: type HIRE to confirm hiring for "${
+            job?.job_title || "this job"
+          }".`
+        );
         if (!typed || typed.trim().toUpperCase() !== "HIRE") {
           alert("Hiring cancelled.");
           return;
@@ -613,7 +990,9 @@
           return;
         }
 
-        const selectedAppRow = applications.find(a => String(a.application_id) === String(selectedApplicationId));
+        const selectedAppRow = applications.find(
+          (a) => String(a.application_id) === String(selectedApplicationId)
+        );
         const installerIdToAssign = selectedAppRow?.installer_id;
 
         if (installerIdToAssign) {
@@ -624,10 +1003,15 @@
             .eq("job_id", activeJobId);
 
           if (assignErr) {
-            alert("Approved, but failed to assign installer to the job: " + assignErr.message);
+            alert(
+              "Approved, but failed to assign installer to the job: " +
+                assignErr.message
+            );
           }
         } else {
-          console.warn("No installer_id found for selected application; job assignment skipped.");
+          console.warn(
+            "No installer_id found for selected application; job assignment skipped."
+          );
         }
 
         const { error: rejErr } = await supabase
@@ -639,7 +1023,10 @@
           .in("status", ["pending", "viewed"]);
 
         if (rejErr) {
-          alert("Approved, but failed to update other applications: " + rejErr.message);
+          alert(
+            "Approved, but failed to update other applications: " +
+              rejErr.message
+          );
         } else {
           alert("Applicant approved successfully.");
         }

@@ -8,166 +8,38 @@
   <link rel="stylesheet" href="../css_files/sideBar.css" />
   <title>PaymentsRequest</title>
   <style>
-    main {
-      margin-top: 1.4rem;
-    }
-
+    main { margin-top: 1.4rem; }
     /* Header */
-    main .payments-header h1 {
-      margin: 0;
-      color: #1c2430;
-      font-weight: 700;
-    }
-
-    main .payments-header p {
-      margin: 0.2rem 0 1rem;
-      color: #6c7a8a;
-    }
-
-    main .search-filter input {
-      width: 40%;
-    }
-
+    main .payments-header h1 { margin: 0; color: #1c2430; font-weight: 700; }
+    main .payments-header p { margin: 0.2rem 0 1rem; color: #6c7a8a; }
+    main .search-filter input { width: 40%; }
     /* Search & Filter */
-    main .search-filter {
-      display: flex;
-      gap: 0.8rem;
-      margin-bottom: 1rem;
-      flex-wrap: wrap;
+    main .search-filter { display: flex; gap: 0.8rem; margin-bottom: 1rem; flex-wrap: wrap; }
+    main .search-filter input, main .search-filter select, main .search-filter button {
+      padding: 0.6rem 0.75rem; border: 1px solid #e7edf3; border-radius: 8px; font-size: 0.9rem;
     }
-
-    main .search-filter input,
-    main .search-filter select,
-    main .search-filter button {
-      padding: 0.6rem 0.75rem;
-      border: 1px solid #e7edf3;
-      border-radius: 8px;
-      font-size: 0.9rem;
-    }
-
-    main .search-filter button {
-      background: #20a44c;
-      color: #fff;
-      cursor: pointer;
-      border: none;
-    }
-
-    main .search-filter button:hover {
-      background: #188a3e;
-    }
-
-    main .search-filter .clear {
-      background: #e7edf3;
-      color: #1c2430;
-    }
-
-    main .search-filter .clear:hover {
-      background: #d7e6ee;
-    }
-
+    main .search-filter button { background: #20a44c; color: #fff; cursor: pointer; border: none; }
+    main .search-filter button:hover { background: #188a3e; }
+    main .search-filter .clear { background: #e7edf3; color: #1c2430; }
+    main .search-filter .clear:hover { background: #d7e6ee; }
     /* Summary Cards */
-    main .summary-cards {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(180px, 1fr));
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
-
-    main .summary-cards .card {
-      background: #fff;
-      padding: 1rem;
-      border-radius: 10px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-      text-align: center;
-    }
-
-    main .summary-cards .card h3 {
-      margin: 0;
-      font-size: 0.9rem;
-      color: #6c7a8a;
-      font-weight: 600;
-    }
-
-    main .summary-cards .card p {
-      margin: 0.4rem 0 0;
-      font-size: 1.25rem;
-      font-weight: 800;
-      letter-spacing: 0.2px;
-    }
-
-    main .summary-cards .paid p {
-      color: #20a44c;
-    }
-
-    main .summary-cards .unpaid p {
-      color: #e53935;
-    }
-
+    main .summary-cards { display: grid; grid-template-columns: repeat(3, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+    main .summary-cards .card { background: #fff; padding: 1rem; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); text-align: center; }
+    main .summary-cards .card h3 { margin: 0; font-size: 0.9rem; color: #6c7a8a; font-weight: 600; }
+    main .summary-cards .card p { margin: 0.4rem 0 0; font-size: 1.25rem; font-weight: 800; letter-spacing: 0.2px; }
+    main .summary-cards .paid p { color: #20a44c; }
+    main .summary-cards .unpaid p { color: #e53935; }
     /* Table */
-    main .payments-table table {
-      width: 100%;
-      border-collapse: collapse;
-      background: #fff;
-      border-radius: 10px;
-      overflow: hidden;
-    }
-
-    main .payments-table th,
-    main .payments-table td {
-      padding: 0.9rem;
-      text-align: left;
-      border-bottom: 1px solid #f0f0f0;
-      white-space: nowrap;
-    }
-
-    main .payments-table th {
-      background: #f8fbfd;
-      color: #1c2430;
-      font-weight: 700;
-    }
-
-    main .status {
-      padding: 0.3rem 0.6rem;
-      border-radius: 12px;
-      font-size: 0.8rem;
-      font-weight: 700;
-    }
-
-    main .status.paid {
-      background: #e6f6ec;
-      color: #1d8e45;
-    }
-
-    main .status.not-paid {
-      background: #fdecea;
-      color: #c62828;
-    }
-
-    main .mark-paid {
-      background: #20a44c;
-      color: #fff;
-      padding: 0.4rem 0.8rem;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 600;
-    }
-
-    main .mark-paid:hover {
-      background: #188a3e;
-    }
-
-    main button[disabled] {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-
-    @media (max-width: 980px) {
-      main .payments-table table {
-        display: block;
-        overflow-x: auto;
-      }
-    }
+    main .payments-table table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 10px; overflow: hidden; }
+    main .payments-table th, main .payments-table td { padding: 0.9rem; text-align: left; border-bottom: 1px solid #f0f0f0; white-space: nowrap; }
+    main .payments-table th { background: #f8fbfd; color: #1c2430; font-weight: 700; }
+    main .status { padding: 0.3rem 0.6rem; border-radius: 12px; font-size: 0.8rem; font-weight: 700; }
+    main .status.paid { background: #e6f6ec; color: #1d8e45; }
+    main .status.not-paid { background: #fdecea; color: #c62828; }
+    main .mark-paid { background: #20a44c; color: #fff; padding: 0.4rem 0.8rem; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; }
+    main .mark-paid:hover { background: #188a3e; }
+    main button[disabled] { opacity: 0.6; cursor: not-allowed; }
+    @media (max-width: 980px) { main .payments-table table { display: block; overflow-x: auto; } }
   </style>
 </head>
 
@@ -186,47 +58,20 @@
       </div>
 
       <div class="sidebar">
-        <a href="dashboard.html">
-          <span class="material-icons-sharp">dashboard</span>
-          <h3>Dashboard</h3>
-        </a>
-        <a href="workerVerification.html">
-          <span class="material-icons-sharp">engineering</span>
-          <h3>Workers<br>Verification</h3>
-        </a>
-        <a href="jobVerification.html">
-          <span class="material-icons-sharp">work</span>
-          <h3>Jobs<br>Verification</h3>
-        </a>
-        <a href="jobApplicationVerification.html">
-          <span class="material-icons-sharp">approval</span>
-          <h3>Application<br>Verification</h3>
-        </a>
-        <a href="adminVerification.html">
-          <span class="material-icons-sharp">shield</span>
-          <h3>Admin<br>Verification</h3>
-        </a>
-        <a href="paymentsRequest.html" class="active">
-          <span class="material-icons-sharp">paid</span>
-          <h3>Payments<br>Request</h3>
-        </a>
-        <a href="courses.html">
-          <span class="material-icons-sharp">school</span>
-          <h3>Course<br>Publisher</h3>
-        </a>
-        <a href="#">
-          <span class="material-icons-sharp">settings</span>
-          <h3>Settings</h3>
-        </a>
-        <a href="#" id="logout-btn">
-          <span class="material-icons-sharp">logout</span>
-          <h3>Logout</h3>
-        </a>
+        <a href="dashboard.html"><span class="material-icons-sharp">dashboard</span><h3>Dashboard</h3></a>
+        <a href="workerVerification.html"><span class="material-icons-sharp">engineering</span><h3>Workers<br>Verification</h3></a>
+        <a href="jobVerification.html"><span class="material-icons-sharp">work</span><h3>Jobs<br>Verification</h3></a>
+        <a href="jobApplicationVerification.html"><span class="material-icons-sharp">approval</span><h3>Application<br>Verification</h3></a>
+        <a href="adminVerification.html"><span class="material-icons-sharp">shield</span><h3>Admin<br>Verification</h3></a>
+        <a href="paymentsRequest.html" class="active"><span class="material-icons-sharp">payments</span><h3>Payments<br>Request</h3></a>
+        <a href="courses.html"><span class="material-icons-sharp">school</span><h3>Course<br>Publisher</h3></a>
+        <a href="#"><span class="material-icons-sharp">settings</span><h3>Settings</h3></a>
+        <a href="#" id="logout-btn"><span class="material-icons-sharp">logout</span><h3>Logout</h3></a>
       </div>
     </aside>
     <!-- End of Sidebar Section -->
 
-    <!-- Main Content, insert here-->
+    <!-- Main Content -->
     <main>
       <div class="payments-header">
         <h1>Payments Request</h1>
@@ -276,48 +121,14 @@
             </tr>
           </thead>
           <tbody id="paymentsTbody">
-            <!-- Sample rows. Add more or render server-side as needed. -->
-            <tr data-status="not-paid">
-              <td class="col-jobid">#J1023</td>
-              <td class="col-worker">Juan Dela Cruz</td>
-              <td class="col-title">House Painting</td>
-              <td>₱5,000</td>
-              <td>2025-09-01</td>
-              <td><span class="status not-paid">Not Paid</span></td>
-              <td><button class="mark-paid">Mark as Paid</button></td>
-            </tr>
-            <tr data-status="paid">
-              <td class="col-jobid">#J1022</td>
-              <td class="col-worker">Maria Santos</td>
-              <td class="col-title">Plumbing Fix</td>
-              <td>₱3,200</td>
-              <td>2025-08-29</td>
-              <td><span class="status paid">Paid</span></td>
-              <td><button disabled>Paid</button></td>
-            </tr>
-            <tr data-status="not-paid">
-              <td class="col-jobid">#J1019</td>
-              <td class="col-worker">Carlos Reyes</td>
-              <td class="col-title">Electrical Wiring</td>
-              <td>₱7,800</td>
-              <td>2025-08-28</td>
-              <td><span class="status not-paid">Not Paid</span></td>
-              <td><button class="mark-paid">Mark as Paid</button></td>
-            </tr>
-            <tr data-status="paid">
-              <td class="col-jobid">#J1017</td>
-              <td class="col-worker">Ana Dizon</td>
-              <td class="col-title">Deep Cleaning</td>
-              <td>₱2,900</td>
-              <td>2025-08-26</td>
-              <td><span class="status paid">Paid</span></td>
-              <td><button disabled>Paid</button></td>
-            </tr>
+            <!-- Dynamically render rows here -->
           </tbody>
         </table>
       </div>
 
-      <!-- Inline JS for filtering/search + mark-as-paid -->
+      <!-- Inline JS for filtering/search + mark-as-paid (UNCHANGED UI logic) -->
+      <script src="../../general_files/index.js"></script>
+      <script type="module" src="../../general_files/session.js"></script>
       <script>
         (function () {
           const searchInput = document.getElementById('searchInput');
@@ -330,13 +141,8 @@
           const paidCount = document.getElementById('paidCount');
           const unpaidCount = document.getElementById('unpaidCount');
 
-          function rows() {
-            return Array.from(tbody.querySelectorAll('tr'));
-          }
-
-          function normalize(s) {
-            return (s || '').toString().trim().toLowerCase();
-          }
+          function rows() { return Array.from(tbody.querySelectorAll('tr')); }
+          function normalize(s) { return (s || '').toString().trim().toLowerCase(); }
 
           function rowMatchesSearch(row, q) {
             if (!q) return true;
@@ -378,7 +184,7 @@
             const row = btn.closest('tr');
             if (!row || row.dataset.status === 'paid') return;
 
-            // Update dataset + badge
+            // Update dataset + badge (UI first)
             row.dataset.status = 'paid';
             const statusEl = row.querySelector('.status');
             statusEl.textContent = 'Paid';
@@ -408,7 +214,152 @@
           applyFilters();
         })();
       </script>
+
+      <!-- Supabase client -->
+      <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+
+      <!-- Data loader to render earnings.payments (unique names to avoid collisions) -->
+      <script type="module">
+        import { SUPABASE_URL, SUPABASE_ANON_KEY } from "../../../supabase.js";
+        const sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // expose once for other modules
+        window.__sb = sbClient;
+
+        const tbodyPayments = document.getElementById('paymentsTbody');
+        const searchBtnEl = document.getElementById('searchBtn');
+
+        const peso = (n) => '₱' + (Number(n) || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        const fmtDate = (iso) => { try { return new Date(iso).toISOString().slice(0, 10); } catch { return ''; } };
+
+        function statusToUi(payment_status) {
+          if (payment_status === 'unpaid') return { ds: 'not-paid', text: 'Not Paid', cls: 'status not-paid' };
+          // treat 'paid' and 'payouted' as Paid for this UI
+          return { ds: 'paid', text: 'Paid', cls: 'status paid' };
+        }
+        const shortId = (id) => id ? String(id).slice(0,8).toUpperCase() : '';
+
+        async function loadPayments() {
+          // payments
+          const { data: pays, error: payErr } = await sbClient
+            .schema('earnings')
+            .from('payments')
+            .select('id, installer_id, job_id, payment_status, first_created_at')
+            .order('first_created_at', { ascending: false });
+
+          if (payErr) {
+            console.error(payErr);
+            tbodyPayments.innerHTML = `<tr><td colspan="7">Error loading payments: ${payErr.message}</td></tr>`;
+            return;
+          }
+          if (!pays || pays.length === 0) {
+            tbodyPayments.innerHTML = `<tr><td colspan="7" class="sub">No payment requests yet.</td></tr>`;
+            return;
+          }
+
+          // jobs
+          const jobIds = [...new Set(pays.map(p => p.job_id).filter(Boolean))];
+          let jobsById = {};
+          if (jobIds.length) {
+            const { data: jobs, error: jobErr } = await sbClient
+              .schema('jobs')
+              .from('job')
+              .select('job_id, job_code, job_title, job_pay')
+              .in('job_id', jobIds);
+            if (!jobErr && jobs) jobsById = Object.fromEntries(jobs.map(j => [j.job_id, j]));
+          }
+
+          // installers
+          const installerIds = [...new Set(pays.map(p => p.installer_id).filter(Boolean))];
+          let installersById = {};
+          if (installerIds.length) {
+            const { data: installers, error: instErr } = await sbClient
+              .from('installer')
+              .select('id, name, email')
+              .in('id', installerIds);
+            if (!instErr && installers) installersById = Object.fromEntries(installers.map(i => [i.id, i]));
+          }
+
+          // render
+          const rowsHtml = pays.map(p => {
+            const job = jobsById[p.job_id] || {};
+            const inst = installersById[p.installer_id] || {};
+            const ui = statusToUi(p.payment_status);
+
+            const jobDisplay = job.job_code ? job.job_code : `#${shortId(p.job_id)}`;
+            const workerDisplay = inst.name || inst.email || shortId(p.installer_id);
+            const titleDisplay = job.job_title || '—';
+            const amount = (job.job_pay != null) ? peso(job.job_pay) : '₱0.00';
+            const reqDate = fmtDate(p.first_created_at);
+
+            const actionCell = ui.ds === 'not-paid'
+              ? `<button class="mark-paid">Mark as Paid</button>`
+              : `<button disabled>Paid</button>`;
+
+            return `
+              <tr data-status="${ui.ds}" data-payment-id="${p.id}">
+                <td class="col-jobid">${jobDisplay}</td>
+                <td class="col-worker">${workerDisplay}</td>
+                <td class="col-title">${titleDisplay}</td>
+                <td>${amount}</td>
+                <td>${reqDate}</td>
+                <td><span class="${ui.cls}">${ui.text}</span></td>
+                <td>${actionCell}</td>
+              </tr>
+            `;
+          }).join('');
+
+          tbodyPayments.innerHTML = rowsHtml;
+
+          // re-run your filter pipeline
+          searchBtnEl.click();
+        }
+
+        // kick off
+        loadPayments();
+      </script>
+
+      <!-- Persist "Mark as Paid" to DB (separate module, no name collisions) -->
+      <script type="module">
+        const sbRef = window.__sb; // created in the previous module
+        const tableBodyEl = document.getElementById('paymentsTbody');
+
+        tableBodyEl.addEventListener('click', async (e) => {
+          const btn = e.target.closest('.mark-paid');
+          if (!btn) return;
+
+          const tr = btn.closest('tr');
+          const paymentId = tr?.dataset?.paymentId;
+          if (!paymentId) return;
+
+          try {
+            const { error } = await sbRef
+              .schema('earnings')
+              .from('payments')
+              .update({ payment_status: 'paid' })
+              .eq('id', paymentId);
+
+            if (error) throw error;
+            // success: UI already flipped in your original handler
+          } catch (err) {
+            console.error('Failed to mark as paid:', err);
+
+            // revert UI
+            tr.dataset.status = 'not-paid';
+            const statusEl = tr.querySelector('.status');
+            if (statusEl) {
+              statusEl.textContent = 'Not Paid';
+              statusEl.classList.remove('paid');
+              statusEl.classList.add('not-paid');
+            }
+            btn.textContent = 'Mark as Paid';
+            btn.disabled = false;
+
+            alert('Could not mark as paid: ' + (err?.message || 'Unknown error'));
+          }
+        });
+      </script>
     </main>
+  </div>
 </body>
 
 </html>
