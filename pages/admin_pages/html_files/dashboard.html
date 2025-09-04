@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet" />
   <link rel="stylesheet" href="../css_files/sideBar.css" />
   <title>Admin Dashboard</title>
@@ -11,646 +10,623 @@
     /*DO NOT REMOVE THESE CSS!!!*/
     /*for this file only*/
     /*==START==*/
-    img {
-      display: block;
-      width: 100%;
-      object-fit: cover;
+    img { display:block; width:100%; object-fit:cover; }
+    .container { display:grid; width:96%; margin:0 auto; gap:1.8rem; grid-template-columns:12rem auto 23rem; }
+    main { margin-top:1.4rem; }
+
+    main .pendingDivs{ display:grid; grid-template-columns:repeat(3,1fr); gap:1.6rem; }
+    main .pendingDivs>div{
+      background:#fff; margin-top:1rem; cursor:pointer; transition:.3s; text-align:center;
+      border:1px solid #e7edf3; padding:12px; box-shadow:var(--box-shadow); border-radius:14px;
+    }
+    main .pendingDivs>div:hover{ box-shadow:none; }
+    main .pendingDivs h3{ font-size:1rem; }
+
+    main .pendingDivs svg{ width:7rem; height:7rem; }
+    main .pendingDivs svg circle{ fill:none; stroke-width:10; stroke-linecap:round; transform:translate(5px,5px); }
+    main .pendingDivs .pendingWorkerAccDiv svg circle{ stroke:var(--color-success); stroke-dashoffset:-30; stroke-dasharray:200; }
+    main .pendingDivs .pendingAdminAccessDiv svg circle{ stroke:var(--color-danger); stroke-dashoffset:-30; stroke-dasharray:200; }
+    main .pendingDivs .pendingJobAppDiv svg circle{ stroke:var(--color-primary); stroke-dashoffset:-30; stroke-dasharray:200; }
+
+    main .latestJobApplicantTable{ margin-top:1.3rem; }
+    main .latestJobApplicantTable h2{ margin-bottom:.8rem; }
+
+    main .latestJobApplicantTable{
+      background:transparent;
+      position:relative; /* allow top-right arrow positioning */
+    }
+    main .latestJobApplicantTable table{
+      background:#fff; width:100%; text-align:center; transition:.3s;
+      border:1px solid #e7edf3; padding:18px 12px 12px; box-shadow:var(--box-shadow); border-radius:14px;
+    }
+    main .latestJobApplicantTable table:hover{ box-shadow:none; }
+    main table tbody td{ height:2rem; border-bottom:1px solid var(--color-light); color:var(--color-dark-variant); }
+    main table tbody tr:last-child td{ border:none; }
+    main .latestJobApplicantTable a{ text-align:center; display:block; margin:1rem auto; color:var(--color-primary); }
+
+    /* minimalist header and arrow */
+    .latestJobApplicantTable .section-header{
+      display:flex; align-items:center; justify-content:flex-start; gap:.75rem;
+      margin-bottom:.6rem; padding-right:3rem; /* space so header text doesn't clash with arrow */
+      position:relative;
+    }
+    .section-header h2{ margin:0; }
+    .section-header .arrow-link{
+      position:absolute; top:0; right:0; /* top-right most */
+      display:inline-flex; align-items:center; justify-content:center;
+      width:2.1rem; height:2.1rem; border-radius:9999px;
+      border:1px solid var(--color-light);
+      color:var(--color-primary); background:var(--color-white);
+      text-decoration:none; font-weight:700; line-height:1; font-size:1.15rem;
+      transition:all .2s ease; user-select:none;
+      box-shadow:var(--box-shadow);
+    }
+    .section-header .arrow-link:hover{
+      background:var(--color-primary); color:#fff; box-shadow:none;
+      transform:translateY(-1px);
     }
 
-    .container {
-      display: grid;
-      width: 96%;
-      margin: 0 auto;
-      gap: 1.8rem;
-      grid-template-columns: 12rem auto 23rem;
+    .right-section{ margin-top:1.4rem; }
+    .right-section .nav{ display:flex; justify-content:end; gap:2rem; }
+    .right-section .nav button{ display:none; }
+
+    .right-section .dark-mode{
+      background:var(--color-light); display:flex; justify-content:space-between; align-items:center;
+      height:1.6rem; width:4.2rem; cursor:pointer; border-radius:var(--border-radius-1);
+    }
+    .right-section .dark-mode span{ font-size:1.2rem; width:50%; height:100%; display:flex; align-items:center; justify-content:center; }
+    .right-section .dark-mode span.active{ background:var(--color-primary); color:#fff; border-radius:var(--border-radius-1); }
+
+    .right-section .nav .profile{ display:flex; gap:2rem; text-align:right; }
+    .right-section .nav .profile .profile-photo{
+      width:2.8rem; height:2.8rem; border-radius:50%; overflow:hidden; display:flex; align-items:center; justify-content:center;
+    }
+    .profile-photo img{ width:100%; height:100%; object-fit:cover; }
+
+    .right-section .user-profile{
+      display:flex; justify-content:center; text-align:center; margin-top:1rem; background:#fff; padding:var(--card-padding);
+      border-radius:var(--card-border-radius); box-shadow:var(--box-shadow); cursor:pointer; transition:.3s; border:2px dashed #20a44c;
+    }
+    .right-section .user-profile:hover{ box-shadow:none; }
+    .right-section .user-profile img{ width:11rem; height:auto; margin-bottom:.8rem; border-radius:50%; }
+    .right-section .user-profile h2{ margin-bottom:.2rem; }
+
+    /* --- Published Courses panel (replaces Quick Links) --- */
+    .right-section .coursesDiv{ margin-top:2rem; }
+    .right-section .coursesDiv .header{
+      display:flex; align-items:center; justify-content:space-between; margin-bottom:.8rem;
+    }
+    .right-section .coursesDiv .header h2{ margin:0; display:flex; align-items:center; gap:.5rem; }
+
+    .course-list{
+      display:flex; flex-direction:column; gap:.7rem;
+    }
+    .course-card{
+      background:#fff; border:1px solid #e7edf3; padding:12px 14px; box-shadow:var(--box-shadow);
+      border-radius:14px; display:flex; align-items:center; justify-content:space-between; transition:.3s; cursor:default;
+    }
+    .course-card:hover{ box-shadow:none; }
+    /* make only the 'clickable' variation show pointer without removing original rule */
+    .course-card.clickable{ cursor:pointer; }
+    .course-left{ display:flex; align-items:center; gap:.9rem; min-width:0; }
+    .course-icon{
+      display:flex; align-items:center; justify-content:center; padding:.55rem; border-radius:20%;
+      background:var(--color-primary); color:#fff; flex:0 0 auto;
+    }
+    .course-title{
+      font-weight:600; color:var(--color-dark);
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:11rem;
+    }
+    .course-meta{
+      display:flex; align-items:center; gap:.6rem; flex-wrap:wrap;
+    }
+    .level-pill{
+      border:1px solid var(--color-light); border-radius:9999px; padding:.2rem .55rem; font-size:.78rem; color:var(--color-dark-variant);
+      background:#fff;
+    }
+    .completed-count{
+      display:inline-flex; align-items:center; gap:.25rem; font-size:.86rem; color:#fff;
+      background:var(--color-primary); padding:.2rem .5rem; border-radius:9999px;
+    }
+    .empty-state{
+      background:#fff; border:2px dashed var(--color-primary); color:var(--color-primary);
+      display:flex; align-items:center; justify-content:center; border-radius:14px; padding:18px;
+      text-align:center;
+    }
+    .empty-state .material-icons-sharp{ margin-right:.4rem; }
+
+    /* section total badge (NEW) */
+    .total-badge{
+      display:inline-flex; align-items:center; gap:.35rem;
+      padding:.25rem .6rem; border-radius:9999px; border:1px solid var(--color-light);
+      background:#fff; font-size:.82rem; color:var(--color-dark-variant);
+      box-shadow:var(--box-shadow);
     }
 
-    main {
-      margin-top: 1.4rem;
-    }
+    .jobsTodayDoneButton{ padding:.5rem 1rem; border-radius:30px; background:#20a44c; color:#fff; }
 
-    main .pendingDivs {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1.6rem;
+    @media (max-width:1200px){
+      .container{ width:95%; grid-template-columns:7rem auto 23rem; }
+      main .pendingDivs{ grid-template-columns:1fr; gap:0; }
+      main .latestJobApplicantTable{ width:94%; position:absolute; left:50%; transform:translateX(-50%); margin:2rem 0 0 .8rem; }
+      main .latestJobApplicantTable table{ width:83vw; }
+      main table thead tr th:last-child, main table thead tr th:first-child{ display:none; }
+      main table tbody tr td:last-child, main table tbody tr td:first-child{ display:none; }
+      .section-header .arrow-link{ right:.4rem; top:.2rem; }
+      .course-title{ max-width:8rem; }
     }
-
-    main .pendingDivs>div {
-      background-color: white;
-      margin-top: 1rem;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      text-align: center;
-      border: 1px solid #e7edf3;
-      padding: 12px;
-      box-shadow: var(--box-shadow);
-      border-radius: 14px;
-    }
-
-    main .pendingDivs>div:hover {
-      box-shadow: none;
-    }
-
-    main .pendingDivs>div .status {
-      align-items: center;
-    }
-
-    main .pendingDivs h3 {
-      font-size: 1rem;
-    }
-
-    main .pendingDivs svg {
-      width: 7rem;
-      height: 7rem;
-    }
-
-    main .pendingDivs svg circle {
-      fill: none;
-      stroke-width: 10;
-      stroke-linecap: round;
-      transform: translate(5px, 5px);
-    }
-
-    main .pendingDivs .pendingWorkerAccDiv svg circle {
-      stroke: var(--color-success);
-      stroke-dashoffset: -30;
-      stroke-dasharray: 200;
-    }
-
-    main .pendingDivs .pendingAdminAccessDiv svg circle {
-      stroke: var(--color-danger);
-      stroke-dashoffset: -30;
-      stroke-dasharray: 200;
-    }
-
-    main .pendingDivs .pendingJobAppDiv svg circle {
-      stroke: var(--color-primary);
-      stroke-dashoffset: -30;
-      stroke-dasharray: 200;
-    }
-
-    main .latestJobApplicantTable {
-      margin-top: 1.3rem;
-    }
-
-    main .latestJobApplicantTable h2 {
-      margin-bottom: 0.8rem;
-    }
-
-    main .latestJobApplicantTable table {
-      background-color: white;
-      width: 100%;
-      text-align: center;
-      transition: all 0.3s ease;
-      border: 1px solid #e7edf3;
-      padding: 18px 12px 12px 12px;
-      box-shadow: var(--box-shadow);
-      border-radius: 14px;
-    }
-
-    main .latestJobApplicantTable table:hover {
-      box-shadow: none;
-    }
-
-    main table tbody td {
-      height: 2rem;
-      border-bottom: 1px solid var(--color-light);
-      color: var(--color-dark-variant);
-    }
-
-    main table tbody tr:last-child td {
-      border: none;
-    }
-
-    main .latestJobApplicantTable a {
-      text-align: center;
-      display: block;
-      margin: 1rem auto;
-      color: var(--color-primary);
-    }
-
-    .right-section {
-      margin-top: 1.4rem;
-    }
-
-    .right-section .nav {
-      display: flex;
-      justify-content: end;
-      gap: 2rem;
-    }
-
-    .right-section .nav button {
-      display: none;
-    }
-
-    .right-section .dark-mode {
-      background-color: var(--color-light);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      height: 1.6rem;
-      width: 4.2rem;
-      cursor: pointer;
-      border-radius: var(--border-radius-1);
-    }
-
-    .right-section .dark-mode span {
-      font-size: 1.2rem;
-      width: 50%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .right-section .dark-mode span.active {
-      background-color: var(--color-primary);
-      color: white;
-      border-radius: var(--border-radius-1);
-    }
-
-    .right-section .nav .profile {
-      display: flex;
-      gap: 2rem;
-      text-align: right;
-    }
-
-    .right-section .nav .profile .profile-photo {
-      width: 2.8rem;
-      height: 2.8rem;
-      border-radius: 50%;
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .profile-photo img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      /*makes admin profile square*/
-    }
-
-    .right-section .user-profile {
-      display: flex;
-      justify-content: center;
-      text-align: center;
-      margin-top: 1rem;
-      background-color: var(--color-white);
-      padding: var(--card-padding);
-      border-radius: var(--card-border-radius);
-      box-shadow: var(--box-shadow);
-      cursor: pointer;
-      transition: all 0.3s ease;
-      border: 2px dashed #20a44c;
-    }
-
-    .right-section .user-profile:hover {
-      box-shadow: none;
-    }
-
-    .right-section .user-profile img {
-      width: 11rem;
-      height: auto;
-      margin-bottom: 0.8rem;
-      border-radius: 50%;
-    }
-
-    .right-section .user-profile h2 {
-      margin-bottom: 0.2rem;
-    }
-
-    .right-section .quickLinksDiv {
-      margin-top: 2rem;
-    }
-
-    .right-section .quickLinksDiv .header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 0.8rem;
-    }
-
-    .right-section .quickLinksDiv .header span {
-      padding: 10px;
-      box-shadow: var(--box-shadow);
-      background-color: var(--color-white);
-      border-radius: 50%;
-    }
-
-    .right-section .quickLinksDiv .notification {
-      background-color: white;
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      margin-bottom: 0.7rem;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      border: 1px solid #e7edf3;
-      padding: 12px 12px 12px 20px;
-      box-shadow: var(--box-shadow);
-      border-radius: 14px;
-    }
-
-    .right-section .quickLinksDiv .notification:hover {
-      box-shadow: none;
-    }
-
-    .right-section .quickLinksDiv .notification .content {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin: 0;
-      width: 100%;
-    }
-
-    .right-section .quickLinksDiv .notification .icon {
-      padding: 0.6rem;
-      color: var(--color-white);
-      background-color: var(--color-success);
-      border-radius: 20%;
-      display: flex;
-    }
-
-    .right-section .quickLinksDiv .notification.deactive .icon {
-      background-color: var(--color-danger);
-    }
-
-    .right-section .quickLinksDiv .add-reminder {
-      background-color: var(--color-white);
-      border: 2px dashed var(--color-primary);
-      color: var(--color-primary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-    }
-
-    .right-section .quickLinksDiv .add-reminder:hover {
-      background-color: var(--color-primary);
-      color: white;
-    }
-
-    .right-section .quickLinksDiv .add-reminder div {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-    }
-
-    .jobsTodayDoneButton {
-      padding: 0.5rem 1rem;
-      border-radius: 30px;
-      background-color: #20a44c;
-      color: white;
-    }
-
-    @media screen and (max-width: 1200px) {
-      .container {
-        width: 95%;
-        grid-template-columns: 7rem auto 23rem;
+    @media (max-width:768px){
+      .container{ width:100%; grid-template-columns:1fr; padding:0 var(--padding-1); }
+      @keyframes showMenu{ to{ left:0; } }
+      main{ margin-top:8rem; padding:0 1rem; }
+      main .latestJobApplicantTable{ position:relative; margin:3rem 0 0 0; width:100%; }
+      .right-section{ width:94%; margin:0 auto 4rem; }
+      .right-section .nav{
+        position:fixed; top:0; left:0; align-items:center; background:#fff; padding:0 var(--padding-1);
+        height:4.6rem; width:100%; z-index:2; box-shadow:0 1rem 1rem var(--color-light); margin:0;
       }
-
-      main .pendingDivs {
-        grid-template-columns: 1fr;
-        gap: 0;
-      }
-
-
-
-      main .latestJobApplicantTable {
-        width: 94%;
-        position: absolute;
-        left: 50%;
-        transform: translateX(-50%);
-        margin: 2rem 0 0 0.8rem;
-      }
-
-      main .latestJobApplicantTable table {
-        width: 83vw;
-      }
-
-      main table thead tr th:last-child,
-      main table thead tr th:first-child {
-        display: none;
-      }
-
-      main table tbody tr td:last-child,
-      main table tbody tr td:first-child {
-        display: none;
-      }
+      .right-section .nav .dark-mode{ width:4.4rem; position:absolute; left:66%; }
+      .right-section .profile .info{ display:none; }
+      .right-section .nav button{ display:inline-block; background:transparent; cursor:pointer; color:var(--color-dark); position:absolute; left:1rem; }
+      .right-section .nav button span{ font-size:2rem; }
     }
 
-    @media screen and (max-width: 768px) {
-      .container {
-        width: 100%;
-        grid-template-columns: 1fr;
-        padding: 0 var(--padding-1);
-      }
-
-      @keyframes showMenu {
-        to {
-          left: 0;
-        }
-      }
-
-      main {
-        margin-top: 8rem;
-        padding: 0 1rem;
-      }
-
-      main .latestJobApplicantTable {
-        position: relative;
-        margin: 3rem 0 0 0;
-        width: 100%;
-      }
-
-      main .latestJobApplicantTable table {
-        width: 100%;
-        margin: 0;
-      }
-
-      .right-section {
-        width: 94%;
-        margin: 0 auto 4rem;
-      }
-
-      .right-section .nav {
-        position: fixed;
-        top: 0;
-        left: 0;
-        align-items: center;
-        background-color: var(--color-white);
-        padding: 0 var(--padding-1);
-        height: 4.6rem;
-        width: 100%;
-        z-index: 2;
-        box-shadow: 0 1rem 1rem var(--color-light);
-        margin: 0;
-      }
-
-      .right-section .nav .dark-mode {
-        width: 4.4rem;
-        position: absolute;
-        left: 66%;
-      }
-
-      .right-section .profile .info {
-        display: none;
-      }
-
-      .right-section .nav button {
-        display: inline-block;
-        background-color: transparent;
-        cursor: pointer;
-        color: var(--color-dark);
-        position: absolute;
-        left: 1rem;
-      }
-
-      .right-section .nav button span {
-        font-size: 2rem;
-      }
-    }
-
-    .newJobPostedPay {
-      color: #20a44c;
-      font-weight: bold;
-    }
-
-    .material-icons-sharp {
-      display: flex;
-      align-items: center;
-    }
+    .newJobPostedPay{ color:#20a44c; font-weight:bold; }
+    .material-icons-sharp{ display:flex; align-items:center; }
     /*==END==*/
   </style>
 </head>
-
 <body>
   <div class="container">
     <!-- Sidebar Section -->
     <aside>
       <div class="toggle">
         <div class="logo">
-          <img src="../../../img/simpLogo.png" />
-          <h2>SIMP<span class="danger">Project</span></h2>
+          <img src="../../../img/simpLogo.png" alt="SIMP Logo" />
+        <h2>SIMP<span class="danger">Project</span></h2>
         </div>
-        <div class="close" id="close-btn">
-          <span class="material-icons-sharp">close</span>
-        </div>
+        <div class="close" id="close-btn"><span class="material-icons-sharp">close</span></div>
       </div>
 
       <div class="sidebar">
-        <a href="dashboard.html" class="active">
-          <span class="material-icons-sharp">dashboard</span>
-          <h3>Dashboard</h3>
-        </a>
-        <a href="workerVerification.html">
-          <span class="material-icons-sharp">engineering</span>
-          <h3>Workers<br>Verification</h3>
-        </a>
-        <a href="jobVerification.html">
-          <span class="material-icons-sharp">work</span>
-          <h3>Jobs<br>Verification</h3>
-        </a>
-        <a href="jobApplicationVerification.html">
-          <span class="material-icons-sharp">approval</span>
-          <h3>Application<br>Verification</h3>
-        </a>
-        <a href="adminVerification.html">
-          <span class="material-icons-sharp">shield</span>
-          <h3>Admin<br>Verification</h3>
-        </a>
-        <a href="paymentsRequest.html">
-          <span class="material-icons-sharp">payments</span>
-          <h3>Payments<br>Request</h3>
-        </a>
-        <a href="courses.html">
-          <span class="material-icons-sharp">school</span>
-          <h3>Course<br>Publisher</h3>
-        </a>
-        <a href="#">
-          <span class="material-icons-sharp">settings</span>
-          <h3>Settings</h3>
-        </a>
-
-        <a href="#" id="logout-btn">
-          <span class="material-icons-sharp">logout</span>
-          <h3>Logout</h3>
-        </a>
+        <a href="dashboard.html" class="active"><span class="material-icons-sharp">dashboard</span><h3>Dashboard</h3></a>
+        <a href="workerVerification.html"><span class="material-icons-sharp">engineering</span><h3>Workers<br>Verification</h3></a>
+        <a href="jobVerification.html"><span class="material-icons-sharp">work</span><h3>Jobs<br>Verification</h3></a>
+        <a href="jobApplicationVerification.html"><span class="material-icons-sharp">approval</span><h3>Application<br>Verification</h3></a>
+        <a href="adminVerification.html"><span class="material-icons-sharp">shield</span><h3>Admin<br>Verification</h3></a>
+        <a href="paymentsRequest.html"><span class="material-icons-sharp">payments</span><h3>Payments<br>Request</h3></a>
+        <a href="courses.html"><span class="material-icons-sharp">school</span><h3>Course<br>Publisher</h3></a>
+        <a href="#"><span class="material-icons-sharp">settings</span><h3>Settings</h3></a>
+        <a href="#" id="logout-btn"><span class="material-icons-sharp">logout</span><h3>Logout</h3></a>
       </div>
     </aside>
-    <!-- End of Sidebar Section -->
 
     <!-- Main Content -->
     <main>
       <h1>Admin Overview</h1>
 
-      <!-- KPIs aligned to your flows -->
+      <!-- KPIs -->
       <div class="pendingDivs">
+        <!-- 1) Pending Installers -->
         <div class="pendingWorkerAccDiv" onclick="location.href='workerVerification.html'">
-          <div class="status">
-            <div class="info">
-              <h3>Pending Worker Accounts</h3>
-              <h1>123</h1>
-            </div>
-          </div>
+          <div class="status"><div class="info">
+            <h3>Pending Installers</h3>
+            <h1 id="kpi-pending-installers">0</h1>
+          </div></div>
         </div>
 
-        <div class="pendingJobAppDiv" onclick="location.href='jobApplicationVerification.html'">
-          <div class="status">
-            <div class="info">
-              <h3>Job Applicants</h3>
-              <h1>456</h1>
-            </div>
-          </div>
+        <!-- 2) Pending or Viewed Jobs -->
+        <div class="pendingJobAppDiv" onclick="location.href='jobVerification.html'">
+          <div class="status"><div class="info">
+            <h3>Pending / Viewed Jobs</h3>
+            <h1 id="kpi-pending-jobs">0</h1>
+          </div></div>
         </div>
 
+        <!-- 3) Admin Access Requests -->
         <div class="pendingAdminAccessDiv" onclick="location.href='adminVerification.html'">
-          <div class="status">
-            <div class="info">
-              <h3>Admin Access Requests</h3>
-              <h1>789</h1>
-            </div>
-          </div>
+          <div class="status"><div class="info">
+            <h3>Admin Access Requests</h3>
+            <h1 id="kpi-admin-requests">0</h1>
+          </div></div>
         </div>
-
       </div>
-      <!-- End of KPIs -->
 
-      <!-- latest job submissions div -->
+      <!-- Newly Applications Table (jobs with pending applicants) -->
       <div class="latestJobApplicantTable">
-        <h2>Latest Job Submissions (for review)</h2>
+        <div class="section-header">
+          <h2>New Applications1</h2>
+          <!-- minimalist chevron link pinned top-right, visually above the Action column -->
+          <a class="arrow-link" href="jobApplicationVerification.html" aria-label="Go to Application Verification">&gt;</a>
+        </div>
         <table>
           <thead>
             <tr>
-              <th>Job</th>
-              <th>Pay</th>
-              <th>Category</th>
-              <th>Job Category</th>
-              <th>Schedule</th>
-            </tr>
-          </thead>
-          <tbody>
-            <td>Install CCTV</td>
-            <td>₱3,000</td>
-            <td>Easy</td>
-            <td>Electrical</td>
-            <td>Tommorow</td>
-          </tbody>
-        </table>
-        <a href="jobApplicationVerification.html">Go to Job Verifications page</a>
-      </div>
-      <!-- End latest job submissions -->
-
-
-      <!-- Applications awaiting decision -->
-      <div class="latestJobApplicantTable">
-        <h2>Choose the best applicant for each job.</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Job</th>
+              <th style="text-align:left">Job</th>
               <th>No. of Applicants</th>
-              <th>Job date/time</th>
-              <th>Job Category</th>
+              <th>Last Applicant</th>
+              <th>Last Applied</th>
+              <th>Action</th>
             </tr>
           </thead>
-          <tbody>
-            <td>Install CCTV</td>
-            <td>123</td>
-            <td>Today</td>
-            <td>Easy</td>
+          <tbody id="new-apps-by-job-tbody">
+            <!-- rows injected by JS -->
           </tbody>
         </table>
-        <a href="jobApplicationVerification.html">Go to Application Verification page</a>
       </div>
-      <!-- End Applications table -->
+      <!-- END -->
     </main>
-    <!-- End of Main Content -->
 
     <!-- Right Section -->
     <div class="right-section">
       <div class="nav">
-        <button id="menu-btn">
-          <span class="material-icons-sharp">menu</span>
-        </button>
+        <button id="menu-btn" type="button"><span class="material-icons-sharp">menu</span></button>
         <div class="dark-mode">
-          <span class="material-icons-sharp active"> light_mode </span>
-          <span class="material-icons-sharp"> dark_mode </span>
+          <span class="material-icons-sharp active">light_mode</span>
+          <span class="material-icons-sharp">dark_mode</span>
         </div>
-
         <div class="profile">
-          <div class="info">
-            <p>Hey, <b>Admin Name</b></p>
-            <small class="text-muted">Role: Admin or Superadmin</small>
-          </div>
-          <div class="profile-photo">
-            <img src="../../../img/bgTatay.jpg" alt="admin" />
-          </div>
+          <!-- ADDED spans for dynamic admin name & role -->
+          <div class="info"><p>Hey, <b id="admin-name">Admin</b></p><small class="text-muted">Role: <span id="admin-role">Admin or Superadmin</span></small></div>
+          <div class="profile-photo"><img src="../../../img/bgTatay.jpg" alt="admin" /></div>
         </div>
       </div>
-      <!-- End of Nav -->
 
-      <!-- Quick Links to your pages -->
-      <div class="quickLinksDiv">
+      <!-- Published Courses (replaces Quick Links) -->
+      <div class="coursesDiv">
         <div class="header">
-          <h2>Quick Links</h2>
+          <h2>
+            Published Courses
+            <!-- total completions badge (NEW) -->
+            <span id="courses-total-badge" class="total-badge" title="All completions across visible courses" style="display:none;">
+              <span class="material-icons-sharp" style="font-size:1rem;">verified</span>
+              <span id="courses-total-count">0</span>
+            </span>
+          </h2>
+          <span class="material-icons-sharp" style="padding:10px; box-shadow:var(--box-shadow); background:#fff; border-radius:50%;">school</span>
         </div>
 
-        <div class="notification" onclick="location.href='workerVerification.html'">
-          <div class="content">
-            <div class="info">
-              <h3>Workers Verification</h3>
-              <small class="text_muted">Approve / Reject new workers</small>
-            </div>
-            <span class="material-icons-sharp">keyboard_arrow_right</span>
-          </div>
-        </div>
-
-        <div class="notification" onclick="location.href='jobVerification.html'">
-          <div class="content">
-            <div class="info">
-              <h3>Jobs Verification</h3>
-              <small class="text_muted">Review client-submitted jobs</small>
-            </div>
-            <span class="material-icons-sharp">keyboard_arrow_right</span>
-          </div>
-        </div>
-
-        <div class="notification" onclick="location.href='jobApplicationVerification.html'">
-          <div class="content">
-            <div class="info">
-              <h3>Application Verification</h3>
-              <small class="text_muted">Choose candidates to hire</small>
-            </div>
-            <span class="material-icons-sharp">keyboard_arrow_right</span>
-          </div>
-        </div>
-
-        <div class="notification" onclick="location.href='adminVerification.html'">
-          <div class="content">
-            <div class="info">
-              <h3>Admin Verification</h3>
-              <small class="text_muted">Grant Admin / Superadmin</small>
-            </div>
-            <span class="material-icons-sharp">keyboard_arrow_right</span>
-          </div>
-        </div>
-
-        <div class="notification" onclick="location.href='courses.html'">
-          <div class="content">
-            <div class="info">
-              <h3>Course Publisher</h3>
-              <small class="text_muted">Upload & manage worker courses</small>
-            </div>
-            <span class="material-icons-sharp">keyboard_arrow_right</span>
+        <div id="courses-list" class="course-list">
+          <!-- Courses will be injected here -->
+          <div class="empty-state" id="courses-empty" style="display:none;">
+            <span class="material-icons-sharp">menu_book</span>
+            <span>No published courses yet.</span>
           </div>
         </div>
       </div>
-      <script src="../../general_files/index.js"></script>
-      <script type="module" src="../../general_files/session.js"></script>
+      <!-- /Published Courses -->
+    </div>
+  </div>
 
+  <!-- Supabase CDN (v2) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script src="../../general_files/index.js"></script>
+  <script type="module" src="../../general_files/session.js"></script>
+
+  <!-- Page logic -->
+  <script type="module">
+    async function ensureSupabaseClient() {
+      if (window.supabaseClient && typeof window.supabaseClient.from === "function") return window.supabaseClient;
+      if (window.supabase && typeof window.supabase.from === "function") {
+        window.supabaseClient = window.supabase; return window.supabaseClient;
+      }
+      const ns = window.supabase;
+      if (!ns || typeof ns.createClient !== "function") { console.error("Supabase not loaded"); return null; }
+      let url, key;
+      try {
+        const mod = await import("../../../supabase.js");
+        url = mod.SUPABASE_URL; key = mod.SUPABASE_ANON_KEY;
+      } catch (_) {}
+      if (!url) url = window.SUPABASE_URL;
+      if (!key) key = window.SUPABASE_ANON_KEY;
+      if (!url || !key) { console.error("Missing SUPABASE_URL / SUPABASE_ANON KEY."); return null; }
+      window.supabaseClient = ns.createClient(url, key);
+      return window.supabaseClient;
+    }
+
+    function fromInSchema(client, schema, table) {
+      if (client.schema && typeof client.schema === "function") return client.schema(schema).from(table);
+      return client.from(`${schema}.${table}`);
+    }
+
+    async function updatePendingInstallersKPI() {
+      const client = await ensureSupabaseClient();
+      if (!client) return;
+      const { count, error } = await fromInSchema(client, "public", "installer_documents")
+        .select("*", { count: "exact", head: true })
+        .eq("status", "pending");
+      if (error) { console.error("Pending installers KPI error:", error); return; }
+      document.getElementById("kpi-pending-installers").textContent =
+        (typeof count === "number" ? count : 0).toLocaleString();
+    }
+
+    async function updatePendingJobsKPI() {
+      const client = await ensureSupabaseClient();
+      if (!client) return;
+      const { count, error } = await fromInSchema(client, "jobs", "job")
+        .select("*", { count: "exact", head: true })
+        .in("job_status", ["pending", "viewed"]);
+      if (error) { console.error("Pending/viewed jobs KPI error:", error); return; }
+      document.getElementById("kpi-pending-jobs").textContent =
+        (typeof count === "number" ? count : 0).toLocaleString();
+    }
+
+    // Admin Access Requests KPI (role = 'pending')
+    async function updatePendingAdminsKPI() {
+      const client = await ensureSupabaseClient();
+      if (!client) return;
+      const { count, error } = await fromInSchema(client, "public", "admin")
+        .select("*", { count: "exact", head: true })
+        .eq("role", "pending");
+      if (error) { console.error("Pending admins KPI error:", error); return; }
+      document.getElementById("kpi-admin-requests").textContent =
+        (typeof count === "number" ? count : 0).toLocaleString();
+    }
+
+    // Table of jobs with new applicants (counts pending apps per job + last applicant name)
+    async function updateNewApplicationsTable() {
+      const client = await ensureSupabaseClient();
+      if (!client) return;
+
+      // 1) Fetch recent pending applications (need installer_id to capture last applicant)
+      const { data: apps, error: appErr } = await fromInSchema(client, "jobs", "job_application")
+        .select("job_id, installer_id, applied_at, status")
+        .eq("status", "pending")
+        .order("applied_at", { ascending: false })
+        .limit(300); // dashboard sample size
+
+      const tbody = document.getElementById("new-apps-by-job-tbody");
+      tbody.innerHTML = "";
+
+      if (appErr) {
+        console.error("Fetch applications error:", appErr);
+        tbody.innerHTML = `<tr><td colspan="5">Unable to load applications.</td></tr>`;
+        return;
+      }
+
+      if (!apps || apps.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5">No new applications</td></tr>`;
+        return;
+      }
+
+      // 2) Group by job_id: count, lastApplied, lastInstallerId
+      const byJob = new Map(); // job_id -> { count, lastApplied, lastInstallerId }
+      for (const a of apps) {
+        if (!byJob.has(a.job_id)) {
+          byJob.set(a.job_id, {
+            count: 0,
+            lastApplied: a.applied_at ? new Date(a.applied_at) : null,
+            lastInstallerId: a.installer_id || null
+          });
+        }
+        const entry = byJob.get(a.job_id);
+        entry.count += 1;
+
+        const at = a.applied_at ? new Date(a.applied_at) : null;
+        if (at && (!entry.lastApplied || at > entry.lastApplied)) {
+          entry.lastApplied = at;
+          entry.lastInstallerId = a.installer_id || entry.lastInstallerId;
+        }
+      }
+
+      // 3) Lookup job titles for those job_ids
+      const jobIds = Array.from(byJob.keys());
+      const { data: jobRows, error: jobErr } = await fromInSchema(client, "jobs", "job")
+        .select("job_id, job_title")
+        .in("job_id", jobIds);
+
+      if (jobErr) {
+        console.error("Fetch jobs error:", jobErr);
+      }
+      const jobTitleById = new Map();
+      (jobRows || []).forEach(j => jobTitleById.set(j.job_id, j.job_title));
+
+      // 4) Lookup last installer names via installer_id
+      const lastInstallerIds = Array.from(new Set(
+        jobIds.map(id => byJob.get(id).lastInstallerId).filter(Boolean)
+      ));
+      let installers = [];
+      if (lastInstallerIds.length) {
+        const { data: insRows, error: insErr } = await fromInSchema(client, "public", "installer")
+          .select("id, name")
+          .in("id", lastInstallerIds);
+        if (insErr) {
+          console.error("Installers fetch error:", insErr);
+        } else {
+          installers = insRows || [];
+        }
+      }
+      const installerNameById = new Map();
+      installers.forEach(i => {
+        const composed =
+          i.full_name ||
+          i.name ||
+          [i.first_name, i.last_name].filter(Boolean).join(" ").trim();
+        installerNameById.set(i.id, composed || i.id);
+      });
+
+      // 5) Build rows (sort by most recent application time)
+      const rows = jobIds
+        .map(id => {
+          const entry = byJob.get(id);
+          return {
+            job_id: id,
+            title: jobTitleById.get(id) || id,
+            count: entry.count,
+            lastApplied: entry.lastApplied,
+            lastInstallerName: installerNameById.get(entry.lastInstallerId) || entry.lastInstallerId || "—"
+          };
+        })
+        .sort((a, b) => (b.lastApplied?.getTime() || 0) - (a.lastApplied?.getTime() || 0))
+        .slice(0, 15); // top 15 for dashboard
+
+      if (!rows.length) {
+        tbody.innerHTML = `<tr><td colspan="5"><span class="material-icons-sharp" style="vertical-align:middle;margin-right:.35rem;">hourglass_empty</span>No new applications</td></tr>`;
+        return;
+      }
+
+      for (const r of rows) {
+        tbody.insertAdjacentHTML(
+          "beforeend",
+          `<tr>
+            <td style="text-align:left">${escapeHtml(r.title)}</td>
+            <td>${r.count}</td>
+            <td>${escapeHtml(r.lastInstallerName)}</td>
+            <td>${r.lastApplied ? r.lastApplied.toLocaleString() : "—"}</td>
+            <td><a href="jobApplicationVerification.html" style="color:var(--color-primary)">Review</a></td>
+          </tr>`
+        );
+      }
+    }
+
+    // -------- Published Courses loader (NEW) --------
+    async function updatePublishedCoursesPanel() {
+      const client = await ensureSupabaseClient();
+      if (!client) return;
+
+      const listEl = document.getElementById("courses-list");
+      const emptyEl = document.getElementById("courses-empty");
+      if (!listEl) return;
+
+      // Fetch published courses
+      const { data: courses, error: cErr } = await fromInSchema(client, "courses", "course")
+        .select("id, title, level")
+        .eq("is_published", true)
+        .order("created_at", { ascending: false })
+        .limit(30);
+
+      if (cErr) {
+        console.error("Courses fetch error:", cErr);
+        listEl.innerHTML = `<div class="empty-state"><span class="material-icons-sharp">error_outline</span><span>Unable to load courses.</span></div>`;
+        return;
+      }
+
+      if (!courses || courses.length === 0) {
+        emptyEl.style.display = "flex";
+        return;
+      }
+
+      // Fetch completions for these course ids and aggregate in JS
+      const ids = courses.map(c => c.id);
+      const { data: completions, error: compErr } = await fromInSchema(client, "courses", "completed_courses")
+        .select("course_id")
+        .in("course_id", ids)
+        .limit(10000);
+
+      if (compErr) console.error("Completed courses fetch error:", compErr);
+
+      const countByCourse = new Map();
+      (completions || []).forEach(row => {
+        countByCourse.set(row.course_id, (countByCourse.get(row.course_id) || 0) + 1);
+      });
+
+      // Update section total (sum of counts for visible courses)
+      const total = Array.from(countByCourse.values()).reduce((a, b) => a + b, 0);
+      const totalBadge = document.getElementById("courses-total-badge");
+      const totalCount = document.getElementById("courses-total-count");
+      if (totalBadge && totalCount) {
+        totalCount.textContent = total.toLocaleString();
+        totalBadge.style.display = "inline-flex";
+      }
+
+      // Render cards
+      listEl.innerHTML = "";
+      for (const course of courses) {
+        const completed = countByCourse.get(course.id) || 0;
+        const levelText = Number.isFinite(course.level) ? `Level ${course.level}` : "Level 0";
+        listEl.insertAdjacentHTML(
+          "beforeend",
+          `<div class="course-card clickable" role="button" tabindex="0" data-course-id="${course.id}" aria-label="Open course ${escapeHtml(course.title)}">
+            <div class="course-left">
+              <div class="course-icon"><span class="material-icons-sharp">menu_book</span></div>
+              <div class="course-title" title="${escapeHtml(course.title)}">${escapeHtml(course.title)}</div>
+            </div>
+            <div class="course-meta">
+              <span class="level-pill">${escapeHtml(levelText)}</span>
+              <span class="completed-count" title="Installers who completed">
+                <span class="material-icons-sharp">verified</span>${completed.toLocaleString()}
+              </span>
+            </div>
+          </div>`
+        );
+      }
+
+      // Make course cards clickable -> redirect to courses.html
+      listEl.addEventListener("click", (e) => {
+        const card = e.target.closest(".course-card.clickable");
+        if (card) {
+          window.location.href = "courses.html";
+        }
+      });
+      // Keyboard support (Enter/Space)
+      listEl.addEventListener("keydown", (e) => {
+        if ((e.key === "Enter" || e.key === " ") && e.target.classList.contains("course-card")) {
+          e.preventDefault();
+          window.location.href = "courses.html";
+        }
+      });
+    }
+
+    // -------- UPDATED: Logged-in admin name & role (matches public.admin schema) --------
+    async function updateLoggedInAdminInfo() {
+      const client = await ensureSupabaseClient();
+      if (!client) return;
+
+      const nameEl = document.getElementById("admin-name");
+      const roleEl = document.getElementById("admin-role");
+      if (!nameEl || !roleEl) return;
+
+      try {
+        // Get current user (requires a valid session)
+        const { data: userRes, error: userErr } = await client.auth.getUser();
+        if (userErr) { console.error("auth.getUser error:", userErr); return; }
+        const user = userRes?.user;
+        if (!user?.id) { return; }
+
+        // Look up admin record by id (PK references auth.users.id)
+        const { data: adminRow, error: adminErr } = await fromInSchema(client, "public", "admin")
+          .select("id, name, role, email, phone")
+          .eq("id", user.id)
+          .limit(1)
+          .maybeSingle();
+
+        if (adminErr) { console.error("admin lookup error:", adminErr); return; }
+
+        // Compose display name with safe fallbacks
+        const composedName =
+          adminRow?.name ||
+          user.user_metadata?.full_name ||
+          user.user_metadata?.name ||
+          user.email ||
+          "Admin";
+
+        const roleStr = adminRow?.role || "admin";
+
+        nameEl.textContent = composedName;
+        roleEl.textContent = (roleStr || "").toString().charAt(0).toUpperCase() + (roleStr || "").toString().slice(1);
+      } catch (e) {
+        console.error("updateLoggedInAdminInfo exception:", e);
+      }
+    }
+
+    // Simple HTML-escape helper for titles/names
+    function escapeHtml(str) {
+      return String(str ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    // Kick off KPIs + sections
+    updatePendingInstallersKPI();
+    updatePendingJobsKPI();
+    updatePendingAdminsKPI();
+    updateNewApplicationsTable(); // by job (counts + last applicant)
+    updatePublishedCoursesPanel(); // published courses on right panel
+    updateLoggedInAdminInfo();     // show logged-in admin name & role
+  </script>
 </body>
-
 </html>

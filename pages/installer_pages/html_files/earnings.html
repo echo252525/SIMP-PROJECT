@@ -92,7 +92,7 @@
     .dot{ width:10px; height:10px; border-radius:999px; display:inline-block; }
     .dot.approved{ background:#20a44c; }
     .dot.pending{ background:#f59e0b; }
-    .dot.payouted{ background:#1f6d86; }
+    .dot.payouted{ background:#1f6d86; } /* class name kept; just label text changes */
 
     /* Select Mode toolbar (appears when Request Payout is pressed first) */
     .select-toolbar{
@@ -171,7 +171,7 @@
       <!-- ===== Payments Summary (live from earnings.payments x jobs.job) ===== -->
       <section class="summary-grid" id="payments-summary">
         <div class="card">
-          <div class="label">Total Payments that are approved by admin but don't payout yet (to payout) — Balance</div>
+          <div class="label">Total Payments that are approved by admin but not yet disbursed — Balance</div>
           <div class="value" id="sum-approved-balance">₱0.00</div>
           <div class="sub">Filter: <code>earnings.payments.payment_status = 'paid'</code></div>
           <div class="bar"><span id="bar-approved"></span></div>
@@ -183,17 +183,17 @@
           <div class="bar"><span id="bar-pending"></span></div>
         </div>
         <div class="card">
-          <div class="label">Total Payments that are already payouted</div>
+          <div class="label">Total Payments that are already disbursed</div>
           <div class="value" id="sum-payouted">₱0.00</div>
-          <div class="sub">Filter: <code>earnings.payments.payment_status = 'payouted'</code></div>
+          <div class="sub">Filter: <code>earnings.payments.payment_status = 'disbursed'</code></div>
           <div class="bar"><span id="bar-payouted"></span></div>
         </div>
         <div class="card">
           <div class="label">Legend</div>
           <div class="legend">
-            <span><span class="dot approved"></span> Approved (to payout)</span>
+            <span><span class="dot approved"></span> Approved (to disburse)</span>
             <span><span class="dot pending"></span> Pending (unpaid)</span>
-            <span><span class="dot payouted"></span> Payouted</span>
+            <span><span class="dot payouted"></span> Disbursed</span>
           </div>
           <div class="sub">Amounts use <code>jobs.job.job_pay</code> via <code>earnings.payments.job_id</code>.</div>
         </div>
@@ -225,8 +225,8 @@
       <!-- ===== Tabs and Tables ===== -->
       <section class="tabs">
         <div class="tabbar">
-          <button class="active" data-tab="unpaid">Unpaid / Approved (not yet payouted)</button>
-          <button data-tab="paid">Payouted</button>
+          <button class="active" data-tab="unpaid">Unpaid / Approved (not yet disbursed)</button>
+          <button data-tab="paid">Disbursed</button>
         </div>
 
         <!-- Select toolbar (only shows in Select Mode on the Unpaid tab) -->
@@ -253,7 +253,7 @@
           </table>
         </div>
 
-        <!-- Payouted -->
+        <!-- Disbursed -->
         <div class="tablewrap" id="tab-paid" style="display:none;">
           <table>
             <thead>
@@ -263,7 +263,7 @@
                 <th>Date</th>
                 <th class="mono">Amount (₱)</th>
                 <th>Status</th>
-                <th>Payout Ref</th>
+                <th>Disbursement Ref</th>
               </tr>
             </thead>
             <tbody id="tbody-paid"></tbody>
@@ -323,13 +323,16 @@
 
     // ========= STATE =========
     let JOBS = [];      // [{ job_id, job_code, job_title, job_pay, job_date }]
-    let PAYMENTS = [];  // [{ id, installer_id, job_id, payment_status, first_created_at, updated_at }]
+    let PAYMENTS = [];  // [{ id, installer_id, job_id, payment_status, first_created_at, updated_at, payout_batch_no? }]
     let EARNINGS = [];  // UI rows
 
     // Select Mode
     let SELECT_MODE = false;
     const SELECTED = new Set(); // payment ids
     const ELIGIBLE = new Set(); // ids eligible to select (payment_status === 'paid')
+
+    // NEW: installer for creating payout group
+    let CURRENT_INSTALLER_ID = null;
 
     // ========= ELEMS =========
     const CURRENCY = '₱';
@@ -339,10 +342,10 @@
     // Summary
     const sumApprovedBalanceEl = document.getElementById('sum-approved-balance');
     const sumPendingEl = document.getElementById('sum-pending');
-    const sumPayoutedEl = document.getElementById('sum-payouted');
+    const sumPayoutedEl = document.getElementById('sum-payouted'); // id kept
     const barApproved = document.getElementById('bar-approved');
     const barPending = document.getElementById('bar-pending');
-    const barPayouted = document.getElementById('bar-payouted');
+    const barPayouted = document.getElementById('bar-payouted');   // id kept
 
     // Tables / controls / modal
     const tbodyUnpaid = document.getElementById('tbody-unpaid');
@@ -380,6 +383,22 @@
       return true;
     };
 
+    // Generate a batch number via RPC; fallback to client-side
+    async function getPayoutBatchNo(){
+      try{
+        // Server-side generator function name: earnings.next_payout_batch (exposed as rpc 'next_payout_batch')
+        const { data, error } = await supabase.rpc('next_payout_batch', { prefix: 'BATCH' });
+        if (error) throw error;
+        if (data && typeof data === 'string' && data.length) return data;
+      }catch(err){
+        console.warn('RPC next_payout_batch failed, using client fallback:', err?.message || err);
+      }
+      // Fallback: YYYYMMDD + 8-char random
+      const d = new Date().toISOString().slice(0,10).replace(/-/g,'');
+      const rnd = (crypto.randomUUID ? crypto.randomUUID() : (Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2))).slice(0,8).toUpperCase();
+      return `BATCH-${d}-${rnd}`;
+    }
+
     async function getInstallerId(){
       const param = new URLSearchParams(location.search).get('installer');
       if (param) return param;
@@ -392,7 +411,7 @@
       const { data: payments, error: payErr } = await supabase
         .schema("earnings")
         .from('payments')
-        .select('id, installer_id, job_id, payment_status, first_created_at, updated_at')
+        .select('id, installer_id, job_id, payment_status, payout_batch_no, first_created_at, updated_at')
         .eq('installer_id', installerId);
 
       if (payErr) throw payErr;
@@ -415,7 +434,7 @@
       EARNINGS = (payments || []).map(p=>{
         const j = jobById.get(p.job_id) || {};
         const uiStatus =
-          p.payment_status === 'payouted'       ? 'paid' :
+          p.payment_status === 'disbursed'     ? 'paid' :
           p.payment_status === 'paid'           ? 'approved' :
           p.payment_status === 'pending_payout' ? 'approved' :
                                                   'unpaid';
@@ -429,7 +448,7 @@
           date: j.job_date || null,
           amount: Number(j.job_pay) || 0,
           status: uiStatus,
-          paid_ref: p.payment_status === 'payouted' ? (p.id || '').slice(0,8).toUpperCase() : null,
+          paid_ref: p.payment_status === 'disbursed' ? (p.payout_batch_no || p.id || '').toString().slice(-8).toUpperCase() : null,
           updated_at: p.updated_at
         };
       });
@@ -447,32 +466,32 @@
     // ========= SUMMARY =========
     function computePaymentsSummary(){
       const jobById = new Map(JOBS.map(j=>[j.job_id, j]));
-      const sums = { unpaid:0, paid:0, payouted:0 };
+      const sums = { unpaid:0, paid:0, disbursed:0 };
 
       for (const p of PAYMENTS){
         const j = jobById.get(p.job_id);
         if (!j) continue;
         const amt = Number(j.job_pay) || 0;
         if (p.payment_status === 'unpaid') sums.unpaid += amt;
-        else if (p.payment_status === 'paid') sums.paid += amt;        // approved, not payouted
-        else if (p.payment_status === 'payouted') sums.payouted += amt;
+        else if (p.payment_status === 'paid') sums.paid += amt;              // approved, not disbursed
+        else if (p.payment_status === 'disbursed') sums.disbursed += amt;
       }
 
-      const total = (sums.unpaid + sums.paid + sums.payouted) || 1;
+      const total = (sums.unpaid + sums.paid + sums.disbursed) || 1;
 
       sumApprovedBalanceEl.textContent = fmt(sums.paid);
       sumPendingEl.textContent = fmt(sums.unpaid);
-      sumPayoutedEl.textContent = fmt(sums.payouted);
+      sumPayoutedEl.textContent = fmt(sums.disbursed);   // id kept
 
       barApproved.style.width = (sums.paid / total * 100).toFixed(1) + '%';
       barPending.style.width = (sums.unpaid / total * 100).toFixed(1) + '%';
-      barPayouted.style.width = (sums.payouted / total * 100).toFixed(1) + '%';
+      barPayouted.style.width = (sums.disbursed / total * 100).toFixed(1) + '%'; // id kept
     }
 
     // ========= TABLES =========
     function rowHTML(r){
       let pill = '';
-      if (r.status === 'paid') pill = '<span class="pill paid">Paid</span>';
+      if (r.status === 'paid') pill = '<span class="pill paid">Disbursed</span>';
       else if (r.status === 'approved') pill = '<span class="pill approved">Approved</span>';
       else pill = '<span class="pill unpaid">Unpaid</span>';
 
@@ -509,19 +528,19 @@
         return hit && okDate;
       });
 
-      // Not payouted = unpaid + approved
-      const notPayouted = filtered.filter(r => r.status === 'unpaid' || r.status === 'approved');
-      tbodyUnpaid.innerHTML = notPayouted.length
-        ? notPayouted.map(rowHTML).join('')
+      // Not disbursed = unpaid + approved
+      const notDisbursed = filtered.filter(r => r.status === 'unpaid' || r.status === 'approved');
+      tbodyUnpaid.innerHTML = notDisbursed.length
+        ? notDisbursed.map(rowHTML).join('')
         : `<tr><td colspan="6" class="sub" style="padding:1rem;">No records match your filters.</td></tr>`;
 
-      // Payouted
-      const payoutedRows = filtered.filter(r => r.status === 'paid');
-      tbodyPaid.innerHTML = payoutedRows.length
-        ? payoutedRows.map(rowHTML).join('')
-        : `<tr><td colspan="6" class="sub" style="padding:1rem;">No payouted records match your filters.</td></tr>`;
+      // Disbursed
+      const disbursedRows = filtered.filter(r => r.status === 'paid');
+      tbodyPaid.innerHTML = disbursedRows.length
+        ? disbursedRows.map(rowHTML).join('')
+        : `<tr><td colspan="6" class="sub" style="padding:1rem;">No disbursed records match your filters.</td></tr>`;
 
-      updatePayoutButton(notPayouted);
+      updatePayoutButton(notDisbursed);
       updateSelectToolbarCount();
       wireRowCheckboxes();
     }
@@ -545,7 +564,7 @@
 
       const headers = (activeTab==='unpaid')
         ? ['Job Code','Title','Date','Amount','Status']
-        : ['Job Code','Title','Date','Amount','Status','Payout Ref'];
+        : ['Job Code','Title','Date','Amount','Status','Disbursement Ref'];
 
       const records = rows.map(tr=>{
         const cells = Array.from(tr.querySelectorAll('td'));
@@ -597,15 +616,16 @@
         modalNote.textContent = `You currently don't meet the payout threshold of ${fmt(PAYOUT_THRESHOLD)} for the selected items.`;
         confirmPayout.disabled = true;
       } else {
-        modalNote.textContent = `A payout request will be created for ${eligibleChosen.length} job(s). You’ll see them move to “pending_payout”.`;
+        modalNote.textContent = `A payout request will be created for ${eligibleChosen.length} job(s). They will be grouped under the same batch number and move to “pending_payout”.`;
         confirmPayout.disabled = false;
       }
 
       modal.classList.add('open');
     }
     function closePayout(){ modal.classList.remove('open'); }
+
     async function confirmPayoutRequest(){
-      // Update selected eligible rows to pending_payout
+      // Update selected eligible rows to pending_payout AND give them the same payout_batch_no
       const ids = Array.from(SELECTED).filter(id => ELIGIBLE.has(id));
       if (!ids.length) return;
 
@@ -613,16 +633,24 @@
       confirmPayout.innerHTML = '<span class="material-icons-sharp">hourglass_top</span> Working...';
 
       try{
-        const { error } = await supabase
+        // 1) Generate/get a single batch number for this request
+        const batchNo = await getPayoutBatchNo();
+
+        // 2) Assign same batch number to all selected payments and move to pending_payout
+        const { error: updErr } = await supabase
           .schema('earnings')
           .from('payments')
-          .update({ payment_status: 'pending_payout' })
+          .update({ payment_status: 'pending_payout', payout_batch_no: batchNo })
           .in('id', ids);
-        if (error) throw error;
+
+        if (updErr) throw updErr;
 
         // Mutate local PAYMENTS and derived EARNINGS
         for (const p of PAYMENTS){
-          if (ids.includes(p.id)) p.payment_status = 'pending_payout';
+          if (ids.includes(p.id)){
+            p.payment_status = 'pending_payout';
+            p.payout_batch_no = batchNo;
+          }
         }
         EARNINGS = EARNINGS.map(r => ids.includes(r.payment_id)
           ? { ...r, payment_status: 'pending_payout', status: 'approved' }
@@ -641,7 +669,7 @@
         computePaymentsSummary();
         applyFilters();
         closePayout();
-        alert(`Request submitted for ${ids.length} job(s).`);
+        alert(`Request submitted for ${ids.length} job(s).\nBatch: ${batchNo}`);
       }catch(err){
         console.error(err);
         alert('Failed to submit payout request: ' + (err?.message || 'Unknown error'));
@@ -739,6 +767,7 @@
     (async function init(){
       try{
         const installerId = await getInstallerId();
+        CURRENT_INSTALLER_ID = installerId; // (kept for future use)
         if (!installerId){
           helperBox.innerHTML = `<strong>Heads up:</strong> No installer ID found. Sign in or append <code>?installer=&lt;uuid&gt;</code> to the URL.`;
         } else {

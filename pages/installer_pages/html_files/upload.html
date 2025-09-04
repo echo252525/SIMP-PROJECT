@@ -182,7 +182,7 @@
             // Optional but recommended: set status to Pending Review so your login logic can branch cleanly
             const { error: statusErr } = await supabase
               .from("installer")
-              .update({ status: "Pending Review" })
+              .update({ status: "pending" })
               .eq("id", user.id);
             if (statusErr) {
               // Not fatal; just log it so you can fix any RLS issues later

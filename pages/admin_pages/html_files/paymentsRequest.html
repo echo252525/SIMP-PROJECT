@@ -1,365 +1,1056 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet" />
+    <link rel="stylesheet" href="../css_files/sideBar.css" />
+    <title>PaymentsRequest</title>
+    <style>
+      main { margin-top: 1.4rem; }
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet" />
-  <link rel="stylesheet" href="../css_files/sideBar.css" />
-  <title>PaymentsRequest</title>
-  <style>
-    main { margin-top: 1.4rem; }
-    /* Header */
-    main .payments-header h1 { margin: 0; color: #1c2430; font-weight: 700; }
-    main .payments-header p { margin: 0.2rem 0 1rem; color: #6c7a8a; }
-    main .search-filter input { width: 40%; }
-    /* Search & Filter */
-    main .search-filter { display: flex; gap: 0.8rem; margin-bottom: 1rem; flex-wrap: wrap; }
-    main .search-filter input, main .search-filter select, main .search-filter button {
-      padding: 0.6rem 0.75rem; border: 1px solid #e7edf3; border-radius: 8px; font-size: 0.9rem;
-    }
-    main .search-filter button { background: #20a44c; color: #fff; cursor: pointer; border: none; }
-    main .search-filter button:hover { background: #188a3e; }
-    main .search-filter .clear { background: #e7edf3; color: #1c2430; }
-    main .search-filter .clear:hover { background: #d7e6ee; }
-    /* Summary Cards */
-    main .summary-cards { display: grid; grid-template-columns: repeat(3, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
-    main .summary-cards .card { background: #fff; padding: 1rem; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); text-align: center; }
-    main .summary-cards .card h3 { margin: 0; font-size: 0.9rem; color: #6c7a8a; font-weight: 600; }
-    main .summary-cards .card p { margin: 0.4rem 0 0; font-size: 1.25rem; font-weight: 800; letter-spacing: 0.2px; }
-    main .summary-cards .paid p { color: #20a44c; }
-    main .summary-cards .unpaid p { color: #e53935; }
-    /* Table */
-    main .payments-table table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 10px; overflow: hidden; }
-    main .payments-table th, main .payments-table td { padding: 0.9rem; text-align: left; border-bottom: 1px solid #f0f0f0; white-space: nowrap; }
-    main .payments-table th { background: #f8fbfd; color: #1c2430; font-weight: 700; }
-    main .status { padding: 0.3rem 0.6rem; border-radius: 12px; font-size: 0.8rem; font-weight: 700; }
-    main .status.paid { background: #e6f6ec; color: #1d8e45; }
-    main .status.not-paid { background: #fdecea; color: #c62828; }
-    main .mark-paid { background: #20a44c; color: #fff; padding: 0.4rem 0.8rem; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; }
-    main .mark-paid:hover { background: #188a3e; }
-    main button[disabled] { opacity: 0.6; cursor: not-allowed; }
-    @media (max-width: 980px) { main .payments-table table { display: block; overflow-x: auto; } }
-  </style>
-</head>
+      /* Header */
+      main .payments-header h1 { margin: 0; color: #1c2430; font-weight: 700; }
+      main .payments-header p { margin: 0.2rem 0 1rem; color: #6c7a8a; }
+      main .search-filter input { width: 40%; }
 
-<body>
-  <div class="container">
-    <!-- Sidebar Section -->
-    <aside>
-      <div class="toggle">
-        <div class="logo">
-          <img src="../../../img/simpLogo.png" />
-          <h2>SIMP<span class="danger">Project</span></h2>
+      /* Search & Filter */
+      main .search-filter { display: flex; gap: 0.8rem; margin-bottom: 1rem; flex-wrap: wrap; }
+      main .search-filter input,
+      main .search-filter select,
+      main .search-filter button {
+        padding: 0.6rem 0.75rem; border: 1px solid #e7edf3; border-radius: 8px; font-size: 0.9rem;
+      }
+      main .search-filter button { background: #20a44c; color: #fff; cursor: pointer; border: none; }
+      main .search-filter button:hover { background: #188a3e; }
+      main .search-filter .clear { background: #e7edf3; color: #1c2430; }
+      main .search-filter .clear:hover { background: #d7e6ee; }
+
+      /* Summary Cards */
+      main .summary-cards { display: grid; grid-template-columns: repeat(3, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+      main .summary-cards .card { background: #fff; padding: 1rem; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); text-align: center; }
+      main .summary-cards .card h3 { margin: 0; font-size: 0.9rem; color: #6c7a8a; font-weight: 600; }
+      main .summary-cards .card p { margin: 0.4rem 0 1rem 0; font-size: 1.25rem; font-weight: 800; letter-spacing: 0.2px; }
+      main .summary-cards .paid p { color: #20a44c; }
+      main .summary-cards .unpaid p { color: #e53935; }
+
+      /* Tabs */
+      .payout-tabs { display:flex; gap:.4rem; margin:.6rem 0 .6rem; border-bottom:1px solid #e7edf3; flex-wrap: wrap; }
+      .payout-tabs button{
+        appearance:none; background:transparent; border:none; padding:.65rem 1rem;
+        font-weight:700; color:#6c7a8a; cursor:pointer; border-bottom:3px solid transparent;
+      }
+      .payout-tabs button.active{ color:#1c2430; border-color:#20a44c; }
+
+      /* Table */
+      main .payments-table table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 10px; overflow: hidden; }
+      main .payments-table th, main .payments-table td { padding: 0.9rem; text-align: left; border-bottom: 1px solid #f0f0f0; white-space: nowrap; }
+      main .payments-table th { background: #f8fbfd; color: #1c2430; font-weight: 700; }
+      main .payments-table .col-select { width: 40px; text-align: center; }
+      main .payments-table .col-select input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; }
+
+      main .status { padding: 0.3rem 0.6rem; border-radius: 12px; font-size: 0.8rem; font-weight: 700; }
+      main .status.paid { background: #e6f6ec; color: #1d8e45; }
+      main .status.not-paid { background: #fdecea; color: #c62828; }
+      main .status.pending { background: #fff7ed; color: #b45309; }
+
+      main .mark-paid, .do-payout, .do-payout-group, .do-payout-batch {
+        background: #20a44c; color: #fff; padding: 0.4rem 0.8rem; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;
+      }
+      main .mark-paid:hover, .do-payout:hover, .do-payout-group:hover, .do-payout-batch:hover { background: #188a3e; }
+      main button[disabled] { opacity: 0.6; cursor: not-allowed; }
+
+      /* Batch / Bulk bar */
+      main .batch-bar {
+        position: sticky; top: 0; z-index: 5;
+        display: flex; gap: .6rem; align-items: center; margin: .8rem 0;
+        background: #ffffff; border: 1px solid #e7edf3; border-radius: 10px; padding: .7rem .9rem;
+        box-shadow: 0 4px 10px rgba(0,0,0,.04);
+      }
+      main .batch-bar .pill { padding: .35rem .6rem; border-radius: 999px; background: #f8fbfd; border: 1px solid #e7edf3; font-weight: 700; color: #1c2430; }
+      main .batch-bar .create { background: #1e7bcb; border: none; color: #fff; padding: .55rem .85rem; border-radius: 8px; font-weight: 700; cursor: pointer; }
+      main .batch-bar .create:hover { background: #1868a9; }
+      main .batch-bar .select-all-wrap { display: flex; align-items: center; gap: .45rem; margin-right: .4rem; }
+
+      /* Keep old button hidden (per your note) */
+      #createPayoutBtn { display: none !important; }
+
+      /* Bulk mark-as-paid button */
+      #bulkMarkPaidBtn { background:#20a44c; border:none; color:#fff; padding:.55rem .85rem; border-radius:8px; font-weight:700; cursor:pointer; }
+      #bulkMarkPaidBtn:hover { background:#188a3e; }
+
+      /* Requests table */
+      .requests-table { display:none; margin-top: .6rem; }
+      .requests-table table { width:100%; border-collapse: collapse; background:#fff; border-radius:10px; overflow:hidden; }
+      .requests-table th, .requests-table td { padding:.9rem; text-align:left; border-bottom:1px solid #f0f0f0; white-space:nowrap; }
+      .requests-table th { background:#f8fbfd; color:#1c2430; font-weight:700; }
+
+      @media (max-width: 980px) {
+        main .payments-table table { display: block; overflow-x: auto; }
+        main .search-filter input { width: 100%; min-width: 220px; }
+        main .batch-bar { flex-wrap: wrap; }
+      }
+
+      .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; }
+      .sub { color:#6c7a8a; }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <!-- Sidebar Section -->
+      <aside>
+        <div class="toggle">
+          <div class="logo">
+            <img src="../../../img/simpLogo.png" alt="SIMP Logo" />
+            <h2>SIMP<span class="danger">Project</span></h2>
+          </div>
+          <div class="close" id="close-btn">
+            <span class="material-icons-sharp">close</span>
+          </div>
         </div>
-        <div class="close" id="close-btn">
-          <span class="material-icons-sharp">close</span>
+
+        <div class="sidebar">
+          <a href="dashboard.html"><span class="material-icons-sharp">dashboard</span><h3>Dashboard</h3></a>
+          <a href="workerVerification.html"><span class="material-icons-sharp">engineering</span><h3>Workers<br>Verification</h3></a>
+          <a href="jobVerification.html"><span class="material-icons-sharp">work</span><h3>Jobs<br>Verification</h3></a>
+          <a href="jobApplicationVerification.html"><span class="material-icons-sharp">approval</span><h3>Application<br>Verification</h3></a>
+          <a href="adminVerification.html"><span class="material-icons-sharp">shield</span><h3>Admin<br>Verification</h3></a>
+          <a href="paymentsRequest.html" class="active"><span class="material-icons-sharp">payments</span><h3>Payments<br>Request</h3></a>
+          <a href="courses.html"><span class="material-icons-sharp">school</span><h3>Course<br>Publisher</h3></a>
+          <a href="#"><span class="material-icons-sharp">settings</span><h3>Settings</h3></a>
+          <a href="#" id="logout-btn"><span class="material-icons-sharp">logout</span><h3>Logout</h3></a>
         </div>
-      </div>
+      </aside>
+      <!-- End of Sidebar Section -->
 
-      <div class="sidebar">
-        <a href="dashboard.html"><span class="material-icons-sharp">dashboard</span><h3>Dashboard</h3></a>
-        <a href="workerVerification.html"><span class="material-icons-sharp">engineering</span><h3>Workers<br>Verification</h3></a>
-        <a href="jobVerification.html"><span class="material-icons-sharp">work</span><h3>Jobs<br>Verification</h3></a>
-        <a href="jobApplicationVerification.html"><span class="material-icons-sharp">approval</span><h3>Application<br>Verification</h3></a>
-        <a href="adminVerification.html"><span class="material-icons-sharp">shield</span><h3>Admin<br>Verification</h3></a>
-        <a href="paymentsRequest.html" class="active"><span class="material-icons-sharp">payments</span><h3>Payments<br>Request</h3></a>
-        <a href="courses.html"><span class="material-icons-sharp">school</span><h3>Course<br>Publisher</h3></a>
-        <a href="#"><span class="material-icons-sharp">settings</span><h3>Settings</h3></a>
-        <a href="#" id="logout-btn"><span class="material-icons-sharp">logout</span><h3>Logout</h3></a>
-      </div>
-    </aside>
-    <!-- End of Sidebar Section -->
-
-    <!-- Main Content -->
-    <main>
-      <div class="payments-header">
-        <h1>Payments Request</h1>
-        <p>Manage and verify all payment requests from workers after job completion.</p>
-      </div>
-
-      <!-- Search & Filter -->
-      <div class="search-filter">
-        <input id="searchInput" type="text" placeholder="Search by Job ID, Worker, or Job Title..." />
-        <select id="statusFilter">
-          <option value="all">All</option>
-          <option value="paid">Paid</option>
-          <option value="not-paid">Not Paid</option>
-        </select>
-        <button id="searchBtn">Search</button>
-        <button id="clearBtn" class="clear">Clear</button>
-      </div>
-
-      <!-- Summary Cards (dynamic) -->
-      <div class="summary-cards">
-        <div class="card total">
-          <h3>Total (visible)</h3>
-          <p id="totalCount">0</p>
+      <!-- Main Content -->
+      <main>
+        <div class="payments-header">
+          <h1>Payments Request</h1>
+          <p>Manage and verify all payment requests from workers after job completion.</p>
         </div>
-        <div class="card paid">
-          <h3>Paid (visible)</h3>
-          <p id="paidCount">0</p>
+
+        <!-- Search & Filter -->
+        <div class="search-filter">
+          <input id="searchInput" type="text" placeholder="Search by Job ID, Worker, or Job Title..." />
+          <select id="statusFilter">
+            <option value="all">All</option>
+            <option value="paid">Paid</option>
+            <option value="not-paid">Not Paid</option>
+          </select>
+          <button id="searchBtn" type="button">Search</button>
+          <button id="clearBtn" class="clear" type="button">Clear</button>
         </div>
-        <div class="card unpaid">
-          <h3>Not Paid (visible)</h3>
-          <p id="unpaidCount">0</p>
+
+        <!-- Summary Cards -->
+        <div class="summary-cards">
+          <div class="card total">
+            <h3>Total (visible)</h3>
+            <p id="totalCount">0</p>
+          </div>
+          <div class="card paid">
+            <h3>Paid (visible)</h3>
+            <p id="paidCount">0</p>
+          </div>
+          <div class="card unpaid">
+            <h3>Not Paid (visible)</h3>
+            <p id="unpaidCount">0</p>
+          </div>
         </div>
-      </div>
 
-      <!-- Payments Table -->
-      <div class="payments-table">
-        <table>
-          <thead>
-            <tr>
-              <th>Job ID</th>
-              <th>Worker</th>
-              <th>Job Title</th>
-              <th>Amount</th>
-              <th>Requested Date</th>
-              <th>Status</th>
-              <th style="width: 1%;">Action</th>
-            </tr>
-          </thead>
-          <tbody id="paymentsTbody">
-            <!-- Dynamically render rows here -->
-          </tbody>
-        </table>
-      </div>
+        <!-- Tabs -->
+        <div class="payout-tabs">
+          <button id="tabAll" class="active" data-mode="all" type="button">All Payments</button>
+          <button id="tabRequests" data-mode="requests" type="button">Payout Requests</button>
+          <button id="tabUnpaid" data-mode="unpaid" type="button">Unpaid</button>
+          <button id="tabPaid" data-mode="paid" type="button">Paid</button>
+          <button id="tabDisbursed" data-mode="disbursed" type="button">Disbursed</button>
+        </div>
 
-      <!-- Inline JS for filtering/search + mark-as-paid (UNCHANGED UI logic) -->
-      <script src="../../general_files/index.js"></script>
-      <script type="module" src="../../general_files/session.js"></script>
-      <script>
-        (function () {
-          const searchInput = document.getElementById('searchInput');
-          const statusFilter = document.getElementById('statusFilter');
-          const searchBtn = document.getElementById('searchBtn');
-          const clearBtn = document.getElementById('clearBtn');
-          const tbody = document.getElementById('paymentsTbody');
+        <!-- Batch / Bulk Bar -->
+        <div class="batch-bar" id="batchBar">
+          <div class="select-all-wrap">
+            <input type="checkbox" id="selectAllVisible" />
+            <label for="selectAllVisible" style="user-select:none;cursor:pointer;">Select all (visible same status)</label>
+          </div>
+          <span class="pill" id="selCount">Selected: 0</span>
+          <span class="pill" id="selTotal">Total: ₱0.00</span>
+          <button id="createPayoutBtn" class="create disabled" type="button" disabled>Create Payout</button>
+          <!-- Added bulk mark-paid -->
+          <button id="bulkMarkPaidBtn" type="button" title="Mark all selected rows as Paid">Mark Selected as Paid</button>
+        </div>
 
-          const totalCount = document.getElementById('totalCount');
-          const paidCount = document.getElementById('paidCount');
-          const unpaidCount = document.getElementById('unpaidCount');
+        <!-- Payments Table -->
+        <div class="payments-table" id="paymentsTableWrap">
+          <table>
+            <thead>
+              <tr>
+                <th class="col-select"><span title="Select (same status)">Sel</span></th>
+                <th>Job ID</th>
+                <th>Worker</th>
+                <th>Job Title</th>
+                <th>Amount</th>
+                <th>Requested Date</th>
+                <th>Status</th>
+                <th style="width:1%;">Action</th>
+              </tr>
+            </thead>
+            <tbody id="paymentsTbody"></tbody>
+          </table>
+        </div>
 
-          function rows() { return Array.from(tbody.querySelectorAll('tr')); }
-          function normalize(s) { return (s || '').toString().trim().toLowerCase(); }
+        <!-- Grouped Requests Table (Requests tab) -->
+        <div class="requests-table" id="requestsTableWrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Jobs</th>
+                <th>Installer</th>
+                <th># Payments</th>
+                <th>Total Amount</th>
+                <th>Requested Date</th>
+                <th style="width:1%;">Action</th>
+              </tr>
+            </thead>
+            <tbody id="requestsTbody"></tbody>
+          </table>
+        </div>
 
-          function rowMatchesSearch(row, q) {
-            if (!q) return true;
-            const job = row.querySelector('.col-jobid')?.textContent || '';
-            const worker = row.querySelector('.col-worker')?.textContent || '';
-            const title = row.querySelector('.col-title')?.textContent || '';
-            const haystack = normalize(job + ' ' + worker + ' ' + title);
-            return haystack.includes(normalize(q));
-          }
+        <!-- Inline JS: filters, search, selection -->
+        <script src="../../general_files/index.js"></script>
+        <script type="module" src="../../general_files/session.js"></script>
+        <script>
+          (function () {
+            const searchInput = document.getElementById('searchInput');
+            const statusFilter = document.getElementById('statusFilter');
+            const searchBtn = document.getElementById('searchBtn');
+            const clearBtn = document.getElementById('clearBtn');
+            const tbody = document.getElementById('paymentsTbody');
 
-          function rowMatchesStatus(row, status) {
-            if (status === 'all') return true;
-            return row.dataset.status === status;
-          }
+            const totalCount = document.getElementById('totalCount');
+            const paidCount = document.getElementById('paidCount');
+            const unpaidCount = document.getElementById('unpaidCount');
 
-          function applyFilters() {
-            const q = searchInput.value;
-            const f = statusFilter.value;
-            let visible = 0, visPaid = 0, visUnpaid = 0;
+            const selCountEl = document.getElementById('selCount');
+            const selTotalEl = document.getElementById('selTotal');
+            const selectAllVisibleEl = document.getElementById('selectAllVisible');
+            const createPayoutBtn = document.getElementById('createPayoutBtn');
 
-            rows().forEach(row => {
-              const show = rowMatchesSearch(row, q) && rowMatchesStatus(row, f);
-              row.style.display = show ? '' : 'none';
-              if (show) {
-                visible++;
-                if (row.dataset.status === 'paid') visPaid++;
-                if (row.dataset.status === 'not-paid') visUnpaid++;
+            function rows() { return Array.from(tbody.querySelectorAll('tr')); }
+            function normalize(s) { return (s || '').toString().trim().toLowerCase(); }
+
+            function rowMatchesSearch(row, q) {
+              if (!q) return true;
+              const job = row.querySelector('.col-jobid')?.textContent || '';
+              const worker = row.querySelector('.col-worker')?.textContent || '';
+              const title = row.querySelector('.col-title')?.textContent || '';
+              const haystack = normalize(job + ' ' + worker + ' ' + title);
+              return haystack.includes(normalize(q));
+            }
+
+            function rowMatchesStatus(row, status) {
+              if (status === 'all') return true;
+              return row.dataset.status === status;
+            }
+
+            function updateSelectionSummary() {
+              let count = 0;
+              let total = 0;
+              rows().forEach(r => {
+                if (r.style.display === 'none') return;
+                if (r.dataset.status !== 'not-paid') return;
+                const cb = r.querySelector('.row-select');
+                if (cb && cb.checked) {
+                  count++;
+                  const amt = Number(r.dataset.amount || 0);
+                  total += isNaN(amt) ? 0 : amt;
+                }
+              });
+              const peso = (n) => '₱' + (Number(n) || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+              selCountEl.textContent = 'Selected: ' + count;
+              selTotalEl.textContent = 'Total: ' + peso(total);
+
+              if (count > 0) {
+                createPayoutBtn.classList.remove('disabled');
+                createPayoutBtn.disabled = false;
+              } else {
+                createPayoutBtn.classList.add('disabled');
+                createPayoutBtn.disabled = true;
               }
+            }
+
+            function applyFilters() {
+              const q = searchInput.value;
+              const f = statusFilter.value;
+              let visible = 0, visPaid = 0, visUnpaid = 0;
+
+              rows().forEach(row => {
+                const show = rowMatchesSearch(row, q) && rowMatchesStatus(row, f);
+                row.style.display = show ? '' : 'none';
+                if (show) {
+                  visible++;
+                  if (row.dataset.status === 'paid') visPaid++;
+                  if (row.dataset.status === 'not-paid') visUnpaid++;
+                }
+              });
+
+              totalCount.textContent = String(visible);
+              paidCount.textContent = String(visPaid);
+              unpaidCount.textContent = String(visUnpaid);
+
+              const mode = window.__tabMode || 'all';
+              rows().forEach(row => {
+                if (row.style.display === 'none') return;
+                if (mode === 'all') return;
+                if (mode === 'requests' && row.dataset.status !== 'pending_payout') { row.style.display = 'none'; return; }
+                if (mode === 'unpaid' && row.dataset.status !== 'not-paid') { row.style.display = 'none'; return; }
+                if (mode === 'paid' && row.dataset.status !== 'paid') { row.style.display = 'none'; return; }
+                if (mode === 'disbursed' && row.dataset.status !== 'disbursed') { row.style.display = 'none'; return; }
+              });
+
+              updateSelectionSummary();
+            }
+
+            function onMarkPaidClick(e) {
+              const btn = e.target.closest('.mark-paid');
+              if (!btn) return;
+              const row = btn.closest('tr');
+              if (!row || row.dataset.status === 'paid') return;
+
+              row.dataset.status = 'paid';
+              const statusEl = row.querySelector('.status');
+              if (statusEl) {
+                statusEl.textContent = 'Paid';
+                statusEl.classList.remove('not-paid', 'pending');
+                statusEl.classList.add('paid');
+              }
+              btn.textContent = 'Paid';
+              btn.disabled = true;
+
+              const cb = row.querySelector('.row-select');
+              if (cb) cb.checked = false;
+
+              applyFilters();
+            }
+
+            tbody.addEventListener('change', (e) => {
+              const cb = e.target.closest('.row-select');
+              if (!cb) return;
+              const row = cb.closest('tr');
+              if (row && row.dataset.status !== 'not-paid') {
+                cb.checked = false;
+              }
+              updateSelectionSummary();
             });
 
-            totalCount.textContent = visible;
-            paidCount.textContent = visPaid;
-            unpaidCount.textContent = visUnpaid;
-          }
+            selectAllVisibleEl.addEventListener('change', () => {
+              const check = !!selectAllVisibleEl.checked;
+              let targetStatus = null;
+              const statusSel = document.getElementById('statusFilter')?.value || 'all';
+              if (statusSel !== 'all') {
+                targetStatus = statusSel;
+              } else {
+                const firstSelectable = rows().find(r => r.style.display !== 'none' && r.querySelector('.row-select') && !r.querySelector('.row-select').disabled);
+                if (firstSelectable) targetStatus = firstSelectable.dataset.status;
+              }
 
-          function onMarkPaidClick(e) {
-            const btn = e.target.closest('.mark-paid');
-            if (!btn) return;
-            const row = btn.closest('tr');
-            if (!row || row.dataset.status === 'paid') return;
+              rows().forEach(r => {
+                if (r.style.display === 'none') return;
+                const cb = r.querySelector('.row-select');
+                if (!cb || cb.disabled) return;
+                if (!targetStatus || r.dataset.status !== targetStatus) return;
+                cb.checked = check;
+              });
 
-            // Update dataset + badge (UI first)
-            row.dataset.status = 'paid';
-            const statusEl = row.querySelector('.status');
-            statusEl.textContent = 'Paid';
-            statusEl.classList.remove('not-paid');
-            statusEl.classList.add('paid');
+              updateSelectionSummary();
+            });
 
-            // Disable button
-            btn.textContent = 'Paid';
-            btn.disabled = true;
+            tbody.addEventListener('click', onMarkPaidClick);
+            searchInput.addEventListener('input', applyFilters);
+            statusFilter.addEventListener('change', applyFilters);
+            searchBtn.addEventListener('click', applyFilters);
+            clearBtn.addEventListener('click', () => {
+              searchInput.value = '';
+              statusFilter.value = 'all';
+              applyFilters();
+            });
 
-            // Re-apply filters to respect current view
+            window.__tabMode = 'all';
             applyFilters();
+
+            const paymentsTableWrap = document.getElementById('paymentsTableWrap');
+            const requestsTableWrap = document.getElementById('requestsTableWrap');
+            const setActive = (id) => {
+              document.querySelectorAll('.payout-tabs button').forEach(b=>b.classList.remove('active'));
+              document.getElementById(id).classList.add('active');
+            };
+            const showRequests = (on) => {
+              requestsTableWrap.style.display = on ? '' : 'none';
+              paymentsTableWrap.style.display = on ? 'none' : '';
+              if (on && window.__buildRequests) window.__buildRequests();
+            };
+
+            document.getElementById('tabAll').addEventListener('click', () => {
+              window.__tabMode = 'all'; setActive('tabAll'); applyFilters(); showRequests(false);
+            });
+            document.getElementById('tabRequests').addEventListener('click', () => {
+              window.__tabMode = 'requests'; setActive('tabRequests'); applyFilters(); showRequests(true);
+            });
+            document.getElementById('tabUnpaid').addEventListener('click', () => {
+              window.__tabMode = 'unpaid'; setActive('tabUnpaid'); applyFilters(); showRequests(false);
+            });
+            document.getElementById('tabPaid').addEventListener('click', () => {
+              window.__tabMode = 'paid'; setActive('tabPaid'); applyFilters(); showRequests(false);
+            });
+            document.getElementById('tabDisbursed').addEventListener('click', () => {
+              window.__tabMode = 'disbursed'; setActive('tabDisbursed'); applyFilters(); showRequests(false);
+            });
+
+            window.__paymentsUI = {
+              updateSelectionSummary,
+              applyFilters
+            };
+          })();
+        </script>
+
+        <!-- Supabase client -->
+        <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+
+        <!-- Data loader -->
+        <script type="module">
+          import { SUPABASE_URL, SUPABASE_ANON_KEY } from "../../../supabase.js";
+          const sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+          window.__sb = sbClient;
+
+          const tbodyPayments = document.getElementById('paymentsTbody');
+          const searchBtnEl = document.getElementById('searchBtn');
+
+          const peso = (n) => '₱' + (Number(n) || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+          const fmtDate = (iso) => { try { return new Date(iso).toISOString().slice(0, 10); } catch { return ''; } };
+          const shortId = (id) => id ? String(id).slice(0,8).toUpperCase() : '';
+
+          let __PAYMENTS = [];
+          let __JOBS_BY_ID = {};
+          let __INSTALLERS_BY_ID = {};
+
+          function statusToUi(payment_status) {
+            if (payment_status === 'unpaid') return { ds: 'not-paid', text: 'Not Paid', cls: 'status not-paid', action: 'mark' };
+            if (payment_status === 'pending_payout') return { ds: 'pending_payout', text: 'Pending Payout', cls: 'status pending', action: 'payout' };
+            if (payment_status === 'disbursed') return { ds: 'disbursed', text: 'Disbursed', cls: 'status paid', action: 'none' };
+            return { ds: 'paid', text: 'Paid', cls: 'status paid', action: 'none' };
           }
 
-          // Events
-          tbody.addEventListener('click', onMarkPaidClick);
-          searchInput.addEventListener('input', applyFilters);
-          statusFilter.addEventListener('change', applyFilters);
-          searchBtn.addEventListener('click', applyFilters);
-          clearBtn.addEventListener('click', () => {
-            searchInput.value = '';
-            statusFilter.value = 'all';
-            applyFilters();
-          });
-
-          // Initial compute
-          applyFilters();
-        })();
-      </script>
-
-      <!-- Supabase client -->
-      <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-
-      <!-- Data loader to render earnings.payments (unique names to avoid collisions) -->
-      <script type="module">
-        import { SUPABASE_URL, SUPABASE_ANON_KEY } from "../../../supabase.js";
-        const sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        // expose once for other modules
-        window.__sb = sbClient;
-
-        const tbodyPayments = document.getElementById('paymentsTbody');
-        const searchBtnEl = document.getElementById('searchBtn');
-
-        const peso = (n) => '₱' + (Number(n) || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        const fmtDate = (iso) => { try { return new Date(iso).toISOString().slice(0, 10); } catch { return ''; } };
-
-        function statusToUi(payment_status) {
-          if (payment_status === 'unpaid') return { ds: 'not-paid', text: 'Not Paid', cls: 'status not-paid' };
-          // treat 'paid' and 'payouted' as Paid for this UI
-          return { ds: 'paid', text: 'Paid', cls: 'status paid' };
-        }
-        const shortId = (id) => id ? String(id).slice(0,8).toUpperCase() : '';
-
-        async function loadPayments() {
-          // payments
-          const { data: pays, error: payErr } = await sbClient
-            .schema('earnings')
-            .from('payments')
-            .select('id, installer_id, job_id, payment_status, first_created_at')
-            .order('first_created_at', { ascending: false });
-
-          if (payErr) {
-            console.error(payErr);
-            tbodyPayments.innerHTML = `<tr><td colspan="7">Error loading payments: ${payErr.message}</td></tr>`;
-            return;
-          }
-          if (!pays || pays.length === 0) {
-            tbodyPayments.innerHTML = `<tr><td colspan="7" class="sub">No payment requests yet.</td></tr>`;
-            return;
-          }
-
-          // jobs
-          const jobIds = [...new Set(pays.map(p => p.job_id).filter(Boolean))];
-          let jobsById = {};
-          if (jobIds.length) {
-            const { data: jobs, error: jobErr } = await sbClient
-              .schema('jobs')
-              .from('job')
-              .select('job_id, job_code, job_title, job_pay')
-              .in('job_id', jobIds);
-            if (!jobErr && jobs) jobsById = Object.fromEntries(jobs.map(j => [j.job_id, j]));
-          }
-
-          // installers
-          const installerIds = [...new Set(pays.map(p => p.installer_id).filter(Boolean))];
-          let installersById = {};
-          if (installerIds.length) {
-            const { data: installers, error: instErr } = await sbClient
-              .from('installer')
-              .select('id, name, email')
-              .in('id', installerIds);
-            if (!instErr && installers) installersById = Object.fromEntries(installers.map(i => [i.id, i]));
-          }
-
-          // render
-          const rowsHtml = pays.map(p => {
-            const job = jobsById[p.job_id] || {};
-            const inst = installersById[p.installer_id] || {};
-            const ui = statusToUi(p.payment_status);
-
-            const jobDisplay = job.job_code ? job.job_code : `#${shortId(p.job_id)}`;
-            const workerDisplay = inst.name || inst.email || shortId(p.installer_id);
-            const titleDisplay = job.job_title || '—';
-            const amount = (job.job_pay != null) ? peso(job.job_pay) : '₱0.00';
-            const reqDate = fmtDate(p.first_created_at);
-
-            const actionCell = ui.ds === 'not-paid'
-              ? `<button class="mark-paid">Mark as Paid</button>`
-              : `<button disabled>Paid</button>`;
-
-            return `
-              <tr data-status="${ui.ds}" data-payment-id="${p.id}">
-                <td class="col-jobid">${jobDisplay}</td>
-                <td class="col-worker">${workerDisplay}</td>
-                <td class="col-title">${titleDisplay}</td>
-                <td>${amount}</td>
-                <td>${reqDate}</td>
-                <td><span class="${ui.cls}">${ui.text}</span></td>
-                <td>${actionCell}</td>
-              </tr>
-            `;
-          }).join('');
-
-          tbodyPayments.innerHTML = rowsHtml;
-
-          // re-run your filter pipeline
-          searchBtnEl.click();
-        }
-
-        // kick off
-        loadPayments();
-      </script>
-
-      <!-- Persist "Mark as Paid" to DB (separate module, no name collisions) -->
-      <script type="module">
-        const sbRef = window.__sb; // created in the previous module
-        const tableBodyEl = document.getElementById('paymentsTbody');
-
-        tableBodyEl.addEventListener('click', async (e) => {
-          const btn = e.target.closest('.mark-paid');
-          if (!btn) return;
-
-          const tr = btn.closest('tr');
-          const paymentId = tr?.dataset?.paymentId;
-          if (!paymentId) return;
-
-          try {
-            const { error } = await sbRef
+          async function loadPayments() {
+            const { data: pays, error: payErr } = await sbClient
               .schema('earnings')
               .from('payments')
-              .update({ payment_status: 'paid' })
-              .eq('id', paymentId);
+              .select('id, installer_id, job_id, payment_status, payout_batch_no, first_created_at, updated_at')
+              .order('first_created_at', { ascending: false });
 
-            if (error) throw error;
-            // success: UI already flipped in your original handler
-          } catch (err) {
-            console.error('Failed to mark as paid:', err);
-
-            // revert UI
-            tr.dataset.status = 'not-paid';
-            const statusEl = tr.querySelector('.status');
-            if (statusEl) {
-              statusEl.textContent = 'Not Paid';
-              statusEl.classList.remove('paid');
-              statusEl.classList.add('not-paid');
+            if (payErr) {
+              console.error(payErr);
+              tbodyPayments.innerHTML = '<tr><td colspan="8">Error loading payments.</td></tr>';
+              return;
             }
-            btn.textContent = 'Mark as Paid';
-            btn.disabled = false;
+            if (!pays || pays.length === 0) {
+              __PAYMENTS = [];
+              tbodyPayments.innerHTML = '<tr><td colspan="8" class="sub">No payment requests yet.</td></tr>';
+              if (window.__buildRequests) window.__buildRequests();
+              return;
+            }
+            __PAYMENTS = pays;
 
-            alert('Could not mark as paid: ' + (err?.message || 'Unknown error'));
+            // jobs
+            const jobIds = [...new Set(pays.map(p => p.job_id).filter(Boolean))];
+            __JOBS_BY_ID = {};
+            if (jobIds.length) {
+              const { data: jobs } = await sbClient
+                .schema('jobs')
+                .from('job')
+                .select('job_id, job_code, job_title, job_pay')
+                .in('job_id', jobIds);
+              if (jobs) __JOBS_BY_ID = Object.fromEntries(jobs.map(j => [j.job_id, j]));
+            }
+
+            // installers
+            const installerIds = [...new Set(pays.map(p => p.installer_id).filter(Boolean))];
+            __INSTALLERS_BY_ID = {};
+            if (installerIds.length) {
+              const { data: installers } = await sbClient
+                .from('installer')
+                .select('id, name, email')
+                .in('id', installerIds);
+              if (installers) __INSTALLERS_BY_ID = Object.fromEntries(installers.map(i => [i.id, i]));
+            }
+
+            // Group pending_payout by batch
+            const pendingGroups = new Map(); // key = payout_batch_no
+            // Group disbursed by batch (NEW)
+            const disbursedGroups = new Map(); // key = payout_batch_no
+
+            for (const p of pays) {
+              const job = __JOBS_BY_ID[p.job_id] || {};
+              const amount = Number(job.job_pay) || 0;
+
+              if (p.payment_status === 'pending_payout' && p.payout_batch_no) {
+                const k = p.payout_batch_no;
+                if (!pendingGroups.has(k)) {
+                  pendingGroups.set(k, {
+                    key: k,
+                    payment_ids: [],
+                    job_labels: new Set(),
+                    installers: new Set(),
+                    installer_display: null,
+                    count: 0,
+                    total: 0,
+                    requested_at: p.updated_at || p.first_created_at || null
+                  });
+                }
+                const g = pendingGroups.get(k);
+                g.payment_ids.push(p.id);
+                g.installers.add(p.installer_id);
+                g.count += 1;
+                g.total += amount;
+                const jobDisplay = job.job_code ? job.job_code : `#${shortId(p.job_id)}`;
+                g.job_labels.add(jobDisplay);
+                const ts = (d)=> d ? new Date(d).getTime() : Infinity;
+                if (ts(p.updated_at || p.first_created_at) < ts(g.requested_at)) {
+                  g.requested_at = p.updated_at || p.first_created_at;
+                }
+              }
+
+              if (p.payment_status === 'disbursed' && p.payout_batch_no) {
+                const k = p.payout_batch_no;
+                if (!disbursedGroups.has(k)) {
+                  disbursedGroups.set(k, {
+                    key: k,
+                    payment_ids: [],
+                    job_labels: new Set(),
+                    installers: new Set(),
+                    installer_display: null,
+                    count: 0,
+                    total: 0,
+                    requested_at: p.updated_at || p.first_created_at || null
+                  });
+                }
+                const g = disbursedGroups.get(k);
+                g.payment_ids.push(p.id);
+                g.installers.add(p.installer_id);
+                g.count += 1;
+                g.total += amount;
+                const jobDisplay = job.job_code ? job.job_code : `#${shortId(p.job_id)}`;
+                g.job_labels.add(jobDisplay);
+                const ts = (d)=> d ? new Date(d).getTime() : Infinity;
+                if (ts(p.updated_at || p.first_created_at) < ts(g.requested_at)) {
+                  g.requested_at = p.updated_at || p.first_created_at;
+                }
+              }
+            }
+
+            // Determine installer display for groups
+            const resolveInstallerDisplay = (set) => {
+              if (set.size === 1) {
+                const only = [...set][0];
+                const inst = __INSTALLERS_BY_ID[only] || {};
+                return inst.name || inst.email || shortId(only);
+              }
+              return 'Multiple';
+            };
+            for (const g of pendingGroups.values()) g.installer_display = resolveInstallerDisplay(g.installers);
+            for (const g of disbursedGroups.values()) g.installer_display = resolveInstallerDisplay(g.installers);
+
+            // Build table rows
+            const rowsHtml = [];
+            const pesoFmt = (n) => '₱' + (Number(n) || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+            // Individual rows (skip pending_payout with batch; skip disbursed with batch because we'll group them)
+            for (const p of pays) {
+              if ((p.payment_status === 'pending_payout' && p.payout_batch_no) ||
+                  (p.payment_status === 'disbursed' && p.payout_batch_no)) {
+                continue;
+              }
+
+              const job = __JOBS_BY_ID[p.job_id] || {};
+              const inst = __INSTALLERS_BY_ID[p.installer_id] || {};
+              const ui = statusToUi(p.payment_status);
+
+              const jobDisplay = job.job_code ? job.job_code : `#${shortId(p.job_id)}`;
+              const workerDisplay = inst.name || inst.email || shortId(p.installer_id);
+              const titleDisplay = job.job_title || '—';
+              const amountNum = (job.job_pay != null) ? Number(job.job_pay) : 0;
+              const amount = peso(amountNum);
+              const reqDate = fmtDate(p.first_created_at);
+
+              const selectable = ui.ds === 'not-paid';
+              const selectCell = `<input type="checkbox" class="row-select" ${selectable ? '' : 'disabled'} />`;
+
+              rowsHtml.push(
+                `<tr data-status="${ui.ds}"
+                     data-payment-id="${p.id}"
+                     data-installer-id="${p.installer_id}"
+                     data-amount="${amountNum}"
+                     data-batch="${p.payout_batch_no || ''}">
+                  <td class="col-select" style="text-align:center;">${selectCell}</td>
+                  <td class="col-jobid">${jobDisplay}</td>
+                  <td class="col-worker">${workerDisplay}</td>
+                  <td class="col-title">${titleDisplay}</td>
+                  <td>${amount}</td>
+                  <td>${reqDate}</td>
+                  <td><span class="${ui.cls}">${ui.text}</span></td>
+                  <td>${
+                    ui.action === 'mark' ? '<button class="mark-paid" type="button">Mark as Paid</button>' :
+                    ui.action === 'payout' ? '<button class="do-payout" type="button">Payout</button>' :
+                    '<button type="button" disabled>Paid</button>'
+                  }</td>
+                </tr>`
+              );
+            }
+
+            // Grouped pending rows
+            for (const g of pendingGroups.values()) {
+              const reqDate = fmtDate(g.requested_at);
+              const jobLabels = Array.from(g.job_labels);
+              const jobsTitle = jobLabels.length > 1 ? `JOBS: ${jobLabels.join(', ')}` : `JOB: ${jobLabels[0] || '—'}`;
+              rowsHtml.push(
+                `<tr data-status="pending_payout"
+                     data-payment-id=""
+                     data-installer-id=""
+                     data-amount="${g.total}"
+                     data-batch="${g.key}">
+                  <td class="col-select" style="text-align:center;">—</td>
+                  <td class="col-jobid mono">${jobsTitle}</td>
+                  <td class="col-worker">${g.installer_display}</td>
+                  <td class="col-title">Batch Payout (${g.count} payments)</td>
+                  <td class="mono">${pesoFmt(g.total)}</td>
+                  <td>${reqDate}</td>
+                  <td><span class="status pending">Pending Payout</span></td>
+                  <td>
+                    <button class="do-payout-batch" type="button"
+                            data-batch="${g.key}"
+                            data-payment-ids='${JSON.stringify(g.payment_ids).replace(/'/g,"&apos;")}'>
+                      Payout Batch
+                    </button>
+                  </td>
+                </tr>`
+              );
+            }
+
+            // Grouped disbursed rows (NEW)
+            for (const g of disbursedGroups.values()) {
+              const reqDate = fmtDate(g.requested_at);
+              const jobLabels = Array.from(g.job_labels);
+              const jobsTitle = jobLabels.length > 1 ? `JOBS: ${jobLabels.join(', ')}` : `JOB: ${jobLabels[0] || '—'}`;
+              rowsHtml.push(
+                `<tr data-status="disbursed"
+                     data-payment-id=""
+                     data-installer-id=""
+                     data-amount="${g.total}"
+                     data-batch="${g.key}">
+                  <td class="col-select" style="text-align:center;">—</td>
+                  <td class="col-jobid mono">${jobsTitle}</td>
+                  <td class="col-worker">${g.installer_display}</td>
+                  <td class="col-title">Batch Disbursed (${g.count} payments)</td>
+                  <td class="mono">${pesoFmt(g.total)}</td>
+                  <td>${reqDate}</td>
+                  <td><span class="status paid">Disbursed</span></td>
+                  <td><button type="button" disabled>Paid</button></td>
+                </tr>`
+              );
+            }
+
+            tbodyPayments.innerHTML = rowsHtml.join('') || '<tr><td colspan="8" class="sub">No payment requests yet.</td></tr>';
+
+            // apply current filters/search
+            searchBtnEl.click();
+
+            // refresh grouped view in Requests tab
+            if (window.__buildRequests) window.__buildRequests();
+            if (window.__paymentsUI) window.__paymentsUI.updateSelectionSummary();
           }
-        });
-      </script>
-    </main>
-  </div>
-</body>
 
+          // Build Requests tab groups (pending only)
+          const requestsTbody = document.getElementById('requestsTbody');
+          window.__buildRequests = function buildRequests() {
+            const pending = __PAYMENTS.filter(p => p.payment_status === 'pending_payout');
+            const groups = new Map();
+
+            for (const p of pending) {
+              const key = p.payout_batch_no || '';
+              if (!key) continue;
+              const job = __JOBS_BY_ID[p.job_id] || {};
+              const amount = Number(job.job_pay) || 0;
+
+              if (!groups.has(key)) {
+                groups.set(key, {
+                  key,
+                  installer_id: p.installer_id,
+                  installer_display: (__INSTALLERS_BY_ID[p.installer_id]?.name) || (__INSTALLERS_BY_ID[p.installer_id]?.email) || shortId(p.installer_id),
+                  count: 0,
+                  total: 0,
+                  requested_at: p.updated_at || p.first_created_at || null,
+                  payment_ids: [],
+                  job_labels: new Set()
+                });
+              }
+              const g = groups.get(key);
+              g.count += 1;
+              g.total += amount;
+              g.payment_ids.push(p.id);
+              const jobDisplay = job.job_code ? job.job_code : `#${shortId(p.job_id)}`;
+              g.job_labels.add(jobDisplay);
+
+              const ts = (d)=> d ? new Date(d).getTime() : Infinity;
+              if (ts(p.updated_at || p.first_created_at) < ts(g.requested_at)) {
+                g.requested_at = p.updated_at || p.first_created_at;
+              }
+            }
+
+            if (groups.size === 0) {
+              requestsTbody.innerHTML = '<tr><td colspan="6" class="sub" style="padding:1rem;">No payout requests yet.</td></tr>';
+              return;
+            }
+
+            const pesoFmt = (n) => '₱' + (Number(n) || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            const fmt = (d)=> d ? new Date(d).toISOString().slice(0,10) : '—';
+
+            const rows = Array.from(groups.values()).map(g => {
+              const list = Array.from(g.job_labels);
+              const jobsTitle = list.length > 1 ? `JOBS: ${list.join(', ')}` : `JOB: ${list[0] || '—'}`;
+              return (
+                `<tr data-batch-key="${g.key}"
+                     data-payment-ids='${JSON.stringify(g.payment_ids).replace(/'/g,"&apos;")}'>
+                  <td class="mono">${jobsTitle}</td>
+                  <td>${g.installer_display}</td>
+                  <td>${g.count}</td>
+                  <td class="mono">${pesoFmt(g.total)}</td>
+                  <td>${fmt(g.requested_at)}</td>
+                  <td><button class="do-payout-group" type="button">Disburse Group</button></td>
+                </tr>`
+              );
+            }).join('');
+
+            requestsTbody.innerHTML = rows;
+          };
+
+          // start
+          await loadPayments();
+          window.__reloadPayments = loadPayments;
+        </script>
+
+        <!-- Persist single actions -->
+        <script type="module">
+          const sbRef = window.__sb;
+          const tableBodyEl = document.getElementById('paymentsTbody');
+          const requestsBodyEl = document.getElementById('requestsTbody');
+
+          // Single mark as paid
+          tableBodyEl.addEventListener('click', async (e) => {
+            const btn = e.target.closest('.mark-paid');
+            if (!btn) return;
+
+            const tr = btn.closest('tr');
+            const paymentId = tr?.dataset?.paymentId;
+            if (!paymentId) return;
+
+            try {
+              const { error } = await sbRef
+                .schema('earnings')
+                .from('payments')
+                .update({ payment_status: 'paid' })
+                .eq('id', paymentId);
+
+              if (error) throw error;
+              // UI already flipped in earlier handler
+            } catch (err) {
+              console.error('Failed to mark as paid:', err);
+              tr.dataset.status = 'not-paid';
+              const statusEl = tr.querySelector('.status');
+              if (statusEl) {
+                statusEl.textContent = 'Not Paid';
+                statusEl.classList.remove('paid');
+                statusEl.classList.add('not-paid');
+              }
+              btn.textContent = 'Mark as Paid';
+              btn.disabled = false;
+              alert('Could not mark as paid: ' + (err?.message || 'Unknown error'));
+            }
+          });
+
+          // Single disburse
+          tableBodyEl.addEventListener('click', async (e) => {
+            const payBtn = e.target.closest('.do-payout');
+            if (!payBtn) return;
+
+            const tr = payBtn.closest('tr');
+            const paymentId = tr?.dataset?.paymentId;
+            if (!paymentId) return;
+
+            const ok = confirm('Confirm disbursement for this request? This will mark it as "disbursed".');
+            if (!ok) return;
+
+            try {
+              const { error } = await sbRef
+                .schema('earnings')
+                .from('payments')
+                .update({ payment_status: 'disbursed' })
+                .eq('id', paymentId);
+
+              if (error) throw error;
+
+              tr.dataset.status = 'disbursed';
+              const statusEl = tr.querySelector('.status');
+              if (statusEl) {
+                statusEl.textContent = 'Disbursed';
+                statusEl.classList.remove('not-paid', 'pending');
+                statusEl.classList.add('paid');
+              }
+              payBtn.textContent = 'Paid';
+              payBtn.disabled = true;
+
+              if (window.__tabMode === 'requests') tr.style.display = 'none';
+              if (window.__paymentsUI) window.__paymentsUI.updateSelectionSummary();
+              if (window.__buildRequests) window.__buildRequests();
+            } catch (err) {
+              console.error('Failed to disburse:', err);
+              alert('Could not mark as disbursed: ' + (err?.message || 'Unknown error'));
+            }
+          });
+
+          // Disburse batch from main table (pending grouped row)
+          tableBodyEl.addEventListener('click', async (e) => {
+            const btn = e.target.closest('.do-payout-batch');
+            if (!btn) return;
+
+            let ids = [];
+            try { ids = JSON.parse(btn.dataset.paymentIds || '[]'); } catch { ids = []; }
+            const batchKey = btn.dataset.batch || '';
+            if (!ids.length || !batchKey) return;
+
+            const ok = confirm(`Disburse all ${ids.length} payments in this batch?\nBatch: ${String(batchKey).toUpperCase().slice(0,64)}`);
+            if (!ok) return;
+
+            btn.disabled = true; const prevTxt = btn.textContent; btn.textContent = 'Working...';
+
+            try {
+              const { error } = await sbRef
+                .schema('earnings')
+                .from('payments')
+                .update({ payment_status: 'disbursed' })
+                .in('id', ids);
+
+              if (error) throw error;
+
+              if (window.__reloadPayments) window.__reloadPayments();
+              alert('Batch disbursed successfully.');
+            } catch (err) {
+              console.error('Failed to disburse batch:', err);
+              alert('Could not disburse batch: ' + (err?.message || 'Unknown error'));
+            } finally {
+              btn.disabled = false; btn.textContent = prevTxt;
+            }
+          });
+
+          // Disburse group from Requests tab
+          requestsBodyEl.addEventListener('click', async (e) => {
+            const btn = e.target.closest('.do-payout-group');
+            if (!btn) return;
+            const tr = btn.closest('tr');
+            const key = tr?.dataset?.batchKey;
+            const idsAttr = tr?.dataset?.paymentIds;
+            if (!key || !idsAttr) return;
+
+            let ids = [];
+            try { ids = JSON.parse(idsAttr); } catch { ids = []; }
+            if (!Array.isArray(ids) || ids.length === 0) return;
+
+            const ok = confirm(`Disburse all ${ids.length} payments in this group?`);
+            if (!ok) return;
+
+            btn.disabled = true; const prev = btn.textContent; btn.textContent = 'Working...';
+
+            try {
+              const { error } = await sbRef
+                .schema('earnings')
+                .from('payments')
+                .update({ payment_status: 'disbursed' })
+                .in('id', ids);
+
+              if (error) throw error;
+
+              tr.remove();
+              if (window.__reloadPayments) window.__reloadPayments();
+              alert('Group disbursed successfully.');
+            } catch (err) {
+              console.error('Failed to disburse group:', err);
+              alert('Could not disburse group: ' + (err?.message || 'Unknown error'));
+            } finally {
+              btn.disabled = false; btn.textContent = prev;
+            }
+          });
+        </script>
+
+        <!-- Batch payout integration (kept; button hidden) -->
+        <script type="module">
+          const sb = window.__sb;
+          const tbody = document.getElementById('paymentsTbody');
+          const selectAllVisibleEl = document.getElementById('selectAllVisible');
+          const createPayoutBtn = document.getElementById('createPayoutBtn');
+
+          function getVisibleUnpaidSelectedRows() {
+            return Array.from(tbody.querySelectorAll('tr'))
+              .filter(r => r.style.display !== 'none' && r.dataset.status === 'not-paid')
+              .filter(r => r.querySelector('.row-select')?.checked);
+          }
+
+          function validateSameInstaller(rows) {
+            const ids = new Set(rows.map(r => r.dataset.installerId));
+            if (ids.size <= 1) {
+              return { ok: true, installerId: rows[0]?.dataset?.installerId || null };
+            }
+            return { ok: false, installerId: null };
+          }
+
+          async function generateBatchNo() {
+            try {
+              const { data, error } = await sb.rpc('next_payout_batch', { prefix: 'BATCH' });
+              if (error) throw error;
+              if (data && typeof data === 'string' && data.length) return data;
+            } catch (err) {
+              console.warn('RPC next_payout_batch failed, using client fallback:', err?.message || String(err));
+            }
+            const d = new Date().toISOString().slice(0,10).replace(/-/g,'');
+            const rnd = (crypto.randomUUID ? crypto.randomUUID() : (Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2))).slice(0,8).toUpperCase();
+            return `BATCH-${d}-${rnd}`;
+          }
+
+          async function createBatchPayout() {
+            const selectedRows = getVisibleUnpaidSelectedRows();
+            if (selectedRows.length === 0) return;
+
+            const { ok } = validateSameInstaller(selectedRows);
+            if (!ok) { alert('Selected rows must all belong to the same installer.'); return; }
+
+            const batchNo = await generateBatchNo();
+            const paymentIds = selectedRows.map(r => r.dataset.paymentId).filter(Boolean);
+
+            try {
+              const { error } = await sb
+                .schema('earnings')
+                .from('payments')
+                .update({ payout_batch_no: batchNo, payment_status: 'pending_payout' })
+                .in('id', paymentIds);
+
+              if (error) throw error;
+            } catch (err) {
+              console.error('Failed to update payments with batch:', err);
+              alert('Could not attach payments to batch: ' + (err?.message || 'Unknown error'));
+              return;
+            }
+
+            selectedRows.forEach(tr => {
+              tr.dataset.status = 'pending_payout';
+              tr.dataset.batch = batchNo;
+              const statusEl = tr.querySelector('.status');
+              if (statusEl) {
+                statusEl.textContent = 'Pending Payout';
+                statusEl.classList.remove('not-paid', 'paid');
+                statusEl.classList.add('pending');
+              }
+              const actionCellBtn = tr.querySelector('.mark-paid');
+              if (actionCellBtn) {
+                actionCellBtn.classList.remove('mark-paid');
+                actionCellBtn.classList.add('do-payout');
+                actionCellBtn.textContent = 'Payout';
+                actionCellBtn.disabled = false;
+              }
+              const cb = tr.querySelector('.row-select');
+              if (cb) cb.checked = false;
+            });
+
+            selectAllVisibleEl.checked = false;
+
+            if (window.__reloadPayments) window.__reloadPayments();
+            alert(`Payout created.\nBatch: ${batchNo}`);
+          }
+
+          createPayoutBtn.addEventListener('click', async () => {
+            if (createPayoutBtn.disabled) return;
+            await createBatchPayout();
+          });
+        </script>
+
+        <!-- Bulk "Mark as Paid" -->
+        <script type="module">
+          const sbulk = window.__sb;
+          const tbodyBulk = document.getElementById('paymentsTbody');
+          const bulkBtn = document.getElementById('bulkMarkPaidBtn');
+          const selectAllVisible = document.getElementById('selectAllVisible');
+
+          function getSelectedUnpaidRows() {
+            return Array.from(tbodyBulk.querySelectorAll('tr'))
+              .filter(r => r.style.display !== 'none' && r.dataset.status === 'not-paid')
+              .filter(r => r.querySelector('.row-select')?.checked);
+          }
+
+          bulkBtn.addEventListener('click', async () => {
+            const rows = getSelectedUnpaidRows();
+            if (rows.length === 0) { alert('Select at least one "Not Paid" row first.'); return; }
+
+            const ids = rows.map(r => r.dataset.paymentId).filter(Boolean);
+            if (!ids.length) return;
+
+            const ok = confirm(`Mark ${ids.length} selected payment(s) as PAID?`);
+            if (!ok) return;
+
+            bulkBtn.disabled = true;
+            const prevText = bulkBtn.textContent;
+            bulkBtn.textContent = 'Working...';
+
+            try {
+              const { error } = await sbulk
+                .schema('earnings')
+                .from('payments')
+                .update({ payment_status: 'paid' })
+                .in('id', ids);
+
+              if (error) throw error;
+
+              rows.forEach(tr => {
+                tr.dataset.status = 'paid';
+                const chip = tr.querySelector('.status');
+                if (chip) {
+                  chip.textContent = 'Paid';
+                  chip.classList.remove('not-paid', 'pending');
+                  chip.classList.add('paid');
+                }
+                const btn = tr.querySelector('.mark-paid');
+                if (btn) {
+                  btn.textContent = 'Paid';
+                  btn.disabled = true;
+                }
+                const cb = tr.querySelector('.row-select');
+                if (cb) cb.checked = false;
+              });
+
+              if (selectAllVisible) selectAllVisible.checked = false;
+
+              if (window.__paymentsUI) {
+                window.__paymentsUI.applyFilters();
+                window.__paymentsUI.updateSelectionSummary();
+              }
+
+              alert('Selected payments marked as PAID.');
+            } catch (err) {
+              console.error('Bulk mark-as-paid failed:', err);
+              alert('Could not update selected payments: ' + (err?.message || 'Unknown error'));
+            } finally {
+              bulkBtn.disabled = false;
+              bulkBtn.textContent = prevText;
+            }
+          });
+        </script>
+      </main>
+    </div>
+  </body>
 </html>
