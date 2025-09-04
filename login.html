@@ -1,210 +1,289 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8" />
-    <title>Login – SIMP Project</title>
-    <style>
-      body {
-        font-family: system-ui, Arial, sans-serif;
-        max-width: 480px;
-        margin: 50px auto;
-        padding: 0 16px;
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login–SIMP Project</title>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap");
+
+    :root {
+      --azure-blue: #20647c;
+      --green: #20a44c;
+    }
+
+    * {
+      padding: 0;
+      margin: 0;
+      box-sizing: border-box;
+      font-family: "Raleway", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      height: 100vh;
+      background: linear-gradient(135deg, #f8fbfd, #e7edf3);
+      /* soft background */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    .loginDiv {
+      max-width: 460px;
+      width: 90%;
+      padding: 3rem 2.5rem;
+      border-radius: 25px;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 8px 30px rgba(32, 100, 124, 0.2);
+      color: #1c2430;
+    }
+
+    .loginDivHeader {
+      display: grid;
+      place-items: center;
+      gap: .5rem;
+    }
+
+    .loginDiv img {
+      width: 4rem;
+    }
+
+    .loginDiv h2 {
+      color: #20647c;
+      margin-bottom: 1rem;
+    }
+
+    .loginDiv button {
+      width: 100%;
+      padding: 0.8rem;
+      border: none;
+      border-radius: 12px;
+      background: #20a44c;
+      color: #fff;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .loginDiv button:hover {
+      background: #1a7f3a;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 13px;
+      margin: 8px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      background-color: #4f46e5;
+      color: white;
+      cursor: pointer;
+      margin-top: 12px;
+    }
+
+    button:hover {
+      background-color: #3730a3;
+    }
+
+    p {
+      text-align: center;
+      padding-top: 1.2rem;
+      font-size: .9rem;
+
+      a {
+        text-decoration: none;
+        color: var(--azure-blue)
       }
-      h2 {
-        margin-bottom: 20px;
+
+      a:active {
+        color: var(--green)
       }
-      input,
-      select {
-        width: 100%;
-        padding: 10px;
-        margin: 8px 0;
-        border: 1px solid #ccc;
-        border-radius: 8px;
-      }
-      button {
-        width: 100%;
-        padding: 10px;
-        border: none;
-        border-radius: 8px;
-        background-color: #4f46e5;
-        color: white;
-        cursor: pointer;
-        margin-top: 12px;
-      }
-      button:hover {
-        background-color: #3730a3;
-      }
-    </style>
+    }
+  </style>
 
-    <script type="module">
-      import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
-      import { SUPABASE_URL, SUPABASE_ANON_KEY } from "/supabase.js";
+  <script type="module">
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+    import { SUPABASE_URL, SUPABASE_ANON_KEY } from "/supabase.js";
 
-      const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-      // If installer_documents is in another schema, e.g. "jobs", use:
-      // const db = supabase.schema("jobs");
-      const db = supabase; // public schema
+    // If installer_documents is in another schema, e.g. "jobs", use:
+    // const db = supabase.schema("jobs");
+    const db = supabase; // public schema
 
-      // Paths
-      const INSTALLER_UPLOAD =
-        "../pages/installer_pages/html_files/upload.html";
-      const INSTALLER_DASH =
-        "../pages/installer_pages/html_files/dashboard.html";
-      const INSTALLER_REVIEW =
-        "../pages/installer_pages/html_files/review.html";
-      const INSTALLER_APPROVED =
-        "../pages/installer_pages/html_files/approved.html";
-      const INSTALLER_REJECTED =
-        "../pages/installer_pages/html_files/rejected.html";
-      const CUSTOMER_DASH =
-        "../pages/customer_pages/html_files/createPost.html";
+    // Paths
+    const INSTALLER_UPLOAD =
+      "../pages/installer_pages/html_files/upload.html";
+    const INSTALLER_DASH =
+      "../pages/installer_pages/html_files/dashboard.html";
+    const INSTALLER_REVIEW =
+      "../pages/installer_pages/html_files/review.html";
+    const INSTALLER_APPROVED =
+      "../pages/installer_pages/html_files/approved.html";
+    const INSTALLER_REJECTED =
+      "../pages/installer_pages/html_files/rejected.html";
+    const CUSTOMER_DASH =
+      "../pages/customer_pages/html_files/createPost.html";
 
-      // Get the latest installer_documents row for this user
-      async function getLatestInstallerDoc(userId) {
-        const { data, error } = await db
-          .from("installer_documents")
-          .select("installer_id, status, updated_at, uploaded_at")
-          .eq("installer_id", userId)
-          .order("updated_at", { ascending: false, nullsLast: true })
-          .order("uploaded_at", { ascending: false, nullsLast: true })
-          .limit(1)
-          .maybeSingle();
+    // Get the latest installer_documents row for this user
+    async function getLatestInstallerDoc(userId) {
+      const { data, error } = await db
+        .from("installer_documents")
+        .select("installer_id, status, updated_at, uploaded_at")
+        .eq("installer_id", userId)
+        .order("updated_at", { ascending: false, nullsLast: true })
+        .order("uploaded_at", { ascending: false, nullsLast: true })
+        .limit(1)
+        .maybeSingle();
 
-        if (error) throw error;
-        return data; // may be null if no docs yet
-      }
+      if (error) throw error;
+      return data; // may be null if no docs yet
+    }
 
-      async function isCustomer(userId) {
-        const { data, error } = await supabase
-          .from("customer")
-          .select("id")
-          .eq("id", userId)
-          .maybeSingle();
-        if (error) throw error;
-        return !!data;
-      }
+    async function isCustomer(userId) {
+      const { data, error } = await supabase
+        .from("customer")
+        .select("id")
+        .eq("id", userId)
+        .maybeSingle();
+      if (error) throw error;
+      return !!data;
+    }
 
-      // ✅ NEW: check if user exists in public.installer table
-      async function isInstaller(userId) {
-        const { data, error } = await supabase
-          .from("installer")
-          .select("id")
-          .eq("id", userId)
-          .maybeSingle();
-        if (error) throw error;
-        return !!data;
-      }
+    // ✅ NEW: check if user exists in public.installer table
+    async function isInstaller(userId) {
+      const { data, error } = await supabase
+        .from("installer")
+        .select("id")
+        .eq("id", userId)
+        .maybeSingle();
+      if (error) throw error;
+      return !!data;
+    }
 
-      window.login = async () => {
-        const email = document.getElementById("email").value.trim();
-        const password = document.getElementById("password").value;
-        const role = document.getElementById("role").value;
+    window.login = async () => {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+      const role = document.getElementById("role").value;
 
-        try {
-          // 1) Auth sign-in
-          const { data: signInData, error: signInError } =
-            await supabase.auth.signInWithPassword({ email, password });
-          if (signInError) throw signInError;
+      try {
+        // 1) Auth sign-in
+        const { data: signInData, error: signInError } =
+          await supabase.auth.signInWithPassword({ email, password });
+        if (signInError) throw signInError;
 
-          const userId = signInData.user.id;
+        const userId = signInData.user.id;
 
-          if (role === "installer") {
-            // ✅ First, ensure this user is actually an installer
-            const installerExists = await isInstaller(userId);
-            if (!installerExists) {
-              alert(
-                "No installer profile found for this account. Please register as an installer first."
-              );
-              // Do NOT redirect to upload; stop here.
-              return;
-            }
-
-            // Proceed with document status routing only for real installers
-            const doc = await getLatestInstallerDoc(userId);
-
-            if (doc) {
-              const status = String(doc.status || "").toLowerCase();
-
-              // 2) When status is "approved", flip to "verified"
-              if (status === "approved") {
-                try {
-                  const { data: updated, error: updErr } = await db
-                    .from("installer_documents")
-                    .update({ status: "verified" })
-                    .eq("installer_id", userId) // ← NOT doc.id
-                    .select("status") // force returning row
-                    .single(); // 406 if nothing matched
-                  if (updErr) throw updErr;
-                  console.log("Status updated to:", updated.status);
-                } catch (e) {
-                  console.warn(
-                    "Auto-upgrade failed (still going to Approved page):",
-                    e
-                  );
-                }
-                window.location.href = INSTALLER_APPROVED;
-                return;
-              }
-
-              if (status === "verified") {
-                window.location.href = INSTALLER_DASH;
-                return;
-              }
-
-              if (
-                status === "pending review" ||
-                status === "pending" ||
-                status === "submitted" ||
-                status === "under review"
-              ) {
-                window.location.href = INSTALLER_REVIEW;
-                return;
-              }
-
-              if (status === "rejected") {
-                window.location.href = INSTALLER_REJECTED;
-                return;
-              }
-
-              // Unknown status → send to upload
-              window.location.href = INSTALLER_UPLOAD;
-              return;
-            } else {
-              // Installer exists but has no documents yet → upload
-              alert(
-                "No installer documents found. Please upload your documents."
-              );
-              window.location.href = INSTALLER_UPLOAD;
-              return;
-            }
+        if (role === "installer") {
+          // ✅ First, ensure this user is actually an installer
+          const installerExists = await isInstaller(userId);
+          if (!installerExists) {
+            alert(
+              "No installer profile found for this account. Please register as an installer first."
+            );
+            // Do NOT redirect to upload; stop here.
+            return;
           }
 
-          if (role === "customer") {
-            const customer = await isCustomer(userId);
-            if (customer) {
-              window.location.href = CUSTOMER_DASH;
-            } else {
-              alert("No customer profile found. Please register as customer.");
+          // Proceed with document status routing only for real installers
+          const doc = await getLatestInstallerDoc(userId);
+
+          if (doc) {
+            const status = String(doc.status || "").toLowerCase();
+
+            // 2) When status is "approved", flip to "verified"
+            if (status === "approved") {
+              try {
+                const { data: updated, error: updErr } = await db
+                  .from("installer_documents")
+                  .update({ status: "verified" })
+                  .eq("installer_id", userId) // ← NOT doc.id
+                  .select("status") // force returning row
+                  .single(); // 406 if nothing matched
+                if (updErr) throw updErr;
+                console.log("Status updated to:", updated.status);
+              } catch (e) {
+                console.warn(
+                  "Auto-upgrade failed (still going to Approved page):",
+                  e
+                );
+              }
+              window.location.href = INSTALLER_APPROVED;
+              return;
             }
+
+            if (status === "verified") {
+              window.location.href = INSTALLER_DASH;
+              return;
+            }
+
+            if (
+              status === "pending review" ||
+              status === "pending" ||
+              status === "submitted" ||
+              status === "under review"
+            ) {
+              window.location.href = INSTALLER_REVIEW;
+              return;
+            }
+
+            if (status === "rejected") {
+              window.location.href = INSTALLER_REJECTED;
+              return;
+            }
+
+            // Unknown status → send to upload
+            window.location.href = INSTALLER_UPLOAD;
+            return;
+          } else {
+            // Installer exists but has no documents yet → upload
+            alert(
+              "No installer documents found. Please upload your documents."
+            );
+            window.location.href = INSTALLER_UPLOAD;
+            return;
           }
-        } catch (err) {
-          alert("Error: " + (err.message || "Login failed"));
-          console.error(err);
         }
-      };
-    </script>
-  </head>
 
-  <body>
-    <h2>Login – SIMP Project</h2>
+        if (role === "customer") {
+          const customer = await isCustomer(userId);
+          if (customer) {
+            window.location.href = CUSTOMER_DASH;
+          } else {
+            alert("No customer profile found. Please register as customer.");
+          }
+        }
+      } catch (err) {
+        alert("Error: " + (err.message || "Login failed"));
+        console.error(err);
+      }
+    };
+  </script>
+</head>
+
+<body>
+  <div class="loginDiv">
+    <div class="loginDivHeader">
+      <img src="img/simpHappyMascotLogo.png">
+      <h2>Login – SIMP Project</h2>
+    </div>
+
     <input type="email" id="email" placeholder="Email" required /><br />
-    <input
-      type="password"
-      id="password"
-      placeholder="Password"
-      required
-    /><br />
+    <input type="password" id="password" placeholder="Password" required /><br />
 
     <!-- Role Selector -->
     <select id="role" required>
@@ -215,5 +294,8 @@
 
     <button onclick="login()">Login</button>
     <p>Don't have an account? <a href="signup.html">Sign Up</a></p>
-  </body>
+  </div>
+
+</body>
+
 </html>
