@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet" />
+  <link rel="stylesheet" href="../css_files/sideBar.css" />
+  <title>myJobPosts</title>
+  <style>
+    main {
+      margin-top: 1.4rem;
+      padding: 1rem;
+    }
+
+    .dashboard-header {
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .dashboard-header h1 {
+      margin: 0;
+      color: #1c2430;
+    }
+
+    .filters {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .filters input {
+      width: 40%;
+    }
+
+    .filters input,
+    .filters select {
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    table thead {
+      background: #1c2430;
+      color: #fff;
+    }
+
+    table th,
+    table td {
+      padding: 0.8rem;
+      text-align: left;
+      border-bottom: 1px solid #eaeaea;
+    }
+
+    table tbody tr:hover {
+      background: #f8f9fb;
+    }
+
+    .status-pending {
+      color: #f59e0b;
+      font-weight: bold;
+    }
+
+    .status-approved {
+      color: #20a44c;
+      font-weight: bold;
+    }
+
+    .action-btn {
+      padding: 0.4rem 0.8rem;
+      background: #1c2430;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    .action-btn:hover {
+      background: #333d4f;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <!-- Sidebar Section -->
+    <aside>
+      <div class="toggle">
+        <div class="logo">
+          <img src="#" />
+          <h2>SIMP<span class="danger">Project</span></h2>
+        </div>
+        <div class="close" id="close-btn">
+          <span class="material-icons-sharp">close</span>
+        </div>
+      </div>
+
+      <div class="sidebar">
+        <a href="myJobPosts.html" class="active">
+          <span class="material-icons-sharp">cases</span>
+          <h3>My Job Posts</h3>
+        </a>
+        <a href="createPost.html" id="nav-create">
+          <span class="material-icons-sharp">add</span>
+          <h3>Create a post</h3>
+        </a>
+
+        <a href="#" id="logout-btn">
+          <span class="material-icons-sharp">logout</span>
+          <h3>Logout</h3>
+        </a>
+      </div>
+    </aside>
+    <!-- End of Sidebar Section -->
+
+    <!--MAIN CONTENT-->
+    <main>
+      <div class="dashboard-header">
+        <h1>My Job Posts</h1>
+        <div class="filters">
+          <input type="text" id="searchInput" placeholder="Search jobs..." />
+          <select id="statusFilter">
+            <option value="">All Status</option>
+            <option value="pending">Pending</option>
+            <option value="approved">Approved</option>
+          </select>
+        </div>
+      </div>
+
+      <table id="jobsTable">
+        <thead>
+          <tr>
+            <th>Job Title</th>
+            <th>Category</th>
+            <th>Difficulty</th>
+            <th>Pay</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Install CCTV</td>
+            <td>Security</td>
+            <td>Medium</td>
+            <td>₱3,500</td>
+            <td>2025-09-10</td>
+            <td><span class="status-pending">Pending</span></td>
+            <td><a href="createPost.html"><button class="action-btn">More Details</button></a></td>
+          </tr>
+          <tr>
+            <td>Network Cabling</td>
+            <td>Networking</td>
+            <td>Hard</td>
+            <td>₱5,000</td>
+            <td>2025-09-12</td>
+            <td><span class="status-approved">Approved</span></td>
+            <td><a href="createPost.html"><button class="action-btn">More Details</button></a></td>
+          </tr>
+          <tr>
+            <td>Install Door Lock</td>
+            <td>Smart Home</td>
+            <td>Easy</td>
+            <td>₱1,200</td>
+            <td>2025-09-14</td>
+            <td><span class="status-pending">Pending</span></td>
+            <td><a href="createPost.html"><button class="action-btn">More Details</button></a></td>
+          </tr>
+        </tbody>
+      </table>
+    </main>
+  </div>
+
+  <script>
+    const searchInput = document.getElementById('searchInput');
+    const statusFilter = document.getElementById('statusFilter');
+    const table = document.getElementById('jobsTable').getElementsByTagName('tbody')[0];
+
+    function filterTable() {
+      const searchValue = searchInput.value.toLowerCase().trim();
+      const statusValue = statusFilter.value;
+
+      for (let row of table.rows) {
+        const jobTitle = row.cells[0].textContent.toLowerCase();
+        const statusText = row.cells[5].textContent.toLowerCase();
+
+        const matchesSearch = !searchValue || jobTitle.includes(searchValue);
+        const matchesStatus = !statusValue || statusText.includes(statusValue);
+
+        if (matchesSearch && matchesStatus) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      }
+    }
+
+    searchInput.addEventListener('input', () => {
+      if (searchInput.value.trim() === '') {
+        // reset filter when search bar cleared
+        statusFilter.value = '';
+      }
+      filterTable();
+    });
+
+    statusFilter.addEventListener('change', filterTable);
+
+    // Run once at load
+    filterTable();
+  </script>
+</body>
+
+</html>
