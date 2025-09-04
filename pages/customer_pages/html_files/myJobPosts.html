@@ -2,91 +2,220 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet" />
   <link rel="stylesheet" href="../css_files/sideBar.css" />
   <title>myJobPosts</title>
   <style>
+    :root{
+      --card-border:#e7edf3;
+      --muted:#6b7280;
+      --ink:#1c2430;
+      --bg-soft:#f8f9fb;
+      --success:#20a44c;
+      --warn:#f59e0b;
+      --primary:#1c2430;
+      --chip:#eef2f7;
+      --modal-bg: rgba(17,24,39,.6);
+      --modal-card:#ffffff;
+      --line:#e5e7eb;
+    }
     main {
       margin-top: 1.4rem;
       padding: 1rem;
     }
-
     .dashboard-header {
       align-items: center;
       margin-bottom: 1rem;
     }
-
     .dashboard-header h1 {
       margin: 0;
-      color: #1c2430;
+      color: var(--ink);
     }
 
+    /* Filters row */
     .filters {
       display: flex;
-      gap: 0.5rem;
+      gap: .5rem;
       flex-wrap: wrap;
+      margin-top:.6rem;
     }
-
-    .filters input {
-      width: 40%;
-    }
-
+    .filters input { width: 42ch; max-width: 100%; }
     .filters input,
     .filters select {
-      padding: 0.5rem;
+      padding: .55rem .7rem;
       border: 1px solid #ccc;
-      border-radius: 6px;
+      border-radius: 8px;
+      background:#fff;
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background: #fff;
-      border-radius: 10px;
-      overflow: hidden;
+    /* Cards grid */
+    .cards-grid{
+      display:grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    @media (max-width: 1200px){
+      .cards-grid{ grid-template-columns: repeat(8, 1fr); }
+    }
+    @media (max-width: 768px){
+      .cards-grid{ grid-template-columns: repeat(4, 1fr); }
     }
 
-    table thead {
-      background: #1c2430;
-      color: #fff;
+    .job-card{
+      grid-column: span 4 / span 4;
+      background:#fff;
+      border:1px solid var(--card-border);
+      border-radius:14px;
+      box-shadow: var(--box-shadow, 0 2px 8px rgba(0,0,0,.04));
+      padding:14px;
+      transition: transform .15s ease, box-shadow .15s ease;
+      position:relative;
+      overflow:hidden;
+    }
+    .job-card:hover{ transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,.08); }
+    @media (max-width: 1200px){ .job-card{ grid-column: span 8 / span 8; } }
+    @media (max-width: 768px){ .job-card{ grid-column: span 4 / span 4; } }
+
+    .job-head{
+      display:flex; align-items:flex-start; justify-content:space-between; gap:.6rem;
+    }
+    .job-title{
+      font-weight:700; color:var(--ink); font-size:1.05rem; line-height:1.25; margin:0;
+      max-width: 34ch; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+    }
+    .status-badge{
+      display:inline-flex; align-items:center; gap:.35rem;
+      padding:.28rem .55rem; border-radius:9999px; font-size:.78rem; font-weight:600;
+      background:var(--bg-soft); color:var(--ink); border:1px solid var(--card-border);
+      white-space:nowrap;
+    }
+    .status-pending{ background:#fff8e6; color:#9a6700; border-color:#f6d88a; }
+    .status-approved{ background:#e8fff1; color:#0c7a3d; border-color:#9ee2bd; }
+    .status-overdue{ background:#fff0f0; color:#b91c1c; border-color:#f6b1b1; }
+    .status-done{ background:#eafff6; color:#0f766e; border-color:#99f6e4; }
+    .status-rejected{ background:#ffe8e8; color:#b91c1c; border-color:#f6b1b1; }
+    .status-viewed{ background:#eef5ff; color:#1d4ed8; border-color:#c7daff; }
+
+    .chips{
+      display:flex; flex-wrap:wrap; gap:.4rem; margin:.6rem 0 .2rem;
+    }
+    .chip{
+      display:inline-flex; align-items:center; gap:.35rem;
+      background:var(--chip); color:#334155; border:1px solid var(--card-border);
+      padding:.24rem .5rem; border-radius:9999px; font-size:.78rem;
     }
 
-    table th,
-    table td {
-      padding: 0.8rem;
-      text-align: left;
-      border-bottom: 1px solid #eaeaea;
+    .meta{
+      display:grid; grid-template-columns: repeat(2, 1fr); gap:.6rem; margin:.6rem 0 .2rem;
+    }
+    .meta-item{
+      display:flex; align-items:center; gap:.35rem; color:#334155; font-size:.9rem;
+      background:#fff; border:1px dashed var(--card-border); border-radius:10px; padding:.45rem .6rem;
     }
 
-    table tbody tr:hover {
-      background: #f8f9fb;
+    .installer{
+      display:flex; align-items:center; gap:.6rem; margin-top:.6rem;
+      background: #fff; border:1px solid var(--card-border); border-radius:12px; padding:.5rem .6rem;
+    }
+    .avatar{
+      width:30px; height:30px; border-radius:50%; background:#111827; color:#fff; display:grid; place-items:center; font-size:.8rem; font-weight:700;
+    }
+    .installer .name{ font-weight:600; color:#111827; }
+    .installer .muted{ color:var(--muted); font-size:.86rem; }
+
+    .actions{
+      display:flex; align-items:center; justify-content:flex-end; gap:.5rem; margin-top:.75rem;
+    }
+    .btn{
+      border:none; border-radius:10px; padding:.5rem .75rem; cursor:pointer; font-weight:600;
+      display:inline-flex; align-items:center; gap:.4rem;
+    }
+    .btn-ghost{
+      background:#fff; border:1px solid var(--card-border); color:#111827;
+    }
+    .btn-primary{
+      background:var(--primary); color:#fff;
+    }
+    .btn-danger{
+      background:#ef4444; color:#fff;
+    }
+    .btn:hover{ filter:brightness(.96); }
+
+    .empty{
+      margin-top:1.2rem;
+      border:2px dashed var(--card-border); border-radius:14px; padding:1rem;
+      display:flex; align-items:center; justify-content:center; gap:.6rem; color:var(--muted);
+      background:#fff;
     }
 
-    .status-pending {
-      color: #f59e0b;
-      font-weight: bold;
-    }
+    .muted { color: var(--muted); }
 
-    .status-approved {
-      color: #20a44c;
-      font-weight: bold;
+    /* ===== MODALS ===== */
+    .modal-overlay{
+      position:fixed; inset:0; background:var(--modal-bg);
+      display:none; align-items:center; justify-content:center; padding:16px;
+      z-index: 50;
     }
+    .modal{
+      width:min(980px, 100%);
+      background:var(--modal-card);
+      border-radius:16px; overflow:hidden; box-shadow: 0 20px 48px rgba(0,0,0,.18);
+      max-height: 92vh; display:flex; flex-direction:column;
+    }
+    .modal-hero{
+      position:relative; height:220px; background:#f3f4f6; overflow:hidden;
+    }
+    .modal-hero .hero-img{
+      position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+      filter: saturate(1.05);
+    }
+    .modal-hero::after{
+      content:""; position:absolute; inset:0;
+      background: linear-gradient(180deg, rgba(0,0,0,.35) 0%, rgba(0,0,0,.15) 40%, rgba(0,0,0,0) 100%);
+      pointer-events:none;
+    }
+    .modal-header{
+      position:absolute; top:12px; left:12px; right:12px; display:flex; justify-content:space-between; align-items:center; color:#fff;
+    }
+    .modal-header .badge{ background: rgba(255,255,255,.18); border:1px solid rgba(255,255,255,.35); padding:.25rem .6rem; border-radius:9999px; font-weight:700; font-size:.82rem; display:inline-flex; gap:.35rem; align-items:center; }
+    .modal-header .close-btn{
+      border:1px solid rgba(255,255,255,.5); background:rgba(0,0,0,.3); color:#fff; width:36px; height:36px; border-radius:9999px; display:grid; place-items:center; cursor:pointer;
+    }
+    .modal-body{
+      padding:16px; overflow:auto;
+    }
+    .modal-title{
+      margin:-44px 0 8px 0; color:#fff; font-weight:800; font-size:1.35rem; text-shadow: 0 1px 2px rgba(0,0,0,.4);
+      padding:0 16px;
+    }
+    .modal-section{
+      display:grid; grid-template-columns: 1.3fr .7fr; gap:16px;
+    }
+    @media (max-width: 900px){
+      .modal-section{ grid-template-columns:1fr; }
+    }
+    .modal-card{
+      border:1px solid var(--line); border-radius:12px; padding:12px; background:#fff;
+    }
+    .row{ display:flex; align-items:center; gap:.5rem; margin:.35rem 0; color:#111827; }
+    .row .label{ width:140px; color:#6b7280; font-size:.9rem; }
+    .divider{ height:1px; background:var(--line); margin:10px 0; }
+    .modal-actions{
+      display:flex; gap:.5rem; justify-content:flex-end; margin-top:10px;
+    }
+    .btn-warning{ background:#f59e0b; color:#111827; }
 
-    .action-btn {
-      padding: 0.4rem 0.8rem;
-      background: #1c2430;
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 0.9rem;
-    }
+    /* Installer modal */
+    .inst-top{ display:flex; gap:12px; align-items:center; }
+    .inst-avatar{ width:56px; height:56px; border-radius:50%; background:#111827; color:#fff; display:grid; place-items:center; font-weight:800; }
+    .inst-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    @media (max-width: 700px){ .inst-grid{ grid-template-columns:1fr; } }
 
-    .action-btn:hover {
-      background: #333d4f;
-    }
+    /* === NEW: Hide the card-level Edit button, keep code intact === */
+    .actions .btn-edit { display:none !important; }
   </style>
 </head>
 
@@ -96,7 +225,7 @@
     <aside>
       <div class="toggle">
         <div class="logo">
-          <img src="#" />
+          <img src="#" alt="" />
           <h2>SIMP<span class="danger">Project</span></h2>
         </div>
         <div class="close" id="close-btn">
@@ -132,92 +261,700 @@
             <option value="">All Status</option>
             <option value="pending">Pending</option>
             <option value="approved">Approved</option>
+            <option value="viewed">Viewed</option>
+            <option value="overdue">Overdue</option>
+            <option value="rejected">Rejected</option>
+            <option value="done">Done</option>
+          </select>
+          <select id="sortSelect" title="Sort">
+            <option value="created_desc">Newest first</option>
+            <option value="created_asc">Oldest first</option>
+            <option value="date_desc">Job date (newest)</option>
+            <option value="date_asc">Job date (oldest)</option>
+            <option value="pay_desc">Pay (highest)</option>
+            <option value="pay_asc">Pay (lowest)</option>
           </select>
         </div>
       </div>
 
-      <table id="jobsTable">
-        <thead>
-          <tr>
-            <th>Job Title</th>
-            <th>Category</th>
-            <th>Difficulty</th>
-            <th>Pay</th>
-            <th>Date</th>
-            <th>Status</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Install CCTV</td>
-            <td>Security</td>
-            <td>Medium</td>
-            <td>₱3,500</td>
-            <td>2025-09-10</td>
-            <td><span class="status-pending">Pending</span></td>
-            <td><a href="createPost.html"><button class="action-btn">More Details</button></a></td>
-          </tr>
-          <tr>
-            <td>Network Cabling</td>
-            <td>Networking</td>
-            <td>Hard</td>
-            <td>₱5,000</td>
-            <td>2025-09-12</td>
-            <td><span class="status-approved">Approved</span></td>
-            <td><a href="createPost.html"><button class="action-btn">More Details</button></a></td>
-          </tr>
-          <tr>
-            <td>Install Door Lock</td>
-            <td>Smart Home</td>
-            <td>Easy</td>
-            <td>₱1,200</td>
-            <td>2025-09-14</td>
-            <td><span class="status-pending">Pending</span></td>
-            <td><a href="createPost.html"><button class="action-btn">More Details</button></a></td>
-          </tr>
-        </tbody>
-      </table>
+      <!-- Cards container -->
+      <div id="cardsContainer" class="cards-grid">
+        <!-- Loading placeholder -->
+        <div class="job-card" id="loader-card">
+          <div class="job-head">
+            <h3 class="job-title muted">Loading your jobs…</h3>
+            <span class="status-badge"><span class="material-icons-sharp" style="font-size:1rem;">pending</span> Please wait</span>
+          </div>
+          <div class="chips">
+            <span class="chip">—</span>
+            <span class="chip">—</span>
+          </div>
+          <div class="meta">
+            <div class="meta-item"><span class="material-icons-sharp">payments</span> —</div>
+            <div class="meta-item"><span class="material-icons-sharp">event</span> —</div>
+          </div>
+          <div class="installer">
+            <div class="avatar">—</div>
+            <div class="muted">Fetching installer…</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="emptyState" class="empty" style="display:none;">
+        <span class="material-icons-sharp">work</span>
+        <span>No jobs yet. Create one to get started!</span>
+        <a href="createPost.html" class="btn btn-primary" style="text-decoration:none;">
+          <span class="material-icons-sharp">add</span> New Job
+        </a>
+      </div>
     </main>
   </div>
 
-  <script>
+  <!-- ====== JOB DETAILS MODAL ====== -->
+  <div id="jobModal" class="modal-overlay" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="jobModalTitle">
+      <div class="modal-hero">
+        <img id="jobHero" class="hero-img" alt="Job photo" />
+        <div class="modal-header">
+          <span id="jobStatusBadge" class="badge"><span class="material-icons-sharp" style="font-size:1rem;">info</span><span id="jobStatusText">Status</span></span>
+          <button id="jobCloseBtn" class="close-btn" title="Close"><span class="material-icons-sharp">close</span></button>
+        </div>
+      </div>
+      <div class="modal-body">
+        <h2 id="jobModalTitle" class="modal-title">Job Title</h2>
+        <div class="modal-section">
+          <!-- Left: job info -->
+          <div class="modal-card">
+            <div class="row"><span class="label">Category</span><span id="mCategory">—</span></div>
+            <div class="row"><span class="label">Difficulty</span><span id="mDiff">—</span></div>
+            <div class="row"><span class="label">Pay</span><span id="mPay">—</span></div>
+            <div class="row"><span class="label">Date & Time</span><span id="mWhen">—</span></div>
+            <div class="row"><span class="label">Duration</span><span id="mDuration">—</span></div>
+            <div class="row"><span class="label">Location</span><span id="mLocation">—</span></div>
+            <div class="divider"></div>
+            <div class="row" style="align-items:flex-start;"><span class="label">Description</span><span id="mDesc">—</span></div>
+          </div>
+
+          <!-- Right: installer & actions -->
+          <div class="modal-card">
+            <div class="row" id="instRow">
+              <span class="label">Installer</span>
+              <span id="mInstaller">Unassigned</span>
+            </div>
+
+            <!-- Reschedule (for overdue) -->
+            <div id="reschedWrap" class="modal-card" style="border-style:dashed; margin-top:10px; display:none;">
+              <div class="row" style="font-weight:700;"><span class="material-icons-sharp">schedule</span>Reschedule</div>
+              <div class="row">
+                <span class="label">New date</span>
+                <input id="reschedDate" type="date" />
+              </div>
+              <div class="row">
+                <span class="label">New time</span>
+                <input id="reschedTime" type="time" />
+              </div>
+              <div class="modal-actions">
+                <button id="reschedSubmit" class="btn btn-warning"><span class="material-icons-sharp">update</span> Apply</button>
+              </div>
+            </div>
+
+            <div class="modal-actions" id="modalBtns">
+              <!-- buttons injected -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== INSTALLER PROFILE MODAL ====== -->
+  <div id="installerModal" class="modal-overlay" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="installerTitle">
+      <div class="modal-body">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <h2 id="installerTitle" style="margin:0;">Installer Profile</h2>
+          <button id="instCloseBtn" class="btn btn-ghost" title="Close"><span class="material-icons-sharp">close</span></button>
+        </div>
+        <div class="divider"></div>
+        <div class="inst-top">
+          <div id="instAvatar" class="inst-avatar">IN</div>
+          <div>
+            <div id="instName" style="font-weight:800; font-size:1.15rem;">—</div>
+            <div id="instEmail" class="muted">—</div>
+          </div>
+        </div>
+        <div class="divider"></div>
+        <div class="inst-grid">
+          <div class="modal-card">
+            <div class="row"><span class="label">Phone</span><span id="instPhone">—</span></div>
+            <div class="row"><span class="label">Profession</span><span id="instProfession">—</span></div>
+            <div class="row"><span class="label">Employer</span><span id="instEmployer">—</span></div>
+          </div>
+          <div class="modal-card">
+            <div class="row"><span class="label">Qualification</span><span id="instQual">—</span></div>
+            <div class="row"><span class="label">Employment</span><span id="instEmpStatus">—</span></div>
+            <div class="row"><span class="label">Level</span><span id="instLevel">—</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Supabase CDN (v2) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../../general_files/index.js"></script>
+  <script type="module" src="../../general_files/session.js"></script>
+
+  <script type="module">
+    // ---------- Supabase helpers ----------
+    async function ensureSupabaseClient() {
+      if (window.supabaseClient && typeof window.supabaseClient.from === "function") return window.supabaseClient;
+      if (window.supabase && typeof window.supabase.from === "function") {
+        window.supabaseClient = window.supabase; return window.supabaseClient;
+      }
+      const ns = window.supabase;
+      if (!ns || typeof ns.createClient !== "function") { console.error("Supabase not loaded"); return null; }
+
+      let url, key;
+      try {
+        const mod = await import("../../../supabase.js"); // optional module with keys
+        url = mod.SUPABASE_URL; key = mod.SUPABASE_ANON_KEY;
+      } catch (_) {}
+      if (!url) url = window.SUPABASE_URL;
+      if (!key) key = window.SUPABASE_ANON_KEY;
+
+      if (!url || !key) { console.error("Missing SUPABASE_URL / SUPABASE_ANON KEY"); return null; }
+      window.supabaseClient = ns.createClient(url, key);
+      return window.supabaseClient;
+    }
+    function fromInSchema(client, schema, table) {
+      if (client.schema && typeof client.schema === "function") return client.schema(schema).from(table);
+      return client.from(`${schema}.${table}`);
+    }
+
+    // ---------- Formatting helpers ----------
+    function escapeHtml(str) {
+      return String(str ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+    function formatPeso(n) {
+      const num = Number(n ?? 0);
+      return `₱${num.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
+    function difficultyToText(level) {
+      const n = Number(level);
+      if (n === 0) return "Easy";
+      if (n === 1) return "Medium";
+      if (n === 2) return "Hard";
+      return `Level ${isFinite(n) ? n : 0}`;
+    }
+    function statusClass(status) {
+      const s = String(status || "").toLowerCase();
+      if (s === "pending") return "status-pending";
+      if (s === "approved" || s === "active") return "status-approved";
+      if (s === "overdue") return "status-overdue";
+      if (s === "done" || s === "completed") return "status-done";
+      if (s === "rejected") return "status-rejected";
+      if (s === "viewed") return "status-viewed";
+      return "";
+    }
+    function initials(name) {
+      const n = (name || "").trim();
+      if (!n) return "NA";
+      const parts = n.split(/\s+/).slice(0,2);
+      return parts.map(p => p[0]?.toUpperCase() || "").join("") || "NA";
+    }
+    function fmtDate(d) {
+      if (!d) return "—";
+      const dt = new Date(d);
+      if (Number.isNaN(dt.getTime())) return String(d);
+      return dt.toLocaleDateString(undefined, { year:'numeric', month:'short', day:'2-digit' });
+    }
+    function fmtTime(t) {
+      if (!t) return "—";
+      try {
+        const [H, M] = String(t).split(":");
+        const d = new Date(); d.setHours(+H||0, +M||0, 0, 0);
+        return d.toLocaleTimeString(undefined, { hour:'2-digit', minute:'2-digit' });
+      } catch { return String(t); }
+    }
+
+    // Convert Postgres interval -> whole hours
+    function intervalToHours(v) {
+      if (v == null) return null;
+      if (typeof v === "number" && isFinite(v)) return Math.max(0, Math.round(v));
+      const s = String(v).trim();
+
+      let m = /^(\d{1,2}):([0-5]?\d)(?::([0-5]?\d))?$/.exec(s);
+      if (m) {
+        const h = parseInt(m[1] || "0", 10), min = parseInt(m[2] || "0", 10);
+        return Math.max(0, Math.round(h + min/60));
+      }
+      m = /(?:(\d+)\s+day[s]?\s*)?(\d{1,2}):([0-5]?\d)(?::([0-5]?\d))?/i.exec(s);
+      if (m) {
+        const d = parseInt(m[1] || "0", 10), h = parseInt(m[2] || "0", 10), min = parseInt(m[3] || "0", 10);
+        return Math.max(0, Math.round(d*24 + h + min/60));
+      }
+      m = /^P(T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?)$/i.exec(s);
+      if (m) {
+        const h = parseInt(m[2] || "0", 10), min = parseInt(m[3] || "0", 10);
+        return Math.max(0, Math.round(h + min/60));
+      }
+      if (/^\d+$/.test(s)) return Math.max(0, parseInt(s,10));
+      return null;
+    }
+    // Convert whole hours -> interval string Postgres accepts
+    function hoursToInterval(hours) {
+      const h = Math.max(0, parseInt(hours, 10) || 0);
+      return `${String(h).padStart(2, '0')}:00:00`;
+    }
+
+    // ---------- DOM refs ----------
+    const cardsContainer = document.getElementById('cardsContainer');
+    const emptyState = document.getElementById('emptyState');
     const searchInput = document.getElementById('searchInput');
     const statusFilter = document.getElementById('statusFilter');
-    const table = document.getElementById('jobsTable').getElementsByTagName('tbody')[0];
+    const sortSelect = document.getElementById('sortSelect');
 
-    function filterTable() {
-      const searchValue = searchInput.value.toLowerCase().trim();
-      const statusValue = statusFilter.value;
+    // Modals
+    const jobModal = document.getElementById('jobModal');
+    const jobHero = document.getElementById('jobHero');
+    const jobStatusBadge = document.getElementById('jobStatusBadge');
+    const jobStatusText = document.getElementById('jobStatusText');
+    const jobCloseBtn = document.getElementById('jobCloseBtn');
+    const jobTitleEl = document.getElementById('jobModalTitle');
+    const mCategory = document.getElementById('mCategory');
+    const mDiff = document.getElementById('mDiff');
+    const mPay = document.getElementById('mPay');
+    const mWhen = document.getElementById('mWhen');
+    const mDuration = document.getElementById('mDuration');
+    const mLocation = document.getElementById('mLocation');
+    const mDesc = document.getElementById('mDesc');
+    const mInstaller = document.getElementById('mInstaller');
+    const modalBtns = document.getElementById('modalBtns');
+    const reschedWrap = document.getElementById('reschedWrap');
+    const reschedDate = document.getElementById('reschedDate');
+    const reschedTime = document.getElementById('reschedTime');
+    const reschedSubmit = document.getElementById('reschedSubmit');
 
-      for (let row of table.rows) {
-        const jobTitle = row.cells[0].textContent.toLowerCase();
-        const statusText = row.cells[5].textContent.toLowerCase();
+    const installerModal = document.getElementById('installerModal');
+    const instCloseBtn = document.getElementById('instCloseBtn');
+    const instAvatar = document.getElementById('instAvatar');
+    const instName = document.getElementById('instName');
+    const instEmail = document.getElementById('instEmail');
+    const instPhone = document.getElementById('instPhone');
+    const instProfession = document.getElementById('instProfession');
+    const instEmployer = document.getElementById('instEmployer');
+    const instQual = document.getElementById('instQual');
+    const instEmpStatus = document.getElementById('instEmpStatus');
+    const instLevel = document.getElementById('instLevel');
 
-        const matchesSearch = !searchValue || jobTitle.includes(searchValue);
-        const matchesStatus = !statusValue || statusText.includes(statusValue);
+    // Keep jobs in memory for client-side sort/filter
+    let JOBS = [];
+    let INSTALLER_BY_ID = new Map();
+    let CURRENT_JOB = null;
 
-        if (matchesSearch && matchesStatus) {
-          row.style.display = '';
+    // ---------- Rendering ----------
+    function cardHtml(job){
+      const title = escapeHtml(job.job_title);
+      const category = escapeHtml(job.job_category || "Uncategorized");
+      const diffText = difficultyToText(job.job_difficulty);
+      const pay = formatPeso(job.job_pay);
+      const date = fmtDate(job.job_date);
+      const time = fmtTime(job.job_time);
+      const status = String(job.job_status || "pending");
+      const statusCls = statusClass(status);
+      const statusNorm = (status.toLowerCase()==='active') ? 'approved'
+                        : (status.toLowerCase()==='completed') ? 'done'
+                        : status.toLowerCase();
+      const detailsUrl = `#`; // we'll open modal instead
+
+      const durHrs = job._duration_hours;
+      const durChip = (durHrs != null && !Number.isNaN(durHrs)) ? `
+        <span class="chip" title="Estimated duration">
+          <span class="material-icons-sharp" style="font-size:1rem;">schedule</span>${durHrs}h
+        </span>` : "";
+
+      let installerName = "Unassigned";
+      if (job.installer_id_assigned && INSTALLER_BY_ID.has(job.installer_id_assigned)) {
+        installerName = INSTALLER_BY_ID.get(job.installer_id_assigned)?.name || "Assigned";
+      }
+      const hasInstaller = installerName !== "Unassigned";
+      const avatarText = initials(installerName);
+
+      return `
+        <div class="job-card" data-job-id="${job.job_id}" data-title="${title.toLowerCase()}" data-status="${status.toLowerCase()}" data-status-norm="${statusNorm}">
+          <div class="job-head">
+            <h3 class="job-title" title="${title}">${title}</h3>
+            <span class="status-badge ${statusCls}">
+              <span class="material-icons-sharp" style="font-size:1rem;">${
+                status.toLowerCase()==='approved' || status.toLowerCase()==='active' ? 'verified' :
+                status.toLowerCase()==='pending' ? 'hourglass_empty' :
+                status.toLowerCase()==='overdue' ? 'warning' :
+                status.toLowerCase()==='done' || status.toLowerCase()==='completed' ? 'check_circle' :
+                status.toLowerCase()==='rejected' ? 'block' :
+                status.toLowerCase()==='viewed' ? 'visibility' : 'info'
+              }</span>
+              ${status.charAt(0).toUpperCase()+status.slice(1)}
+            </span>
+          </div>
+
+          <div class="chips">
+            <span class="chip" title="Category">
+              <span class="material-icons-sharp" style="font-size:1rem;">category</span>${category}
+            </span>
+            <span class="chip" title="Difficulty"><span class="material-icons-sharp" style="font-size:1rem;">military_tech</span>${diffText}</span>
+            ${durChip}
+          </div>
+
+          <div class="meta">
+            <div class="meta-item" title="Pay"><span class="material-icons-sharp">payments</span>${pay}</div>
+            <div class="meta-item" title="When"><span class="material-icons-sharp">event</span>${date} • ${time}</div>
+          </div>
+
+          <div class="installer" title="${hasInstaller ? 'Assigned installer' : 'No installer assigned'}">
+            <div class="avatar" style="${hasInstaller ? '' : 'background:#6b7280;'}">${avatarText}</div>
+            <div>
+              <div class="name">${escapeHtml(installerName)}</div>
+              <div class="muted">${hasInstaller ? 'Assigned' : 'Unassigned'}</div>
+            </div>
+          </div>
+
+          <div class="actions">
+            <a class="btn btn-ghost btn-details" href="${detailsUrl}">
+              <span class="material-icons-sharp">visibility</span> Details
+            </a>
+            <a class="btn btn-primary btn-edit" href="createPost.html?job_id=${encodeURIComponent(job.job_id)}">
+              <span class="material-icons-sharp">edit</span> Edit
+            </a>
+          </div>
+        </div>
+      `;
+    }
+
+    function render(){
+      if (!JOBS.length){
+        cardsContainer.innerHTML = "";
+        emptyState.style.display = "flex";
+        return;
+      }
+      emptyState.style.display = "none";
+      cardsContainer.innerHTML = JOBS.map(cardHtml).join("");
+      applyClientFilters();
+    }
+
+    // ---------- Data loader ----------
+    async function loadMyJobs() {
+      const client = await ensureSupabaseClient();
+      if (!client) return;
+
+      const { data: u, error: uErr } = await client.auth.getUser();
+      if (uErr || !u?.user?.id) {
+        console.error("auth.getUser error:", uErr);
+        cardsContainer.innerHTML = `<div class="empty"><span class="material-icons-sharp">person_off</span><span>Please log in to see your jobs.</span></div>`;
+        return;
+      }
+      const userId = u.user.id;
+
+      const { data: jobs, error } = await fromInSchema(client, "jobs", "job")
+        .select("job_id, job_title, job_category, job_difficulty, job_pay, job_date, job_time, job_status, created_at, installer_id_assigned, job_duration, job_picture_url, job_location, job_description")
+        .eq("posted_by", userId)
+        .order("created_at", { ascending: false })
+        .limit(300);
+
+      if (error) {
+        console.error("jobs fetch error:", error);
+        cardsContainer.innerHTML = `<div class="empty"><span class="material-icons-sharp">error_outline</span><span>Unable to load your jobs.</span></div>`;
+        return;
+      }
+
+      JOBS = (jobs || []).map(j => ({ ...j, _duration_hours: intervalToHours(j.job_duration) }));
+
+      const installerIds = Array.from(new Set(JOBS.map(j => j.installer_id_assigned).filter(Boolean)));
+      INSTALLER_BY_ID = new Map();
+      if (installerIds.length){
+        const { data: installers, error: insErr } = await fromInSchema(client, "public", "installer")
+          .select("id, name, email")
+          .in("id", installerIds)
+          .limit(1000);
+        if (insErr) {
+          console.error("installer fetch error:", insErr);
         } else {
-          row.style.display = 'none';
+          (installers || []).forEach(i => INSTALLER_BY_ID.set(i.id, i));
         }
+      }
+
+      render();
+    }
+
+    // ---------- Client filters + sorting ----------
+    function applyClientFilters(){
+      const searchValue = searchInput.value.toLowerCase().trim();
+      const statusValue = statusFilter.value.toLowerCase().trim();
+
+      const cards = Array.from(cardsContainer.querySelectorAll('.job-card'));
+      for (const card of cards){
+        const title = card.getAttribute('data-title') || '';
+        const st = card.getAttribute('data-status') || '';
+        const stn = card.getAttribute('data-status-norm') || st;
+        const matchesSearch = !searchValue || title.includes(searchValue);
+        const matchesStatus = !statusValue || st === statusValue || stn === statusValue;
+        card.style.display = (matchesSearch && matchesStatus) ? '' : 'none';
       }
     }
 
-    searchInput.addEventListener('input', () => {
-      if (searchInput.value.trim() === '') {
-        // reset filter when search bar cleared
-        statusFilter.value = '';
+    function sortClient(){
+      const mode = sortSelect.value;
+      const by = (a,b,k,dir=1)=> (a[k] > b[k] ? 1 : a[k] < b[k] ? -1 : 0)*dir;
+
+      if (mode === 'created_desc') JOBS.sort((a,b)=> by(a,b,'created_at',-1));
+      else if (mode === 'created_asc') JOBS.sort((a,b)=> by(a,b,'created_at',+1));
+      else if (mode === 'date_desc') JOBS.sort((a,b)=> by(a,b,'job_date',-1));
+      else if (mode === 'date_asc') JOBS.sort((a,b)=> by(a,b,'job_date',+1));
+      else if (mode === 'pay_desc') JOBS.sort((a,b)=> (Number(b.job_pay||0) - Number(a.job_pay||0)));
+      else if (mode === 'pay_asc') JOBS.sort((a,b)=> (Number(a.job_pay||0) - Number(b.job_pay||0)));
+
+      render();
+    }
+
+    // ---------- Modal helpers ----------
+    function showJobModal(){ jobModal.style.display='flex'; jobModal.setAttribute('aria-hidden','false'); }
+    function hideJobModal(){ jobModal.style.display='none'; jobModal.setAttribute('aria-hidden','true'); CURRENT_JOB=null; reschedWrap.style.display='none'; }
+    function showInstModal(){ installerModal.style.display='flex'; installerModal.setAttribute('aria-hidden','false'); }
+    function hideInstModal(){ installerModal.style.display='none'; installerModal.setAttribute('aria-hidden','true'); }
+
+    function setBadge(status){
+      const cls = statusClass(status);
+      jobStatusBadge.className = `badge ${cls}`;
+      jobStatusText.textContent = status.charAt(0).toUpperCase()+status.slice(1);
+    }
+
+    function fillJobModal(job){
+      CURRENT_JOB = job;
+      const status = (job.job_status || 'pending').toLowerCase();
+
+      jobTitleEl.textContent = job.job_title || '—';
+      setBadge(status);
+
+      if (job.job_picture_url){
+        jobHero.src = job.job_picture_url;
+        jobHero.style.display = 'block';
+      } else {
+        jobHero.style.display = 'none';
       }
-      filterTable();
+
+      mCategory.textContent = job.job_category || '—';
+      mDiff.textContent = difficultyToText(job.job_difficulty);
+      mPay.textContent = formatPeso(job.job_pay);
+      mWhen.textContent = `${fmtDate(job.job_date)} • ${fmtTime(job.job_time)}`;
+      mDuration.textContent = (job._duration_hours != null ? `${job._duration_hours} hour(s)` : '—');
+      mLocation.textContent = job.job_location || '—';
+      mDesc.textContent = job.job_description || '—';
+
+      // Installer label
+      let instLabel = 'Unassigned';
+      if (job.installer_id_assigned && INSTALLER_BY_ID.has(job.installer_id_assigned)){
+        const i = INSTALLER_BY_ID.get(job.installer_id_assigned);
+        instLabel = i?.name || 'Assigned';
+      }
+      mInstaller.textContent = instLabel;
+
+      // Actions
+      modalBtns.innerHTML = '';
+      reschedWrap.style.display = 'none';
+
+      const assigned = !!job.installer_id_assigned;
+
+      if (status === 'done' || status === 'completed'){
+        // no buttons
+      } else if (assigned){
+        // Only "View Installer"
+        const v = document.createElement('button');
+        v.className = 'btn btn-ghost';
+        v.innerHTML = `<span class="material-icons-sharp">badge</span> View Installer`;
+        v.addEventListener('click', () => openInstallerProfile(job.installer_id_assigned));
+        modalBtns.appendChild(v);
+      } else if (status === 'overdue'){
+        // Reschedule -> sets pending
+        reschedWrap.style.display = 'block';
+        const today = new Date();
+        const yyyy = today.getFullYear(), mm = String(today.getMonth()+1).padStart(2,'0'), dd = String(today.getDate()).padStart(2,'0');
+        reschedDate.value = job.job_date || `${yyyy}-${mm}-${dd}`;
+        reschedDate.min = `${yyyy}-${mm}-${dd}`;
+        reschedTime.value = job.job_time || '09:00';
+
+        reschedSubmit.onclick = async () => {
+          const nd = reschedDate.value, nt = reschedTime.value;
+          if (!nd || !nt) { alert('Pick a new date and time.'); return; }
+          await updateJob(job.job_id, { job_date: nd, job_time: nt, job_status: 'pending' }, 'Rescheduled.');
+        };
+      } else if (status === 'pending' || status === 'viewed'){
+        const edit = document.createElement('a');
+        edit.className = 'btn btn-primary';
+        edit.href = `createPost.html?job_id=${encodeURIComponent(job.job_id)}`;
+        edit.innerHTML = `<span class="material-icons-sharp">edit</span> Edit`;
+        edit.addEventListener('click', cacheJobBeforeNav(job));
+
+        const del = document.createElement('button');
+        del.className = 'btn btn-danger';
+        del.innerHTML = `<span class="material-icons-sharp">delete</span> Cancel / Delete`;
+        del.addEventListener('click', () => deleteJob(job));
+
+        modalBtns.append(edit, del);
+      } else if (status === 'approved' || status === 'active'){
+        // Only allowed if NOT assigned
+        const edit = document.createElement('a');
+        edit.className = 'btn btn-primary';
+        edit.href = `createPost.html?job_id=${encodeURIComponent(job.job_id)}`;
+        edit.innerHTML = `<span class="material-icons-sharp">edit</span> Edit (will set Pending)`;
+        edit.addEventListener('click', async (e) => {
+          // set to pending first
+          e.preventDefault();
+          const ok = await updateJob(job.job_id, { job_status: 'pending' }, 'Status set to Pending for editing.');
+          if (ok) {
+            try { sessionStorage.setItem('edit_job_cache', JSON.stringify({ ...job, job_status:'pending' })); } catch {}
+            window.location.href = edit.href;
+          }
+        });
+
+        const del = document.createElement('button');
+        del.className = 'btn btn-danger';
+        del.innerHTML = `<span class="material-icons-sharp">delete</span> Delete`;
+        del.addEventListener('click', () => deleteJob(job));
+
+        modalBtns.append(edit, del);
+      } else if (status === 'rejected'){
+        // allow delete
+        const del = document.createElement('button');
+        del.className = 'btn btn-danger';
+        del.innerHTML = `<span class="material-icons-sharp">delete</span> Delete`;
+        del.addEventListener('click', () => deleteJob(job));
+        modalBtns.append(del);
+      }
+    }
+
+    function cacheJobBeforeNav(job){
+      return () => { try { sessionStorage.setItem('edit_job_cache', JSON.stringify(job)); } catch {} };
+    }
+
+    // Update job helper
+    async function updateJob(job_id, updates, successMsg='Updated.'){
+      const client = await ensureSupabaseClient();
+      const { error } = await fromInSchema(client, 'jobs', 'job').update(updates).eq('job_id', job_id);
+      if (error) {
+        alert('Update failed: ' + error.message);
+        console.error(error);
+        return false;
+      }
+      // reflect locally
+      const idx = JOBS.findIndex(j => j.job_id === job_id);
+      if (idx >= 0) {
+        JOBS[idx] = { ...JOBS[idx], ...updates };
+        if (updates.job_duration) JOBS[idx]._duration_hours = intervalToHours(updates.job_duration);
+      }
+      render();
+      alert(successMsg);
+      return true;
+    }
+
+    async function deleteJob(job){
+      if (job.installer_id_assigned){
+        alert('Cannot delete: an installer is assigned. View installer profile instead.');
+        return;
+      }
+      if (!confirm('Delete this job posting? This cannot be undone.')) return;
+      const client = await ensureSupabaseClient();
+      const { error } = await fromInSchema(client, 'jobs', 'job').delete().eq('job_id', job.job_id);
+      if (error){
+        alert('Delete failed: ' + error.message);
+        console.error(error);
+        return;
+      }
+      JOBS = JOBS.filter(j => j.job_id !== job.job_id);
+      render();
+      hideJobModal();
+      alert('Job deleted.');
+    }
+
+    async function openInstallerProfile(installerId){
+      const client = await ensureSupabaseClient();
+      let inst = INSTALLER_BY_ID.get(installerId);
+      if (!inst || !inst.email || !inst.phone){
+        const { data, error } = await fromInSchema(client, 'public', 'installer')
+          .select('id, name, email, phone, profession, employer, "highestQualification", "employmentStatus", levelstatus')
+          .eq('id', installerId)
+          .maybeSingle();
+        if (error){ console.error(error); }
+        if (data){ inst = data; INSTALLER_BY_ID.set(installerId, data); }
+      }
+      // Fill UI
+      const name = inst?.name || '—';
+      instAvatar.textContent = initials(name);
+      instName.textContent = name;
+      instEmail.textContent = inst?.email || '—';
+      instPhone.textContent = inst?.phone || '—';
+      instProfession.textContent = inst?.profession || '—';
+      instEmployer.textContent = inst?.employer || '—';
+      instQual.textContent = inst?.highestQualification || '—';
+      instEmpStatus.textContent = inst?.employmentStatus || '—';
+      instLevel.textContent = Number.isFinite(inst?.levelstatus) ? String(inst.levelstatus) : '—';
+
+      showInstModal();
+    }
+
+    // ---------- Events ----------
+    searchInput.addEventListener('input', () => {
+      if (searchInput.value.trim() === '') { statusFilter.value = ''; }
+      applyClientFilters();
+    });
+    statusFilter.addEventListener('change', applyClientFilters);
+    sortSelect.addEventListener('change', sortClient);
+
+    // Cache job before nav (for both buttons)
+    cardsContainer.addEventListener('click', (e) => {
+      const card = e.target.closest('.job-card');
+      if (!card) return;
+      const jobId = card.dataset.jobId;
+      const job = JOBS.find(j => j.job_id === jobId);
+      if (!job) return;
+
+      // Details -> open modal (prevent navigation)
+      const detailsLink = e.target.closest('a.btn-details');
+      if (detailsLink){
+        e.preventDefault();
+        fillJobModal(job);
+        showJobModal();
+        return;
+      }
+
+      // Edit click from card: set pending first if approved/active (and not assigned), else just cache+go
+      const editLink = e.target.closest('a.btn-edit');
+      if (editLink){
+        try { sessionStorage.setItem('edit_job_cache', JSON.stringify(job)); } catch {}
+        const st = (job.job_status||'').toLowerCase();
+        if ((st === 'approved' || st === 'active') && !job.installer_id_assigned){
+          e.preventDefault();
+          (async () => {
+            const ok = await updateJob(job.job_id, { job_status: 'pending' }, 'Status set to Pending for editing.');
+            if (ok) window.location.href = editLink.href;
+          })();
+        }
+      }
     });
 
-    statusFilter.addEventListener('change', filterTable);
+    // Modal close handlers
+    jobCloseBtn.addEventListener('click', hideJobModal);
+    jobModal.addEventListener('click', (e)=> { if (e.target === jobModal) hideJobModal(); });
+    installerModal.addEventListener('click', (e)=> { if (e.target === installerModal) hideInstModal(); });
+    instCloseBtn.addEventListener('click', hideInstModal);
+    window.addEventListener('keydown', (e)=> { if (e.key === 'Escape'){ hideJobModal(); hideInstModal(); } });
 
-    // Run once at load
-    filterTable();
+    // ---------- Init ----------
+    loadMyJobs();
   </script>
 </body>
-
 </html>
