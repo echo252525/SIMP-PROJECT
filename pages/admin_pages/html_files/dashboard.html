@@ -174,6 +174,33 @@
     .newJobPostedPay{ color:#20a44c; font-weight:bold; }
     .material-icons-sharp{ display:flex; align-items:center; }
     /*==END==*/
+
+    /* ====== ADDED: Payments Requests styles ====== */
+    .right-section .paymentsDiv{ margin-top:2rem; }
+    .right-section .paymentsDiv .header{
+      display:flex; align-items:center; justify-content:space-between; margin-bottom:.8rem;
+    }
+    .right-section .paymentsDiv .header h2{ margin:0; display:flex; align-items:center; gap:.5rem; }
+    .payment-list{ display:flex; flex-direction:column; gap:.7rem; }
+    .payment-card{
+      background:#fff; border:1px solid #e7edf3; padding:12px 14px; box-shadow:var(--box-shadow);
+      border-radius:14px; display:flex; align-items:flex-start; justify-content:space-between; transition:.3s;
+    }
+    .payment-card:hover{ box-shadow:none; }
+    .payment-left{ display:flex; align-items:flex-start; gap:.8rem; }
+    .payment-icon{
+      display:flex; align-items:center; justify-content:center; padding:.55rem; border-radius:20%;
+      background:var(--color-primary); color:#fff; flex:0 0 auto;
+    }
+    .payment-text{ display:flex; flex-direction:column; gap:.2rem; }
+    .payment-line{ font-size:.94rem; color:var(--color-dark); }
+    .payment-meta{ font-size:.8rem; color:var(--color-dark-variant); }
+    .payment-muted{ opacity:.7; }
+    .payments-empty{
+      background:#fff; border:2px dashed var(--color-primary); color:var(--color-primary);
+      display:flex; align-items:center; justify-content:center; border-radius:14px; padding:18px; text-align:center;
+    }
+    .payments-empty .material-icons-sharp{ margin-right:.4rem; }
   </style>
 </head>
 <body>
@@ -196,7 +223,7 @@
         <a href="adminVerification.html"><span class="material-icons-sharp">shield</span><h3>Admin<br>Verification</h3></a>
         <a href="paymentsRequest.html"><span class="material-icons-sharp">payments</span><h3>Payments<br>Request</h3></a>
         <a href="courses.html"><span class="material-icons-sharp">school</span><h3>Course<br>Publisher</h3></a>
-        <a href="#"><span class="material-icons-sharp">settings</span><h3>Settings</h3></a>
+        <a href="settings.html"><span class="material-icons-sharp">settings</span><h3>Settings</h3></a>
         <a href="#" id="logout-btn"><span class="material-icons-sharp">logout</span><h3>Logout</h3></a>
       </div>
     </aside>
@@ -295,6 +322,28 @@
         </div>
       </div>
       <!-- /Published Courses -->
+
+      <!-- ===== ADDED: Payments Requests ===== -->
+      <div class="paymentsDiv">
+        <div class="header">
+          <h2>
+            Payments Requests
+            <span id="payments-total-badge" class="total-badge" title="Visible items count" style="display:none;">
+              <span class="material-icons-sharp" style="font-size:1rem;">payments</span>
+              <span id="payments-total-count">0</span>
+            </span>
+          </h2>
+          <span class="material-icons-sharp" style="padding:10px; box-shadow:var(--box-shadow); background:#fff; border-radius:50%;">payments</span>
+        </div>
+
+        <div id="payments-list" class="payment-list">
+          <div class="payments-empty" id="payments-empty" style="display:none;">
+            <span class="material-icons-sharp">hourglass_empty</span>
+            <span>No payment requests to show.</span>
+          </div>
+        </div>
+      </div>
+      <!-- /Payments Requests -->
     </div>
   </div>
 
@@ -429,7 +478,7 @@
       let installers = [];
       if (lastInstallerIds.length) {
         const { data: insRows, error: insErr } = await fromInSchema(client, "public", "installer")
-          .select("id, name")
+          .select("id, name, full_name, first_name, last_name")
           .in("id", lastInstallerIds);
         if (insErr) {
           console.error("Installers fetch error:", insErr);
@@ -568,6 +617,122 @@
       });
     }
 
+    // -------- ADDED: Payments Requests loader --------
+    async function updatePaymentsRequestsPanel() {
+      const client = await ensureSupabaseClient();
+      if (!client) return;
+
+      const listEl = document.getElementById("payments-list");
+      const emptyEl = document.getElementById("payments-empty");
+      const totalBadge = document.getElementById("payments-total-badge");
+      const totalCount = document.getElementById("payments-total-count");
+      if (!listEl) return;
+
+      // 1) Get recent payments (most-recently updated first)
+      const { data: pays, error: pErr } = await fromInSchema(client, "earnings", "payments")
+        .select("id, installer_id, job_id, updated_at, payment_status, payout_batch_no, reference_number")
+        .order("updated_at", { ascending: false })
+        .limit(10);
+
+      if (pErr) {
+        console.error("Payments fetch error:", pErr);
+        listEl.innerHTML = `<div class="payments-empty"><span class="material-icons-sharp">error_outline</span><span>Unable to load payment requests.</span></div>`;
+        return;
+      }
+
+      if (!pays || pays.length === 0) {
+        emptyEl.style.display = "flex";
+        if (totalBadge && totalCount) {
+          totalCount.textContent = "0";
+          totalBadge.style.display = "inline-flex";
+        }
+        return;
+      }
+
+      // 2) Look up installer names
+      const installerIds = Array.from(new Set(pays.map(p => p.installer_id)));
+      let installers = [];
+      if (installerIds.length) {
+        const { data: insRows, error: insErr } = await fromInSchema(client, "public", "installer")
+          .select("id, name, full_name, first_name, last_name")
+          .in("id", installerIds);
+        if (insErr) {
+          console.error("Installers fetch error:", insErr);
+        } else {
+          installers = insRows || [];
+        }
+      }
+      const installerNameById = new Map();
+      installers.forEach(i => {
+        const composed =
+          i.full_name ||
+          i.name ||
+          [i.first_name, i.last_name].filter(Boolean).join(" ").trim();
+        installerNameById.set(i.id, composed || i.id);
+      });
+
+      // 3) Look up job titles
+      const jobIds = Array.from(new Set(pays.map(p => p.job_id)));
+      let jobs = [];
+      if (jobIds.length) {
+        const { data: jobRows, error: jobErr } = await fromInSchema(client, "jobs", "job")
+          .select("job_id, job_title")
+          .in("job_id", jobIds);
+        if (jobErr) {
+          console.error("Jobs fetch error:", jobErr);
+        } else {
+          jobs = jobRows || [];
+        }
+      }
+      const jobTitleById = new Map();
+      jobs.forEach(j => jobTitleById.set(j.job_id, j.job_title));
+
+      // 4) Render cards with status-specific messages
+      listEl.innerHTML = "";
+      for (const p of pays) {
+        const name = installerNameById.get(p.installer_id) || p.installer_id;
+        const title = jobTitleById.get(p.job_id) || p.job_id;
+        const updated = p.updated_at ? new Date(p.updated_at).toLocaleString() : "—";
+        const status = (p.payment_status || "").toString();
+
+        let line = "";
+        let muted = false;
+        if (status === "unpaid") {
+          line = `${escapeHtml(name)} requested to be paid for <b>${escapeHtml(title)}</b>.`;
+        } else if (status === "pending_payout") {
+          const batchTxt = p.payout_batch_no ? ` (Batch: ${escapeHtml(p.payout_batch_no)})` : "";
+          line = `${escapeHtml(name)} is queued for payout for <b>${escapeHtml(title)}</b>${batchTxt}.`;
+        } else if (status === "disbursed") {
+          const batch = p.payout_batch_no ? `Batch: ${escapeHtml(p.payout_batch_no)}` : "";
+          const ref = p.reference_number ? `Ref: ${escapeHtml(p.reference_number)}` : "";
+          const extra = [batch, ref].filter(Boolean).join(" · ");
+          line = `${escapeHtml(name)} was paid for <b>${escapeHtml(title)}</b>${extra ? ` (${extra})` : ""}.`;
+          muted = true; // style disbursed a bit muted
+        } else {
+          line = `${escapeHtml(name)} · <b>${escapeHtml(title)}</b> · ${escapeHtml(status)}`;
+          muted = true;
+        }
+
+        listEl.insertAdjacentHTML(
+          "beforeend",
+          `<div class="payment-card${muted ? " payment-muted" : ""}">
+            <div class="payment-left">
+              <div class="payment-icon"><span class="material-icons-sharp">payments</span></div>
+              <div class="payment-text">
+                <div class="payment-line">${line}</div>
+                <div class="payment-meta">Last updated: ${updated}</div>
+              </div>
+            </div>
+          </div>`
+        );
+      }
+
+      if (totalBadge && totalCount) {
+        totalCount.textContent = pays.length.toString();
+        totalBadge.style.display = "inline-flex";
+      }
+    }
+
     // -------- UPDATED: Logged-in admin name & role (matches public.admin schema) --------
     async function updateLoggedInAdminInfo() {
       const client = await ensureSupabaseClient();
@@ -626,6 +791,7 @@
     updatePendingAdminsKPI();
     updateNewApplicationsTable(); // by job (counts + last applicant)
     updatePublishedCoursesPanel(); // published courses on right panel
+    updatePaymentsRequestsPanel(); // << ADDED: payments requests on right panel
     updateLoggedInAdminInfo();     // show logged-in admin name & role
   </script>
 </body>
