@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet" />
+  <link rel="stylesheet" href="../css_files/sideBar.css" />
+  <title>Manage Your Shop!</title>
+  <style>
+    :root {
+      --ink: #1c2430;
+      --muted: #6c7a8a;
+      --line: #e7edf3;
+      --bg: #f8fbfd;
+      --card: #ffffff;
+      --brand: #20a44c;
+      --danger: #e53935;
+      --pill: #eef6ff;
+      --radius: 14px;
+    }
+
+    main {
+      margin-top: 1.4rem;
+    }
+
+    img {
+      display: block;
+      width: 100%;
+      object-fit: cover;
+    }
+
+    /* Header */
+    .page-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .page-head h1 {
+      margin: 0;
+      color: var(--ink);
+    }
+
+    .page-head p {
+      margin: .25rem 0 0;
+      color: var(--muted);
+    }
+
+    .head-actions {
+      display: flex;
+      gap: .6rem;
+      align-items: center;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: .45rem;
+      padding: .65rem .9rem;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: #fff;
+      cursor: pointer;
+      transition: .15s ease;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn.primary {
+      background: var(--brand);
+      color: #fff;
+      border-color: var(--brand);
+    }
+
+    .btn.ghost {
+      background: transparent;
+    }
+
+    .btn.danger {
+      background: var(--danger);
+      color: #fff;
+      border-color: var(--danger);
+    }
+
+    .btn.icon {
+      padding: .5rem .6rem;
+    }
+
+    .btn .material-icons-sharp {
+      font-size: 20px;
+    }
+
+    /* Controls */
+    .controls {
+      margin: 1rem 0;
+      display: flex;
+      gap: .6rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .controls .field {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: .5rem .7rem;
+      display: flex;
+      gap: .5rem;
+      align-items: center;
+    }
+
+    .controls input[type="text"],
+    .controls input[type="number"],
+    .controls select {
+      border: none;
+      outline: none;
+      font: inherit;
+      color: var(--ink);
+      min-width: 160px;
+      background: transparent;
+    }
+
+    .controls .price-range {
+      display: flex;
+      gap: .4rem;
+      align-items: center;
+    }
+
+    .controls label {
+      color: var(--muted);
+      font-size: .9rem;
+    }
+
+    /* Grid */
+    .grid {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: repeat(12, 1fr);
+    }
+
+    .card {
+      grid-column: span 3;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    @media (max-width:1200px) {
+      .card {
+        grid-column: span 6;
+      }
+    }
+
+    @media (max-width:720px) {
+      .card {
+        grid-column: span 12;
+      }
+    }
+
+    .card .thumb {
+      aspect-ratio: 1 / 1;
+      /* square thumbnail */
+      background: #f1f5f9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .card .thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .card .body {
+      padding: .9rem;
+      display: flex;
+      flex-direction: column;
+      gap: .5rem;
+    }
+
+    .title-row {
+      display: flex;
+      justify-content: space-between;
+      gap: .6rem;
+      align-items: start;
+    }
+
+    .title-row h3 {
+      margin: 0;
+      font-size: 1.05rem;
+      color: var(--ink);
+    }
+
+    .price {
+      font-weight: 700;
+    }
+
+    .features {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .4rem;
+      margin: .25rem 0 .2rem;
+    }
+
+    .chip {
+      font-size: .85rem;
+      padding: .25rem .5rem;
+      border-radius: 999px;
+      background: var(--pill);
+      border: 1px solid var(--line);
+      color: var(--ink);
+    }
+
+    .actions {
+      display: flex;
+      gap: .5rem;
+      margin-top: .25rem;
+      flex-wrap: wrap;
+    }
+
+    .empty {
+      border: 1px dashed var(--line);
+      background: #fff;
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2.2rem;
+      color: var(--muted);
+      gap: .6rem;
+    }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(17, 24, 39, .6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+    }
+
+    .modal {
+      width: min(720px, 92vw);
+      background: #fff;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      overflow: hidden;
+    }
+
+    .modal header {
+      padding: 1rem;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal header h3 {
+      margin: 0;
+    }
+
+    .modal .content {
+      padding: 1rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: .9rem;
+    }
+
+    .modal .content .full {
+      grid-column: 1 / -1;
+    }
+
+    .modal .content label {
+      display: block;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: .25rem;
+    }
+
+    .modal .content input,
+    .modal .content select,
+    .modal .content textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: .6rem .7rem;
+      font: inherit;
+      outline: none;
+    }
+
+    .modal footer {
+      padding: 1rem;
+      border-top: 1px solid var(--line);
+      display: flex;
+      justify-content: flex-end;
+      gap: .6rem;
+    }
+
+    .show {
+      display: flex;
+    }
+
+    /* Tiny helpers */
+    .platform-badge {
+      font-size: .75rem;
+      font-weight: 700;
+      letter-spacing: .02em;
+      padding: .2rem .5rem;
+      border-radius: 6px;
+      border: 1px solid var(--line);
+      background: #fafafa;
+      color: #555;
+    }
+
+    .badge-row {
+      display: flex;
+      gap: .4rem;
+      align-items: center;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <!-- Sidebar Section (unchanged) -->
+    <aside>
+      <div class="toggle">
+        <div class="logo">
+          <img src="../../../img/simpLogo.png" alt="SIMP Logo" />
+          <h2>SIMP<span class="danger">Project</span></h2>
+        </div>
+        <div class="close" id="close-btn">
+          <span class="material-icons-sharp">close</span>
+        </div>
+      </div>
+
+      <div class="sidebar">
+        <a href="dashboard.html"><span class="material-icons-sharp">dashboard</span>
+          <h3>Dashboard</h3>
+        </a>
+        <a href="workerVerification.html"><span class="material-icons-sharp">engineering</span>
+          <h3>Workers<br>Verification</h3>
+        </a>
+        <a href="jobVerification.html"><span class="material-icons-sharp">work</span>
+          <h3>Jobs<br>Verification</h3>
+        </a>
+        <a href="jobApplicationVerification.html"><span class="material-icons-sharp">approval</span>
+          <h3>Application<br>Verification</h3>
+        </a>
+        <a href="adminVerification.html"><span class="material-icons-sharp">shield</span>
+          <h3>Admin<br>Verification</h3>
+        </a>
+        <a href="paymentsRequest.html"><span class="material-icons-sharp">payments</span>
+          <h3>Payments<br>Request</h3>
+        </a>
+        <a href="courses.html"><span class="material-icons-sharp">school</span>
+          <h3>Course<br>Publisher</h3>
+        </a>
+        <a href="manageShop.html" class="active"><span class="material-icons-sharp">shopping_cart</span>
+          <h3>Manage<br>Shop</h3>
+        </a>
+        <a href="#"><span class="material-icons-sharp">settings</span>
+          <h3>Settings</h3>
+        </a>
+        <a href="#" id="logout-btn"><span class="material-icons-sharp">logout</span>
+          <h3>Logout</h3>
+        </a>
+      </div>
+    </aside>
+    <!-- End of Sidebar Section -->
+
+    <!-- Main Content -->
+    <main>
+      <!-- Page header -->
+      <div class="page-head">
+        <div>
+          <h1>Manage Your Shop</h1>
+          <p>Add, search, and filter affiliate products from Shopee or Lazada.</p>
+        </div>
+        <div class="head-actions">
+          <button class="btn primary" id="open-add-modal">
+            <span class="material-icons-sharp">add</span> Add Product
+          </button>
+          <button class="btn ghost" id="clear-storage" title="Clear local demo data">
+            <span class="material-icons-sharp">restart_alt</span> Reset Demo
+          </button>
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <div class="controls">
+        <div class="field" style="flex:1 1 320px;">
+          <span class="material-icons-sharp">search</span>
+          <input id="searchInput" type="text" placeholder="Search by name or feature…">
+        </div>
+
+        <div class="field">
+          <label for="platformFilter">Platform</label>
+          <select id="platformFilter">
+            <option value="">All</option>
+            <option value="Shopee">Shopee</option>
+            <option value="Lazada">Lazada</option>
+          </select>
+        </div>
+
+        <div class="field price-range">
+          <label>₱</label>
+          <input id="minPrice" type="number" placeholder="Min" min="0" step="1" style="width:100px;">
+          <span>–</span>
+          <input id="maxPrice" type="number" placeholder="Max" min="0" step="1" style="width:100px;">
+        </div>
+
+        <div class="field">
+          <label for="favOnly">Favorites only</label>
+          <input id="favOnly" type="checkbox" style="transform:translateY(2px);">
+        </div>
+
+        <!-- Removed Apply button by request -->
+        <button class="btn ghost" id="resetFilters"><span class="material-icons-sharp">filter_alt_off</span>
+          Reset</button>
+      </div>
+
+      <!-- Grid -->
+      <section id="grid" class="grid">
+        <!-- Cards injected here -->
+      </section>
+
+      <div id="emptyState" class="empty" style="display:none;">
+        <span class="material-icons-sharp">inventory_2</span>
+        <span>No products yet. Click “Add Product” to get started.</span>
+      </div>
+    </main>
+  </div>
+
+  <!-- Add / Edit Product Modal -->
+  <div id="addModal" class="modal-backdrop" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="addModalTitle">
+      <header>
+        <h3 id="addModalTitle">Add Product</h3>
+        <button class="btn ghost" id="close-add-modal" aria-label="Close">
+          <span class="material-icons-sharp">close</span>
+        </button>
+      </header>
+      <div class="content">
+        <div class="full">
+          <label for="prodName">Product Name</label>
+          <input id="prodName" type="text" placeholder="e.g., TP-Link Deco S7 Mesh Wi-Fi" required>
+        </div>
+
+        <div>
+          <label for="prodPrice">Price (PHP)</label>
+          <input id="prodPrice" type="number" min="0" step="1" placeholder="e.g., 3990" required>
+        </div>
+
+        <div>
+          <label for="prodPlatform">Platform</label>
+          <select id="prodPlatform">
+            <option value="Shopee">Shopee</option>
+            <option value="Lazada">Lazada</option>
+          </select>
+        </div>
+
+        <div class="full">
+          <label for="prodLink">Product Link (Shopee/Lazada)</label>
+          <input id="prodLink" type="url" placeholder="https://shopee.ph/... or https://www.lazada.com.ph/...">
+        </div>
+
+        <div class="full">
+          <label for="prodImage">Image URL</label>
+          <input id="prodImage" type="url" placeholder="https://...jpg / png / webp">
+        </div>
+
+        <div class="full">
+          <label for="prodFeatures">Features (comma-separated)</label>
+          <textarea id="prodFeatures" rows="3" placeholder="Dual-band, Mesh ready, Up to 300 sqm coverage"></textarea>
+        </div>
+      </div>
+      <footer>
+        <button class="btn" id="cancelAdd">Cancel</button>
+        <button class="btn primary" id="saveProduct">Save Product</button>
+      </footer>
+    </div>
+  </div>
+
+  <script>
+    // ---- Simple local store (swap these to DB calls later without touching UI wiring)
+    let editingProductId = null;
+    const STORAGE_KEY = 'shopProducts';
+    const FAV_KEY = 'shopFavorites';
+
+    const fmtPHP = new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP', maximumFractionDigits: 0 });
+
+    const $ = (sel, root = document) => root.querySelector(sel);
+    const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+
+    const grid = $('#grid');
+    const emptyState = $('#emptyState');
+
+    const searchInput = $('#searchInput');
+    const platformFilter = $('#platformFilter');
+    const minPrice = $('#minPrice');
+    const maxPrice = $('#maxPrice');
+    const favOnly = $('#favOnly');
+
+    const resetFiltersBtn = $('#resetFilters');
+
+    const addModal = $('#addModal');
+    const openAddModalBtn = $('#open-add-modal');
+    const closeAddModalBtn = $('#close-add-modal');
+    const cancelAddBtn = $('#cancelAdd');
+    const saveProductBtn = $('#saveProduct');
+
+    const prodName = $('#prodName');
+    const prodPrice = $('#prodPrice');
+    const prodPlatform = $('#prodPlatform');
+    const prodLink = $('#prodLink');
+    const prodImage = $('#prodImage');
+    const prodFeatures = $('#prodFeatures');
+
+    const clearStorage = $('#clear-storage');
+
+    function loadProducts() {
+      try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+      catch { return []; }
+    }
+    function saveProducts(arr) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
+    }
+    function loadFavs() {
+      try { return new Set(JSON.parse(localStorage.getItem(FAV_KEY)) || []); }
+      catch { return new Set(); }
+    }
+    function saveFavs(set) {
+      localStorage.setItem(FAV_KEY, JSON.stringify(Array.from(set)));
+    }
+
+    function uid() { return 'p_' + Math.random().toString(36).slice(2, 10); }
+
+    // Seed demo if empty
+    function seedDemo() {
+      const demo = [
+        {
+          id: uid(),
+          name: 'TP-Link Deco S7 Mesh Wi-Fi',
+          price: 3990,
+          image: 'https://images.unsplash.com/photo-1587825140400-9b9df7e2f206?q=80&w=1200&auto=format&fit=crop',
+          features: ['Dual-band', 'Mesh ready', 'Up to 300 sqm'],
+          platform: 'Shopee',
+          link: 'https://shopee.ph/'
+        },
+        {
+          id: uid(),
+          name: 'Xiaomi Smart Camera C200',
+          price: 1590,
+          image: 'https://images.unsplash.com/photo-1589254066213-a0c9dc853511?q=80&w=1200&auto=format&fit=crop',
+          features: ['1080p', 'Night vision', 'Motion detect'],
+          platform: 'Lazada',
+          link: 'https://www.lazada.com.ph/'
+        }
+      ];
+      saveProducts(demo);
+    }
+
+    // Render using current control values (kept pure for easy DB swap)
+    function render() {
+      const products = loadProducts();
+      const favs = loadFavs();
+
+      const q = searchInput.value.trim().toLowerCase();
+      const pf = platformFilter.value;
+      const minP = minPrice.value ? Number(minPrice.value) : null;
+      const maxP = maxPrice.value ? Number(maxPrice.value) : null;
+      const favOnlyOn = favOnly.checked;
+
+      const filtered = products.filter(p => {
+        if (pf && p.platform !== pf) return false;
+        if (minP !== null && p.price < minP) return false;
+        if (maxP !== null && p.price > maxP) return false;
+        if (favOnlyOn && !favs.has(p.id)) return false;
+        if (q) {
+          const hay = (p.name + ' ' + (p.features || []).join(' ')).toLowerCase();
+          if (!hay.includes(q)) return false;
+        }
+        return true;
+      });
+
+      grid.innerHTML = '';
+
+      if (filtered.length === 0) {
+        emptyState.style.display = 'flex';
+        return;
+      } else {
+        emptyState.style.display = 'none';
+      }
+
+      for (const p of filtered) {
+        const card = document.createElement('article');
+        card.className = 'card';
+        card.innerHTML = `
+          <div class="thumb">${p.image ? `<img src="${p.image}" alt="${p.name}">` : ''}</div>
+          <div class="body">
+            <div class="title-row">
+              <div>
+                <h3>${p.name}</h3>
+                <div class="badge-row">
+                  <span class="platform-badge">${p.platform}</span>
+                </div>
+              </div>
+              <div class="price">${fmtPHP.format(p.price)}</div>
+            </div>
+            <div class="features">
+              ${(p.features || []).slice(0, 6).map(f => `<span class="chip">${escapeHtml(f)}</span>`).join('')}
+            </div>
+            <div class="actions">
+              <button class="btn icon" data-action="fav" data-id="${p.id}" title="Add to favorites">
+                <span class="material-icons-sharp">${loadFavs().has(p.id) ? 'favorite' : 'favorite_border'}</span>
+                ${loadFavs().has(p.id) ? 'Favorited' : 'Favorite'}
+              </button>
+              <a class="btn" href="${p.link || '#'}" target="_blank" rel="noopener" title="Open in app/site">
+                <span class="material-icons-sharp">open_in_new</span> View More
+              </a>
+              <button class="btn" data-action="edit" data-id="${p.id}" title="Edit product">
+                <span class="material-icons-sharp">edit</span> Edit
+              </button>
+              <button class="btn danger icon" data-action="delete" data-id="${p.id}" title="Delete product">
+                <span class="material-icons-sharp">delete</span> Delete
+              </button>
+            </div>
+          </div>
+        `;
+        grid.appendChild(card);
+      }
+    }
+
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+    }
+
+    // Modal helpers
+    function openAddModal(product = null) {
+      addModal.classList.add('show');
+      addModal.setAttribute('aria-hidden', 'false');
+      if (product) {
+        editingProductId = product.id;
+        $('#addModalTitle').textContent = 'Edit Product';
+        prodName.value = product.name;
+        prodPrice.value = product.price;
+        prodPlatform.value = product.platform;
+        prodLink.value = product.link;
+        prodImage.value = product.image;
+        prodFeatures.value = (product.features || []).join(', ');
+      } else {
+        editingProductId = null;
+        $('#addModalTitle').textContent = 'Add Product';
+        prodName.value = '';
+        prodPrice.value = '';
+        prodPlatform.value = 'Shopee';
+        prodLink.value = '';
+        prodImage.value = '';
+        prodFeatures.value = '';
+      }
+      setTimeout(() => prodName.focus(), 0);
+    }
+    function closeAddModal() {
+      addModal.classList.remove('show');
+      addModal.setAttribute('aria-hidden', 'true');
+    }
+
+    // Events
+    if (openAddModalBtn) openAddModalBtn.addEventListener('click', () => openAddModal());
+    if (closeAddModalBtn) closeAddModalBtn.addEventListener('click', closeAddModal);
+    if (cancelAddBtn) cancelAddBtn.addEventListener('click', closeAddModal);
+    addModal.addEventListener('click', (e) => { if (e.target === addModal) closeAddModal(); });
+
+    saveProductBtn.addEventListener('click', () => {
+      const name = prodName.value.trim();
+      const price = Number(prodPrice.value);
+      const platform = prodPlatform.value;
+      const link = prodLink.value.trim();
+      const image = prodImage.value.trim();
+      const features = prodFeatures.value.split(',').map(s => s.trim()).filter(Boolean);
+
+      if (!name || !(price >= 0) || !platform) {
+        alert('Please provide a valid name, price, and platform.');
+        return;
+      }
+
+      let products = loadProducts();
+
+      if (editingProductId) {
+        // Update existing
+        products = products.map(p => p.id === editingProductId
+          ? { ...p, name, price, platform, link, image, features }
+          : p);
+      } else {
+        // Add new
+        products.unshift({ id: uid(), name, price, platform, link, image, features });
+      }
+
+      saveProducts(products);
+      closeAddModal();
+      render();
+    });
+
+    // Card actions
+    grid.addEventListener('click', (e) => {
+      const btn = e.target.closest('button[data-action]');
+      if (!btn) return;
+      const id = btn.getAttribute('data-id');
+      const action = btn.getAttribute('data-action');
+
+      if (action === 'fav') {
+        const favs = loadFavs();
+        if (favs.has(id)) favs.delete(id); else favs.add(id);
+        saveFavs(favs);
+        render();
+      }
+
+      if (action === 'delete') {
+        if (!confirm('Delete this product?')) return;
+        const products = loadProducts().filter(p => p.id !== id);
+        saveProducts(products);
+        const favs = loadFavs(); favs.delete(id); saveFavs(favs);
+        render();
+      }
+
+      if (action === 'edit') {
+        const product = loadProducts().find(p => p.id === id);
+        if (product) openAddModal(product);
+      }
+    });
+
+    // Live filters (no Apply button)
+    const rerender = () => render();
+    searchInput.addEventListener('input', rerender);
+    platformFilter.addEventListener('change', rerender);
+    minPrice.addEventListener('input', rerender);
+    maxPrice.addEventListener('input', rerender);
+    favOnly.addEventListener('change', rerender);
+
+    // Reset filters
+    resetFiltersBtn.addEventListener('click', () => {
+      searchInput.value = '';
+      platformFilter.value = '';
+      minPrice.value = '';
+      maxPrice.value = '';
+      favOnly.checked = false;
+      render();
+    });
+
+    // Reset demo storage
+    if (clearStorage) clearStorage.addEventListener('click', () => {
+      if (!confirm('This will clear local demo products and favorites. Continue?')) return;
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(FAV_KEY);
+      seedDemo();
+      render();
+    });
+
+    // Init
+    (function init() {
+      if (!loadProducts().length) seedDemo();
+      render();
+    })();
+  </script>
+</body>
+
+</html>
