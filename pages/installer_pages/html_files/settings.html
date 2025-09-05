@@ -610,7 +610,59 @@
         });
       }
 
-      // Delete account flow
+      // === NEW: Purge installer folder from 'documents_review' bucket (recursive) ===
+      async function listAllPaths(bucket, prefix){
+        // Recursively collect file paths under prefix
+        const paths = [];
+        const stack = [prefix]; // folders to process
+        while (stack.length){
+          const folder = stack.pop();
+          const { data, error } = await sb.storage.from(bucket).list(folder, {
+            limit: 1000,
+            offset: 0,
+            sortBy: { column: 'name', order: 'asc' }
+          });
+          if (error){
+            // If folder doesn't exist, ignore
+            if (error.message?.toLowerCase().includes('not found')) continue;
+            throw error;
+          }
+          for (const item of (data || [])){
+            // Heuristic: if metadata exists, it's a file; otherwise it's a subfolder
+            if (item?.metadata){ // file
+              paths.push((folder ? (folder + '/') : '') + item.name);
+            } else { // folder
+              stack.push((folder ? (folder + '/') : '') + item.name);
+            }
+          }
+        }
+        return paths;
+      }
+
+      async function purgeDocumentsReviewFolder(userId){
+        const bucket = 'documents_review';
+        const prefix = userId; // folder named after UUID
+        try{
+          // gather all file paths
+          const files = await listAllPaths(bucket, prefix);
+          if (!files.length) return { ok:true, deleted: 0, message: 'No files to delete' };
+
+          // remove in chunks (to avoid too-long payloads)
+          const chunkSize = 100;
+          let deleted = 0;
+          for (let i=0; i<files.length; i+=chunkSize){
+            const chunk = files.slice(i, i+chunkSize);
+            const { data, error } = await sb.storage.from(bucket).remove(chunk);
+            if (error) throw error;
+            deleted += (data?.length || chunk.length);
+          }
+          return { ok:true, deleted, message: `Deleted ${deleted} file(s)` };
+        }catch(e){
+          return { ok:false, deleted: 0, message: e?.message || 'Failed to purge storage' };
+        }
+      }
+
+      // Delete account helpers (existing)
       async function deleteViaEdgeFunction(userId){
         try{
           const { data, error } = await sb.functions.invoke("delete-account", { body: { user_id: userId }});
@@ -642,6 +694,15 @@
         const btn = document.getElementById("deleteAccountBtn");
         const prev = btn.innerHTML; btn.disabled = true; btn.textContent = "Deleting…";
 
+        // 0) Purge installer documents from Storage BEFORE deleting auth (so policy still allows it)
+        const purge = await purgeDocumentsReviewFolder(USER.id);
+        if (purge.ok){
+          toast(`Storage: ${purge.message}`, true);
+        }else{
+          // Proceed anyway, but notify failure (your edge function will still delete auth & rows)
+          toast(`Storage cleanup failed: ${purge.message}`, false);
+        }
+
         // 1) Try Edge Function (recommended)
         let res = await deleteViaEdgeFunction(USER.id);
 
@@ -666,6 +727,8 @@
       // Boot
       (async function init(){
         try{
+          const { data: { user } } = await sb.auth.getUser();
+          USER = user;
           await loadInstaller();
         }catch(e){
           console.error(e);
@@ -675,3 +738,4 @@
     </script>
   </body>
 </html>
+  

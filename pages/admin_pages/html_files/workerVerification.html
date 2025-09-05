@@ -477,7 +477,7 @@
 
       let WORKERS = []; // combined installer + docs
       let ACTIVE_ID = null; // currently focused installer id
-      const DOC_REVIEW = new Map(); // installer_id -> [{key,type,url,status}...]
+      const DOC_REVIEW = new Map(); // installer_id -> [{key,type,path,url,status}...]
 
       /* ------------------------------ Utilities ------------------------------ */
       const cap = (s = "") => (s ? s[0].toUpperCase() + s.slice(1) : s);
@@ -490,25 +490,30 @@
         return `https://i.pravatar.cc/150?img=${num}`;
       }
 
-      function toPublicUrl(path) {
+      // Build a bucket key that ALWAYS includes the owner's folder
+      function withOwnerPrefix(path, ownerId) {
         if (!path) return "";
-        if (/^https?:\/\//i.test(path)) return path;
-        const { data } = sb.storage
-          .from("documents_review")
-          .getPublicUrl(String(path).replace(/^\/+/, ""));
-        return data?.publicUrl || "";
+        let key = String(path).replace(/^\/+/, "");
+        if (ownerId && !key.startsWith(ownerId + "/")) key = `${ownerId}/${key}`;
+        return key;
       }
 
-      /* === NEW: Ensure paths for previews include the installer's folder === */
-      function toPublicUrlWithOwner(path, ownerId) {
+      // Create a short-lived signed URL to preview private files
+      async function getSignedUrlWithOwner(path, ownerId, expiresIn = 60 * 60) {
         if (!path) return "";
+        // If already a full https URL (e.g., external), just return it.
         if (/^https?:\/\//i.test(path)) return path;
-        let key = String(path).replace(/^\/+/, "");
-        if (ownerId && !key.startsWith(ownerId + "/")) {
-          key = `${ownerId}/${key}`;
+
+        const key = withOwnerPrefix(path, ownerId);
+        const { data, error } = await sb.storage
+          .from("documents_review")
+          .createSignedUrl(key, expiresIn, { download: false });
+
+        if (error) {
+          console.error("Signed URL error:", error, "for", key);
+          return "";
         }
-        const { data } = sb.storage.from("documents_review").getPublicUrl(key);
-        return data?.publicUrl || "";
+        return data?.signedUrl || "";
       }
 
       function fmtDateISO(d) {
@@ -520,7 +525,7 @@
 
       /* ------------------------------ Fetch & Build ------------------------------ */
       async function fetchWorkers() {
-        // 1) Pull all installer_documents (latest first) — EXPANDED FIELDS
+        // 1) Pull all installer_documents (latest first)
         const { data: docsRows, error: docsErr } = await sb
           .from("installer_documents")
           .select(
@@ -592,13 +597,14 @@
           };
         });
 
-        // 4) Initialize per-doc review state if needed
+        // 4) Initialize per-doc review state (store PATH; sign later)
         for (const w of WORKERS) {
-          if (!DOC_REVIEW.has(w.id)) {
-            const rows = buildDocRows(w._rawDocs); // uses installer_id internally now
-            DOC_REVIEW.set(w.id, rows);
-          }
+          const rows = buildDocRows(w._rawDocs); // includes .path, empty .url initially
+          DOC_REVIEW.set(w.id, rows);
         }
+
+        // 5) Sign all docs for each installer (private bucket preview)
+        await Promise.all(WORKERS.map((w) => signAllDocsForInstaller(w.id)));
 
         renderWorkerList();
         if (WORKERS.length) {
@@ -612,7 +618,7 @@
         }
       }
 
-      // UPDATED: build rows using owner's id to construct correct public URLs for EVERY certificate
+      // Build rows using owner's id, but store raw path; URL is filled by signer
       function buildDocRows(raw) {
         const ownerId = raw?.installer_id || "";
         const rows = [];
@@ -632,7 +638,8 @@
           rows.push({
             key,
             type: label,
-            url: path ? toPublicUrlWithOwner(path, ownerId) : "",
+            path: path ? withOwnerPrefix(path, ownerId) : "", // keep canonical storage key
+            url: "", // filled later via signed URL
             status: path ? st : "missing",
           });
         }
@@ -646,6 +653,7 @@
           rows.push({
             key: "certificates",
             type: "Certificates (none)",
+            path: "",
             url: "",
             status: "missing",
           });
@@ -655,13 +663,32 @@
             rows.push({
               key: `certificates[${idx}]`,
               type: `Certificate #${idx + 1}`,
-              url: toPublicUrlWithOwner(c, ownerId),
+              path: withOwnerPrefix(c, ownerId),
+              url: "",
               status: st,
             });
           });
         }
 
         return rows;
+      }
+
+      // Create signed URLs for all docs of a specific installer and store them back
+      async function signAllDocsForInstaller(installerId) {
+        const list = (DOC_REVIEW.get(installerId) || []).slice();
+        if (!list.length) return;
+
+        const signed = await Promise.all(
+          list.map(async (item) => {
+            if (!item.path) return { ...item, url: "" };
+            // path already includes owner prefix; extract owner from it:
+            const owner = installerId; // we know folder == installerId by design
+            const url = await getSignedUrlWithOwner(item.path.replace(new RegExp('^' + owner + '/'), ''), owner);
+            return { ...item, url };
+          })
+        );
+
+        DOC_REVIEW.set(installerId, signed);
       }
 
       /* ------------------------------ Render List ------------------------------ */
@@ -698,16 +725,16 @@
               <img class="avatar" src="${w.avatar}" alt="${w.fullName}">
               <div>
                 <div style="font-weight:700">${w.fullName}</div>
-                <div style="font-size:.85rem;color:var(--muted)">${
-                  w.email
-                }</div>
+                <div style="font-size:.85rem;color:var(--muted)">${w.email}</div>
               </div>
               <span class="pill">${cap(w.profileStatus || "pending")}</span>
             `;
 
-            item.addEventListener("click", () => {
+            item.addEventListener("click", async () => {
               ACTIVE_ID = w.id;
               markActiveTile(ACTIVE_ID);
+              // Renew signed URLs on selection (in case earlier ones expired)
+              await signAllDocsForInstaller(w.id);
               renderDetails(w);
             });
 
@@ -739,7 +766,7 @@
 
         const docs = DOC_REVIEW.get(worker.id) || [];
         const status = (worker.profileStatus || "pending").toLowerCase();
-        const isPending = status === "pending"; // <— control visibility of per-doc actions
+        const isPending = status === "pending"; // controls per-doc actions
 
         let actionsHTML = "";
         if (status === "pending") {
@@ -766,21 +793,11 @@
                 </span>
               </div>
               <div class="meta">
-                <span class="kv"><strong>Uploaded:</strong> ${
-                  fmtDateISO(worker.createdAt) || "—"
-                }</span>
-                <span class="kv"><strong>Birthdate:</strong> ${
-                  worker.birthdate || "—"
-                }</span>
-                <span class="kv"><strong>Age:</strong> ${
-                  worker.age || "—"
-                }</span>
-                <span class="kv"><strong>Phone:</strong> ${
-                  worker.phone || "—"
-                }</span>
-                <span class="kv"><strong>Email:</strong> ${
-                  worker.email || "—"
-                }</span>
+                <span class="kv"><strong>Uploaded:</strong> ${fmtDateISO(worker.createdAt) || "—"}</span>
+                <span class="kv"><strong>Birthdate:</strong> ${worker.birthdate || "—"}</span>
+                <span class="kv"><strong>Age:</strong> ${worker.age || "—"}</span>
+                <span class="kv"><strong>Phone:</strong> ${worker.phone || "—"}</span>
+                <span class="kv"><strong>Email:</strong> ${worker.email || "—"}</span>
                 <span class="kv"><strong>Role:</strong> Worker</span>
               </div>
             </div>
@@ -794,36 +811,20 @@
             <div class="card">
               <h4>Basic Information</h4>
               <div class="info-list">
-                <div><span class="label">Full Name</span>${
-                  worker.fullName
-                }</div>
-                <div><span class="label">Profession</span>${
-                  worker.profession || "—"
-                }</div>
-                <div><span class="label">Highest Qualification</span>${
-                  worker.highestQualification || "—"
-                }</div>
-                <div><span class="label">Employment Status</span>${
-                  worker.employmentStatus || "—"
-                }</div>
-                <div><span class="label">Main Income Source</span>${
-                  worker.mainIncomeSource || "—"
-                }</div>
+                <div><span class="label">Full Name</span>${worker.fullName}</div>
+                <div><span class="label">Profession</span>${worker.profession || "—"}</div>
+                <div><span class="label">Highest Qualification</span>${worker.highestQualification || "—"}</div>
+                <div><span class="label">Employment Status</span>${worker.employmentStatus || "—"}</div>
+                <div><span class="label">Main Income Source</span>${worker.mainIncomeSource || "—"}</div>
               </div>
             </div>
 
             <div class="card">
               <h4>Bank Details</h4>
               <div class="info-list">
-                <div><span class="label">Bank Name</span>${
-                  worker.bankName || "—"
-                }</div>
-                <div><span class="label">Account Holder</span>${
-                  worker.accountHolder || "—"
-                }</div>
-                <div><span class="label">Account Number</span>${
-                  worker.accountNumber || "—"
-                }</div>
+                <div><span class="label">Bank Name</span>${worker.bankName || "—"}</div>
+                <div><span class="label">Account Holder</span>${worker.accountHolder || "—"}</div>
+                <div><span class="label">Account Number</span>${worker.accountNumber || "—"}</div>
               </div>
             </div>
           </div>
@@ -837,28 +838,18 @@
                   (d, idx) => `
                 <div class="doc" data-doc="${idx}">
                   <div class="doc-title">
-                    <span class="material-icons-sharp">description</span> ${
-                      d.type
-                    }
+                    <span class="material-icons-sharp">description</span> ${d.type}
                   </div>
-                  <button class="btn" data-view="${idx}" ${
-                    d.url ? "" : "disabled"
-                  }>
+                  <button class="btn" data-view="${idx}" ${d.url ? "" : "disabled"}>
                     <span class="material-icons-sharp" style="font-size:18px;">visibility</span> Preview
                   </button>
                   <div class="status-dot ${d.status}">
                     <span class="dot"></span>
                     <span class="label">${cap(d.status)}</span>
                   </div>
-                  <div class="actions" ${
-                    isPending ? "" : 'style="display:none"'
-                  }>
-                    <button class="btn primary" data-approve="${idx}" ${
-                    d.url ? "" : "disabled"
-                  }>Approve</button>
-                    <button class="btn reject" data-reject="${idx}" ${
-                    d.url ? "" : "disabled"
-                  }>Reject</button>
+                  <div class="actions" ${isPending ? "" : 'style="display:none"'}>
+                    <button class="btn primary" data-approve="${idx}" ${d.path ? "" : "disabled"}>Approve</button>
+                    <button class="btn reject" data-reject="${idx}" ${d.path ? "" : "disabled"}>Reject</button>
                   </div>
                 </div>
               `
@@ -870,12 +861,35 @@
 
         // Wire doc actions
         detailsPane.querySelectorAll("[data-view]").forEach((btn) => {
-          btn.addEventListener("click", () => {
+          btn.addEventListener("click", async () => {
             const idx = Number(btn.dataset.view);
-            const item = docs[idx];
+            const item = (DOC_REVIEW.get(worker.id) || [])[idx];
+            if (!item) return;
+
+            // If signed URL expired, try to refresh on demand
+            if (!item.url && item.path) {
+              const freshUrl = await getSignedUrlWithOwner(
+                item.path.replace(new RegExp('^' + worker.id + '/'), ''),
+                worker.id
+              );
+              item.url = freshUrl;
+              DOC_REVIEW.set(worker.id, (DOC_REVIEW.get(worker.id) || []).map((x, i) => (i === idx ? item : x)));
+              if (freshUrl) {
+                openDoc(item.type, freshUrl);
+                // Also enable the button for future clicks
+                btn.disabled = false;
+                return;
+              }
+            }
+
+            if (!item.url) {
+              alert("Preview unavailable. File missing or you lack permission.");
+              return;
+            }
             openDoc(item.type, item.url);
           });
         });
+
         detailsPane.querySelectorAll("[data-approve]").forEach((btn) => {
           btn.addEventListener("click", async () => {
             const idx = Number(btn.dataset.approve);
@@ -960,8 +974,10 @@
             .maybeSingle();
 
           if (!error && data) {
-            const freshRows = buildDocRows(data); // uses owner id for URLs
+            const freshRows = buildDocRows(data);
             DOC_REVIEW.set(installerId, freshRows);
+            // Re-sign after refresh
+            await signAllDocsForInstaller(installerId);
             if (w) {
               w._rawDocs = data;
               renderDetails(w);
@@ -1027,7 +1043,6 @@
           if (upErr) throw upErr;
           return;
         }
-
         // Unknown key → no-op
       }
 
@@ -1117,6 +1132,7 @@
             w.profileStatus = String(fresh.status || "pending").toLowerCase();
             w._rawDocs = fresh;
             DOC_REVIEW.set(installerId, buildDocRows(fresh));
+            await signAllDocsForInstaller(installerId);
             renderWorkerList(searchInput.value);
             renderDetails(w);
           } else {
@@ -1131,6 +1147,10 @@
 
       /* ------------------------------ Modal ------------------------------ */
       function openDoc(title, url) {
+        if (!url) {
+          alert("Preview unavailable.");
+          return;
+        }
         docTitle.textContent = title || "Document";
         docBody.innerHTML = "";
         const isImage = /\.(png|jpe?g|gif|webp|bmp|svg)($|\?)/i.test(url);

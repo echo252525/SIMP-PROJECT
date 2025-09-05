@@ -609,6 +609,40 @@
         return data?.publicUrl || "";
       }
 
+      // === NEW: Build the storage key from a stored value and installerId
+      function buildStorageKey(value, installerId) {
+        if (!value) return "";
+        if (isUrl(value)) return ""; // already a URL
+        let key = String(value).replace(/^\/+/, "");
+        if (!key.startsWith(installerId + "/")) {
+          key = `${installerId}/${key}`;
+        }
+        return key;
+      }
+
+      // === NEW: Create signed URLs for private bucket preview/download
+      async function createSignedPreviewAndDownload(key) {
+        // 10 minute token for viewing
+        const { data: viewData, error: viewErr } = await sb.storage
+          .from(BUCKET)
+          .createSignedUrl(key, 60 * 10);
+        if (viewErr) throw viewErr;
+
+        const filename = friendlyName(key.replace(/^[^/]+\//, "")) || "file";
+
+        // 10 minute token for download (forces download filename)
+        const { data: dlData, error: dlErr } = await sb.storage
+          .from(BUCKET)
+          .createSignedUrl(key, 60 * 10, { download: filename });
+        if (dlErr) throw dlErr;
+
+        return {
+          signedViewUrl: viewData.signedUrl,
+          signedDownloadUrl: dlData.signedUrl,
+          filename
+        };
+      }
+
       function statusToClass(status) {
         const s = String(status || "").toLowerCase();
         if (["approved", "verified", "accepted"].includes(s)) return "uploaded";
@@ -681,10 +715,46 @@
         }
       }
 
+      // === UPDATED: keep function name; internally do async resolution for private bucket
       function setPreview({ label, value, installerId }) {
         clearPreview();
-        const url = publicDocUrl(value, installerId);
-        renderPreviewFromUrl(label, url);
+
+        // If already an external URL, render directly
+        if (isUrl(value)) {
+          renderPreviewFromUrl(label, value);
+          return;
+        }
+
+        // Try signed URLs first (private buckets); fallback to public (in case bucket is public)
+        (async () => {
+          try {
+            const key = buildStorageKey(value, installerId);
+            if (!key) {
+              // fallback to public builder (will still return empty if value is empty)
+              const url = publicDocUrl(value, installerId);
+              renderPreviewFromUrl(label, url);
+              return;
+            }
+
+            const { signedViewUrl, signedDownloadUrl, filename } =
+              await createSignedPreviewAndDownload(key);
+
+            // Wire actions with signed URLs
+            previewTitleEl.textContent = label;
+            previewOpenEl.href = signedViewUrl;
+            previewOpenEl.style.display = "inline-grid";
+            previewDownloadEl.href = signedDownloadUrl;
+            previewDownloadEl.setAttribute("download", filename);
+            previewDownloadEl.style.display = "inline-grid";
+
+            // Render using the signed view URL
+            renderPreviewFromUrl(label, signedViewUrl);
+          } catch (e) {
+            console.warn("Signed URL failed, falling back to public URL:", e?.message || e);
+            const url = publicDocUrl(value, installerId);
+            renderPreviewFromUrl(label, url);
+          }
+        })();
       }
 
       // ---------- Upload helpers ----------
@@ -856,7 +926,7 @@
         previewBodyEl.appendChild(container);
       }
 
-      function showCertificatePreview(
+      async function showCertificatePreview(
         installerId,
         certs,
         certStatuses,
@@ -864,11 +934,38 @@
       ) {
         const total = certs.length;
         const path = certs[index];
-        const url = publicDocUrl(path, installerId);
+        const key = buildStorageKey(path, installerId);
+        let viewUrl = "";
+        let dlUrl = "";
+
+        try {
+          if (key) {
+            const { signedViewUrl, signedDownloadUrl } =
+              await createSignedPreviewAndDownload(key);
+            viewUrl = signedViewUrl;
+            dlUrl = signedDownloadUrl;
+          } else {
+            // Fallback if it's already a URL or key building failed
+            viewUrl = publicDocUrl(path, installerId);
+            dlUrl = viewUrl;
+          }
+        } catch (e) {
+          console.warn("Signed URL (cert) failed, fallback to public:", e?.message || e);
+          viewUrl = publicDocUrl(path, installerId);
+          dlUrl = viewUrl;
+        }
+
         const name = friendlyName(path);
 
         // Draw the actual file first
-        renderPreviewFromUrl(name, url);
+        renderPreviewFromUrl(name, viewUrl);
+
+        // Wire actions for this selected item
+        previewOpenEl.href = viewUrl;
+        previewOpenEl.style.display = "inline-grid";
+        previewDownloadEl.href = dlUrl;
+        previewDownloadEl.setAttribute("download", name || "file");
+        previewDownloadEl.style.display = "inline-grid";
 
         // Then wrap it with a toolbar and make the body fill the pane
         const currentEmbed = previewBodyEl.innerHTML;
@@ -880,14 +977,10 @@
         previewBodyEl.innerHTML = `
           <div class="preview-toolbar">
             <div class="group">
-              <button class="btn small" id="prevCertBtn" ${
-                canPrev ? "" : "disabled"
-              }>
+              <button class="btn small" id="prevCertBtn" ${canPrev ? "" : "disabled"}>
                 <span class="material-icons-sharp">chevron_left</span> Prev
               </button>
-              <button class="btn small" id="nextCertBtn" ${
-                canNext ? "" : "disabled"
-              }>
+              <button class="btn small" id="nextCertBtn" ${canNext ? "" : "disabled"}>
                 Next <span class="material-icons-sharp">chevron_right</span>
               </button>
             </div>

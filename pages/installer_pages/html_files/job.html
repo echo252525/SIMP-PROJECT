@@ -1173,6 +1173,26 @@
         return data?.levelstatus ?? null;
       }
 
+      /* === ADDED: small helpers to support private Storage preview === */
+      function buildStorageKeyForResume(resumeFieldValue, installerId) {
+        if (!resumeFieldValue) return "";
+        if (/^https?:\/\//i.test(resumeFieldValue)) return ""; // already a URL
+        const clean = String(resumeFieldValue).replace(/^\/+/, "");
+        return clean.includes("/")
+          ? clean
+          : `${installerId}/${clean}`;
+      }
+      async function createSignedUrlForResume(key) {
+        // 10 minutes validity + suggest filename on download
+        const filename = key.split("/").pop() || "resume";
+        const { data, error } = await sb
+          .storage
+          .from("documents_review")
+          .createSignedUrl(key, 60 * 10, { download: filename });
+        if (error) throw error;
+        return data?.signedUrl || "";
+      }
+
       let RESUME_CACHE = {
         loaded: false,
         url: "",
@@ -1196,17 +1216,35 @@
           RESUME_CACHE = { loaded: true, url: "", name: "", installerId };
           return RESUME_CACHE;
         }
+
         let path = data?.resume || "";
         if (!path) {
           RESUME_CACHE = { loaded: true, url: "", name: "", installerId };
           return RESUME_CACHE;
         }
-        if (path && !path.includes("/")) path = `${installerId}/${path}`;
-        const { data: pub } = sb.storage
-          .from("documents_review")
-          .getPublicUrl(path);
-        const url = pub?.publicUrl || "";
-        const name = path.split("/").pop() || "resume.pdf";
+
+        // === CHANGED: prefer signed URL for private buckets ===
+        let key = buildStorageKeyForResume(path, installerId);
+        let url = "";
+        const name = (key || path).split("/").pop() || "resume";
+
+        try {
+          if (key) {
+            url = await createSignedUrlForResume(key);
+          }
+        } catch (e) {
+          console.warn("Signed URL for resume failed, fallback to publicUrl:", e?.message || e);
+        }
+
+        // Fallback to public URL (in case the bucket is public)
+        if (!url) {
+          if (path && !path.includes("/")) path = `${installerId}/${path}`;
+          const { data: pub } = sb.storage
+            .from("documents_review")
+            .getPublicUrl(path);
+          url = pub?.publicUrl || "";
+        }
+
         RESUME_CACHE = { loaded: true, url, name, installerId };
         return RESUME_CACHE;
       }
@@ -1595,7 +1633,7 @@
           if (!geo) continue;
           const latlng = L.latLng(geo.lat, geo.lng);
 
-          if (user) {
+        if (user) {
             const d = distKm({lat:user.lat, lng:user.lng}, {lat:geo.lat, lng:geo.lng});
             if (d > radiusKm) continue;
           }

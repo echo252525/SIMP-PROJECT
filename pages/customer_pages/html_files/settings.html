@@ -3,7 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="../css_files/sideBar.css" />
     <title>Settings</title>
     <style>
@@ -18,58 +21,268 @@
         --danger: #ef4444;
         --chip: #eef2f7;
       }
-      * { box-sizing: border-box; }
-      body { background: var(--bg); color: var(--ink); }
-      .container { display: grid; width: 96%; margin: 0 auto; gap: 1.8rem; grid-template-columns: 12rem auto 0; }
-      main { margin-top: 1.4rem; padding: 1rem; }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        background: var(--bg);
+        color: var(--ink);
+      }
+      .container {
+        display: grid;
+        width: 96%;
+        margin: 0 auto;
+        gap: 1.8rem;
+        grid-template-columns: 12rem auto 0;
+      }
+      main {
+        margin-top: 1.4rem;
+        padding: 1rem;
+      }
 
-      .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
-      .header h1 { margin: 0; color: var(--ink); }
-      .header .actions { display: flex; gap: 0.5rem; align-items: center; }
-      .icon-btn { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.5rem 0.75rem; border: 1px solid var(--line); border-radius: 10px; background: var(--card); cursor: pointer; user-select: none; }
-      .icon-btn:hover { background: #fbfbfb; }
-      .icon-btn[disabled] { opacity: 0.6; pointer-events: none; }
+      .header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+      }
+      .header h1 {
+        margin: 0;
+        color: var(--ink);
+      }
+      .header .actions {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+      }
+      .icon-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.5rem 0.75rem;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: var(--card);
+        cursor: pointer;
+        user-select: none;
+      }
+      .icon-btn:hover {
+        background: #fbfbfb;
+      }
+      .icon-btn[disabled] {
+        opacity: 0.6;
+        pointer-events: none;
+      }
 
-      .cards { display: grid; grid-template-columns: 1fr; gap: 1rem; }
-      .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 1rem; }
-      .card h2 { margin: 0.2rem 0 1rem; font-size: 1.05rem; color: var(--ink); display: flex; align-items: center; gap: 0.5rem; }
-      .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-      .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
-      .field { display: flex; flex-direction: column; gap: 0.35rem; }
-      .field label { font-size: 0.9rem; color: var(--muted); }
-      .value, input, .readonly { width: 100%; padding: 0.7rem 0.8rem; border: 1px solid var(--line); border-radius: 10px; background: #fff; }
-      .readonly { background: #f9fafb; color: #374151; }
-      input[readonly] { background: #f9fafb; color: #374151; }
-      input:focus { outline: none; border-color: #cbd5e1; box-shadow: 0 0 0 3px rgba(31, 41, 55, 0.06); }
+      .cards {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 1rem;
+      }
+      .card h2 {
+        margin: 0.2rem 0 1rem;
+        font-size: 1.05rem;
+        color: var(--ink);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+      .grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+      }
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+      }
+      .field label {
+        font-size: 0.9rem;
+        color: var(--muted);
+      }
+      .value,
+      input,
+      .readonly {
+        width: 100%;
+        padding: 0.7rem 0.8rem;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: #fff;
+      }
+      .readonly {
+        background: #f9fafb;
+        color: #374151;
+      }
+      input[readonly] {
+        background: #f9fafb;
+        color: #374151;
+      }
+      input:focus {
+        outline: none;
+        border-color: #cbd5e1;
+        box-shadow: 0 0 0 3px rgba(31, 41, 55, 0.06);
+      }
 
-      .row { display: flex; gap: 0.6rem; align-items: center; }
-      .hint { font-size: 0.85rem; color: var(--muted); }
-      .pill { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.25rem 0.55rem; border-radius: 999px; background: var(--chip); color: #374151; font-size: 0.8rem; }
+      .row {
+        display: flex;
+        gap: 0.6rem;
+        align-items: center;
+      }
+      .hint {
+        font-size: 0.85rem;
+        color: var(--muted);
+      }
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.25rem 0.55rem;
+        border-radius: 999px;
+        background: var(--chip);
+        color: #374151;
+        font-size: 0.8rem;
+      }
 
-      .danger-zone { border: 1px solid var(--line); background: #fff; border-radius: 14px; padding: 1rem; }
-      .danger-zone h3 { margin: 0.2rem 0 0.5rem; color: #991b1b; display: flex; align-items: center; gap: 0.4rem; }
-      .danger-zone p { margin: 0 0 0.8rem; color: #6b7280; }
-      .btn-danger { background: var(--danger); color: #fff; border: none; padding: 0.7rem 1rem; border-radius: 10px; cursor: pointer; }
-      .btn-danger:hover { filter: brightness(0.96); }
+      .danger-zone {
+        border: 1px solid var(--line);
+        background: #fff;
+        border-radius: 14px;
+        padding: 1rem;
+      }
+      .danger-zone h3 {
+        margin: 0.2rem 0 0.5rem;
+        color: #991b1b;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+      }
+      .danger-zone p {
+        margin: 0 0 0.8rem;
+        color: #6b7280;
+      }
+      .btn-danger {
+        background: var(--danger);
+        color: #fff;
+        border: none;
+        padding: 0.7rem 1rem;
+        border-radius: 10px;
+        cursor: pointer;
+      }
+      .btn-danger:hover {
+        filter: brightness(0.96);
+      }
 
-      .footer-actions { display: flex; gap: 0.5rem; justify-content: flex-end; margin-top: 0.6rem; }
-      .btn { padding: 0.7rem 1rem; border-radius: 10px; border: 1px solid var(--line); background: #fff; cursor: pointer; }
-      .btn.primary { background: var(--success); color: #fff; border-color: transparent; }
-      .btn:disabled { opacity: 0.6; pointer-events: none; }
+      .footer-actions {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: flex-end;
+        margin-top: 0.6rem;
+      }
+      .btn {
+        padding: 0.7rem 1rem;
+        border-radius: 10px;
+        border: 1px solid var(--line);
+        background: #fff;
+        cursor: pointer;
+      }
+      .btn.primary {
+        background: var(--success);
+        color: #fff;
+        border-color: transparent;
+      }
+      .btn:disabled {
+        opacity: 0.6;
+        pointer-events: none;
+      }
 
-      .loading { border: 2px dashed var(--line); border-radius: 14px; background: var(--card); padding: 2rem; display: flex; align-items: center; justify-content: center; gap: 0.6rem; color: var(--muted); min-height: 120px; }
+      .loading {
+        border: 2px dashed var(--line);
+        border-radius: 14px;
+        background: var(--card);
+        padding: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem;
+        color: var(--muted);
+        min-height: 120px;
+      }
 
-      .toast { position: fixed; right: 24px; bottom: 24px; background: #111827; color: #fff; padding: 0.8rem 1rem; border-radius: 12px; display: flex; gap: 0.6rem; align-items: center; box-shadow: 0 10px 30px rgba(0,0,0,.2); opacity: 0; transform: translateY(12px); transition: .25s ease; }
-      .toast.show { opacity: 1; transform: translateY(0); }
+      .toast {
+        position: fixed;
+        right: 24px;
+        bottom: 24px;
+        background: #111827;
+        color: #fff;
+        padding: 0.8rem 1rem;
+        border-radius: 12px;
+        display: flex;
+        gap: 0.6rem;
+        align-items: center;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        opacity: 0;
+        transform: translateY(12px);
+        transition: 0.25s ease;
+      }
+      .toast.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
 
-      .modal-backdrop { position: fixed; inset: 0; background: rgba(17, 24, 39, 0.6); display: none; align-items: center; justify-content: center; padding: 1rem; z-index: 50; }
-      .modal { width: 100%; max-width: 520px; background: #fff; border-radius: 16px; padding: 1rem; border: 1px solid var(--line); }
-      .modal header { display: flex; align-items: center; justify-content: space-between; }
-      .modal h3 { margin: 0.2rem 0; }
-      .modal .body { margin: 0.6rem 0 1rem; color: #374151; }
-      .modal .actions { display: flex; justify-content: flex-end; gap: 0.5rem; }
+      .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(17, 24, 39, 0.6);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        z-index: 50;
+      }
+      .modal {
+        width: 100%;
+        max-width: 520px;
+        background: #fff;
+        border-radius: 16px;
+        padding: 1rem;
+        border: 1px solid var(--line);
+      }
+      .modal header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .modal h3 {
+        margin: 0.2rem 0;
+      }
+      .modal .body {
+        margin: 0.6rem 0 1rem;
+        color: #374151;
+      }
+      .modal .actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.5rem;
+      }
 
-      @media (max-width: 900px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+      @media (max-width: 900px) {
+        .grid-2,
+        .grid-3 {
+          grid-template-columns: 1fr;
+        }
+      }
     </style>
   </head>
   <body>
@@ -116,7 +329,9 @@
               <span class="material-icons-sharp">edit</span> Edit
             </button>
             <span class="pill" title="Data source">
-              <span class="material-icons-sharp" style="font-size: 1rem">storage</span>
+              <span class="material-icons-sharp" style="font-size: 1rem"
+                >storage</span
+              >
               public.customer
             </span>
           </div>
@@ -139,11 +354,18 @@
               <div class="field">
                 <label for="email">Email</label>
                 <input id="email" type="email" class="readonly" readonly />
-                <div class="hint">Email is managed in auth. (Mirrored to customer.email)</div>
+                <div class="hint">
+                  Email is managed in auth. (Mirrored to customer.email)
+                </div>
               </div>
               <div class="field">
                 <label for="phone">Phone</label>
-                <input id="phone" type="tel" placeholder="+63 9xx xxx xxxx" disabled />
+                <input
+                  id="phone"
+                  type="tel"
+                  placeholder="+63 9xx xxx xxxx"
+                  disabled
+                />
               </div>
               <div class="field">
                 <label for="createdAt">Created</label>
@@ -151,9 +373,13 @@
               </div>
             </div>
             <div class="footer-actions">
-              <button id="cancelBtn" class="btn" style="display: none">Cancel</button>
+              <button id="cancelBtn" class="btn" style="display: none">
+                Cancel
+              </button>
               <button id="saveBtn" class="btn primary" style="display: none">
-                <span class="material-icons-sharp" style="font-size: 1rem">save</span>
+                <span class="material-icons-sharp" style="font-size: 1rem"
+                  >save</span
+                >
                 Save changes
               </button>
             </div>
@@ -170,7 +396,9 @@
               <div class="field">
                 <label for="age">Age (auto)</label>
                 <input id="age" type="number" class="readonly" readonly />
-                <div class="hint">Calculated from your birthdate and saved to <code>age</code>.</div>
+                <div class="hint">
+                  Calculated from your birthdate and saved to <code>age</code>.
+                </div>
               </div>
               <div class="field">
                 <label for="uid">User ID</label>
@@ -181,10 +409,17 @@
 
           <!-- Danger zone -->
           <section class="danger-zone">
-            <h3><span class="material-icons-sharp">warning</span> Danger zone</h3>
-            <p>Deleting your account removes your customer record and your Auth user. This action is permanent.</p>
+            <h3>
+              <span class="material-icons-sharp">warning</span> Danger zone
+            </h3>
+            <p>
+              Deleting your account removes your customer record and your Auth
+              user. This action is permanent.
+            </p>
             <button id="deleteBtn" class="btn-danger">
-              <span class="material-icons-sharp" style="vertical-align: middle">delete_forever</span>
+              <span class="material-icons-sharp" style="vertical-align: middle"
+                >delete_forever</span
+              >
               Delete account
             </button>
           </section>
@@ -201,7 +436,13 @@
     </div>
 
     <!-- Delete Modal -->
-    <div id="deleteModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="delTitle">
+    <div
+      id="deleteModal"
+      class="modal-backdrop"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="delTitle"
+    >
       <div class="modal">
         <header>
           <h3 id="delTitle">Confirm account deletion</h3>
@@ -210,13 +451,23 @@
           </button>
         </header>
         <div class="body">
-          <p>This will call the <code>delete-account</code> Edge Function to remove your Auth user and cascade delete related records. Type <strong>DELETE</strong> to proceed.</p>
+          <p>
+            This will call the <code>delete-account</code> Edge Function to
+            remove your Auth user and cascade delete related records. Type
+            <strong>DELETE</strong> to proceed.
+          </p>
           <input id="confirmText" placeholder="Type DELETE to confirm" />
         </div>
         <div class="actions">
           <button id="modalCancel" class="btn">Cancel</button>
-          <button id="modalDelete" class="btn danger" style="background: #ef4444; color: #fff">
-            <span class="material-icons-sharp" style="font-size: 1rem">delete</span>
+          <button
+            id="modalDelete"
+            class="btn danger"
+            style="background: #ef4444; color: #fff"
+          >
+            <span class="material-icons-sharp" style="font-size: 1rem"
+              >delete</span
+            >
             Delete permanently
           </button>
         </div>
@@ -287,7 +538,10 @@
       }
 
       async function loadData() {
-        const { data: { user }, error: uerr } = await supabase.auth.getUser();
+        const {
+          data: { user },
+          error: uerr,
+        } = await supabase.auth.getUser();
         if (uerr || !user) {
           loading.innerHTML = '<div class="hint">Not signed in.</div>';
           return;
@@ -301,7 +555,8 @@
           .single();
 
         if (error) {
-          loading.innerHTML = '<span class="material-icons-sharp">error</span><span>Could not load settings.</span>';
+          loading.innerHTML =
+            '<span class="material-icons-sharp">error</span><span>Could not load settings.</span>';
           console.error(error);
           return;
         }
@@ -311,23 +566,27 @@
         emailEl.value = data.email || user.email || "";
         phoneEl.value = data.phone || "";
         birthEl.value = data.birthdate || "";
-        ageEl.value = (data.age ?? calcAge(data.birthdate)) ?? "";
+        ageEl.value = data.age ?? calcAge(data.birthdate) ?? "";
         uidEl.value = user.id;
-        createdAtEl.value = data.createdAt ? new Date(data.createdAt).toLocaleString() : "";
+        createdAtEl.value = data.createdAt
+          ? new Date(data.createdAt).toLocaleString()
+          : "";
 
         loading.style.display = "none";
         content.style.display = "";
         setEditing(false);
       }
 
-      birthEl?.addEventListener("change", () => { ageEl.value = calcAge(birthEl.value) ?? ""; });
+      birthEl?.addEventListener("change", () => {
+        ageEl.value = calcAge(birthEl.value) ?? "";
+      });
       editBtn.addEventListener("click", () => setEditing(true));
 
       cancelBtn.addEventListener("click", () => {
         nameEl.value = original.name || "";
         phoneEl.value = original.phone || "";
         birthEl.value = original.birthdate || "";
-        ageEl.value = (original.age ?? calcAge(original.birthdate)) ?? "";
+        ageEl.value = original.age ?? calcAge(original.birthdate) ?? "";
         setEditing(false);
       });
 
@@ -344,13 +603,18 @@
         };
 
         // PH phone sanity
-        if (updates.phone && !/^(\+?63|0)9\d{9}$/.test(updates.phone.replace(/\s|-/g, ""))) {
+        if (
+          updates.phone &&
+          !/^(\+?63|0)9\d{9}$/.test(updates.phone.replace(/\s|-/g, ""))
+        ) {
           showToast("Invalid phone number format", false);
           return;
         }
 
         saveBtn.disabled = true;
-        const { error } = await supabase.from("customer").upsert(updates, { onConflict: "id" });
+        const { error } = await supabase
+          .from("customer")
+          .upsert(updates, { onConflict: "id" });
         saveBtn.disabled = false;
 
         if (error) {
@@ -365,15 +629,95 @@
       });
 
       // Logout
-      document.getElementById("logout-btn")?.addEventListener("click", async (e) => {
-        e.preventDefault();
-        await supabase.auth.signOut();
-        window.location.href = "../../../index.html";
-      });
+      document
+        .getElementById("logout-btn")
+        ?.addEventListener("click", async (e) => {
+          e.preventDefault();
+          await supabase.auth.signOut();
+          window.location.href = "../../../index.html";
+        });
+
+      // ===== NEW: helper to recursively list and delete files in jobs/<uid>/ =====
+      async function listAllFilesInFolder(bucket, folder) {
+        // Returns an array of full paths like "uid/file.jpg" or "uid/sub/f.png"
+        const paths = [];
+
+        async function walk(prefix) {
+          const { data, error } = await supabase.storage
+            .from(bucket)
+            .list(prefix, {
+              limit: 1000,
+              sortBy: { column: "name", order: "asc" },
+            });
+
+          if (error) {
+            console.error("List error for", `${bucket}:${prefix}`, error);
+            return;
+          }
+
+          for (const item of data) {
+            // Folders in Supabase Storage list usually have null metadata/id
+            const isFolder = !item.id && !item.metadata;
+            if (isFolder) {
+              await walk(`${prefix}/${item.name}`);
+            } else {
+              paths.push(`${prefix}/${item.name}`);
+            }
+          }
+        }
+
+        await walk(folder);
+        return paths;
+      }
+
+      async function deleteCustomerJobsFiles(customerId) {
+        try {
+          const base = customerId;
+          // Ensure the folder exists before listing
+          const { data: probe, error: probeErr } = await supabase.storage
+            .from("jobs")
+            .list(base, { limit: 1 });
+          if (probeErr) {
+            console.warn("Skipping storage cleanup (list error):", probeErr.message);
+            return;
+          }
+          if (!probe || probe.length === 0) {
+            // nothing to delete
+            return;
+          }
+
+          const allPaths = await listAllFilesInFolder("jobs", base);
+          if (!allPaths.length) return;
+
+          // Delete in chunks to avoid payload limits
+          const chunkSize = 100;
+          for (let i = 0; i < allPaths.length; i += chunkSize) {
+            const chunk = allPaths.slice(i, i + chunkSize);
+            const { data, error } = await supabase.storage
+              .from("jobs")
+              .remove(chunk);
+            if (error) {
+              console.error("Remove error:", error, "on", chunk);
+              // continue trying other chunks; we still proceed to account deletion
+            }
+          }
+          console.log(`Deleted ${allPaths.length} files from jobs/${base}`);
+        } catch (err) {
+          console.error("Storage cleanup failed:", err);
+          // Do not block account deletion if cleanup has issues
+        }
+      }
+      // ===== END NEW helpers =====
 
       // Delete flow
-      function openDelete() { deleteModal.style.display = "flex"; confirmText.value = ""; confirmText.focus(); }
-      function closeDelete() { deleteModal.style.display = "none"; }
+      function openDelete() {
+        deleteModal.style.display = "flex";
+        confirmText.value = "";
+        confirmText.focus();
+      }
+      function closeDelete() {
+        deleteModal.style.display = "none";
+      }
 
       deleteBtn.addEventListener("click", openDelete);
       modalClose.addEventListener("click", closeDelete);
@@ -388,18 +732,28 @@
 
         try {
           // get user id & pass it to the Edge Function (required by your function)
-          const { data: { user }, error: uerr } = await supabase.auth.getUser();
+          const {
+            data: { user },
+            error: uerr,
+          } = await supabase.auth.getUser();
           if (uerr || !user) throw new Error("Not signed in");
 
-          const { data, error } = await supabase.functions.invoke("delete-account", {
-            body: { user_id: user.id },
-          });
+          // ===== NEW: delete files under jobs/<uid>/ BEFORE deleting the account =====
+          await deleteCustomerJobsFiles(user.id);
+
+          // Existing call to your Edge Function
+          const { data, error } = await supabase.functions.invoke(
+            "delete-account",
+            {
+              body: { user_id: user.id },
+            }
+          );
           if (error) throw error;
 
           showToast("Account deleted");
           setTimeout(async () => {
             await supabase.auth.signOut();
-            window.location.href = "../auth/login.html";
+            window.location.href = "../../../index.html";
           }, 900);
         } catch (err) {
           // show HTTP status + body if available
