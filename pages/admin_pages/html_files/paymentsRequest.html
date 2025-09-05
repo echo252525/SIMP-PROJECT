@@ -39,8 +39,19 @@
       .payout-tabs button{
         appearance:none; background:transparent; border:none; padding:.65rem 1rem;
         font-weight:700; color:#6c7a8a; cursor:pointer; border-bottom:3px solid transparent;
+        display:inline-flex; align-items:center; gap:.5rem;
       }
       .payout-tabs button.active{ color:#1c2430; border-color:#20a44c; }
+
+      /* NEW: tiny notification badge */
+      .badge {
+        display:inline-grid; place-items:center;
+        min-width: 22px; height: 20px; padding: 0 .4rem;
+        border-radius: 999px; background:#e91e63; color:#fff;
+        font-size:.72rem; font-weight:800; line-height: 1;
+        box-shadow: 0 2px 6px rgba(233,30,99,.25);
+      }
+      .badge[hidden] { display:none !important; }
 
       /* Table */
       main .payments-table table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 10px; overflow: hidden; }
@@ -93,6 +104,63 @@
 
       .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; }
       .sub { color:#6c7a8a; }
+
+      /* ====== Bank Confirmation Modal (UPDATED) ====== */
+      .bank-modal-overlay {
+        position: fixed; inset: 0;
+        background: rgba(17,24,39,.55);
+        display: none; align-items: center; justify-content: center;
+        z-index: 10050;
+        padding: 12px;
+      }
+      .bank-modal-overlay.show { display: flex; }
+      .bank-modal {
+        width: min(720px, 96vw);
+        background: #fff;
+        border-radius: 14px;
+        box-shadow: 0 24px 64px rgba(0,0,0,.35);
+        overflow: hidden;
+      }
+      .bank-modal .bm-header {
+        padding: 12px 14px;
+        background: linear-gradient(180deg, #f8fbfd, #eef4f9);
+        border-bottom: 1px solid #e7edf3;
+        display:flex; align-items:center; justify-content:space-between;
+      }
+      .bank-modal .bm-header h3 { margin:0; font-size:1.05rem; color:#1c2430; }
+      .bank-modal .bm-body {
+        padding: 12px 14px;
+        max-height: 64vh; overflow: auto;
+      }
+      .bank-modal .bm-body table { width:100%; border-collapse: collapse; margin-bottom:.6rem; }
+      .bank-modal .bm-body th, .bank-modal .bm-body td {
+        padding: .65rem .6rem; border-bottom: 1px solid #eef2f7; text-align:left;
+      }
+      .bank-modal .bm-body th {
+        background:#f8fbfd; color:#1c2430; font-weight:800;
+        position: sticky; top: 0;
+      }
+      .bank-modal .bm-ref {
+        display:grid; gap:.4rem; padding:.2rem 0 .4rem;
+      }
+      .bank-modal .bm-ref label { font-weight:800; color:#1c2430; }
+      .bank-modal .bm-ref input {
+        border:1px solid #e7edf3; border-radius:10px; padding:.6rem .7rem; font:inherit;
+      }
+      .bank-modal .bm-ref small { color:#6c7a8a; }
+
+      .bank-modal .bm-footer {
+        display:flex; gap:.5rem; justify-content:flex-end; flex-wrap: wrap;
+        padding: 12px 14px; border-top:1px solid #e7edf3; background:#fff;
+      }
+      .bm-btn {
+        border:none; border-radius:10px; padding:.6rem .85rem; font-weight:800; cursor:pointer;
+      }
+      .bm-cancel { background:#e7edf3; color:#1c2430; }
+      .bm-confirm { background:#20a44c; color:#fff; }
+      .bm-cancel:hover { background:#dbe7ef; }
+      .bm-confirm:hover { background:#188a3e; }
+      .bm-error { color:#c62828; font-size:.85rem; }
     </style>
   </head>
 
@@ -161,11 +229,31 @@
 
         <!-- Tabs -->
         <div class="payout-tabs">
-          <button id="tabAll" class="active" data-mode="all" type="button">All Payments</button>
-          <button id="tabRequests" data-mode="requests" type="button">Payout Requests</button>
-          <button id="tabUnpaid" data-mode="unpaid" type="button">Unpaid</button>
-          <button id="tabPaid" data-mode="paid" type="button">Paid</button>
-          <button id="tabDisbursed" data-mode="disbursed" type="button">Disbursed</button>
+          <button id="tabAll" class="active" data-mode="all" type="button">
+            All Payments
+            <!-- NEW badge -->
+            <span id="badgeAll" class="badge" hidden>0</span>
+          </button>
+          <button id="tabRequests" data-mode="requests" type="button">
+            Payout Requests
+            <!-- NEW badge -->
+            <span id="badgeRequests" class="badge" hidden>0</span>
+          </button>
+          <button id="tabUnpaid" data-mode="unpaid" type="button">
+            Unpaid
+            <!-- NEW badge -->
+            <span id="badgeUnpaid" class="badge" hidden>0</span>
+          </button>
+          <button id="tabPaid" data-mode="paid" type="button">
+            Paid
+            <!-- NEW badge -->
+            <span id="badgePaid" class="badge" hidden>0</span>
+          </button>
+          <button id="tabDisbursed" data-mode="disbursed" type="button">
+            Disbursed
+            <!-- NEW badge -->
+            <span id="badgeDisbursed" class="badge" hidden>0</span>
+          </button>
         </div>
 
         <!-- Batch / Bulk Bar -->
@@ -455,11 +543,13 @@
             }
             if (!pays || pays.length === 0) {
               __PAYMENTS = [];
+              window.__PAYMENTS = __PAYMENTS; /* expose (ADDED) */
               tbodyPayments.innerHTML = '<tr><td colspan="8" class="sub">No payment requests yet.</td></tr>';
               if (window.__buildRequests) window.__buildRequests();
               return;
             }
             __PAYMENTS = pays;
+            window.__PAYMENTS = __PAYMENTS; /* expose (ADDED) */
 
             // jobs
             const jobIds = [...new Set(pays.map(p => p.job_id).filter(Boolean))];
@@ -628,7 +718,7 @@
                   <td>
                     <button class="do-payout-batch" type="button"
                             data-batch="${g.key}"
-                            data-payment-ids='${JSON.stringify(g.payment_ids).replace(/'/g,"&apos;")}'>
+                            data-payment-ids='${JSON.stringify(g.payment_ids).replace(/'</g,"&apos;")}'>
                       Payout Batch
                     </button>
                   </td>
@@ -719,7 +809,7 @@
               const jobsTitle = list.length > 1 ? `JOBS: ${list.join(', ')}` : `JOB: ${list[0] || '—'}`;
               return (
                 `<tr data-batch-key="${g.key}"
-                     data-payment-ids='${JSON.stringify(g.payment_ids).replace(/'/g,"&apos;")}'>
+                     data-payment-ids='${JSON.stringify(g.payment_ids).replace(/'</g,"&apos;")}'>
                   <td class="mono">${jobsTitle}</td>
                   <td>${g.installer_display}</td>
                   <td>${g.count}</td>
@@ -777,7 +867,7 @@
             }
           });
 
-          // Single disburse
+          /* ====== UPDATED: SINGLE disburse asks for reference number via modal too ====== */
           tableBodyEl.addEventListener('click', async (e) => {
             const payBtn = e.target.closest('.do-payout');
             if (!payBtn) return;
@@ -786,14 +876,15 @@
             const paymentId = tr?.dataset?.paymentId;
             if (!paymentId) return;
 
-            const ok = confirm('Confirm disbursement for this request? This will mark it as "disbursed".');
-            if (!ok) return;
+            // Show bank details + reference input for a single payment
+            const okRef = await window.__confirmWithBankDetails([paymentId], 'single payment');
+            if (!okRef?.proceed) return;
 
             try {
               const { error } = await sbRef
                 .schema('earnings')
                 .from('payments')
-                .update({ payment_status: 'disbursed' })
+                .update({ payment_status: 'disbursed', reference_number: okRef.reference })
                 .eq('id', paymentId);
 
               if (error) throw error;
@@ -817,6 +908,95 @@
             }
           });
 
+          /* ====== BATCH/GROUP CONFIRMATION WITH BANK DETAILS + REFERENCE INPUT (ADDED/UPDATED) ====== */
+
+          // Helper: open confirmation modal listing installers' bank details + reference input for the given payment IDs.
+          async function confirmWithBankDetails(paymentIds, contextLabel = 'batch') {
+            try {
+              const allPays = Array.isArray(window.__PAYMENTS) ? window.__PAYMENTS : [];
+              const instIds = [...new Set(
+                allPays.filter(p => paymentIds.includes(p.id)).map(p => p.installer_id).filter(Boolean)
+              )];
+
+              if (!instIds.length) {
+                const ref = prompt(`Enter GCash Reference Number for this ${contextLabel}:`);
+                if (!ref) return { proceed: false, reference: '' };
+                return { proceed: true, reference: ref.trim() };
+              }
+
+              // Fetch bank fields for installers
+              const { data: installers, error } = await sbRef
+                .from('installer')
+                .select('id, name, email, "bankName", "accountNumber", "accountHolder"')
+                .in('id', instIds);
+
+              if (error) {
+                console.warn('Bank details fetch error:', error);
+              }
+
+              // Fill UI
+              const overlay = document.getElementById('bankConfirmModal');
+              const tbody = document.getElementById('bankModalBody');
+              const title = document.getElementById('bankModalTitle');
+              const refInput = document.getElementById('bankRefInput');
+              const refError = document.getElementById('bankRefError');
+              const btnCancel = document.getElementById('bankCancelBtn');
+              const btnOk = document.getElementById('bankConfirmBtn');
+
+              title.textContent = `Confirm Disbursement (${contextLabel})`;
+              tbody.innerHTML = (installers || []).map(i => `
+                <tr>
+                  <td>${i.name || i.email || i.id}</td>
+                  <td>${i.bankName || '—'}</td>
+                  <td class="mono">${i.accountNumber || '—'}</td>
+                  <td>${i.accountHolder || '—'}</td>
+                </tr>
+              `).join('') || `<tr><td colspan="4" class="sub">No bank details found.</td></tr>`;
+
+              refInput.value = '';
+              refError.textContent = '';
+
+              return await new Promise(resolve => {
+                function cleanup(val){
+                  overlay.classList.remove('show');
+                  btnCancel.removeEventListener('click', onCancel);
+                  btnOk.removeEventListener('click', onOk);
+                  overlay.removeEventListener('click', onBackdrop);
+                  refInput.removeEventListener('input', onInput);
+                  resolve(val);
+                }
+                function onCancel(){ cleanup({ proceed:false, reference:'' }); }
+                function onBackdrop(e){ if (e.target === overlay) cleanup({ proceed:false, reference:'' }); }
+                function onInput(){ refError.textContent = ''; }
+                function onOk(){
+                  const ref = refInput.value.trim();
+                  // Basic validation: 6–64 chars, letters/numbers/-/_
+                  const ok = /^[A-Za-z0-9\-_]{6,64}$/.test(ref);
+                  if (!ok) {
+                    refError.textContent = 'Please enter a valid reference (6–64 chars, letters/numbers/-/_).';
+                    refInput.focus();
+                    return;
+                  }
+                  cleanup({ proceed:true, reference: ref });
+                }
+
+                btnCancel.addEventListener('click', onCancel);
+                btnOk.addEventListener('click', onOk);
+                overlay.addEventListener('click', onBackdrop);
+                refInput.addEventListener('input', onInput);
+
+                overlay.classList.add('show');
+              });
+
+            } catch (err) {
+              console.error(err);
+              const ref = prompt(`Enter GCash Reference Number for this ${contextLabel}:`);
+              if (!ref) return { proceed:false, reference:'' };
+              return { proceed:true, reference: ref.trim() };
+            }
+          }
+          window.__confirmWithBankDetails = confirmWithBankDetails;
+
           // Disburse batch from main table (pending grouped row)
           tableBodyEl.addEventListener('click', async (e) => {
             const btn = e.target.closest('.do-payout-batch');
@@ -827,8 +1007,9 @@
             const batchKey = btn.dataset.batch || '';
             if (!ids.length || !batchKey) return;
 
-            const ok = confirm(`Disburse all ${ids.length} payments in this batch?\nBatch: ${String(batchKey).toUpperCase().slice(0,64)}`);
-            if (!ok) return;
+            // Show bank details + reference input
+            const ok = await confirmWithBankDetails(ids, `batch ${String(batchKey).toUpperCase().slice(0,64)}`);
+            if (!ok?.proceed) return;
 
             btn.disabled = true; const prevTxt = btn.textContent; btn.textContent = 'Working...';
 
@@ -836,7 +1017,7 @@
               const { error } = await sbRef
                 .schema('earnings')
                 .from('payments')
-                .update({ payment_status: 'disbursed' })
+                .update({ payment_status: 'disbursed', reference_number: ok.reference })
                 .in('id', ids);
 
               if (error) throw error;
@@ -864,8 +1045,9 @@
             try { ids = JSON.parse(idsAttr); } catch { ids = []; }
             if (!Array.isArray(ids) || ids.length === 0) return;
 
-            const ok = confirm(`Disburse all ${ids.length} payments in this group?`);
-            if (!ok) return;
+            // Show bank details + reference input
+            const ok = await confirmWithBankDetails(ids, `group ${String(key).toUpperCase().slice(0,64)}`);
+            if (!ok?.proceed) return;
 
             btn.disabled = true; const prev = btn.textContent; btn.textContent = 'Working...';
 
@@ -873,7 +1055,7 @@
               const { error } = await sbRef
                 .schema('earnings')
                 .from('payments')
-                .update({ payment_status: 'disbursed' })
+                .update({ payment_status: 'disbursed', reference_number: ok.reference })
                 .in('id', ids);
 
               if (error) throw error;
@@ -1050,7 +1232,127 @@
             }
           });
         </script>
+
+        <!-- ===== NEW: Realtime updates → bump tab badges ===== -->
+        <script type="module">
+          const supa = window.__sb;
+
+          // Badge elements
+          const bAll = document.getElementById('badgeAll');
+          const bReq = document.getElementById('badgeRequests');
+          const bUnp = document.getElementById('badgeUnpaid');
+          const bPaid = document.getElementById('badgePaid');
+          const bDis = document.getElementById('badgeDisbursed');
+
+          // Counters
+          const counts = { all: 0, requests: 0, unpaid: 0, paid: 0, disbursed: 0 };
+
+          function cap(n){ return n > 99 ? '99+' : String(n); }
+          function renderBadges(){
+            // All
+            if (counts.all > 0){ bAll.hidden = false; bAll.textContent = cap(counts.all); } else { bAll.hidden = true; }
+            // Requests
+            if (counts.requests > 0){ bReq.hidden = false; bReq.textContent = cap(counts.requests); } else { bReq.hidden = true; }
+            // Unpaid
+            if (counts.unpaid > 0){ bUnp.hidden = false; bUnp.textContent = cap(counts.unpaid); } else { bUnp.hidden = true; }
+            // Paid
+            if (counts.paid > 0){ bPaid.hidden = false; bPaid.textContent = cap(counts.paid); } else { bPaid.hidden = true; }
+            // Disbursed
+            if (counts.disbursed > 0){ bDis.hidden = false; bDis.textContent = cap(counts.disbursed); } else { bDis.hidden = true; }
+          }
+
+          // Reset helper on tab click (doesn't interfere with your existing listeners)
+          document.getElementById('tabAll').addEventListener('click', ()=>{ counts.all = 0; renderBadges(); });
+          document.getElementById('tabRequests').addEventListener('click', ()=>{ counts.requests = 0; renderBadges(); });
+          document.getElementById('tabUnpaid').addEventListener('click', ()=>{ counts.unpaid = 0; renderBadges(); });
+          document.getElementById('tabPaid').addEventListener('click', ()=>{ counts.paid = 0; renderBadges(); });
+          document.getElementById('tabDisbursed').addEventListener('click', ()=>{ counts.disbursed = 0; renderBadges(); });
+
+          // Map DB status to tab bucket
+          function bucketForStatus(status){
+            switch(status){
+              case 'pending_payout': return 'requests';
+              case 'unpaid': return 'unpaid';
+              case 'paid': return 'paid';
+              case 'disbursed': return 'disbursed';
+              default: return null;
+            }
+          }
+
+          // Debounced reload to avoid thrashing on bursts
+          let reloadTimer = null;
+          function scheduleReload(){
+            if (reloadTimer) return;
+            reloadTimer = setTimeout(async ()=>{
+              reloadTimer = null;
+              try{
+                if (window.__reloadPayments) await window.__reloadPayments();
+              }catch(e){ console.error('reload failed', e); }
+            }, 400);
+          }
+
+          // Subscribe to all changes on earnings.payments
+          const channel = supa
+            .channel('payments_request_live')
+            .on(
+              'postgres_changes',
+              { event: '*', schema: 'earnings', table: 'payments' },
+              (payload) => {
+                // count for "All"
+                counts.all += 1;
+
+                // try to use NEW status; if not available, fallback to OLD
+                const st = (payload.new && payload.new.payment_status) || (payload.old && payload.old.payment_status) || '';
+                const bucket = bucketForStatus(st);
+                if (bucket && counts[bucket] != null) counts[bucket] += 1;
+
+                renderBadges();
+                scheduleReload();
+              }
+            )
+            .subscribe();
+
+          // Clean up (optional)
+          window.addEventListener('beforeunload', () => {
+            if (channel) supa.removeChannel(channel);
+          });
+        </script>
       </main>
+    </div>
+
+    <!-- ===== Bank Confirmation Modal (HTML updated: reference input added, GCash removed) ===== -->
+    <div id="bankConfirmModal" class="bank-modal-overlay" aria-hidden="true">
+      <div class="bank-modal" role="dialog" aria-modal="true" aria-labelledby="bankModalTitle">
+        <div class="bm-header">
+          <h3 id="bankModalTitle">Confirm Disbursement</h3>
+          <button id="bankCancelBtn" class="bm-btn bm-cancel" type="button" title="Close">Close</button>
+        </div>
+        <div class="bm-body">
+          <table>
+            <thead>
+              <tr>
+                <th>Installer</th>
+                <th>Bank Name</th>
+                <th>Account Number</th>
+                <th>Account Holder</th>
+              </tr>
+            </thead>
+            <tbody id="bankModalBody">
+              <tr><td colspan="4" class="sub">Loading…</td></tr>
+            </tbody>
+          </table>
+
+          <div class="bm-ref">
+            <label for="bankRefInput">GCash Reference Number</label>
+            <input id="bankRefInput" type="text" placeholder="e.g. 9AB12C34" />
+            <small>Enter the GCash transaction reference you received. Allowed: letters, numbers, dash and underscore (6–64 chars).</small>
+            <div id="bankRefError" class="bm-error"></div>
+          </div>
+        </div>
+        <div class="bm-footer">
+          <button id="bankConfirmBtn" class="bm-btn bm-confirm" type="button">Confirm Disbursement</button>
+        </div>
+      </div>
     </div>
   </body>
 </html>

@@ -214,7 +214,7 @@
     .inst-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
     @media (max-width: 700px){ .inst-grid{ grid-template-columns:1fr; } }
 
-    /* === NEW: Hide the card-level Edit button, keep code intact === */
+    /* Hide the card-level Edit button (kept in DOM) */
     .actions .btn-edit { display:none !important; }
   </style>
 </head>
@@ -241,6 +241,10 @@
         <a href="createPost.html" id="nav-create">
           <span class="material-icons-sharp">add</span>
           <h3>Create a post</h3>
+        </a>
+        <a href="settings.html" id="nav-create">
+          <span class="material-icons-sharp">settings</span>
+          <h3>Settings</h3>
         </a>
 
         <a href="#" id="logout-btn">
@@ -342,14 +346,14 @@
               <span id="mInstaller">Unassigned</span>
             </div>
 
-            <!-- Reschedule (for overdue) -->
+            <!-- Re-edit Date (for overdue) -->
             <div id="reschedWrap" class="modal-card" style="border-style:dashed; margin-top:10px; display:none;">
-              <div class="row" style="font-weight:700;"><span class="material-icons-sharp">schedule</span>Reschedule</div>
+              <div class="row" id="reschedTitleRow" style="font-weight:700;"><span class="material-icons-sharp">schedule</span>Reschedule</div>
               <div class="row">
                 <span class="label">New date</span>
                 <input id="reschedDate" type="date" />
               </div>
-              <div class="row">
+              <div class="row" id="reschedTimeRow">
                 <span class="label">New time</span>
                 <input id="reschedTime" type="time" />
               </div>
@@ -540,6 +544,8 @@
     const reschedDate = document.getElementById('reschedDate');
     const reschedTime = document.getElementById('reschedTime');
     const reschedSubmit = document.getElementById('reschedSubmit');
+    const reschedTitleRow = document.getElementById('reschedTitleRow');
+    const reschedTimeRow = document.getElementById('reschedTimeRow');
 
     const installerModal = document.getElementById('installerModal');
     const instCloseBtn = document.getElementById('instCloseBtn');
@@ -699,7 +705,8 @@
       const cards = Array.from(cardsContainer.querySelectorAll('.job-card'));
       for (const card of cards){
         const title = card.getAttribute('data-title') || '';
-        const st = card.getAttribute('data-status') || '';
+        the_st = card.getAttribute('data-status') || '';
+        const st = the_st; // keep original naming intact
         const stn = card.getAttribute('data-status-norm') || st;
         const matchesSearch = !searchValue || title.includes(searchValue);
         const matchesStatus = !statusValue || st === statusValue || stn === statusValue;
@@ -779,18 +786,28 @@
         v.addEventListener('click', () => openInstallerProfile(job.installer_id_assigned));
         modalBtns.appendChild(v);
       } else if (status === 'overdue'){
-        // Reschedule -> sets pending
+        // === Re-edit date only; set back to Pending ===
         reschedWrap.style.display = 'block';
+
+        // Title -> "Re-edit Date"
+        if (reschedTitleRow) {
+          reschedTitleRow.innerHTML = `<span class="material-icons-sharp">event</span>Re-edit Date`;
+        }
+        // Hide time row (keep DOM intact)
+        if (reschedTimeRow) reschedTimeRow.style.display = 'none';
+
         const today = new Date();
         const yyyy = today.getFullYear(), mm = String(today.getMonth()+1).padStart(2,'0'), dd = String(today.getDate()).padStart(2,'0');
+        // default & min
         reschedDate.value = job.job_date || `${yyyy}-${mm}-${dd}`;
         reschedDate.min = `${yyyy}-${mm}-${dd}`;
-        reschedTime.value = job.job_time || '09:00';
 
+        // Keep existing time (do not change)
+        reschedSubmit.textContent = 'Save Date';
         reschedSubmit.onclick = async () => {
-          const nd = reschedDate.value, nt = reschedTime.value;
-          if (!nd || !nt) { alert('Pick a new date and time.'); return; }
-          await updateJob(job.job_id, { job_date: nd, job_time: nt, job_status: 'pending' }, 'Rescheduled.');
+          const nd = reschedDate.value;
+          if (!nd) { alert('Pick a new date.'); return; }
+          await updateJob(job.job_id, { job_date: nd, job_status: 'pending' }, 'Date updated. Status set to Pending.');
         };
       } else if (status === 'pending' || status === 'viewed'){
         const edit = document.createElement('a');
@@ -931,7 +948,7 @@
         return;
       }
 
-      // Edit click from card: set pending first if approved/active (and not assigned), else just cache+go
+      // Edit click from card (hidden, but kept): set pending first if approved/active (and not assigned)
       const editLink = e.target.closest('a.btn-edit');
       if (editLink){
         try { sessionStorage.setItem('edit_job_cache', JSON.stringify(job)); } catch {}

@@ -8,6 +8,13 @@
       href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp"
       rel="stylesheet"
     />
+    <!-- Leaflet CSS (ADDED) -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
     <title>Jobs</title>
     <style>
       /* ===== MAIN CONTENT (new) ===== */
@@ -24,6 +31,19 @@
       }
       .page-header p {
         font-size: 0.9rem;
+      }
+
+      /* --- Section headers (ADDED) --- */
+      .section-title {
+        margin: 1.4rem 0 .35rem;
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: #111827;
+      }
+      .section-sub {
+        margin: 0 0 .6rem;
+        color: #6b7280;
+        font-size: .92rem;
       }
 
       /* Search + Filters row */
@@ -226,7 +246,7 @@
         display: none;
         align-items: center;
         justify-content: center;
-        z-index: 50;
+        z-index: 10000; /* bumped above Leaflet panes */
       }
       .modal-backdrop.show {
         display: flex;
@@ -369,7 +389,7 @@
         color: #fff;
         padding: 10px 14px;
         border-radius: 10px;
-        z-index: 60;
+        z-index: 10001; /* above map */
         box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
         font-size: 0.9rem;
         display: none;
@@ -377,6 +397,131 @@
       .toast.show {
         display: block;
       }
+
+      /* ====== MAP (ADDED) ====== */
+      .mapWrap {
+        margin-top: 1.2rem;
+        background: #fff;
+        border-radius: 18px;
+        box-shadow: var(--box-shadow);
+        border: 1px solid #e5e7eb;
+        overflow: hidden;
+        position: relative;
+      }
+      .mapControls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem;
+        align-items: center;
+        padding: 0.8rem;
+        background: linear-gradient(180deg, #f9fafb, #f3f4f6);
+        border-bottom: 1px solid #eef2f7;
+      }
+      .mapControls .btn {
+        padding: 0.55rem 0.9rem;
+        border-radius: 12px;
+        border: 1px solid #e5e7eb;
+        background: #fff;
+        cursor: pointer;
+        font-weight: 700;
+        transition: transform .05s ease, box-shadow .2s ease;
+      }
+      .mapControls .btn:hover { filter: brightness(.98); box-shadow: 0 4px 10px rgba(0,0,0,.06); }
+      .mapControls .btn:active { transform: translateY(1px); }
+      .mapControls .right {
+        margin-left: auto;
+        display: flex;
+        gap: 0.6rem;
+        align-items: center;
+      }
+      #jobsMap {
+        height: 460px;
+        width: 100%;
+        z-index: 1; /* ensure under modal */
+      }
+      .mapInfoCard {
+        display: none;
+        padding: 0.9rem 1rem;
+        border-top: 1px solid #eef2f7;
+        background: #fff;
+      }
+      .mapInfoCard.show { display: block; }
+      .mapInfoCard .title { font-weight: 800; }
+      .mapInfoCard .muted { color: #6b7280; font-size: .92rem; }
+      .mapInfoCard .btn {
+        margin-top: .6rem;
+        display: inline-flex;
+        gap: .35rem;
+        align-items: center;
+        background: #22c55e;
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        padding: .55rem .8rem;
+        cursor: pointer;
+        font-weight: 700;
+      }
+
+      /* Leaflet fine-tuning (ADDED aesthetic & z-index fixes) */
+      .leaflet-container {
+        background: #f8fafc;
+        outline: none;
+        z-index: 1; /* keep under modals */
+      }
+      .leaflet-control-zoom a {
+        border-radius: 12px !important;
+      }
+      .leaflet-popup-content {
+        margin: 10px 14px;
+      }
+      .leaflet-popup-content .pop-title {
+        font-weight: 800; margin-bottom: 4px;
+      }
+      .leaflet-popup-content .pop-line {
+        font-size: .9rem; color:#374151;
+      }
+      .leaflet-popup-content .map-view {
+        margin-top: .5rem; display:inline-block; background:#111827; color:#fff;
+        padding:.45rem .65rem; border-radius:10px; text-decoration:none; font-weight:700;
+      }
+      /* Bring modal above all Leaflet panes */
+      .leaflet-pane, .leaflet-top, .leaflet-bottom { z-index: 1 !important; }
+
+      /* Custom pulsing user marker */
+      .pulse {
+        width: 16px; height: 16px; border-radius: 50%;
+        background: #2563eb; box-shadow: 0 0 0 rgba(37,99,235, 0.4);
+        position: relative;
+      }
+      .pulse::after{
+        content:""; position:absolute; left:50%; top:50%; transform:translate(-50%, -50%);
+        width:16px; height:16px; border-radius:50%; box-shadow: 0 0 0 0 rgba(37,99,235,.35);
+        animation: pulse 1.5s infinite;
+      }
+      @keyframes pulse {
+        0% { box-shadow: 0 0 0 0 rgba(37,99,235,.45); }
+        70% { box-shadow: 0 0 0 18px rgba(37,99,235,0); }
+        100% { box-shadow: 0 0 0 0 rgba(37,99,235,0); }
+      }
+
+      /* Category marker chips (divIcon) */
+      .job-pin {
+        --pin: #111827;
+        --pin-soft: #e5e7eb;
+        display: grid; place-items: center;
+        width: 34px; height: 34px; border-radius: 50%;
+        background: radial-gradient(ellipse at 30% 30%, var(--pin) 0%, var(--pin) 45%, #000 120%);
+        border: 2px solid #fff;
+        box-shadow: 0 8px 18px rgba(0,0,0,.25);
+        color: #fff; font-weight: 900; font-size: 14px;
+      }
+      .job-pin-wrap { position: relative; transform: translate(-50%, -100%); }
+      .job-pin-tail {
+        position: absolute; left: 50%; bottom: -10px; transform: translateX(-50%) rotate(45deg);
+        width: 12px; height: 12px; background: var(--pin); box-shadow: 0 4px 8px rgba(0,0,0,.2);
+      }
+      .job-pin-emo { filter: drop-shadow(0 1px 1px rgba(0,0,0,.3)); }
+
     </style>
   </head>
   <body>
@@ -493,6 +638,40 @@
           </div>
         </div>
 
+        <!-- NEW: Section header for nearby -->
+        <h2 class="section-title">See nearby jobs near you</h2>
+        <p class="section-sub">Tap <strong>Locate me</strong> to find jobs within your chosen radius.</p>
+
+        <!-- MAP (existing) -->
+        <section class="mapWrap">
+          <div class="mapControls">
+            <button id="locateBtn" class="btn">
+              <span class="material-icons-sharp" style="font-size:1rem;">my_location</span>
+              Locate me
+            </button>
+            <div class="right">
+              <label for="radiusSelect" style="color:#374151;">Radius:</label>
+              <select id="radiusSelect" class="btn" title="Search radius (km)">
+                <option value="5">5 km</option>
+                <option value="10" selected>10 km</option>
+                <option value="25">25 km</option>
+                <option value="50">50 km</option>
+              </select>
+              <span id="nearbyCount" class="muted"></span>
+            </div>
+          </div>
+          <div id="jobsMap"></div>
+          <div id="mapInfoCard" class="mapInfoCard">
+            <div class="title" id="micTitle">—</div>
+            <div class="muted" id="micMeta">—</div>
+            <div class="muted" id="micLoc">—</div>
+            <button id="micViewBtn" class="btn"><span class="material-icons-sharp" style="font-size:1rem;">visibility</span> View</button>
+          </div>
+        </section>
+
+        <!-- NEW: Section header for all jobs -->
+        <h2 class="section-title">All Jobs</h2>
+
         <!-- CARDS -->
         <section class="cards"></section>
         <div class="scroll-tip">Scroll down for more</div>
@@ -572,6 +751,12 @@
     <script type="module" src="../../general_files/session.js"></script>
     <!-- Supabase UMD build -->
     <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+    <!-- Leaflet JS (ADDED) -->
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+    ></script>
 
     <script type="module">
       const { createClient } = supabase;
@@ -765,6 +950,9 @@
           list = list.filter((j) => Number(j.job_pay ?? 0) <= maxP);
         renderJobs(list);
         updateButtonLabels();
+
+        // refresh markers if user location set
+        MAP_refreshMarkers();
       }
 
       // ---------- initial load ----------
@@ -782,7 +970,6 @@
           .schema("jobs")
           .from("job")
           .select(
-            // ADDED installer_id_assigned so we can hide jobs that already have an installer
             "job_id, posted_by, job_title, job_description, job_difficulty, job_category, job_location, job_date, job_time, job_pay, job_picture_url, created_at, job_status, installer_id_assigned"
           )
           .eq("job_status", "approved")
@@ -796,12 +983,14 @@
           return;
         }
 
-        // ADDED: filter out jobs that already have an assigned installer
         const visible = (jobs || []).filter((j) => !hasAssignedInstaller(j));
 
         ALL_JOBS = visible;
         populateMenus();
         applyFilters();
+
+        // geocode for map
+        MAP_prepareGeocodingForJobs(ALL_JOBS);
 
         await ensureRealtimeAuth();
         initRealtimeApprovalListener();
@@ -814,11 +1003,6 @@
         } = await sb.auth.getSession();
         if (session?.access_token) {
           sb.realtime.setAuth(session.access_token);
-          console.log("[Realtime] setAuth with user token");
-        } else {
-          console.log(
-            "[Realtime] no user session; using anon token (make sure your SELECT policy allows it)"
-          );
         }
       }
 
@@ -834,10 +1018,8 @@
       });
 
       function upsertApprovedJob(row) {
-        // ADDED: ensure not assigned and approved
         if (!row || row.job_status !== "approved") return;
         if (hasAssignedInstaller(row)) {
-          // if it's assigned, make sure it isn't in our list
           removeIfNoLongerApproved(row);
           return;
         }
@@ -850,6 +1032,7 @@
           ALL_JOBS.unshift(row);
         }
         applyFilters();
+        MAP_prepareGeocodingForJobs([row]);
         showToast(`New approved job: ${row.job_title || row.job_id}`);
       }
 
@@ -859,7 +1042,10 @@
         ALL_JOBS = ALL_JOBS.filter(
           (j) => String(j.job_id) !== String(rowLike.job_id)
         );
-        if (ALL_JOBS.length !== before) applyFilters();
+        if (ALL_JOBS.length !== before) {
+          applyFilters();
+          MAP_removeGeocode(rowLike);
+        }
       }
 
       function initRealtimeApprovalListener() {
@@ -867,8 +1053,6 @@
 
         jobsChannel = sb
           .channel("jobs-approved-feed")
-
-          // INSERT
           .on(
             "postgres_changes",
             { event: "INSERT", schema: "jobs", table: "job" },
@@ -877,14 +1061,11 @@
               if (n?.job_status === "approved") upsertApprovedJob(n);
             }
           )
-
-          // UPDATE
           .on(
             "postgres_changes",
             { event: "UPDATE", schema: "jobs", table: "job" },
             (payload) => {
               const n = payload.new;
-              // ADDED: if approved but gets an assigned installer -> remove; if approved & unassigned -> upsert; else remove
               if (n?.job_status === "approved" && !hasAssignedInstaller(n)) {
                 upsertApprovedJob(n);
               } else {
@@ -892,8 +1073,6 @@
               }
             }
           )
-
-          // DELETE
           .on(
             "postgres_changes",
             { event: "DELETE", schema: "jobs", table: "job" },
@@ -902,12 +1081,7 @@
               removeIfNoLongerApproved(o);
             }
           )
-
-          .subscribe((status) => {
-            console.log("[Realtime] Channel status:", status);
-            if (status === "SUBSCRIBED")
-              console.log("[Realtime] Subscribed to jobs-approved-feed");
-          });
+          .subscribe();
       }
 
       // ---------- dropdown UI wiring ----------
@@ -993,7 +1167,7 @@
           .limit(1)
           .maybeSingle();
         if (error) {
-          console.warn("installer levelstatus lookup error", error);
+        console.warn("installer levelstatus lookup error", error);
           return null;
         }
         return data?.levelstatus ?? null;
@@ -1173,6 +1347,330 @@
             modalBtnApply.textContent = "Apply for this Job!";
           }
         });
+
+      /* ================================
+         ======= MAP ADDITIONS ==========
+         ================================ */
+
+      // Basic Haversine (km)
+      function distKm(a, b) {
+        if (!a || !b) return Infinity;
+        const R = 6371;
+        const dLat = (b.lat - a.lat) * Math.PI/180;
+        const dLon = (b.lng - a.lng) * Math.PI/180;
+        const lat1 = a.lat * Math.PI/180;
+        const lat2 = b.lat * Math.PI/180;
+        const s =
+          Math.sin(dLat/2)**2 +
+          Math.sin(dLon/2)**2 * Math.cos(lat1) * Math.cos(lat2);
+        return 2 * R * Math.asin(Math.sqrt(s));
+      }
+
+      // Leaflet objects
+      let MAP = null;
+      let MAP_MARKERS = null;
+      let MAP_USER = null;
+      let MAP_RADIUS = null;
+
+      // JobId -> {lat,lng}
+      const GEO_CACHE = new Map();
+
+      // Address -> Promise (dedupe)
+      const GEO_PROMISES = new Map();
+
+      // localStorage helpers
+      function lsGetAddr(addr) {
+        try {
+          const raw = localStorage.getItem("geo:"+addr);
+          if (!raw) return null;
+          return JSON.parse(raw);
+        } catch { return null; }
+      }
+      function lsSetAddr(addr, obj) {
+        try { localStorage.setItem("geo:"+addr, JSON.stringify(obj)); } catch {}
+      }
+
+      // Geocode single address with Nominatim
+      async function geocodeAddress(addr) {
+        const trimmed = String(addr||"").trim();
+        if (!trimmed) return null;
+
+        // memory cache check
+        for (const [k,v] of GEO_CACHE.entries()) {
+          if (v._addr === trimmed) return {lat:v.lat, lng:v.lng};
+        }
+
+        // localStorage cache
+        const hit = lsGetAddr(trimmed);
+        if (hit && typeof hit.lat === "number" && typeof hit.lng === "number") {
+          return {lat: hit.lat, lng: hit.lng};
+        }
+
+        if (GEO_PROMISES.has(trimmed)) return GEO_PROMISES.get(trimmed);
+
+        const url =
+          "https://nominatim.openstreetmap.org/search?format=json&limit=1&q=" +
+          encodeURIComponent(trimmed);
+
+        const p = fetch(url, {
+          headers: { "Accept": "application/json" }
+        })
+          .then(r => r.json())
+          .then(arr => {
+            if (Array.isArray(arr) && arr.length) {
+              const { lat, lon } = arr[0];
+              const res = { lat: parseFloat(lat), lng: parseFloat(lon) };
+              lsSetAddr(trimmed, res);
+              return res;
+            }
+            return null;
+          })
+          .catch(() => null)
+          .finally(() => { GEO_PROMISES.delete(trimmed); });
+
+        GEO_PROMISES.set(trimmed, p);
+        return p;
+      }
+
+      // Prepare geocoding for jobs (queued & rate-limited)
+      let _geoQueue = [];
+      let _geoBusy = false;
+
+      function MAP_prepareGeocodingForJobs(jobs) {
+        (jobs||[]).forEach(j => {
+          const addr = (j.job_location||"").trim();
+          if (!addr) return;
+          if (GEO_CACHE.has(j.job_id)) return;
+          const hit = lsGetAddr(addr);
+          if (hit) {
+            GEO_CACHE.set(j.job_id, { ...hit, _addr: addr, _job: j });
+          } else {
+            _geoQueue.push({ job:j, addr });
+          }
+        });
+        if (!_geoBusy) processGeoQueue();
+      }
+
+      async function processGeoQueue() {
+        _geoBusy = true;
+        while (_geoQueue.length) {
+          const item = _geoQueue.shift();
+          const res = await geocodeAddress(item.addr);
+          if (res) {
+            GEO_CACHE.set(item.job.job_id, { ...res, _addr:item.addr, _job:item.job });
+            if (MAP_USER) MAP_refreshMarkers();
+          }
+          await new Promise(r => setTimeout(r, 600));
+        }
+        _geoBusy = false;
+      }
+
+      function MAP_removeGeocode(rowLike) {
+        if (!rowLike) return;
+        GEO_CACHE.delete(rowLike.job_id);
+        MAP_refreshMarkers();
+      }
+
+      /* ===== Aesthetic helpers for icons ===== */
+      function categoryStyle(cat) {
+        const c = (cat||"").toLowerCase();
+        if (c.includes("elect")) return { color:"#1d4ed8", emoji:"⚡" };
+        if (c.includes("safety")) return { color:"#ef4444", emoji:"🛡️" };
+        if (c.includes("network")) return { color:"#10b981", emoji:"🌐" };
+        if (c.includes("cctv")) return { color:"#8b5cf6", emoji:"📷" };
+        if (c.includes("plumb")) return { color:"#0ea5e9", emoji:"🔧" };
+        if (c.includes("general")) return { color:"#f59e0b", emoji:"🛠️" };
+        return { color:"#111827", emoji:"📍" };
+      }
+
+      function jobDivIcon(job) {
+        const { color, emoji } = categoryStyle(job.job_category);
+        const html = `
+          <div class="job-pin-wrap" style="--pin:${color}">
+            <div class="job-pin"><div class="job-pin-emo">${emoji}</div></div>
+            <div class="job-pin-tail"></div>
+          </div>`;
+        return L.divIcon({
+          className: "", // use our own HTML/CSS
+          html,
+          iconSize: [34, 46],
+          iconAnchor: [17, 40],
+          popupAnchor: [0, -38]
+        });
+      }
+
+      function userDivIcon() {
+        return L.divIcon({
+          className: "",
+          html: `<div class="job-pin-wrap"><div class="pulse"></div></div>`,
+          iconSize: [16, 16],
+          iconAnchor: [8, 8]
+        });
+      }
+
+      function MAP_init() {
+        if (MAP) return;
+        MAP = L.map('jobsMap', { zoomControl: true });
+
+        // Clean light basemap (Carto Positron)
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+          maxZoom: 20,
+          attribution: '&copy; OpenStreetMap &copy; CARTO'
+        }).addTo(MAP);
+
+        MAP_MARKERS = L.layerGroup().addTo(MAP);
+        // Philippines default view
+        MAP.setView([12.8797, 121.7740], 5);
+        L.control.scale({ imperial:false }).addTo(MAP);
+      }
+
+      function MAP_setUserLocation(lat, lng) {
+        const pos = [lat, lng];
+        if (!MAP_USER) {
+          MAP_USER = L.marker(pos, { title: "You are here", icon: userDivIcon() }).addTo(MAP);
+        } else {
+          MAP_USER.setLatLng(pos);
+        }
+
+        // Radius circle
+        const radiusKm = parseFloat($("#radiusSelect").value || "10");
+        const rMeters = radiusKm * 1000;
+        if (!MAP_RADIUS) {
+          MAP_RADIUS = L.circle(pos, {
+            radius: rMeters,
+            color: "#2563eb",
+            weight: 2,
+            fillColor: "#60a5fa",
+            fillOpacity: 0.14
+          }).addTo(MAP);
+        } else {
+          MAP_RADIUS.setLatLng(pos);
+          MAP_RADIUS.setRadius(rMeters);
+        }
+
+        MAP.setView(pos, Math.max(MAP.getZoom(), 13));
+        MAP_refreshMarkers();
+      }
+
+      function MAP_refreshMarkers() {
+        if (!MAP || !MAP_MARKERS) return;
+        MAP_MARKERS.clearLayers();
+
+        const user = MAP_USER ? MAP_USER.getLatLng() : null;
+        const radiusKm = parseFloat($("#radiusSelect").value || "10");
+        let count = 0;
+
+        const filtered = (() => {
+          let list = [...ALL_JOBS];
+          const q = (FILTERS.q || "").trim().toLowerCase();
+          if (q) {
+            list = list.filter((j) => {
+              const hay = [j.job_title, j.job_description, j.job_location]
+                .map((x) => String(x ?? "").toLowerCase())
+                .join(" | ");
+              return hay.includes(q);
+            });
+          }
+          if (FILTERS.category)
+            list = list.filter(
+              (j) => String(j.job_category || "") === FILTERS.category
+            );
+          if (FILTERS.level)
+            list = list.filter(
+              (j) => String(j.job_difficulty || "") === FILTERS.level
+            );
+          const toNum = (v) =>
+            v === null || v === "" || Number.isNaN(v) ? null : Number(v);
+          const minP = toNum(FILTERS.minPrice);
+          const maxP = toNum(FILTERS.maxPrice);
+          if (minP !== null)
+            list = list.filter((j) => Number(j.job_pay ?? 0) >= minP);
+          if (maxP !== null)
+            list = list.filter((j) => Number(j.job_pay ?? 0) <= maxP);
+          return list;
+        })();
+
+        for (const j of filtered) {
+          const geo = GEO_CACHE.get(j.job_id);
+          if (!geo) continue;
+          const latlng = L.latLng(geo.lat, geo.lng);
+
+          if (user) {
+            const d = distKm({lat:user.lat, lng:user.lng}, {lat:geo.lat, lng:geo.lng});
+            if (d > radiusKm) continue;
+          }
+          count++;
+
+          const marker = L.marker(latlng, { title: j.job_title, icon: jobDivIcon(j) });
+
+          const html = `
+            <div class="pop">
+              <div class="pop-title">${esc(j.job_title)}</div>
+              <div class="pop-line">₱${fmtPeso(j.job_pay)} • ${esc(j.job_category || '—')} • L${esc(j.job_difficulty ?? '-')}</div>
+              <div class="pop-line">${esc(j.job_location || 'No location')}</div>
+              <a href="javascript:void(0)" class="map-view" data-job-id="${j.job_id}">View</a>
+            </div>
+          `;
+          marker.bindPopup(html);
+          marker.on('click', () => MAP_fillInfoCard(j));
+          MAP_MARKERS.addLayer(marker);
+        }
+
+        $("#nearbyCount").textContent = user ? `${count} nearby job(s)` : `${count} mapped job(s)`;
+      }
+
+      function MAP_fillInfoCard(job) {
+        const card = $("#mapInfoCard");
+        $("#micTitle").textContent = job.job_title || "—";
+        $("#micMeta").textContent = `₱${fmtPeso(job.job_pay)} • ${job.job_category || '—'} • Level ${job.job_difficulty ?? '-'}`;
+        $("#micLoc").textContent = job.job_location || "Not specified";
+        const btn = $("#micViewBtn");
+        btn.onclick = () => openApplyModal(job);
+        card.classList.add("show");
+      }
+
+      // UI events
+      $("#locateBtn").addEventListener("click", () => {
+        if (!navigator.geolocation) {
+          showToast("Geolocation not supported in this browser.");
+          return;
+        }
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            const { latitude, longitude } = pos.coords;
+            MAP_setUserLocation(latitude, longitude);
+            showToast("Location detected.");
+          },
+          (err) => {
+            console.warn(err);
+            showToast("Could not get your location. Please allow location access.");
+          },
+          { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+        );
+      });
+
+      $("#radiusSelect").addEventListener("change", () => {
+        if (MAP_USER && MAP_RADIUS) {
+          const km = parseFloat($("#radiusSelect").value || "10");
+          MAP_RADIUS.setRadius(km * 1000);
+        }
+        MAP_refreshMarkers();
+      });
+
+      // Delegate popup "View" click
+      document.addEventListener("click", (e) => {
+        const a = e.target.closest(".map-view[data-job-id]");
+        if (!a) return;
+        const id = a.getAttribute("data-job-id");
+        const job = ALL_JOBS.find(j => String(j.job_id) === String(id));
+        if (job) openApplyModal(job);
+      });
+
+      // Initialize map after DOM
+      document.addEventListener("DOMContentLoaded", () => {
+        MAP_init();
+        if (ALL_JOBS.length) MAP_prepareGeocodingForJobs(ALL_JOBS);
+      });
     </script>
   </body>
 </html>

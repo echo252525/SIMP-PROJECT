@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Keep your existing sidebar styles and icons -->
+    <link rel="stylesheet" href="../css_files/sideBar.css" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet" />
+
+    <title>Settings • Installer</title>
+
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap");
+
+      :root{
+        --color-primary:#6c9bcf; --color-danger:#ff3b30; --color-white:#fff;
+        --color-info-dark:#7d8da1; --color-dark:#363949; --color-light:rgba(132,139,200,.18);
+        --color-background:#f6f6f9; --box-shadow:0 2rem 3rem var(--color-light);
+        --success:#1b9c85;
+      }
+
+      *{ margin:0; padding:0; box-sizing:border-box; }
+      html{ font-size:14px; }
+      body{
+        width:100vw; min-height:100vh; overflow-x:hidden;
+        font-family:"Poppins",sans-serif; color:var(--color-dark); background:var(--color-background);
+      }
+
+      .container{
+        display:grid; width:96%; margin:0 auto; gap:1.8rem;
+        grid-template-columns:12rem auto;
+      }
+
+      /* ===== Sidebar (kept) ===== */
+      aside{ min-height:100vh; }
+      aside .toggle{
+        display:flex; align-items:center; justify-content:space-between; margin-top:1.4rem;
+      }
+      aside .toggle .logo{ display:flex; gap:.5rem; align-items:center; }
+      aside .toggle .logo img{ width:2rem; height:2rem; }
+      aside .toggle .close{ display:none; padding-right:1rem; }
+
+      aside .sidebar{
+        display:flex; flex-direction:column; background:var(--color-white); box-shadow:var(--box-shadow);
+        border-radius:15px; height:88vh; position:relative; top:1.5rem; transition:.3s ease;
+      }
+      aside .sidebar:hover{ box-shadow:none; }
+      aside .sidebar a{
+        display:flex; align-items:center; gap:1rem; height:3.7rem; color:var(--color-info-dark);
+        position:relative; margin-left:2rem; transition:.3s ease;
+      }
+      aside .sidebar a span{ font-size:1.6rem; transition:.3s ease; }
+      aside .sidebar a:last-child{ position:absolute; bottom:2rem; width:100%; }
+      aside .sidebar a.active{
+        width:100%; color:var(--color-primary); background:var(--color-light); margin-left:0;
+      }
+      aside .sidebar a.active::before{
+        content:""; width:6px; height:18px; background:var(--color-primary);
+      }
+      aside .sidebar a.active span{ color:var(--color-primary); margin-left:calc(1rem - 3px); }
+      aside .sidebar a:hover{ color:var(--color-primary); }
+      aside .sidebar a:hover span{ margin-left:.6rem; }
+
+      /* ===== Main / Settings ===== */
+      main{ margin-top:1.4rem; }
+      .page{
+        background:var(--color-white); border-radius:15px; box-shadow:var(--box-shadow);
+        padding:1.2rem 1.4rem; min-height:60vh;
+      }
+      .page h1{ font-size:1.4rem; margin-bottom:.25rem; }
+      .page p.lead{ color:var(--color-info-dark); margin-bottom:1rem; }
+
+      .card{
+        border:1px solid var(--color-light); border-radius:12px; padding:1rem; background:#fff; margin-top:1rem;
+      }
+      .card h2{ font-size:1.05rem; margin:0 0 .6rem; }
+
+      .row{ display:grid; gap:.65rem; }
+      @media (min-width:860px){ .row{ grid-template-columns: repeat(2, minmax(0,1fr)); } }
+      @media (min-width:1100px){ .row-3{ grid-template-columns: repeat(3, minmax(0,1fr)); } }
+
+      .field{
+        display:grid; gap:.35rem; align-content:start;
+      }
+      .field label{ font-weight:700; color:#314155; display:flex; align-items:center; gap:.45rem; }
+      .field .hint{ color:var(--color-info-dark); font-size:.85rem; }
+
+      .value-view{
+        border:1px dashed #e1e7f0; background:#fafcff; color:#233047;
+        padding:.6rem .7rem; border-radius:10px; min-height:40px; display:flex; align-items:center; justify-content:space-between; gap:.5rem;
+      }
+      .value-view .text { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+      .value-view .actions{ display:flex; gap:.25rem; }
+      .icon-btn{
+        appearance:none; border:none; background:transparent; cursor:pointer; padding:.2rem; border-radius:8px;
+      }
+      .icon-btn:hover{ background:#eef3f9; }
+      .icon-btn .material-icons-sharp{ font-size:18px; vertical-align:middle; }
+
+      input, select{
+        border:1px solid #dbe5f1; border-radius:10px; padding:.6rem .7rem; font:inherit; background:#fff; width:100%;
+      }
+      input[readonly], input:disabled{ background:#f3f6fa; color:#6d7b8e; }
+
+      .edit-wrap{ display:none; gap:.4rem; align-items:center; }
+      .edit-wrap.show{ display:flex; }
+
+      .btn{
+        border:none; border-radius:10px; padding:.55rem .8rem; font-weight:700; cursor:pointer;
+      }
+      .btn.danger{ background:var(--color-danger); color:#fff; }
+      .btn.ghost{ background:#eef3f9; color:#233047; }
+      .btn:disabled{ opacity:.6; cursor:not-allowed; }
+
+      .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; }
+
+      .toast{
+        position:fixed; right:16px; bottom:16px; background:#121a24; color:#fff; padding:.75rem 1rem; border-radius:10px;
+        box-shadow:0 10px 30px rgba(0,0,0,.2); display:none; z-index:9999; max-width:78vw;
+      }
+      .toast.show{ display:block; }
+
+      .danger-box{
+        border:1px solid #ffd8d6; background:#fff4f3; border-radius:12px; padding:1rem; color:#7a1a14;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <!-- ===== Sidebar (unchanged) ===== -->
+      <aside>
+        <div class="toggle">
+          <div class="logo">
+            <img src="images/logo.png" alt="logo" />
+            <h2>Asmr<span class="danger">Prog</span></h2>
+          </div>
+          <div class="close" id="close-btn">
+            <span class="material-icons-sharp">close</span>
+          </div>
+        </div>
+
+        <div class="sidebar">
+          <a href="dashboard.html">
+            <span class="material-icons-sharp">dashboard</span>
+            <h3>Dashboard</h3>
+          </a>
+          <a href="job.html">
+            <span class="material-icons-sharp">work</span>
+            <h3>Jobs</h3>
+          </a>
+          <a href="myApplication.html">
+            <span class="material-icons-sharp">receipt</span>
+            <h3>My Application</h3>
+          </a>
+          <a href="courses.html">
+            <span class="material-icons-sharp">school</span>
+            <h3>Courses</h3>
+          </a>
+          <a href="shop.html">
+            <span class="material-icons-sharp">shopping_cart</span>
+            <h3>Shop</h3>
+          </a>
+          <a href="earnings.html">
+            <span class="material-icons-sharp">account_balance</span>
+            <h3>Earnings</h3>
+          </a>
+          <a href="documents.html">
+            <span class="material-icons-sharp">file_copy</span>
+            <h3>Documents</h3>
+          </a>
+          <a href="settings.html" class="active">
+            <span class="material-icons-sharp">settings</span>
+            <h3>Settings</h3>
+          </a>
+          <a href="#" id="logout-btn">
+            <span class="material-icons-sharp">logout</span>
+            <h3>Logout</h3>
+          </a>
+        </div>
+      </aside>
+
+      <!-- ===== Settings Main Content ===== -->
+      <main>
+        <div class="page" id="settingsPage">
+          <h1>Installer Settings</h1>
+          <p class="lead">View and update your profile, employment, and payout details. Click the ✏️ to edit a field.</p>
+
+          <!-- Profile -->
+          <section class="card">
+            <h2>Profile</h2>
+            <div class="row">
+              <!-- Name -->
+              <div class="field" data-key="name">
+                <label>Full Name</label>
+                <div class="value-view">
+                  <span class="text" data-view></span>
+                  <span class="actions">
+                    <button class="icon-btn" data-edit title="Edit"><span class="material-icons-sharp">edit</span></button>
+                  </span>
+                </div>
+                <div class="edit-wrap" data-editwrap>
+                  <input type="text" data-input placeholder="e.g. Juan Dela Cruz"/>
+                  <button class="icon-btn" data-save title="Save"><span class="material-icons-sharp">check_circle</span></button>
+                  <button class="icon-btn" data-cancel title="Cancel"><span class="material-icons-sharp">cancel</span></button>
+                </div>
+              </div>
+
+              <!-- Email (read-only) -->
+              <div class="field">
+                <label>Email</label>
+                <div class="value-view">
+                  <span class="text mono" id="emailView"></span>
+                </div>
+                <div class="hint">Email is from your sign-in and can’t be edited here.</div>
+              </div>
+            </div>
+
+            <div class="row">
+              <!-- Birthdate -->
+              <div class="field" data-key="birthdate">
+                <label>Birthdate</label>
+                <div class="value-view">
+                  <span class="text" data-view></span>
+                  <span class="actions">
+                    <button class="icon-btn" data-edit title="Edit"><span class="material-icons-sharp">edit</span></button>
+                  </span>
+                </div>
+                <div class="edit-wrap" data-editwrap>
+                  <input type="date" data-input/>
+                  <button class="icon-btn" data-save title="Save"><span class="material-icons-sharp">check_circle</span></button>
+                  <button class="icon-btn" data-cancel title="Cancel"><span class="material-icons-sharp">cancel</span></button>
+                </div>
+              </div>
+
+              <!-- Age -->
+              <div class="field" data-key="age">
+                <label>Age</label>
+                <div class="value-view">
+                  <span class="text" data-view></span>
+                  <span class="actions">
+                    <button class="icon-btn" data-edit title="Edit"><span class="material-icons-sharp">edit</span></button>
+                  </span>
+                </div>
+                <div class="edit-wrap" data-editwrap>
+                  <input type="number" min="0" step="1" data-input/>
+                  <button class="icon-btn" data-save title="Save"><span class="material-icons-sharp">check_circle</span></button>
+                  <button class="icon-btn" data-cancel title="Cancel"><span class="material-icons-sharp">cancel</span></button>
+                </div>
+                <div class="hint">Usually computed from birthdate; you can adjust if needed.</div>
+              </div>
+            </div>
+
+            <div class="row">
+              <!-- Phone -->
+              <div class="field" data-key="phone">
+                <label>Phone</label>
+                <div class="value-view">
+                  <span class="text" data-view></span>
+                  <span class="actions"><button class="icon-btn" data-edit title="Edit"><span class="material-icons-sharp">edit</span></button></span>
+                </div>
+                <div class="edit-wrap" data-editwrap>
+                  <input type="tel" data-input placeholder="09xxxxxxxxx"/>
+                  <button class="icon-btn" data-save title="Save"><span class="material-icons-sharp">check_circle</span></button>
+                  <button class="icon-btn" data-cancel title="Cancel"><span class="material-icons-sharp">cancel</span></button>
+                </div>
+              </div>
+
+              <!-- Profession -->
+              <div class="field" data-key="profession">
+                <label>Profession</label>
+                <div class="value-view">
+                  <span class="text" data-view></span>
+                  <span class="actions"><button class="icon-btn" data-edit title="Edit"><span class="material-icons-sharp">edit</span></button></span>
+                </div>
+                <div class="edit-wrap" data-editwrap>
+                  <input type="text" data-input placeholder="e.g. CCTV Installer"/>
+                  <button class="icon-btn" data-save title="Save"><span class="material-icons-sharp">check_circle</span></button>
+                  <button class="icon-btn" data-cancel title="Cancel"><span class="material-icons-sharp">cancel</span></button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Education & Employment -->
+          <section class="card">
+            <h2>Education & Employment</h2>
+            <div class="row">
+              <div class="field" data-key="highestQualification">
+                <label>Highest Qualification</label>
+                <div class="value-view"><span class="text" data-view></span><span class="actions"><button class="icon-btn" data-edit title="Edit"><span class="material-icons-sharp">edit</span></button></span></div>
+                <div class="edit-wrap" data-editwrap>
+                  <input type="text" data-input placeholder="e.g. Bachelor's Degree"/>
+                  <button class="icon-btn" data-save title="Save"><span class="material-icons-sharp">check_circle</span></button>
+                  <button class="icon-btn" data-cancel title="Cancel"><span class="material-icons-sharp">cancel</span></button>
+                </div>
+              </div>
+
+              <div class="field" data-key="employmentStatus">
+                <label>Employment Status</label>
+                <div class="value-view"><span class="text" data-view></span><span class="actions"><button class="icon-btn" data-edit title="Edit"><span class="material-icons-sharp">edit</span></button></span></div>
+                <div class="edit-wrap" data-editwrap>
+                  <select data-input>
+                    <option value="">Select…</option>
+                    <option>Employed</option>
+                    <option>Self-employed</option>
+                    <option>Unemployed</option>
+                    <option>Student</option>
+                  </select>
+                  <button class="icon-btn" data-save title="Save"><span class="material-icons-sharp">check_circle</span></button>
+                  <button class="icon-btn" data-cancel title="Cancel"><span class="material-icons-sharp">cancel</span></button>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="field" data-key="employer">
+                <label>Employer (optional)</label>
+                <div class="value-view"><span class="text" data-view></span><span class="actions"><button class="icon-btn" data-edit title="Edit"><span class="material-icons-sharp">edit</span></button></span></div>
+                <div class="edit-wrap" data-editwrap>
+                  <input type="text" data-input placeholder="Company name (optional)"/>
+                  <button class="icon-btn" data-save title="Save"><span class="material-icons-sharp">check_circle</span></button>
+                  <button class="icon-btn" data-cancel title="Cancel"><span class="material-icons-sharp">cancel</span></button>
+                </div>
+              </div>
+
+              <div class="field" data-key="mainIncomeSource">
+                <label>Main Income Source</label>
+                <div class="value-view"><span class="text" data-view></span><span class="actions"><button class="icon-btn" data-edit title="Edit"><span class="material-icons-sharp">edit</span></button></span></div>
+                <div class="edit-wrap" data-editwrap>
+                  <input type="text" data-input placeholder="e.g. Contracting"/>
+                  <button class="icon-btn" data-save title="Save"><span class="material-icons-sharp">check_circle</span></button>
+                  <button class="icon-btn" data-cancel title="Cancel"><span class="material-icons-sharp">cancel</span></button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Payout / Bank -->
+          <section class="card">
+            <h2>Payout Details</h2>
+            <div class="row">
+              <div class="field" data-key="bankName">
+                <label>Bank Name</label>
+                <div class="value-view"><span class="text" data-view></span><span class="actions"><button class="icon-btn" data-edit title="Edit"><span class="material-icons-sharp">edit</span></button></span></div>
+                <div class="edit-wrap" data-editwrap>
+                  <input type="text" data-input placeholder="e.g. BPI / BDO / GCash"/>
+                  <button class="icon-btn" data-save title="Save"><span class="material-icons-sharp">check_circle</span></button>
+                  <button class="icon-btn" data-cancel title="Cancel"><span class="material-icons-sharp">cancel</span></button>
+                </div>
+              </div>
+
+              <div class="field" data-key="accountHolder">
+                <label>Account Holder</label>
+                <div class="value-view"><span class="text" data-view></span><span class="actions"><button class="icon-btn" data-edit title="Edit"><span class="material-icons-sharp">edit</span></button></span></div>
+                <div class="edit-wrap" data-editwrap>
+                  <input type="text" data-input placeholder="Name on the account"/>
+                  <button class="icon-btn" data-save title="Save"><span class="material-icons-sharp">check_circle</span></button>
+                  <button class="icon-btn" data-cancel title="Cancel"><span class="material-icons-sharp">cancel</span></button>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="field" data-key="accountNumber">
+                <label>Account / Mobile No.</label>
+                <div class="value-view"><span class="text" data-view></span><span class="actions"><button class="icon-btn" data-edit title="Edit"><span class="material-icons-sharp">edit</span></button></span></div>
+                <div class="edit-wrap" data-editwrap>
+                  <input type="text" data-input placeholder="09xxxxxxxxx or account #"/>
+                  <button class="icon-btn" data-save title="Save"><span class="material-icons-sharp">check_circle</span></button>
+                  <button class="icon-btn" data-cancel title="Cancel"><span class="material-icons-sharp">cancel</span></button>
+                </div>
+                <div class="hint">For GCash, use your registered mobile number.</div>
+              </div>
+
+              <div class="field">
+                <label>Masked Preview</label>
+                <div class="value-view"><span class="text mono" id="accountMasked">—</span></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Read-only summary -->
+          <section class="card">
+            <h2>Account Summary</h2>
+            <div class="row">
+              <div class="field">
+                <label>Level</label>
+                <div class="value-view"><span class="text" id="levelView">0</span></div>
+              </div>
+              <div class="field">
+                <label>Earning Balance</label>
+                <div class="value-view"><span class="text mono" id="balanceView">₱0.00</span></div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="field">
+                <label>Created At</label>
+                <div class="value-view"><span class="text" id="createdAtView">—</span></div>
+              </div>
+              <div class="field">
+                <label>User ID</label>
+                <div class="value-view"><span class="text mono" id="userIdView">—</span></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Danger zone -->
+          <section class="card danger-box" style="margin-bottom:.2rem;">
+            <h2 style="margin-bottom:.4rem;">Danger Zone</h2>
+            <p style="margin-bottom:.6rem;">Deleting your account will remove your sign-in and (because your tables reference <code>auth.users</code> with <strong>ON DELETE CASCADE</strong>) related rows will be removed automatically. This action is permanent.</p>
+            <button class="btn danger" id="deleteAccountBtn">
+              <span class="material-icons-sharp" style="vertical-align:middle;font-size:18px;">delete_forever</span>
+              Delete Account
+            </button>
+            <div class="hint" style="margin-top:.45rem;">
+              Note: Client apps cannot call the Admin API with an anon key. This button will try an Edge Function
+              <code>delete-account</code> (recommended), and will fall back to the Admin API if your environment allows it.
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <!-- Supabase UMD + your keys -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script type="module">
+      const { createClient } = supabase;
+      import { SUPABASE_URL, SUPABASE_ANON_KEY } from "../../../supabase.js";
+      const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+      const toast = (msg, ok=true)=>{
+        const el = document.getElementById("toast");
+        el.textContent = msg;
+        el.style.background = ok ? "#121a24" : "#b42318";
+        el.classList.add("show");
+        setTimeout(()=>el.classList.remove("show"), 2400);
+      };
+
+      const peso = (n)=> "₱" + Number(n||0).toLocaleString("en-PH",{minimumFractionDigits:2, maximumFractionDigits:2});
+      const maskAccount = (v)=>{
+        const s = String(v||"").replace(/\s+/g,"");
+        if(!s) return "—";
+        if (s.length <= 4) return "••••";
+        return "•••• •••• •••• " + s.slice(-4);
+      };
+      const computeAgeFromDOB = (iso)=>{
+        if(!iso) return "";
+        const d = new Date(iso); if (isNaN(d)) return "";
+        const t = new Date();
+        let age = t.getFullYear()-d.getFullYear();
+        const m = t.getMonth()-d.getMonth();
+        if(m<0 || (m===0 && t.getDate()<d.getDate())) age--;
+        return Math.max(0,age);
+      };
+
+      // Map field -> column name (exact, with quotes where needed)
+      const COLS = {
+        name: "name",
+        birthdate: "birthdate",
+        age: "age",
+        phone: "phone",
+        profession: "profession",
+        highestQualification: "\"highestQualification\"",
+        employmentStatus: "\"employmentStatus\"",
+        employer: "employer",
+        mainIncomeSource: "\"mainIncomeSource\"",
+        bankName: "\"bankName\"",
+        accountNumber: "\"accountNumber\"",
+        accountHolder: "\"accountHolder\""
+      };
+
+      let CURRENT = null; // latest installer row
+      let USER = null;    // auth user
+
+      // Bind inline edit widgets
+      function wireField(el, key){
+        const view = el.querySelector("[data-view]");
+        const wrap = el.querySelector("[data-editwrap]");
+        const input = el.querySelector("[data-input]");
+        const btnEdit = el.querySelector("[data-edit]");
+        const btnSave = el.querySelector("[data-save]");
+        const btnCancel = el.querySelector("[data-cancel]");
+
+        // show current value
+        const setView = (v)=>{ view.textContent = v ?? "—"; };
+
+        // open editor with current
+        const open = ()=>{
+          // Seed input based on type
+          const curr = CURRENT?.[key] ?? "";
+          if (input.type === "date"){
+            input.value = curr ? String(curr).slice(0,10) : "";
+          } else if (input.tagName === "SELECT"){
+            input.value = curr ?? "";
+          } else {
+            input.value = curr ?? "";
+          }
+          wrap.classList.add("show");
+          el.querySelector(".value-view").style.display = "none";
+          input.focus();
+        };
+
+        const close = ()=>{
+          wrap.classList.remove("show");
+          el.querySelector(".value-view").style.display = "";
+        };
+
+        // save only this column
+        const save = async ()=>{
+          if (!USER?.id) return;
+          let value = input.value;
+
+          // small helpers
+          if (key === "age"){
+            value = Number(value||0);
+            if (isNaN(value) || value < 0){ toast("Age must be a valid number.", false); return; }
+          }
+          if (key === "birthdate" && value){
+            // auto recompute age if birthdate changed
+            const computed = computeAgeFromDOB(value);
+            if (computed && computed !== CURRENT?.age){
+              // Optimistically update age locally; UI field itself handled elsewhere if present.
+              CURRENT.age = computed;
+              document.querySelector('[data-key="age"] [data-view]').textContent = String(computed);
+            }
+          }
+          if (key === "accountNumber" && String(value).trim().length < 4){
+            toast("Account number looks too short.", false);
+            return;
+          }
+
+          const col = COLS[key];
+          const updateObj = {};
+          updateObj[col] = (value?.trim?.() ?? value);
+          try{
+            const { error } = await sb.from("installer").update(updateObj).eq("id", USER.id);
+            if (error) throw error;
+            // merge locally
+            CURRENT[key] = input.type === "number" ? Number(value) : value;
+
+            // refresh any dependent views
+            if (key === "accountNumber"){
+              document.getElementById("accountMasked").textContent = maskAccount(value);
+            }
+
+            setView(CURRENT[key] || "—");
+            toast("Saved ✓", true);
+            close();
+          }catch(e){
+            console.error(e);
+            toast(e?.message || "Failed to save.", false);
+          }
+        };
+
+        btnEdit?.addEventListener("click", open);
+        btnCancel?.addEventListener("click", close);
+        btnSave?.addEventListener("click", save);
+
+        // initialize view text
+        setView(CURRENT?.[key] ?? "—");
+      }
+
+      function fillAllViews(row){
+        // Profile
+        document.getElementById("emailView").textContent = row?.email ?? "—";
+        // each field widget
+        document.querySelectorAll('.field[data-key]').forEach(el=>{
+          const key = el.getAttribute("data-key");
+          const view = el.querySelector("[data-view]");
+          let val = row?.[key];
+
+          if (key === "birthdate" && val){ val = String(val).slice(0,10); }
+          view.textContent = (val ?? "—");
+        });
+
+        // Masked account
+        document.getElementById("accountMasked").textContent = maskAccount(row?.accountNumber);
+
+        // Summary
+        document.getElementById("levelView").textContent = row?.levelstatus ?? 0;
+        document.getElementById("balanceView").textContent = peso(row?.earningBalance ?? 0);
+        document.getElementById("createdAtView").textContent = row?.createdAt ? new Date(row.createdAt).toLocaleString() : "—";
+        document.getElementById("userIdView").textContent = row?.id ?? "—";
+      }
+
+      async function loadInstaller(){
+        const { data: { user }, error: uErr } = await sb.auth.getUser();
+        if (uErr){ toast("Auth error. Please sign in again.", false); return; }
+        USER = user;
+        if (!user){ toast("Not signed in.", false); return; }
+
+        const { data, error } = await sb
+          .from("installer")
+          .select('id, email, name, birthdate, age, phone, profession, "highestQualification", "employmentStatus", employer, "mainIncomeSource", "bankName", "accountNumber", "accountHolder", "createdAt", levelstatus, "earningBalance"')
+          .eq("id", user.id)
+          .maybeSingle();
+
+        if (error){ console.error(error); toast("Failed to load settings.", false); return; }
+        CURRENT = data || { id:user.id, email:user.email };
+        fillAllViews(CURRENT);
+
+        // bind editors after we have CURRENT
+        document.querySelectorAll('.field[data-key]').forEach(el=>{
+          wireField(el, el.getAttribute("data-key"));
+        });
+      }
+
+      // Delete account flow
+      async function deleteViaEdgeFunction(userId){
+        try{
+          const { data, error } = await sb.functions.invoke("delete-account", { body: { user_id: userId }});
+          if (error) throw error;
+          return { ok:true, message: data?.message || "Deleted." };
+        }catch(e){
+          return { ok:false, message: e?.message || "Edge function failed." };
+        }
+      }
+      async function deleteViaAdminAPI(userId){
+        try{
+          // This requires a client instantiated with a SERVICE ROLE key.
+          // Most frontends use anon key, so this will usually fail with 401/403.
+          const { error } = await sb.auth.admin.deleteUser(userId);
+          if (error) throw error;
+          return { ok:true, message:"Deleted." };
+        }catch(e){
+          return { ok:false, message: e?.message || "Admin API not permitted with this key." };
+        }
+      }
+
+      document.getElementById("deleteAccountBtn").addEventListener("click", async ()=>{
+        if (!USER?.id){ toast("Not signed in.", false); return; }
+        const c1 = confirm("Delete your account permanently? This cannot be undone.");
+        if (!c1) return;
+        const c2 = confirm("Final confirmation: Delete your account now?");
+        if (!c2) return;
+
+        const btn = document.getElementById("deleteAccountBtn");
+        const prev = btn.innerHTML; btn.disabled = true; btn.textContent = "Deleting…";
+
+        // 1) Try Edge Function (recommended)
+        let res = await deleteViaEdgeFunction(USER.id);
+
+        // 2) If that fails, try Admin API (if environment supports it)
+        if (!res.ok){
+          res = await deleteViaAdminAPI(USER.id);
+        }
+
+        if (res.ok){
+          toast("Account deleted. Signing out…", true);
+          try{ await sb.auth.signOut(); }catch{}
+          // Redirect to landing/login
+          setTimeout(()=>{ window.location.href = "../../../index.html"; }, 1200);
+        }else{
+          btn.disabled = false; btn.innerHTML = prev;
+          toast("Deletion not configured. Set up an Edge Function `delete-account` to call the Admin API. (" + res.message + ")", false);
+        }
+      });
+
+      // Keep age in sync when birthdate field is saved
+      // (Handled in save logic; additionally recompute when birthdate view is edited)
+      // Boot
+      (async function init(){
+        try{
+          await loadInstaller();
+        }catch(e){
+          console.error(e);
+          toast("Could not initialize settings.", false);
+        }
+      })();
+    </script>
+  </body>
+</html>
