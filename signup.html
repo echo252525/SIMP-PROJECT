@@ -127,11 +127,30 @@
 
     .btn-secondary {
       background: #e5e7eb;
+      cursor: pointer;
+      position: relative;
     }
 
     .btn-primary {
-      background: #4f46e5;
-      color: white;
+      background: #20a44c;
+      color: #fff;
+      transition: background 0.3s ease;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .btn-primary:hover {
+      background: #1a7f3a;
+    }
+
+    .btn-secondary:active {
+      top: 2px;
+      left: 1px;
+    }
+
+    .btn-primary:active {
+      top: 2px;
+      left: 1px;
     }
 
     .hint {

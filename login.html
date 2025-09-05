@@ -60,6 +60,7 @@
     }
 
     .loginDiv button {
+      position: relative;
       width: 100%;
       padding: 0.8rem;
       border: none;
@@ -69,10 +70,16 @@
       font-weight: bold;
       cursor: pointer;
       transition: background 0.3s ease;
+      margin-top: 12px;
     }
 
     .loginDiv button:hover {
       background: #1a7f3a;
+    }
+
+    .loginDiv button:active {
+      top: 2px;
+      left: 1px;
     }
 
     input,
@@ -84,25 +91,12 @@
       border-radius: 8px;
     }
 
-    button {
-      width: 100%;
-      padding: 10px;
-      border: none;
-      border-radius: 8px;
-      background-color: #4f46e5;
-      color: white;
-      cursor: pointer;
-      margin-top: 12px;
-    }
-
-    button:hover {
-      background-color: #3730a3;
-    }
-
     p {
       text-align: center;
-      padding-top: 1.2rem;
+      padding-top: .5rem;
+      margin-top: 2rem;
       font-size: .9rem;
+      border-top: 1px solid lightgray;
 
       a {
         text-decoration: none;
