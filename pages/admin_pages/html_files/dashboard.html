@@ -262,7 +262,7 @@
       <!-- Newly Applications Table (jobs with pending applicants) -->
       <div class="latestJobApplicantTable">
         <div class="section-header">
-          <h2>New Applications1</h2>
+          <h2>New Applications </h2>
           <!-- minimalist chevron link pinned top-right, visually above the Action column -->
           <a class="arrow-link" href="jobApplicationVerification.html" aria-label="Go to Application Verification">&gt;</a>
         </div>
@@ -649,12 +649,12 @@
         return;
       }
 
-      // 2) Look up installer names
+      // 2) Look up installer names  **(MINIMAL CHANGE HERE)** 
       const installerIds = Array.from(new Set(pays.map(p => p.installer_id)));
       let installers = [];
       if (installerIds.length) {
         const { data: insRows, error: insErr } = await fromInSchema(client, "public", "installer")
-          .select("id, name, full_name, first_name, last_name")
+          .select("id, name")            // <- matches your schema exactly
           .in("id", installerIds);
         if (insErr) {
           console.error("Installers fetch error:", insErr);
@@ -664,10 +664,7 @@
       }
       const installerNameById = new Map();
       installers.forEach(i => {
-        const composed =
-          i.full_name ||
-          i.name ||
-          [i.first_name, i.last_name].filter(Boolean).join(" ").trim();
+        const composed = (i.name || "").trim();
         installerNameById.set(i.id, composed || i.id);
       });
 
@@ -715,7 +712,7 @@
 
         listEl.insertAdjacentHTML(
           "beforeend",
-          `<div class="payment-card${muted ? " payment-muted" : ""}">
+          `<a href="paymentsRequest.html"><div class="payment-card${muted ? " payment-muted" : ""}">
             <div class="payment-left">
               <div class="payment-icon"><span class="material-icons-sharp">payments</span></div>
               <div class="payment-text">
@@ -723,7 +720,7 @@
                 <div class="payment-meta">Last updated: ${updated}</div>
               </div>
             </div>
-          </div>`
+          </div> </a>`
         );
       }
 
