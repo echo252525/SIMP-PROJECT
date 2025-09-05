@@ -3,6 +3,8 @@
 
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet" />
   <title>SIMP Project – Sign Up</title>
   <style>
     @import url("https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap");
@@ -43,6 +45,29 @@
       color: #1c2430;
     }
 
+    .signupDiv .backBtn {
+      position: relative;
+      max-width: 50px;
+      width: 90%;
+      padding: 1px;
+      border: none;
+      border-radius: .1px;
+      background: none;
+      color: black;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      margin-top: none;
+    }
+
+    .signupDiv .backBtn:hover {
+      background: none;
+    }
+
+    .signupDiv button:active {
+      top: 2px;
+      left: 1px;
+    }
+
     .simpLogo {
       display: grid;
       place-items: center;
@@ -52,9 +77,12 @@
     }
 
     h2 {
-      color: #20647c;
-      margin-bottom: 1rem;
       text-align: center;
+    }
+
+    h2, h3 {
+      color: var(--azure-blue);
+      margin-bottom: 1rem;
     }
 
     .progress-wrap {
@@ -243,6 +271,7 @@
 
 <body>
   <div class="signupDiv">
+    <button class="backBtn" onclick="history.back()"><span class="material-icons-sharp">arrow_back</span></button>
     <div class="simpLogo">
       <img src="img/simpHappyMascotLogo.png">
     </div>

@@ -1,53 +1,246 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>SIMP Project – Admin Login / Sign Up</title>
-    <style>
-      body {
-        font-family: system-ui, Arial, sans-serif;
-        max-width: 720px;
-        margin: 40px auto;
-        padding: 0 16px;
-      }
-      h2 { margin-bottom: 8px; }
-      .tabs { display: flex; gap: 8px; margin: 12px 0 20px; }
-      .tab { padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 10px; cursor: pointer; }
-      .tab.active { background: #4f46e5; color: #fff; border-color: #4f46e5; }
-      .panel { display: none; animation: fade 200ms ease; }
-      .panel.active { display: block; }
-      .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-      .row-1 { display: grid; grid-template-columns: 1fr; gap: 12px; }
-      label { font-size: 14px; color: #333; display: block; margin-top: 8px; }
-      input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; }
-      .actions { display: flex; gap: 10px; margin-top: 16px; }
-      button { padding: 10px 16px; border: 0; border-radius: 10px; cursor: pointer; }
-      .btn-secondary { background: #e5e7eb; }
-      .btn-primary { background: #4f46e5; color: white; }
-      .hint { font-size: 12px; color: #6b7280; margin-top: 2px; }
-      .notice { background: #fef3c7; border: 1px solid #f59e0b; color: #92400e; padding: 10px 12px; border-radius: 10px; margin: 10px 0; }
-      .success { background: #ecfdf5; border: 1px solid #10b981; color: #065f46; }
-      .error { background: #fee2e2; border: 1px solid #ef4444; color: #991b1b; }
-      .hidden { display: none; }
 
-      /* Modal styles */
-      #emailConfirmModal {
-        position: fixed; inset: 0; background: rgba(0,0,0,0.5);
-        display: none; justify-content: center; align-items: center; z-index: 1000;
-      }
-      #emailConfirmModal .modal-content { background: white; padding: 24px; border-radius: 12px; text-align: center; max-width: 400px; }
-      #emailConfirmModal h3 { margin-bottom: 12px; }
-      #emailConfirmModal p { margin-bottom: 20px; font-size: 14px; color: #444; }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet" />
+  <title>SIMP Project – Admin Login / Sign Up</title>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap");
 
-      @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
-    </style>
-  </head>
-  <body>
-    <h2>SIMP Project – Admin Login / Sign Up</h2>
-    <div class="hint">
-      This page is only for <b>Admin</b> accounts. New sign-ups are created as
-      <b>pending</b> and require approval by the superadmin. Pending users cannot log in.
+    :root {
+      --azure-blue: #20647c;
+      --green: #20a44c;
+    }
+
+    * {
+      padding: 0;
+      margin: 0;
+      box-sizing: border-box;
+      font-family: "Raleway", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      height: 100vh;
+      background: linear-gradient(135deg, #f8fbfd, #e7edf3);
+      /* soft background */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    .adminLoginDiv {
+      max-width: 600px;
+      width: 90%;
+      padding: 3rem 2.5rem;
+      border-radius: 25px;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 8px 30px rgba(32, 100, 124, 0.2);
+      color: #1c2430;
+    }
+
+    .adminLoginDiv .backBtn {
+      position: relative;
+      max-width: 50px;
+      width: 90%;
+      padding: 1px;
+      border: none;
+      border-radius: .1px;
+      background: none;
+      color: black;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      margin-top: none;
+    }
+
+    .adminLoginDiv .backBtn:hover {
+      background: none;
+    }
+
+    .adminLoginDiv button:hover {
+      background: #1a7f3a;
+    }
+
+    .adminLoginDiv button:active {
+      top: 2px;
+      left: 1px;
+    }
+
+    .adminLoginDivHeader {
+      display: grid;
+      place-items: center;
+      gap: .5rem;
+    }
+
+    .adminLoginDiv img {
+      width: 4rem;
+    }
+
+    .adminLoginDiv h2, h3 {
+      color: #20647c;
+    }
+
+    .hint {
+      font-size: 12px;
+      color: #6b7280;
+      text-align: center;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin: 12px 0 20px;
+    }
+
+    .tab {
+      padding: 5px 15px;
+      border-bottom: 1px solid #d1d5db;
+      cursor: pointer;
+    }
+
+    .tab.active {
+      color: var(--green);
+      border-color: var(--green);;
+    }
+
+    .panel {
+      display: none;
+      animation: fade 200ms ease;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .row-1 {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    label {
+      font-size: 14px;
+      color: #333;
+      display: block;
+      margin-top: 8px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    button {
+      padding: 10px 16px;
+      border: 0;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: var(--green);
+      color: white;
+      position: relative;
+    }
+
+    .notice {
+      background: #fef3c7;
+      border: 1px solid #f59e0b;
+      color: #92400e;
+      padding: 10px 12px;
+      border-radius: 10px;
+      margin: 10px 0;
+    }
+
+    .success {
+      background: #ecfdf5;
+      border: 1px solid #10b981;
+      color: #065f46;
+    }
+
+    .error {
+      background: #fee2e2;
+      border: 1px solid #ef4444;
+      color: #991b1b;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    /* Modal styles */
+    #emailConfirmModal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    #emailConfirmModal .modal-content {
+      background: white;
+      padding: 24px;
+      border-radius: 12px;
+      text-align: center;
+      max-width: 400px;
+    }
+
+    #emailConfirmModal h3 {
+      margin-bottom: 12px;
+    }
+
+    #emailConfirmModal p {
+      margin-bottom: 20px;
+      font-size: 14px;
+      color: #444;
+    }
+
+    @keyframes fade {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="adminLoginDiv">
+    <button class="backBtn" onclick="history.back()"><span class="material-icons-sharp">arrow_back</span></button>
+    <div class="adminLoginDivHeader">
+      <img src="img/simpHappyMascotLogo.png">
+      <h2>SIMP Project – Welcome!</h2>
+      <div class="hint">
+        This page is only for <b>Admin</b> accounts. New sign-ups are created as
+        <b>pending</b> and require approval by the superadmin. Pending users cannot log in.
+      </div>
     </div>
+
 
     <div class="tabs">
       <div class="tab active" data-tab="login">Login</div>
@@ -99,165 +292,168 @@
         <button id="goToEmailBtn" class="btn-primary">Go to My Email</button>
       </div>
     </div>
+  </div>
 
-    <script type="module">
-      import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
-      import { SUPABASE_URL, SUPABASE_ANON_KEY } from "/supabase.js";
-      const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-      // ===== UI helpers
-      const noticeEl = document.getElementById("notice");
-      function showNotice(msg, type = "") {
-        noticeEl.textContent = msg;
-        noticeEl.classList.remove("hidden", "success", "error");
-        if (type === "success") noticeEl.classList.add("success");
-        if (type === "error") noticeEl.classList.add("error");
-      }
-      function hideNotice() {
-        noticeEl.classList.add("hidden");
-        noticeEl.classList.remove("success", "error");
-        noticeEl.textContent = "";
-      }
+  <script type="module">
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+    import { SUPABASE_URL, SUPABASE_ANON_KEY } from "/supabase.js";
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-      // Tabs
-      const tabs = document.querySelectorAll(".tab");
-      const panels = {
-        login: document.getElementById("loginPanel"),
-        signup: document.getElementById("signupPanel"),
+    // ===== UI helpers
+    const noticeEl = document.getElementById("notice");
+    function showNotice(msg, type = "") {
+      noticeEl.textContent = msg;
+      noticeEl.classList.remove("hidden", "success", "error");
+      if (type === "success") noticeEl.classList.add("success");
+      if (type === "error") noticeEl.classList.add("error");
+    }
+    function hideNotice() {
+      noticeEl.classList.add("hidden");
+      noticeEl.classList.remove("success", "error");
+      noticeEl.textContent = "";
+    }
+
+    // Tabs
+    const tabs = document.querySelectorAll(".tab");
+    const panels = {
+      login: document.getElementById("loginPanel"),
+      signup: document.getElementById("signupPanel"),
+    };
+    tabs.forEach((t) => {
+      t.addEventListener("click", () => {
+        tabs.forEach((x) => x.classList.remove("active"));
+        t.classList.add("active");
+        const key = t.dataset.tab;
+        Object.values(panels).forEach((p) => p.classList.remove("active"));
+        panels[key].classList.add("active");
+        hideNotice();
+      });
+    });
+
+    // ===== Data helpers
+    async function getAdminRow(userId) {
+      const { data, error } = await supabase
+        .from("admin")
+        .select("*")
+        .eq("id", userId)
+        .maybeSingle();
+      if (error) throw error;
+      return data;
+    }
+
+    async function ensureAdminRowNow(user, overrides = {}) {
+      const payload = {
+        id: user.id,
+        email: user.email,
+        name: user.user_metadata?.name || overrides.name || "Admin User",
+        phone: user.user_metadata?.phone || overrides.phone || null,
+        role: "pending",
       };
-      tabs.forEach((t) => {
-        t.addEventListener("click", () => {
-          tabs.forEach((x) => x.classList.remove("active"));
-          t.classList.add("active");
-          const key = t.dataset.tab;
-          Object.values(panels).forEach((p) => p.classList.remove("active"));
-          panels[key].classList.add("active");
-          hideNotice();
+      const { error } = await supabase.from("admin").insert([payload]);
+      if (error) throw error;
+    }
+
+    function openEmailProvider(email) {
+      const emailProvider = email.split("@")[1]?.toLowerCase() || "";
+      let providerUrl = "https://mail.google.com";
+      if (emailProvider.includes("yahoo")) providerUrl = "https://mail.yahoo.com";
+      else if (emailProvider.includes("outlook") || emailProvider.includes("hotmail") || emailProvider.includes("live"))
+        providerUrl = "https://outlook.live.com/mail";
+      else if (emailProvider.includes("icloud")) providerUrl = "https://www.icloud.com/mail";
+      document.getElementById("goToEmailBtn").onclick = () => window.open(providerUrl, "_blank");
+      document.getElementById("emailConfirmModal").style.display = "flex";
+    }
+
+    // ===== SIGN UP
+    document.getElementById("signUpBtn").addEventListener("click", async () => {
+      hideNotice();
+      const name = document.getElementById("suName").value.trim();
+      const phone = document.getElementById("suPhone").value.trim();
+      const email = document.getElementById("suEmail").value.trim();
+      const password = document.getElementById("suPassword").value;
+
+      if (!name || !email || !password || password.length < 6) {
+        showNotice("Please fill all required fields (password min 6 chars).", "error");
+        return;
+      }
+
+      try {
+        const { data: authData, error: authError } = await supabase.auth.signUp({
+          email,
+          password,
+          options: { data: { name, phone, role: "admin" } },
         });
-      });
+        if (authError) throw authError;
 
-      // ===== Data helpers
-      async function getAdminRow(userId) {
-        const { data, error } = await supabase
-          .from("admin")
-          .select("*")
-          .eq("id", userId)
-          .maybeSingle();
-        if (error) throw error;
-        return data;
+        if (authData.session && authData.user) {
+          await ensureAdminRowNow(authData.user, { name, phone });
+          showNotice("Sign up successful. Your admin profile is now pending approval.", "success");
+          document.querySelector('.tab[data-tab="login"]').click();
+        } else {
+          openEmailProvider(email);
+          showNotice("Sign up successful. Please confirm your email. After confirming, log in — your admin profile will be set to pending automatically.", "success");
+          document.querySelector('.tab[data-tab="login"]').click();
+        }
+      } catch (err) {
+        console.error(err);
+        showNotice("Sign up error: " + (err.message || "Unknown error"), "error");
       }
+    });
 
-      async function ensureAdminRowNow(user, overrides = {}) {
-        const payload = {
-          id: user.id,
-          email: user.email,
-          name: user.user_metadata?.name || overrides.name || "Admin User",
-          phone: user.user_metadata?.phone || overrides.phone || null,
-          role: "pending",
-        };
-        const { error } = await supabase.from("admin").insert([payload]);
-        if (error) throw error;
-      }
+    // ===== LOGIN
+    const loginBtn = document.getElementById("loginBtn");
 
-      function openEmailProvider(email) {
-        const emailProvider = email.split("@")[1]?.toLowerCase() || "";
-        let providerUrl = "https://mail.google.com";
-        if (emailProvider.includes("yahoo")) providerUrl = "https://mail.yahoo.com";
-        else if (emailProvider.includes("outlook") || emailProvider.includes("hotmail") || emailProvider.includes("live"))
-          providerUrl = "https://outlook.live.com/mail";
-        else if (emailProvider.includes("icloud")) providerUrl = "https://www.icloud.com/mail";
-        document.getElementById("goToEmailBtn").onclick = () => window.open(providerUrl, "_blank");
-        document.getElementById("emailConfirmModal").style.display = "flex";
-      }
+    async function refreshLoginState() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
 
-      // ===== SIGN UP
-      document.getElementById("signUpBtn").addEventListener("click", async () => {
-        hideNotice();
-        const name = document.getElementById("suName").value.trim();
-        const phone = document.getElementById("suPhone").value.trim();
-        const email = document.getElementById("suEmail").value.trim();
-        const password = document.getElementById("suPassword").value;
+      try {
+        let row = await getAdminRow(user.id);
 
-        if (!name || !email || !password || password.length < 6) {
-          showNotice("Please fill all required fields (password min 6 chars).", "error");
+        if (!row) {
+          await ensureAdminRowNow(user);
+          row = await getAdminRow(user.id);
+        }
+
+        if (row.role === "pending") {
+          window.location.href = "pages/admin_pages/html_files/waiting.html";
           return;
         }
 
-        try {
-          const { data: authData, error: authError } = await supabase.auth.signUp({
-            email,
-            password,
-            options: { data: { name, phone, role: "admin" } },
-          });
-          if (authError) throw authError;
-
-          if (authData.session && authData.user) {
-            await ensureAdminRowNow(authData.user, { name, phone });
-            showNotice("Sign up successful. Your admin profile is now pending approval.", "success");
-            document.querySelector('.tab[data-tab="login"]').click();
-          } else {
-            openEmailProvider(email);
-            showNotice("Sign up successful. Please confirm your email. After confirming, log in — your admin profile will be set to pending automatically.","success");
-            document.querySelector('.tab[data-tab="login"]').click();
-          }
-        } catch (err) {
-          console.error(err);
-          showNotice("Sign up error: " + (err.message || "Unknown error"), "error");
+        if (row.role === "admin" || row.role === "superadmin") {
+          // ✅ Redirect to dashboard
+          window.location.href = "pages/admin_pages/html_files/dashboard.html";
+        } else {
+          showNotice("Unknown role status.", "error");
         }
-      });
-
-      // ===== LOGIN
-      const loginBtn = document.getElementById("loginBtn");
-
-      async function refreshLoginState() {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
-
-        try {
-          let row = await getAdminRow(user.id);
-
-          if (!row) {
-            await ensureAdminRowNow(user);
-            row = await getAdminRow(user.id);
-          }
-
-          if (row.role === "pending") {
-            window.location.href = "pages/admin_pages/html_files/waiting.html";
-            return;
-          }
-
-          if (row.role === "admin" || row.role === "superadmin") {
-            // ✅ Redirect to dashboard
-            window.location.href = "pages/admin_pages/html_files/dashboard.html";
-          } else {
-            showNotice("Unknown role status.", "error");
-          }
-        } catch (e) {
-          console.error(e);
-          showNotice("Failed to fetch admin status: " + (e.message || "Unknown error"), "error");
-        }
+      } catch (e) {
+        console.error(e);
+        showNotice("Failed to fetch admin status: " + (e.message || "Unknown error"), "error");
       }
+    }
 
-      loginBtn.addEventListener("click", async () => {
-        hideNotice();
-        const email = document.getElementById("loginEmail").value.trim();
-        const password = document.getElementById("loginPassword").value;
-        if (!email || !password) {
-          showNotice("Please enter email and password.", "error");
-          return;
-        }
-        try {
-          const { error } = await supabase.auth.signInWithPassword({ email, password });
-          if (error) throw error;
-          await refreshLoginState();
-        } catch (err) {
-          console.error(err);
-          showNotice("Login error: " + (err.message || "Unknown error"), "error");
-        }
-      });
+    loginBtn.addEventListener("click", async () => {
+      hideNotice();
+      const email = document.getElementById("loginEmail").value.trim();
+      const password = document.getElementById("loginPassword").value;
+      if (!email || !password) {
+        showNotice("Please enter email and password.", "error");
+        return;
+      }
+      try {
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        await refreshLoginState();
+      } catch (err) {
+        console.error(err);
+        showNotice("Login error: " + (err.message || "Unknown error"), "error");
+      }
+    });
 
-      // On load, reflect session state
-      (async () => { await refreshLoginState(); })();
-    </script>
-  </body>
+    // On load, reflect session state
+    (async () => { await refreshLoginState(); })();
+  </script>
+</body>
+
 </html>
