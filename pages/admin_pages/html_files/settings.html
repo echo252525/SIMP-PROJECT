@@ -1,350 +1,550 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet" />
-  <link rel="stylesheet" href="../css_files/sideBar.css" />
-  <title>Admin Settings</title>
-  <style>
-    /*DO NOT REMOVE THESE CSS!!!*/
-    /*for this file only*/
-    /*==START==*/
-    img { display:block; width:100%; object-fit:cover; }
-    .material-icons-sharp{ display:flex; align-items:center; }
-
-    .container{
-      display:grid; width:96%; margin:0 auto; gap:1.8rem;
-      grid-template-columns:12rem auto;
-      height:100vh;
-    }
-    main{
-      margin-top:1.4rem;
-      height:100%;
-      overflow:auto;
-    }
-
-    .settings-wrap{ max-width:880px; margin:0 auto; }
-    .card{
-      background:#fff; border:1px solid #e7edf3; border-radius:14px;
-      box-shadow:var(--box-shadow); padding:1.2rem 1.3rem;
-    }
-    .card-header{ display:flex; justify-content:space-between; align-items:center; margin-bottom:.6rem; }
-    .card-header h2{ margin:0; }
-    .muted{ color:#6c7a8a; }
-
-    .form-grid{ display:grid; grid-template-columns:1fr 1fr; gap:1rem 1.2rem; margin-top:1rem; }
-    .form-grid .full{ grid-column:1 / -1; }
-    label{ display:block; font-weight:600; margin-bottom:.35rem; }
-    input{
-      width:100%; border:1px solid #e7edf3; border-radius:10px; padding:.65rem .8rem;
-    }
-    input[readonly], input:disabled{ background:#f8f9fb; color:#6c7a8a; }
-
-    .row{ display:flex; gap:.6rem; align-items:center; flex-wrap:wrap; }
-    .pill{ display:inline-flex; align-items:center; gap:.35rem; border:1px solid #e7edf3; border-radius:9999px; padding:.25rem .6rem; }
-    .pill .material-icons-sharp{ font-size:1rem; }
-
-    .btn{ display:inline-flex; align-items:center; gap:.4rem; padding:.55rem .9rem; border-radius:10px; cursor:pointer; border:1px solid transparent; }
-    .btn-ghost{ background:#fff; border:1px solid #e7edf3; }
-    .btn-primary{ background:#1c2430; color:#fff; }
-    .btn-danger{ background:#ef4444; color:#fff; }
-    .btn:disabled{ opacity:.6; cursor:not-allowed; }
-
-    .actions{ display:flex; justify-content:space-between; align-items:center; margin-top:1rem; }
-    .help{ font-size:.9rem; color:#6c7a8a; }
-    .success{ color:#20a44c; }
-    .error{ color:#ef4444; }
-
-    @media (max-width:1200px){
-      .container{ width:95%; grid-template-columns:7rem auto; }
-    }
-    @media (max-width:768px){
-      .container{ width:100%; grid-template-columns:1fr; padding:0 var(--padding-1); }
-      main{ margin-top:8rem; padding:0 1rem; }
-      .form-grid{ grid-template-columns:1fr; }
-    }
-    /*==END==*/
-  </style>
-</head>
-<body>
-  <div class="container">
-    <!-- Sidebar Section (unchanged) -->
-    <aside>
-      <div class="toggle">
-        <div class="logo">
-          <img src="../../../img/simpLogo.png" alt="SIMP Logo" />
-          <h2>SIMP<span class="danger">Project</span></h2>
-        </div>
-        <div class="close" id="close-btn"><span class="material-icons-sharp">close</span></div>
-      </div>
-      <div class="sidebar">
-        <a href="dashboard.html"><span class="material-icons-sharp">dashboard</span><h3>Dashboard</h3></a>
-        <a href="workerVerification.html"><span class="material-icons-sharp">engineering</span><h3>Workers<br>Verification</h3></a>
-        <a href="jobVerification.html"><span class="material-icons-sharp">work</span><h3>Jobs<br>Verification</h3></a>
-        <a href="jobApplicationVerification.html"><span class="material-icons-sharp">approval</span><h3>Application<br>Verification</h3></a>
-        <a href="adminVerification.html"><span class="material-icons-sharp">shield</span><h3>Admin<br>Verification</h3></a>
-        <a href="paymentsRequest.html"><span class="material-icons-sharp">payments</span><h3>Payments<br>Request</h3></a>
-        <a href="courses.html"><span class="material-icons-sharp">school</span><h3>Course<br>Publisher</h3></a>
-        <a href="settings.html" class="active"><span class="material-icons-sharp">settings</span><h3>Settings</h3></a>
-        <a href="#" id="logout-btn"><span class="material-icons-sharp">logout</span><h3>Logout</h3></a>
-      </div>
-    </aside>
-
-    <!-- Main Content -->
-    <main>
-      <div class="settings-wrap">
-        <div class="card">
-          <div class="card-header">
-            <h2>Admin Settings</h2>
-            <div>
-              <button id="edit-btn" class="btn btn-ghost" title="Edit profile">
-                <span class="material-icons-sharp">edit</span> Edit
-              </button>
-              <button id="save-btn" class="btn btn-primary" style="display:none;">
-                <span class="material-icons-sharp">save</span> Save
-              </button>
-              <button id="cancel-btn" class="btn btn-ghost" style="display:none;">
-                <span class="material-icons-sharp">close</span> Cancel
-              </button>
-            </div>
-          </div>
-
-          <p class="muted">
-            View your profile. Click <strong>Edit</strong> to update your name or phone.
-            Email and role are read-only. <strong>Admins/Pending</strong> may delete their own account; <strong>Superadmins</strong> cannot.
-          </p>
-
-          <div class="form-grid">
-            <div>
-              <label>Email</label>
-              <input id="email" type="email" readonly />
-            </div>
-            <div>
-              <label>Role</label>
-              <div class="row">
-                <span id="role-pill" class="pill">
-                  <span class="material-icons-sharp">verified_user</span>
-                  <span id="role-text">—</span>
-                </span>
-              </div>
-            </div>
-            <div>
-              <label>Full Name</label>
-              <input id="name" type="text" disabled />
-            </div>
-            <div>
-              <label>Phone</label>
-              <input id="phone" type="tel" disabled />
-            </div>
-            <div class="full">
-              <label>Timestamps</label>
-              <div class="row help">
-                <span>Created: <strong id="created-at">—</strong></span>
-                <span style="width:1px; height:18px; background:#e7edf3;"></span>
-                <span>Updated: <strong id="updated-at">—</strong></span>
-              </div>
-            </div>
-          </div>
-
-          <div class="actions">
-            <span id="status-msg" class="help"></span>
-            <button id="delete-btn" class="btn btn-danger" style="display:none;">
-              <span class="material-icons-sharp">delete_forever</span> Delete my account
-            </button>
-          </div>
-        </div>
-      </div>
-    </main>
-  </div>
-
-  <!-- Your global scripts -->
-  <script src="../../general_files/index.js"></script>
-  <script type="module" src="../../general_files/session.js"></script>
-
-  <!-- Page logic -->
-  <script type="module">
-    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
-    import { SUPABASE_URL, SUPABASE_ANON_KEY } from "../../../supabase.js";
-
-    const supa = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    // Helpers & DOM
-    const $ = (s) => document.querySelector(s);
-    const emailEl = $("#email");
-    const nameEl = $("#name");
-    const phoneEl = $("#phone");
-    const roleText = $("#role-text");
-    const rolePill = $("#role-pill");
-    const createdAtEl = $("#created-at");
-    const updatedAtEl = $("#updated-at");
-    const editBtn = $("#edit-btn");
-    const saveBtn = $("#save-btn");
-    const cancelBtn = $("#cancel-btn");
-    const deleteBtn = $("#delete-btn");
-    const statusMsg = $("#status-msg");
-
-    let currentUser = null;
-    let adminRowInitial = null;
-
-    function setEdit(on){
-      nameEl.disabled = !on;
-      phoneEl.disabled = !on;
-      editBtn.style.display = on ? "none" : "inline-flex";
-      saveBtn.style.display = on ? "inline-flex" : "none";
-      cancelBtn.style.display = on ? "inline-flex" : "none";
-    }
-
-    function setStatus(msg, cls){
-      statusMsg.textContent = msg || "";
-      statusMsg.className = "help" + (cls ? " " + cls : "");
-    }
-
-    function fmt(dt){
-      if (!dt) return "—";
-      try { return new Date(dt).toLocaleString(); } catch(_) { return String(dt); }
-    }
-
-    function styleRolePill(role){
-      const border = role==="superadmin" ? "#16a34a" : (role==="admin" ? "#1c2430" : "#f59e0b");
-      const color = border;
-      rolePill.style.borderColor = border;
-      rolePill.style.color = color;
-      const ic = rolePill.querySelector(".material-icons-sharp");
-      ic.textContent = role==="superadmin" ? "verified" : (role==="admin" ? "shield" : "hourglass_empty");
-    }
-
-    function showDeleteForRole(role){
-      // Allow self-delete for admin & pending; block for superadmin
-      const canDelete = role === "admin" || role === "pending";
-      deleteBtn.style.display = canDelete ? "inline-flex" : "none";
-    }
-
-    function fillForm(row, userEmail){
-      emailEl.value = userEmail || row.email || "";
-      nameEl.value = row.name || "";
-      phoneEl.value = row.phone || "";
-      const role = row.role || "pending";
-      roleText.textContent = role.toUpperCase();
-      styleRolePill(role);
-      createdAtEl.textContent = fmt(row.created_at);
-      updatedAtEl.textContent = fmt(row.updated_at);
-      showDeleteForRole(role);
-    }
-
-    async function load(){
-      setStatus("Loading...");
-      const authRes = await supa.auth.getUser();
-      if (authRes.error || !authRes.data.user) {
-        setStatus("Not authenticated. Please log in.","error");
-        return;
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css_files/sideBar.css" />
+    <title>Admin Settings</title>
+    <style>
+      /*DO NOT REMOVE THESE CSS!!!*/
+      /*for this file only*/
+      /*==START==*/
+      img {
+        display: block;
+        width: 100%;
+        object-fit: cover;
       }
-      currentUser = authRes.data.user;
+      .material-icons-sharp {
+        display: flex;
+        align-items: center;
+      }
 
-      const { data: row, error } = await supa
-        .from("admin")
-        .select("id,email,name,phone,role,created_at,updated_at")
-        .eq("id", currentUser.id)
-        .maybeSingle();
+      .container {
+        display: grid;
+        width: 96%;
+        margin: 0 auto;
+        gap: 1.8rem;
+        grid-template-columns: 12rem auto;
+        height: 100vh;
+      }
+      main {
+        margin-top: 1.4rem;
+        height: 100%;
+        overflow: auto;
+      }
 
-      if (error) { console.error(error); setStatus("Failed to load admin profile.","error"); return; }
-      if (!row) { setStatus("Admin record not found.","error"); return; }
+      .settings-wrap {
+        max-width: 880px;
+        margin: 0 auto;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid #e7edf3;
+        border-radius: 14px;
+        box-shadow: var(--box-shadow);
+        padding: 1.2rem 1.3rem;
+      }
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.6rem;
+      }
+      .card-header h2 {
+        margin: 0;
+      }
+      .muted {
+        color: #6c7a8a;
+      }
 
-      adminRowInitial = JSON.parse(JSON.stringify(row));
-      fillForm(row, currentUser.email || row.email);
-      setEdit(false);
-      setStatus("");
-    }
+      .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem 1.2rem;
+        margin-top: 1rem;
+      }
+      .form-grid .full {
+        grid-column: 1 / -1;
+      }
+      label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 0.35rem;
+      }
+      input {
+        width: 100%;
+        border: 1px solid #e7edf3;
+        border-radius: 10px;
+        padding: 0.65rem 0.8rem;
+      }
+      input[readonly],
+      input:disabled {
+        background: #f8f9fb;
+        color: #6c7a8a;
+      }
 
-    async function save(){
-      const newName = (nameEl.value||"").trim();
-      let newPhone = (phoneEl.value||"").trim();
-      if (!newName) { setStatus("Name is required.","error"); return; }
-      if (newPhone.length===0) newPhone=null;
+      .row {
+        display: flex;
+        gap: 0.6rem;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        border: 1px solid #e7edf3;
+        border-radius: 9999px;
+        padding: 0.25rem 0.6rem;
+      }
+      .pill .material-icons-sharp {
+        font-size: 1rem;
+      }
 
-      saveBtn.disabled = true;
-      const { data, error } = await supa
-        .from("admin")
-        .update({ name: newName, phone: newPhone })
-        .eq("id", currentUser.id)
-        .select("id,email,name,phone,role,created_at,updated_at")
-        .maybeSingle();
-      saveBtn.disabled = false;
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.55rem 0.9rem;
+        border-radius: 10px;
+        cursor: pointer;
+        border: 1px solid transparent;
+      }
+      .btn-ghost {
+        background: #fff;
+        border: 1px solid #e7edf3;
+      }
+      .btn-primary {
+        background: #1c2430;
+        color: #fff;
+      }
+      .btn-danger {
+        background: #ef4444;
+        color: #fff;
+      }
+      .btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
 
-      if (error) { console.error(error); setStatus(error.message || "Failed to update.","error"); return; }
-      adminRowInitial = JSON.parse(JSON.stringify(data));
-      fillForm(data, currentUser.email || data.email);
-      setEdit(false);
-      setStatus("Profile updated successfully.","success");
-    }
+      .actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 1rem;
+      }
+      .help {
+        font-size: 0.9rem;
+        color: #6c7a8a;
+      }
+      .success {
+        color: #20a44c;
+      }
+      .error {
+        color: #ef4444;
+      }
 
-    function cancelEdit(){
-      if (!adminRowInitial) return;
-      fillForm(adminRowInitial, currentUser ? currentUser.email : adminRowInitial.email);
-      setEdit(false);
-      setStatus("Reverted changes.");
-    }
+      @media (max-width: 1200px) {
+        .container {
+          width: 95%;
+          grid-template-columns: 7rem auto;
+        }
+      }
+      @media (max-width: 768px) {
+        .container {
+          width: 100%;
+          grid-template-columns: 1fr;
+          padding: 0 var(--padding-1);
+        }
+        main {
+          margin-top: 8rem;
+          padding: 0 1rem;
+        }
+        .form-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      /*==END==*/
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Sidebar Section (unchanged) -->
+      <aside>
+        <div class="toggle">
+          <div class="logo">
+            <img src="../../../img/simpLogo.png" alt="SIMP Logo" />
+            <h2>SIMP<span class="danger">Project</span></h2>
+          </div>
+          <div class="close" id="close-btn">
+            <span class="material-icons-sharp">close</span>
+          </div>
+        </div>
+        <div class="sidebar">
+          <a href="dashboard.html"
+            ><span class="material-icons-sharp">dashboard</span>
+            <h3>Dashboard</h3></a
+          >
+          <a href="workerVerification.html"
+            ><span class="material-icons-sharp">engineering</span>
+            <h3>Workers<br />Verification</h3></a
+          >
+          <a href="jobVerification.html"
+            ><span class="material-icons-sharp">work</span>
+            <h3>Jobs<br />Verification</h3></a
+          >
+          <a href="jobApplicationVerification.html"
+            ><span class="material-icons-sharp">approval</span>
+            <h3>Application<br />Verification</h3></a
+          >
+          <a href="adminVerification.html"
+            ><span class="material-icons-sharp">shield</span>
+            <h3>Admin<br />Verification</h3></a
+          >
+          <a href="manageShop.html"
+            ><span class="material-icons-sharp">shop</span>
+            <h3>Manage<br />Shop</h3></a
+          >
+          <a href="paymentsRequest.html"
+            ><span class="material-icons-sharp">payments</span>
+            <h3>Payments<br />Request</h3></a
+          >
+          <a href="courses.html"
+            ><span class="material-icons-sharp">school</span>
+            <h3>Course<br />Publisher</h3></a
+          >
+          <a href="settings.html" class="active"
+            ><span class="material-icons-sharp">settings</span>
+            <h3>Settings</h3></a
+          >
+          <a href="#" id="logout-btn"
+            ><span class="material-icons-sharp">logout</span>
+            <h3>Logout</h3></a
+          >
+        </div>
+      </aside>
 
-    async function deleteAccount(){
-      if (!confirm("This will permanently delete your account and sign you out. Continue?")) return;
+      <!-- Main Content -->
+      <main>
+        <div class="settings-wrap">
+          <div class="card">
+            <div class="card-header">
+              <h2>Admin Settings</h2>
+              <div>
+                <button
+                  id="edit-btn"
+                  class="btn btn-ghost"
+                  title="Edit profile"
+                >
+                  <span class="material-icons-sharp">edit</span> Edit
+                </button>
+                <button
+                  id="save-btn"
+                  class="btn btn-primary"
+                  style="display: none"
+                >
+                  <span class="material-icons-sharp">save</span> Save
+                </button>
+                <button
+                  id="cancel-btn"
+                  class="btn btn-ghost"
+                  style="display: none"
+                >
+                  <span class="material-icons-sharp">close</span> Cancel
+                </button>
+              </div>
+            </div>
 
-      deleteBtn.disabled = true;
-      setStatus("Deleting…");
+            <p class="muted">
+              View your profile. Click <strong>Edit</strong> to update your name
+              or phone. Email and role are read-only.
+              <strong>Admins/Pending</strong> may delete their own account;
+              <strong>Superadmins</strong> cannot.
+            </p>
 
-      // Try Functions.invoke (includes JWT automatically)
-      try{
-        const invokeRes = await supa.functions.invoke("delete-admin", {
-          body: { user_id: currentUser.id }
-        });
-        if (invokeRes.error) throw invokeRes.error;
-      } catch (e1) {
-        // Fallback: direct POST with Bearer token (covers CORS/proxy edge cases)
+            <div class="form-grid">
+              <div>
+                <label>Email</label>
+                <input id="email" type="email" readonly />
+              </div>
+              <div>
+                <label>Role</label>
+                <div class="row">
+                  <span id="role-pill" class="pill">
+                    <span class="material-icons-sharp">verified_user</span>
+                    <span id="role-text">—</span>
+                  </span>
+                </div>
+              </div>
+              <div>
+                <label>Full Name</label>
+                <input id="name" type="text" disabled />
+              </div>
+              <div>
+                <label>Phone</label>
+                <input id="phone" type="tel" disabled />
+              </div>
+              <div class="full">
+                <label>Timestamps</label>
+                <div class="row help">
+                  <span>Created: <strong id="created-at">—</strong></span>
+                  <span
+                    style="width: 1px; height: 18px; background: #e7edf3"
+                  ></span>
+                  <span>Updated: <strong id="updated-at">—</strong></span>
+                </div>
+              </div>
+            </div>
+
+            <div class="actions">
+              <span id="status-msg" class="help"></span>
+              <button
+                id="delete-btn"
+                class="btn btn-danger"
+                style="display: none"
+              >
+                <span class="material-icons-sharp">delete_forever</span> Delete
+                my account
+              </button>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Your global scripts -->
+    <script src="../../general_files/index.js"></script>
+    <script type="module" src="../../general_files/session.js"></script>
+
+    <!-- Page logic -->
+    <script type="module">
+      import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+      import { SUPABASE_URL, SUPABASE_ANON_KEY } from "../../../supabase.js";
+
+      const supa = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+      // Helpers & DOM
+      const $ = (s) => document.querySelector(s);
+      const emailEl = $("#email");
+      const nameEl = $("#name");
+      const phoneEl = $("#phone");
+      const roleText = $("#role-text");
+      const rolePill = $("#role-pill");
+      const createdAtEl = $("#created-at");
+      const updatedAtEl = $("#updated-at");
+      const editBtn = $("#edit-btn");
+      const saveBtn = $("#save-btn");
+      const cancelBtn = $("#cancel-btn");
+      const deleteBtn = $("#delete-btn");
+      const statusMsg = $("#status-msg");
+
+      let currentUser = null;
+      let adminRowInitial = null;
+
+      function setEdit(on) {
+        nameEl.disabled = !on;
+        phoneEl.disabled = !on;
+        editBtn.style.display = on ? "none" : "inline-flex";
+        saveBtn.style.display = on ? "inline-flex" : "none";
+        cancelBtn.style.display = on ? "inline-flex" : "none";
+      }
+
+      function setStatus(msg, cls) {
+        statusMsg.textContent = msg || "";
+        statusMsg.className = "help" + (cls ? " " + cls : "");
+      }
+
+      function fmt(dt) {
+        if (!dt) return "—";
         try {
-          const sessRes = await supa.auth.getSession();
-          const token = sessRes?.data?.session?.access_token || "";
-          if (!token) throw new Error("Missing access token. Please re-login.");
-
-          const fnUrl = SUPABASE_URL.replace(/\/+$/,"") + "/functions/v1/delete-admin";
-          const r = await fetch(fnUrl, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": "Bearer " + token
-            },
-            body: JSON.stringify({ user_id: currentUser.id })
-          });
-
-          if (!r.ok) {
-            const txt = await r.text().catch(()=> "");
-            throw new Error(`Direct call failed (${r.status}): ${txt}`);
-          }
-        } catch (e2) {
-          console.error("Edge Function error:", e1, e2);
-          setStatus(
-            "Delete failed: " +
-            (e2?.message || e1?.message || "Edge Function unreachable.") +
-            " — Ensure 'delete-admin' is deployed and CORS allows this origin.",
-            "error"
-          );
-          deleteBtn.disabled = false;
-          return;
+          return new Date(dt).toLocaleString();
+        } catch (_) {
+          return String(dt);
         }
       }
 
-      // Sign out and redirect
-      try { await supa.auth.signOut(); } catch(_) {}
-      setStatus("Account deleted. Redirecting…","success");
-      setTimeout(()=>{ window.location.href = "../../../index.html"; }, 800);
-    }
+      function styleRolePill(role) {
+        const border =
+          role === "superadmin"
+            ? "#16a34a"
+            : role === "admin"
+            ? "#1c2430"
+            : "#f59e0b";
+        const color = border;
+        rolePill.style.borderColor = border;
+        rolePill.style.color = color;
+        const ic = rolePill.querySelector(".material-icons-sharp");
+        ic.textContent =
+          role === "superadmin"
+            ? "verified"
+            : role === "admin"
+            ? "shield"
+            : "hourglass_empty";
+      }
 
-    // Wire up
-    editBtn.addEventListener("click", ()=>setEdit(true));
-    saveBtn.addEventListener("click", ()=>save());
-    cancelBtn.addEventListener("click", ()=>cancelEdit());
-    deleteBtn.addEventListener("click", ()=>deleteAccount());
+      function showDeleteForRole(role) {
+        // Allow self-delete for admin & pending; block for superadmin
+        const canDelete = role === "admin" || role === "pending";
+        deleteBtn.style.display = canDelete ? "inline-flex" : "none";
+      }
 
-    // Init
-    load();
-  </script>
-</body>
+      function fillForm(row, userEmail) {
+        emailEl.value = userEmail || row.email || "";
+        nameEl.value = row.name || "";
+        phoneEl.value = row.phone || "";
+        const role = row.role || "pending";
+        roleText.textContent = role.toUpperCase();
+        styleRolePill(role);
+        createdAtEl.textContent = fmt(row.created_at);
+        updatedAtEl.textContent = fmt(row.updated_at);
+        showDeleteForRole(role);
+      }
+
+      async function load() {
+        setStatus("Loading...");
+        const authRes = await supa.auth.getUser();
+        if (authRes.error || !authRes.data.user) {
+          setStatus("Not authenticated. Please log in.", "error");
+          return;
+        }
+        currentUser = authRes.data.user;
+
+        const { data: row, error } = await supa
+          .from("admin")
+          .select("id,email,name,phone,role,created_at,updated_at")
+          .eq("id", currentUser.id)
+          .maybeSingle();
+
+        if (error) {
+          console.error(error);
+          setStatus("Failed to load admin profile.", "error");
+          return;
+        }
+        if (!row) {
+          setStatus("Admin record not found.", "error");
+          return;
+        }
+
+        adminRowInitial = JSON.parse(JSON.stringify(row));
+        fillForm(row, currentUser.email || row.email);
+        setEdit(false);
+        setStatus("");
+      }
+
+      async function save() {
+        const newName = (nameEl.value || "").trim();
+        let newPhone = (phoneEl.value || "").trim();
+        if (!newName) {
+          setStatus("Name is required.", "error");
+          return;
+        }
+        if (newPhone.length === 0) newPhone = null;
+
+        saveBtn.disabled = true;
+        const { data, error } = await supa
+          .from("admin")
+          .update({ name: newName, phone: newPhone })
+          .eq("id", currentUser.id)
+          .select("id,email,name,phone,role,created_at,updated_at")
+          .maybeSingle();
+        saveBtn.disabled = false;
+
+        if (error) {
+          console.error(error);
+          setStatus(error.message || "Failed to update.", "error");
+          return;
+        }
+        adminRowInitial = JSON.parse(JSON.stringify(data));
+        fillForm(data, currentUser.email || data.email);
+        setEdit(false);
+        setStatus("Profile updated successfully.", "success");
+      }
+
+      function cancelEdit() {
+        if (!adminRowInitial) return;
+        fillForm(
+          adminRowInitial,
+          currentUser ? currentUser.email : adminRowInitial.email
+        );
+        setEdit(false);
+        setStatus("Reverted changes.");
+      }
+
+      async function deleteAccount() {
+        if (
+          !confirm(
+            "This will permanently delete your account and sign you out. Continue?"
+          )
+        )
+          return;
+
+        deleteBtn.disabled = true;
+        setStatus("Deleting…");
+
+        // Try Functions.invoke (includes JWT automatically)
+        try {
+          const invokeRes = await supa.functions.invoke("delete-admin", {
+            body: { user_id: currentUser.id },
+          });
+          if (invokeRes.error) throw invokeRes.error;
+        } catch (e1) {
+          // Fallback: direct POST with Bearer token (covers CORS/proxy edge cases)
+          try {
+            const sessRes = await supa.auth.getSession();
+            const token = sessRes?.data?.session?.access_token || "";
+            if (!token)
+              throw new Error("Missing access token. Please re-login.");
+
+            const fnUrl =
+              SUPABASE_URL.replace(/\/+$/, "") + "/functions/v1/delete-admin";
+            const r = await fetch(fnUrl, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + token,
+              },
+              body: JSON.stringify({ user_id: currentUser.id }),
+            });
+
+            if (!r.ok) {
+              const txt = await r.text().catch(() => "");
+              throw new Error(`Direct call failed (${r.status}): ${txt}`);
+            }
+          } catch (e2) {
+            console.error("Edge Function error:", e1, e2);
+            setStatus(
+              "Delete failed: " +
+                (e2?.message || e1?.message || "Edge Function unreachable.") +
+                " — Ensure 'delete-admin' is deployed and CORS allows this origin.",
+              "error"
+            );
+            deleteBtn.disabled = false;
+            return;
+          }
+        }
+
+        // Sign out and redirect
+        try {
+          await supa.auth.signOut();
+        } catch (_) {}
+        setStatus("Account deleted. Redirecting…", "success");
+        setTimeout(() => {
+          window.location.href = "../../../index.html";
+        }, 800);
+      }
+
+      // Wire up
+      editBtn.addEventListener("click", () => setEdit(true));
+      saveBtn.addEventListener("click", () => save());
+      cancelBtn.addEventListener("click", () => cancelEdit());
+      deleteBtn.addEventListener("click", () => deleteAccount());
+
+      // Init
+      load();
+    </script>
+  </body>
 </html>

@@ -369,9 +369,13 @@
             ><span class="material-icons-sharp">shield</span>
             <h3>Admin<br />Verification</h3></a
           >
+          <a href="manageShop.html"
+            ><span class="material-icons-sharp">shop</span>
+            <h3>Manage<br />Shop</h3></a
+          >
           <a href="paymentsRequest.html">
             <span class="material-icons-sharp">payments</span>
-            <h3>Payments<br>Request</h3>
+            <h3>Payments<br />Request</h3>
           </a>
           <a href="courses.html"
             ><span class="material-icons-sharp">school</span>
@@ -494,7 +498,8 @@
       function withOwnerPrefix(path, ownerId) {
         if (!path) return "";
         let key = String(path).replace(/^\/+/, "");
-        if (ownerId && !key.startsWith(ownerId + "/")) key = `${ownerId}/${key}`;
+        if (ownerId && !key.startsWith(ownerId + "/"))
+          key = `${ownerId}/${key}`;
         return key;
       }
 
@@ -683,7 +688,10 @@
             if (!item.path) return { ...item, url: "" };
             // path already includes owner prefix; extract owner from it:
             const owner = installerId; // we know folder == installerId by design
-            const url = await getSignedUrlWithOwner(item.path.replace(new RegExp('^' + owner + '/'), ''), owner);
+            const url = await getSignedUrlWithOwner(
+              item.path.replace(new RegExp("^" + owner + "/"), ""),
+              owner
+            );
             return { ...item, url };
           })
         );
@@ -725,7 +733,9 @@
               <img class="avatar" src="${w.avatar}" alt="${w.fullName}">
               <div>
                 <div style="font-weight:700">${w.fullName}</div>
-                <div style="font-size:.85rem;color:var(--muted)">${w.email}</div>
+                <div style="font-size:.85rem;color:var(--muted)">${
+                  w.email
+                }</div>
               </div>
               <span class="pill">${cap(w.profileStatus || "pending")}</span>
             `;
@@ -793,11 +803,21 @@
                 </span>
               </div>
               <div class="meta">
-                <span class="kv"><strong>Uploaded:</strong> ${fmtDateISO(worker.createdAt) || "—"}</span>
-                <span class="kv"><strong>Birthdate:</strong> ${worker.birthdate || "—"}</span>
-                <span class="kv"><strong>Age:</strong> ${worker.age || "—"}</span>
-                <span class="kv"><strong>Phone:</strong> ${worker.phone || "—"}</span>
-                <span class="kv"><strong>Email:</strong> ${worker.email || "—"}</span>
+                <span class="kv"><strong>Uploaded:</strong> ${
+                  fmtDateISO(worker.createdAt) || "—"
+                }</span>
+                <span class="kv"><strong>Birthdate:</strong> ${
+                  worker.birthdate || "—"
+                }</span>
+                <span class="kv"><strong>Age:</strong> ${
+                  worker.age || "—"
+                }</span>
+                <span class="kv"><strong>Phone:</strong> ${
+                  worker.phone || "—"
+                }</span>
+                <span class="kv"><strong>Email:</strong> ${
+                  worker.email || "—"
+                }</span>
                 <span class="kv"><strong>Role:</strong> Worker</span>
               </div>
             </div>
@@ -811,20 +831,36 @@
             <div class="card">
               <h4>Basic Information</h4>
               <div class="info-list">
-                <div><span class="label">Full Name</span>${worker.fullName}</div>
-                <div><span class="label">Profession</span>${worker.profession || "—"}</div>
-                <div><span class="label">Highest Qualification</span>${worker.highestQualification || "—"}</div>
-                <div><span class="label">Employment Status</span>${worker.employmentStatus || "—"}</div>
-                <div><span class="label">Main Income Source</span>${worker.mainIncomeSource || "—"}</div>
+                <div><span class="label">Full Name</span>${
+                  worker.fullName
+                }</div>
+                <div><span class="label">Profession</span>${
+                  worker.profession || "—"
+                }</div>
+                <div><span class="label">Highest Qualification</span>${
+                  worker.highestQualification || "—"
+                }</div>
+                <div><span class="label">Employment Status</span>${
+                  worker.employmentStatus || "—"
+                }</div>
+                <div><span class="label">Main Income Source</span>${
+                  worker.mainIncomeSource || "—"
+                }</div>
               </div>
             </div>
 
             <div class="card">
               <h4>Bank Details</h4>
               <div class="info-list">
-                <div><span class="label">Bank Name</span>${worker.bankName || "—"}</div>
-                <div><span class="label">Account Holder</span>${worker.accountHolder || "—"}</div>
-                <div><span class="label">Account Number</span>${worker.accountNumber || "—"}</div>
+                <div><span class="label">Bank Name</span>${
+                  worker.bankName || "—"
+                }</div>
+                <div><span class="label">Account Holder</span>${
+                  worker.accountHolder || "—"
+                }</div>
+                <div><span class="label">Account Number</span>${
+                  worker.accountNumber || "—"
+                }</div>
               </div>
             </div>
           </div>
@@ -838,18 +874,28 @@
                   (d, idx) => `
                 <div class="doc" data-doc="${idx}">
                   <div class="doc-title">
-                    <span class="material-icons-sharp">description</span> ${d.type}
+                    <span class="material-icons-sharp">description</span> ${
+                      d.type
+                    }
                   </div>
-                  <button class="btn" data-view="${idx}" ${d.url ? "" : "disabled"}>
+                  <button class="btn" data-view="${idx}" ${
+                    d.url ? "" : "disabled"
+                  }>
                     <span class="material-icons-sharp" style="font-size:18px;">visibility</span> Preview
                   </button>
                   <div class="status-dot ${d.status}">
                     <span class="dot"></span>
                     <span class="label">${cap(d.status)}</span>
                   </div>
-                  <div class="actions" ${isPending ? "" : 'style="display:none"'}>
-                    <button class="btn primary" data-approve="${idx}" ${d.path ? "" : "disabled"}>Approve</button>
-                    <button class="btn reject" data-reject="${idx}" ${d.path ? "" : "disabled"}>Reject</button>
+                  <div class="actions" ${
+                    isPending ? "" : 'style="display:none"'
+                  }>
+                    <button class="btn primary" data-approve="${idx}" ${
+                    d.path ? "" : "disabled"
+                  }>Approve</button>
+                    <button class="btn reject" data-reject="${idx}" ${
+                    d.path ? "" : "disabled"
+                  }>Reject</button>
                   </div>
                 </div>
               `
@@ -869,11 +915,16 @@
             // If signed URL expired, try to refresh on demand
             if (!item.url && item.path) {
               const freshUrl = await getSignedUrlWithOwner(
-                item.path.replace(new RegExp('^' + worker.id + '/'), ''),
+                item.path.replace(new RegExp("^" + worker.id + "/"), ""),
                 worker.id
               );
               item.url = freshUrl;
-              DOC_REVIEW.set(worker.id, (DOC_REVIEW.get(worker.id) || []).map((x, i) => (i === idx ? item : x)));
+              DOC_REVIEW.set(
+                worker.id,
+                (DOC_REVIEW.get(worker.id) || []).map((x, i) =>
+                  i === idx ? item : x
+                )
+              );
               if (freshUrl) {
                 openDoc(item.type, freshUrl);
                 // Also enable the button for future clicks
@@ -883,7 +934,9 @@
             }
 
             if (!item.url) {
-              alert("Preview unavailable. File missing or you lack permission.");
+              alert(
+                "Preview unavailable. File missing or you lack permission."
+              );
               return;
             }
             openDoc(item.type, item.url);
