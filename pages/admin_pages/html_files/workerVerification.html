@@ -528,6 +528,63 @@
         return dt.toLocaleString();
       }
 
+      /* ---------- NEW: avatar helpers for installer_profile bucket ---------- */
+
+      // storage://bucket/folder/file.ext -> { bucket, key }
+      function parseStorageUrl(u) {
+        try {
+          if (typeof u !== "string") return null;
+          if (/^https?:\/\//i.test(u)) {
+            return { bucket: null, key: null, https: u };
+          }
+          const m = u.match(/^storage:\/\/([^/]+)\/(.+)$/i);
+          if (!m) return null;
+          return { bucket: m[1], key: m[2] };
+        } catch {
+          return null;
+        }
+      }
+
+      async function signFromBucket(bucket, key, expiresIn = 60 * 60) {
+        try {
+          const { data, error } = await sb.storage
+            .from(bucket)
+            .createSignedUrl(key, expiresIn, { download: false });
+          if (!error && data?.signedUrl) return data.signedUrl;
+
+          // fallback to public url (in case bucket/object is public)
+          const { data: pub } = sb.storage.from(bucket).getPublicUrl(key);
+          return pub?.publicUrl || "";
+        } catch (e) {
+          console.error("Avatar signing error:", e);
+          // last try public url
+          const { data: pub } = sb.storage.from(bucket).getPublicUrl(key);
+          return pub?.publicUrl || "";
+        }
+      }
+
+      // Resolve the avatar URL from profile_pic_url, otherwise fallback to pravatar
+      async function resolveProfileAvatar(profilePicUrl, ownerId) {
+        if (!profilePicUrl) return pravatar(ownerId);
+
+        const parsed = parseStorageUrl(profilePicUrl);
+        if (!parsed) {
+          // If it's already https or an unknown format, try to use it directly
+          if (/^https?:\/\//i.test(profilePicUrl)) return profilePicUrl;
+          return pravatar(ownerId);
+        }
+        if (parsed.https) return parsed.https;
+
+        // Make sure key includes owner folder for private layouts like: <uuid>/avatar.jpg
+        let key = parsed.key;
+        if (ownerId && !key.startsWith(ownerId + "/")) {
+          key = `${ownerId}/${key.replace(/^\/+/, "")}`;
+        }
+
+        const url = await signFromBucket(parsed.bucket, key);
+        return url || pravatar(ownerId);
+      }
+
       /* ------------------------------ Fetch & Build ------------------------------ */
       async function fetchWorkers() {
         // 1) Pull all installer_documents (latest first)
@@ -562,12 +619,12 @@
           return;
         }
 
-        // 2) Pull installer profiles for those ids
+        // 2) Pull installer profiles for those ids (ADD profile_pic_url)
         const ids = [...new Set(docsRows.map((r) => r.installer_id))];
         const { data: profiles, error: profErr } = await sb
           .from("installer")
           .select(
-            'id, email, name, birthdate, age, phone, profession, "highestQualification", "employmentStatus", "mainIncomeSource", "bankName", "accountNumber", "accountHolder", "createdAt"'
+            'id, email, name, birthdate, age, phone, profession, "highestQualification", "employmentStatus", "mainIncomeSource", "bankName", "accountNumber", "accountHolder", "createdAt", profile_pic_url'
           )
           .in("id", ids);
 
@@ -577,12 +634,12 @@
 
         const profById = new Map((profiles || []).map((p) => [p.id, p]));
 
-        // 3) Combine
+        // 3) Combine (use pravatar initially; we will resolve real avatars next)
         WORKERS = docsRows.map((r) => {
           const p = profById.get(r.installer_id) || {};
           return {
             id: r.installer_id,
-            avatar: pravatar(r.installer_id),
+            avatar: pravatar(r.installer_id), // default; will be replaced if profile_pic_url exists
             fullName: p.name || "(No name)",
             birthdate: p.birthdate || "",
             age: p.age ?? "",
@@ -599,6 +656,7 @@
             createdAt: r.uploaded_at || p.createdAt || null,
             profileStatus: String(r.status || "Pending").toLowerCase(),
             _rawDocs: r,
+            _profilePicUrl: p.profile_pic_url || null, // keep raw for resolver
           };
         });
 
@@ -610,6 +668,21 @@
 
         // 5) Sign all docs for each installer (private bucket preview)
         await Promise.all(WORKERS.map((w) => signAllDocsForInstaller(w.id)));
+
+        // 6) Resolve avatars from installer_profile (profile_pic_url)
+        await Promise.all(
+          WORKERS.map(async (w) => {
+            try {
+              if (w._profilePicUrl) {
+                const url = await resolveProfileAvatar(w._profilePicUrl, w.id);
+                if (url) w.avatar = url;
+              }
+            } catch (e) {
+              console.warn("Avatar resolve failed for", w.id, e);
+              // keep pravatar fallback
+            }
+          })
+        );
 
         renderWorkerList();
         if (WORKERS.length) {
@@ -733,9 +806,7 @@
               <img class="avatar" src="${w.avatar}" alt="${w.fullName}">
               <div>
                 <div style="font-weight:700">${w.fullName}</div>
-                <div style="font-size:.85rem;color:var(--muted)">${
-                  w.email
-                }</div>
+                <div style="font-size:.85rem;color:var(--muted)">${w.email}</div>
               </div>
               <span class="pill">${cap(w.profileStatus || "pending")}</span>
             `;
@@ -831,9 +902,7 @@
             <div class="card">
               <h4>Basic Information</h4>
               <div class="info-list">
-                <div><span class="label">Full Name</span>${
-                  worker.fullName
-                }</div>
+                <div><span class="label">Full Name</span>${worker.fullName}</div>
                 <div><span class="label">Profession</span>${
                   worker.profession || "—"
                 }</div>
@@ -874,9 +943,7 @@
                   (d, idx) => `
                 <div class="doc" data-doc="${idx}">
                   <div class="doc-title">
-                    <span class="material-icons-sharp">description</span> ${
-                      d.type
-                    }
+                    <span class="material-icons-sharp">description</span> ${d.type}
                   </div>
                   <button class="btn" data-view="${idx}" ${
                     d.url ? "" : "disabled"
@@ -887,15 +954,13 @@
                     <span class="dot"></span>
                     <span class="label">${cap(d.status)}</span>
                   </div>
-                  <div class="actions" ${
-                    isPending ? "" : 'style="display:none"'
-                  }>
+                  <div class="actions" ${isPending ? "" : 'style="display:none"'}>
                     <button class="btn primary" data-approve="${idx}" ${
-                    d.path ? "" : "disabled"
-                  }>Approve</button>
+                      d.path ? "" : "disabled"
+                    }>Approve</button>
                     <button class="btn reject" data-reject="${idx}" ${
-                    d.path ? "" : "disabled"
-                  }>Reject</button>
+                      d.path ? "" : "disabled"
+                    }>Reject</button>
                   </div>
                 </div>
               `

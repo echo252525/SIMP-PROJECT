@@ -628,8 +628,25 @@
           .insert([payload]);
         if (insertError) throw insertError;
 
-        // Show email confirmation modal
-        document.getElementById("emailConfirmModal").style.display = "flex";
+        // -------- Email Confirmation Modal (message + proceed to login) --------
+        const modal = document.getElementById("emailConfirmModal");
+        const modalMsg = modal.querySelector("p");
+        const modalBtn = document.getElementById("goToEmailBtn");
+
+        // Keep the existing content in HTML, but we override it here as requested:
+        modalMsg.textContent =
+          "Your account was created. Please check your inbox for the confirmation link. After confirming, you can log in.";
+        modalBtn.textContent = "Proceed to Login";
+
+        // We will NOT open any email provider. We simply send them to login.html:
+        modalBtn.onclick = () => {
+          window.location.href = "login.html";
+        };
+
+        // Show the modal
+        modal.style.display = "flex";
+
+        // (We keep the original provider detection below intact, but it's unused now.)
         const emailProvider = email.split("@")[1].toLowerCase();
         let providerUrl = "https://mail.google.com";
         if (emailProvider.includes("yahoo"))
@@ -642,9 +659,7 @@
           providerUrl = "https://outlook.live.com/mail";
         else if (emailProvider.includes("icloud"))
           providerUrl = "https://www.icloud.com/mail";
-        document.getElementById("goToEmailBtn").onclick = () => {
-          window.open(providerUrl, "_blank");
-        };
+        // (No window.open here — per your new behavior.)
       } catch (err) {
         console.error(err);
         alert("Error: " + (err.message || "Failed to sign up"));

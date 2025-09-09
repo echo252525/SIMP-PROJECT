@@ -293,7 +293,6 @@
         min-width: 124px;
         transition: transform 0.12s ease, box-shadow 0.22s ease;
       }
-      /* push arrow to the right inside the button */
       .section-header .see-all .label {
         font-weight: 500;
       }
@@ -709,7 +708,8 @@
               <small class="text-muted">User</small>
             </div>
             <div class="profile-photo">
-              <img src="images/profile-1.jpg" alt="profile" />
+              <!-- will be replaced at runtime with user's photo or initials image -->
+              <img id="topRightAvatar" src="images/profile-1.jpg" alt="profile" />
             </div>
           </div>
         </div>
@@ -813,6 +813,109 @@
           { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[s]
         ));
 
+      /* ===== Avatar helpers (ADDED) ===== */
+      const AVATAR_BUCKET = "installer_profile";
+      const avatarPathFor = (userId) => `${userId}/avatar.jpg`;
+
+      function parseStorageRef(ref) {
+        if (!ref) return null;
+        if (ref.startsWith("storage://")) {
+          const [, bucket, ...rest] = ref.split("/");
+          return { bucket, path: rest.join("/") };
+        }
+        // /storage/v1/object/public/<bucket>/<path>
+        let m = ref.match(/\/storage\/v1\/object\/public\/([^/]+)\/(.+)$/);
+        if (m) return { bucket: m[1], path: m[2] };
+        // /storage/v1/object/sign/<bucket>/<path>?token=...
+        m = ref.match(/\/storage\/v1\/object\/sign\/([^/]+)\/(.+)\?/);
+        if (m) return { bucket: m[1], path: m[2] };
+        return null;
+      }
+
+      async function getSignedAvatarURL(userId, storedUrl) {
+        const parsed = parseStorageRef(storedUrl) || { bucket: AVATAR_BUCKET, path: avatarPathFor(userId) };
+        try {
+          const { data, error } = await sb.storage
+            .from(parsed.bucket)
+            .createSignedUrl(parsed.path, 60 * 60 * 24); // 24h
+          if (error) throw error;
+          if (data?.signedUrl) return `${data.signedUrl}&t=${Date.now()}`;
+        } catch (e) {
+          console.warn("createSignedUrl failed:", e?.message);
+        }
+        return null;
+      }
+
+      function initialsFrom(nameOrEmail) {
+        const src = (nameOrEmail || "").trim();
+        if (!src) return "U";
+        const parts = src.split(/\s+/).filter(Boolean);
+        if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+        if (parts.length === 1) return parts[0][0].toUpperCase();
+        return src[0]?.toUpperCase() || "U";
+      }
+
+      function makeInitialsDataURL(nameOrEmail, size = 128) {
+        const initials = initialsFrom(nameOrEmail);
+        const c = document.createElement("canvas");
+        c.width = size; c.height = size;
+        const ctx = c.getContext("2d");
+        const grd = ctx.createLinearGradient(0, 0, size, size);
+        grd.addColorStop(0, "#6c9bcf");
+        grd.addColorStop(1, "#1b9c85");
+        ctx.fillStyle = grd;
+        ctx.fillRect(0, 0, size, size);
+
+        ctx.fillStyle = "#fff";
+        ctx.font = `bold ${Math.floor(size * 0.45)}px Poppins, Arial, sans-serif`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(initials, size / 2, size / 2 + 2);
+        return c.toDataURL("image/png");
+      }
+
+      async function setTopRightAvatar(inst) {
+        try {
+          const img = document.getElementById("topRightAvatar");
+          if (!img) return;
+
+          let displayName = inst?.name;
+          let email = inst?.email;
+
+          if (!email) {
+            const { data: { user } } = await sb.auth.getUser();
+            email = user?.email || "";
+          }
+          if (!displayName) displayName = email || "User";
+
+          // Try signed URL if a storage ref exists
+          if (inst?.profile_pic_url && inst?.id) {
+            const url = await getSignedAvatarURL(inst.id, inst.profile_pic_url);
+            if (url) {
+              img.alt = "profile";
+              img.src = url;
+
+              // if token ever expires while the page is open:
+              let retried = false;
+              img.onerror = async () => {
+                if (retried) return;
+                retried = true;
+                const refreshed = await getSignedAvatarURL(inst.id, inst.profile_pic_url);
+                if (refreshed) img.src = refreshed;
+              };
+              return;
+            }
+          }
+
+          // Fallback to initials data URL (keeps your DOM intact)
+          img.alt = "profile";
+          img.src = makeInitialsDataURL(displayName || email || "User", 128);
+        } catch (e) {
+          console.warn("Avatar set error:", e);
+        }
+      }
+      /* ===== End Avatar helpers ===== */
+
       async function resolveInstaller() {
         const {
           data: { user },
@@ -824,7 +927,7 @@
 
         const { data: inst, error } = await sb
           .from("installer")
-          .select('id, name, levelstatus, "earningBalance"')
+          .select('id, email, name, levelstatus, "earningBalance", profile_pic_url') /* ADDED email + profile_pic_url */
           .eq("email", email)
           .maybeSingle();
 
@@ -862,13 +965,9 @@
 
       function updateLevelUI({ name, levelstatus, earningBalance }) {
         if (name) document.getElementById("profileName").textContent = name;
-        document.getElementById("levelHeading").textContent = `Level ${
-          levelstatus ?? 0
-        }`;
+        document.getElementById("levelHeading").textContent = `Level ${levelstatus ?? 0}`;
         document.getElementById("levelNote").textContent =
-          (levelstatus ?? 0) > 0
-            ? "Keep going to reach the next level!"
-            : "Take courses to level up!";
+          (levelstatus ?? 0) > 0 ? "Keep going to reach the next level!" : "Take courses to level up!";
         const balText = `₱${fmtPeso(earningBalance ?? 0)}`;
         document.getElementById("balanceAmount").textContent = balText;
         document.getElementById("balancePct").textContent = balText;
@@ -877,30 +976,20 @@
       }
 
       function updateAppliedCard({ applied, totalJobs }) {
-        document.getElementById("appliedCount").textContent =
-          applied.toLocaleString();
-        document.getElementById(
-          "appliedCaption"
-        ).textContent = `Applied vs Total Jobs (${applied}/${totalJobs})`;
+        document.getElementById("appliedCount").textContent = applied.toLocaleString();
+        document.getElementById("appliedCaption").textContent = `Applied vs Total Jobs (${applied}/${totalJobs})`;
         const pct = totalJobs > 0 ? applied / totalJobs : 0;
-        document.getElementById("appliedPct").textContent = `${Math.round(
-          pct * 100
-        )}%`;
+        document.getElementById("appliedPct").textContent = `${Math.round(pct * 100)}%`;
         const circle1 = document.querySelector("#cardApplied svg circle");
         setCircleProgress(circle1, pct);
       }
 
       function updateApprovedCard({ approved, pending }) {
         const total = approved + pending;
-        document.getElementById("approvedCount").textContent =
-          approved.toLocaleString();
-        document.getElementById(
-          "approvedCaption"
-        ).textContent = `Approved vs Pending (${approved}/${pending})`;
+        document.getElementById("approvedCount").textContent = approved.toLocaleString();
+        document.getElementById("approvedCaption").textContent = `Approved vs Pending (${approved}/${pending})`;
         const pct = total > 0 ? approved / total : 0;
-        document.getElementById("approvedPct").textContent = `${Math.round(
-          pct * 100
-        )}%`;
+        document.getElementById("approvedPct").textContent = `${Math.round(pct * 100)}%`;
         const circle2 = document.querySelector("#cardApproved svg circle");
         setCircleProgress(circle2, pct);
       }
@@ -953,9 +1042,7 @@
           a.className = "user";
           a.innerHTML = `
             <img src="${imgUrl}" alt="Job image" onerror="this.onerror=null;this.src='images/profile-4.jpg';" />
-            <h2 title="${(j.job_title || "").replace(/"/g, "&quot;")}">${
-              j.job_title || "Untitled Job"
-            }</h2>
+            <h2 title="${(j.job_title || "").replace(/"/g, "&quot;")}">${j.job_title || "Untitled Job"}</h2>
             <p>${timeAgo(j.created_at)}</p>
           `;
           wrap.appendChild(a);
@@ -1166,7 +1253,7 @@
           row.setAttribute("data-course-id", c.id);
           row.style.cursor = "pointer";
 
-        const tagsText =
+          const tagsText =
             Array.isArray(c.tags) && c.tags.length
               ? c.tags.slice(0, 3).join(", ")
               : "";
@@ -1259,12 +1346,14 @@
             levelstatus: 0,
             earningBalance: 0,
           });
+          await setTopRightAvatar(null);  /* ADDED: show initials if no installer row */
           updateAppliedCard({ applied: 0, totalJobs: 0 });
           updateApprovedCard({ approved: 0, pending: 0 });
           renderUpcomingWork([]);
           await loadPublishedCourses(6, null);
         } else {
           updateLevelUI(inst);
+          await setTopRightAvatar(inst);  /* ADDED: show signed URL or initials */
           const { totalJobs, applied, approved, pending } = await fetchCounts(
             inst.id
           );
