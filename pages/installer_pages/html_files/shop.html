@@ -3,696 +3,103 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link
-      href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet"/>
     <link rel="stylesheet" href="../css_files/sideBar.css" />
     <title>Shop</title>
     <style>
       /* ───────── MAIN-ONLY STYLES ───────── */
-      main {
-        margin-top: 1.4rem;
+      :root{
+        --line:#e5e7eb; --card:#fff; --ink:#111827; --muted:#6b7280;
+        --brand:#20a44c; --accent:#20647c;
       }
+      main { margin-top: 1.4rem; scroll-behavior:smooth; }
 
       /* layout */
       main .shop-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1.25rem;
-        align-items: start;
-        margin-top: 1rem;
+        display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; align-items: start; margin-top: 1rem;
       }
       main .panel {
-        background: var(--color-white, #fff);
-        border: 1px solid var(--line, #e5e7eb);
-        border-radius: 16px;
-        box-shadow: var(--box-shadow, 0 4px 16px rgba(0, 0, 0, 0.05));
-        padding: 1rem;
+        background: var(--card); border: 1px solid var(--line); border-radius: 16px;
+        box-shadow: 0 4px 16px rgba(0,0,0,.05); padding: 1rem;
       }
-      main .panel h2 {
-        margin: 0 0 0.75rem;
-        font-size: 1rem;
-        color: #111827;
-      }
+      main .panel h2 { margin: 0 0 .75rem; font-size: 1rem; color: var(--ink); }
 
       /* left column: product list */
-      main .product-list {
-        display: flex;
-        flex-direction: column;
-        gap: 0.6rem;
-        margin: 0;
-        padding: 0;
-        list-style: none;
-        max-height: calc(100vh - 12rem);
-        overflow: auto;
-      }
-      main .product-card {
-        border: 1px solid var(--line, #e5e7eb);
-        border-radius: 12px;
-        transition: transform 0.08s ease, box-shadow 0.2s ease,
-          border-color 0.2s ease;
-        background: var(--card, #fff);
-      }
-      main .product-card:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
-        border-color: #d1d5db;
-      }
-      main .product-card a {
-        display: grid;
-        grid-template-columns: 56px 1fr auto;
-        gap: 0.8rem;
-        padding: 0.75rem;
-        text-decoration: none;
-        color: inherit;
-        align-items: center;
-      }
-      main .productImage {
-        width: 56px;
-        height: 56px;
-        border-radius: 10px;
-        background: #f3f4f6;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 0.75rem;
-        color: #6b7280;
-        user-select: none;
-      }
-      main .meta h3 {
-        margin: 0;
-        font-size: 0.95rem;
-        line-height: 1.2;
-      }
-      main .meta p {
-        margin: 0.15rem 0 0;
-        font-size: 0.8rem;
-        color: #6b7280;
-      }
-      main .price {
-        font-weight: 600;
-        font-size: 0.95rem;
-        white-space: nowrap;
-        color: #20a44c;
-      }
+      main .product-list { display:flex; flex-direction:column; gap:.6rem; margin:0; padding:0; list-style:none; max-height: calc(100vh - 12rem); overflow:auto; }
+      main .product-card { border:1px solid var(--line); border-radius:12px; transition:transform .08s ease, box-shadow .2s ease, border-color .2s ease; background:var(--card); }
+      main .product-card:hover { transform: translateY(-1px); box-shadow:0 6px 20px rgba(0,0,0,.06); border-color:#d1d5db; }
+      main .product-card a { display:grid; grid-template-columns:56px 1fr auto; gap:.8rem; padding:.75rem; text-decoration:none; color:inherit; align-items:center; }
+      main .productImage { width:56px; height:56px; border-radius:10px; background:#f3f4f6; display:flex; align-items:center; justify-content:center; font-size:.75rem; color:#6b7280; user-select:none; object-fit:cover; }
+      main .meta h3 { margin:0; font-size:.95rem; line-height:1.2; color:var(--ink); }
+      main .price { font-weight:600; font-size:.95rem; white-space:nowrap; color: var(--brand); }
 
       /* right column: details */
-      main .details-panel {
-        position: relative;
-        min-height: 420px;
-        max-height: calc(100vh - 12rem);
-        overflow: auto;
-      }
-      main .product-detail {
-        display: none;
-        animation: fadeIn 0.15s ease;
-      }
-      main .product-detail:target {
-        display: block;
-      }
-      main .placeholder {
-        padding: 2rem;
-        text-align: center;
-        color: #6b7280;
-      }
-      main .product-detail:target ~ .placeholder {
-        display: none;
-      }
-
-      @keyframes fadeIn {
-        from {
-          opacity: 0.7;
-          transform: translateY(2px);
-        }
-        to {
-          opacity: 1;
-          transform: none;
-        }
-      }
+      main .details-panel { position:relative; min-height: 420px; max-height: calc(100vh - 12rem); overflow:auto; }
+      main .product-detail { display:none; animation: fadeIn .15s ease; }
+      main .product-detail.active { display:block; }
+      main .placeholder { padding:2rem; text-align:center; color:#6b7280; }
+      @keyframes fadeIn { from{ opacity:.7; transform: translateY(2px);} to{opacity:1; transform:none;} }
 
       /* detail header block */
-      main .detail-head {
-        display: flex;
-        gap: 1rem;
-        align-items: center;
-        padding-bottom: 0.75rem;
-        border-bottom: 1px solid #e5e7eb;
-        margin-bottom: 1rem;
-      }
-      main .detail-thumb {
-        width: 90px;
-        height: 90px;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      main .title-price {
-        flex: 1;
-      }
-      main .title-price h3 {
-        margin: 0.1rem 0;
-        font-size: 1.1rem;
-      }
-      main .badges {
-        display: flex;
-        gap: 0.4rem;
-        flex-wrap: wrap;
-        margin-top: 0.25rem;
-      }
-      main .badge {
-        font-size: 0.72rem;
-        padding: 0.15rem 0.5rem;
-        border-radius: 999px;
-        background: #eef2ff;
-        color: #4f46e5;
-        border: 1px solid #e0e7ff;
-      }
-      main .sold-small {
-        color: #6b7280;
-        font-size: 0.8rem;
-      }
+      main .detail-head { display:flex; gap:1rem; align-items:center; padding-bottom:.75rem; border-bottom:1px solid #e5e7eb; margin-bottom:1rem; }
+      main .detail-thumb { width:90px; height:90px; border-radius:12px; display:flex; align-items:center; justify-content:center; background:#f3f4f6; overflow:hidden; }
+      main .detail-thumb img{ width:100%; height:100%; object-fit:cover; }
+      main .title-price { flex:1; }
+      main .title-price h3 { margin:.1rem 0; font-size:1.1rem; }
+      main .badges { display:flex; gap:.4rem; flex-wrap:wrap; margin-top:.25rem; }
+      main .badge { font-size:.72rem; padding:.15rem .5rem; border-radius:999px; background:#eef2ff; color:#4f46e5; border:1px solid #e0e7ff; }
+      main .sold-small { color: var(--muted); font-size:.85rem; }
 
       /* detail sections */
-      main .detail-grid {
-        display: grid;
-        gap: 1rem;
-        grid-template-columns: 1fr 1fr;
-      }
-      main .detail-grid > div:last-child {
-        grid-column: span 2;
-      }
-      main .field {
-        border: 1px solid #e5e7eb;
-        border-radius: 12px;
-        padding: 0.9rem;
-      }
-      main .field h4 {
-        margin: 0 0 0.5rem;
-        font-size: 0.88rem;
-        color: #374151;
-      }
-      main .desc {
-        grid-column: 1 / -1;
-      }
-      main .desc p {
-        margin: 0;
-        color: #374151;
-        font-size: 0.92rem;
-      }
+      main .detail-grid { display:grid; gap:1rem; grid-template-columns:1fr 1fr; }
+      main .detail-grid > div:last-child { grid-column: span 2; }
+      main .field { border:1px solid #e5e7eb; border-radius:12px; padding:.9rem; }
+      main .field h4 { margin:0 0 .5rem; font-size:.88rem; color:#374151; }
+      main .desc { grid-column:1 / -1; }
+      main .desc p { margin:0; color:#374151; font-size:.92rem; }
 
-      /* variations */
-      main .options {
-        display: flex;
-        gap: 0.5rem;
-        flex-wrap: wrap;
-      }
-      main .choice {
-        position: relative;
-      }
-      main .choice input {
-        position: absolute;
-        inset: 0;
-        opacity: 0;
-        pointer-events: none;
-      }
-      main .chip {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0.35rem 0.7rem;
-        border: 1px solid #d1d5db;
-        border-radius: 999px;
-        font-size: 0.85rem;
-        cursor: pointer;
-        background: #fff;
-      }
-      main .choice input:checked + .chip {
-        border-color: #20647c;
-        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
-      }
-
-      /* quantity + actions */
-      main .qty-row {
-        display: flex;
-        gap: 0.6rem;
-        align-items: center;
-        flex-wrap: wrap;
-      }
-      main .qty-input {
-        width: 96px;
-        border: 1px solid #d1d5db;
-        border-radius: 10px;
-        padding: 0.45rem 0.6rem;
-        font-size: 0.95rem;
-      }
-      main .actions {
-        display: flex;
-        gap: 0.6rem;
-        flex-wrap: wrap;
-        margin-top: 0.25rem;
-      }
-      main .btn {
-        border-radius: 12px;
-        border: 1px solid transparent;
-        padding: 0.6rem 0.9rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: transform 0.06s ease, box-shadow 0.15s ease,
-          background 0.2s ease;
-      }
-      main .btn:active {
-        transform: translateY(1px);
-      }
-      main .btn-primary {
-        background: #20a44c;
-        color: #fff;
-        box-shadow: 0 6px 18px rgba(79, 70, 229, 0.25);
-      }
-      main .btn-outline {
-        background: #fff;
-        color: #111827;
-        border-color: #d1d5db;
-      }
+      /* action button */
+      main .actions { display:flex; gap:.6rem; flex-wrap:wrap; margin-top:.25rem; }
+      main .btn { border-radius:12px; border:1px solid transparent; padding:.6rem .9rem; font-weight:600; cursor:pointer; transition: transform .06s ease, box-shadow .15s ease, background .2s ease; }
+      main .btn:active{ transform: translateY(1px); }
+      main .btn-primary{ background: var(--brand); color:#fff; }
+      main .btn-outline{ background:#fff; color: var(--ink); border-color:#d1d5db; }
 
       /* responsive */
-      @media (max-width: 980px) {
-        main .shop-grid {
-          grid-template-columns: 1fr;
-        }
-        main .detail-grid {
-          grid-template-columns: 1fr;
-        }
+      @media (max-width:980px){
+        main .shop-grid{ grid-template-columns:1fr; }
+        main .detail-grid{ grid-template-columns:1fr; }
       }
 
-      /* ===== EXTRA ANIMATIONS (MAIN-ONLY) ===== */
-      main {
-        scroll-behavior: smooth;
-      }
+      /* nice list-in animation */
+      @keyframes listIn { from{opacity:0; transform:translateY(6px) scale(.995);} to{opacity:1; transform:none;} }
+      main .product-list .product-card{ animation:listIn .32s ease both; }
+      main .product-list .product-card:nth-child(1){ animation-delay:.02s; }
+      main .product-list .product-card:nth-child(2){ animation-delay:.06s; }
+      main .product-list .product-card:nth-child(3){ animation-delay:.1s; }
+      main .product-list .product-card:nth-child(4){ animation-delay:.14s; }
+      main .product-list .product-card:nth-child(5){ animation-delay:.18s; }
 
-      @keyframes listIn {
-        from {
-          opacity: 0;
-          transform: translateY(6px) scale(0.995);
-        }
-        to {
-          opacity: 1;
-          transform: none;
-        }
-      }
-      main .product-list .product-card {
-        animation: listIn 0.32s ease both;
-      }
-      main .product-list .product-card:nth-child(1) {
-        animation-delay: 0.02s;
-      }
-      main .product-list .product-card:nth-child(2) {
-        animation-delay: 0.06s;
-      }
-      main .product-list .product-card:nth-child(3) {
-        animation-delay: 0.1s;
-      }
-      main .product-list .product-card:nth-child(4) {
-        animation-delay: 0.14s;
-      }
-      main .product-list .product-card:nth-child(5) {
-        animation-delay: 0.18s;
-      }
+      /* scrollbars */
+      main .product-list::-webkit-scrollbar, main .details-panel::-webkit-scrollbar{ width:10px; }
+      main .product-list::-webkit-scrollbar-thumb, main .details-panel::-webkit-scrollbar-thumb{ background: linear-gradient(#e5e7eb,#d1d5db); border-radius:999px; }
+      main .product-list::-webkit-scrollbar-track, main .details-panel::-webkit-scrollbar-track{ background:#f3f4f6; border-radius:999px; }
 
-      main .thumb {
-        position: relative;
-        overflow: hidden;
-      }
-      main .product-card:hover .thumb {
-        transform: translateZ(0) rotateX(0.5deg) rotateY(0.5deg);
-      }
-      main .thumb::after {
-        content: "";
-        position: absolute;
-        inset: -40% -60% auto auto;
-        width: 60%;
-        height: 200%;
-        background: linear-gradient(
-          115deg,
-          rgba(255, 255, 255, 0.06) 0%,
-          rgba(255, 255, 255, 0.35) 50%,
-          rgba(255, 255, 255, 0) 60%
-        );
-        transform: translateX(-140%) rotate(18deg);
-        pointer-events: none;
-      }
-      @keyframes shine {
-        to {
-          transform: translateX(180%) rotate(18deg);
-        }
-      }
-      main .product-card:hover .thumb::after {
-        animation: shine 0.9s ease;
-      }
-      main .product-card:hover .productImage {
-        transform: scale(1.04);
-        transition: transform 0.25s ease;
-      }
+      /* placeholder pulse */
+      @keyframes hintPulse{ 0%,100%{opacity:.7; transform:translateY(0);} 50%{opacity:1; transform:translateY(-1px);} }
+      main .placeholder{ animation: hintPulse 2.4s ease-in-out infinite; }
 
-      main .product-card a:focus-visible {
-        outline: none;
-        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.18);
-        border-radius: 12px;
+      /* ====== Skeletons ====== */
+      .sk-list .product-card{ pointer-events:none; }
+      .sk-line{ height:12px; width:100%; border-radius:8px; background:#eef2f7; position:relative; overflow:hidden; }
+      .sk-thumb{ width:56px; height:56px; border-radius:10px; background:#eef2f7; position:relative; overflow:hidden; }
+      .shimmer::after{
+        content:""; position:absolute; inset:0; transform:translateX(-100%);
+        background:linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.6) 50%, rgba(255,255,255,0) 100%);
+        animation: shimmer 1.2s infinite;
       }
-
-      @keyframes slideInRight {
-        from {
-          opacity: 0;
-          transform: translateX(8px);
-        }
-        to {
-          opacity: 1;
-          transform: none;
-        }
-      }
-      @keyframes riseUp {
-        from {
-          opacity: 0;
-          transform: translateY(6px);
-        }
-        to {
-          opacity: 1;
-          transform: none;
-        }
-      }
-      @keyframes pricePop {
-        0% {
-          transform: scale(0.9);
-          opacity: 0;
-        }
-        60% {
-          transform: scale(1.04);
-          opacity: 1;
-        }
-        100% {
-          transform: scale(1);
-        }
-      }
-      main .product-detail:target .detail-head {
-        animation: slideInRight 0.28s ease both;
-      }
-      main .product-detail:target .price {
-        animation: pricePop 0.32s ease both 0.08s;
-      }
-      main .product-detail:target .detail-grid > .field {
-        animation: riseUp 0.28s ease both;
-      }
-      main .product-detail:target .detail-grid > .field:nth-child(1) {
-        animation-delay: 0.04s;
-      }
-      main .product-detail:target .detail-grid > .field:nth-child(2) {
-        animation-delay: 0.08s;
-      }
-      main .product-detail:target .detail-grid > .field:nth-child(3) {
-        animation-delay: 0.12s;
-      }
-      main .product-detail:target .detail-grid > .field:nth-child(4) {
-        animation-delay: 0.16s;
-      }
-
-      @keyframes selectPop {
-        0% {
-          transform: scale(0.94);
-        }
-        70% {
-          transform: scale(1.06);
-        }
-        100% {
-          transform: scale(1);
-        }
-      }
-      main .choice input:checked + .chip {
-        animation: selectPop 0.18s ease;
-        box-shadow: 0 0 0 3px rgba(32, 100, 124, 0.15);
-      }
-
-      @keyframes glow {
-        0%,
-        100% {
-          box-shadow: 0 6px 18px rgba(32, 164, 76, 0.25);
-        }
-        50% {
-          box-shadow: 0 10px 28px rgba(32, 164, 76, 0.35);
-        }
-      }
-      main .btn-primary:hover {
-        transform: translateY(-1px);
-        animation: glow 1.4s ease-in-out infinite;
-      }
-      main .btn-outline:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 8px 22px rgba(17, 24, 39, 0.08);
-      }
-
-      main .qty-input:focus {
-        outline: none;
-        box-shadow: 0 0 0 3px rgba(32, 100, 124, 0.15);
-        border-color: #20647c;
-      }
-
-      main .product-list::-webkit-scrollbar,
-      main .details-panel::-webkit-scrollbar {
-        width: 10px;
-      }
-      main .product-list::-webkit-scrollbar-thumb,
-      main .details-panel::-webkit-scrollbar-thumb {
-        background: linear-gradient(#e5e7eb, #d1d5db);
-        border-radius: 999px;
-      }
-      main .product-list::-webkit-scrollbar-track,
-      main .details-panel::-webkit-scrollbar-track {
-        background: #f3f4f6;
-        border-radius: 999px;
-      }
-
-      @keyframes hintPulse {
-        0%,
-        100% {
-          opacity: 0.7;
-          transform: translateY(0);
-        }
-        50% {
-          opacity: 1;
-          transform: translateY(-1px);
-        }
-      }
-      main .placeholder {
-        animation: hintPulse 2.4s ease-in-out infinite;
-      }
-
-      main .details-panel {
-        transition: box-shadow 0.25s ease, transform 0.2s ease;
-      }
-      main:has(.product-detail:target) .details-panel {
-        box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08);
-        transform: translateZ(0);
-      }
-
-      /* ===== CART UI (BOTTOM OF DETAILS PANEL) ===== */
-      /* Sticky bar pinned to bottom of the scrollable details panel */
-      main .cart-bar {
-        position: sticky;
-        bottom: 0;
-        display: flex;
-        justify-content: flex-end;
-        gap: 0.6rem;
-        align-items: center;
-        padding: 0.6rem 0.25rem 0;
-        margin-top: 0.75rem;
-        background: linear-gradient(180deg, rgba(255, 255, 255, 0), #fff 40%);
-        border-top: 1px solid #e5e7eb;
-        z-index: 3;
-      }
-      main .cart-toggle {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        border: 1px solid #e5e7eb;
-        background: #fff;
-        color: #111827;
-        padding: 0.55rem 0.85rem;
-        border-radius: 12px;
-        cursor: pointer;
-        font-weight: 700;
-        transition: transform 0.08s ease, box-shadow 0.18s ease,
-          border-color 0.18s ease;
-      }
-      main .cart-toggle:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 10px 22px rgba(0, 0, 0, 0.06);
-        border-color: #d1d5db;
-      }
-      main .cart-toggle .material-icons-sharp {
-        font-size: 20px;
-        color: #20647c;
-      }
-      main .cart-count {
-        min-width: 22px;
-        height: 22px;
-        border-radius: 999px;
-        display: inline-grid;
-        place-items: center;
-        background: #20a44c;
-        color: #fff;
-        font-size: 0.8rem;
-        padding: 0 0.25rem;
-      }
-
-      /* Slide-up sheet that sits inside the details panel */
-      main .cart-sheet {
-        position: absolute;
-        left: 0.75rem;
-        right: 0.75rem;
-        bottom: 0.75rem;
-        border: 1px solid #e5e7eb;
-        border-radius: 16px;
-        background: #fff;
-        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
-        max-height: min(60vh, 420px);
-        padding: 1rem;
-        z-index: 5;
-        transform: translateY(110%);
-        opacity: 0;
-        pointer-events: none;
-        transition: transform 0.25s ease, opacity 0.25s ease;
-      }
-      main .cart-sheet.open {
-        transform: translateY(0);
-        opacity: 1;
-        pointer-events: auto;
-      }
-      main .cart-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 0.6rem;
-        margin-bottom: 0.6rem;
-      }
-      main .cart-header h2 {
-        font-size: 1rem;
-        margin: 0;
-      }
-      main .cart-close {
-        border: 1px solid #e5e7eb;
-        background: #fff;
-        border-radius: 10px;
-        padding: 0.25rem 0.5rem;
-        cursor: pointer;
-      }
-      main .cart-items {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-        display: flex;
-        flex-direction: column;
-        gap: 0.6rem;
-        max-height: 240px;
-        overflow: auto;
-      }
-      main .cart-item {
-        border: 1px solid #e5e7eb;
-        border-radius: 12px;
-        padding: 0.6rem 0.7rem;
-        display: grid;
-        grid-template-columns: 1fr auto;
-        gap: 0.35rem 0.6rem;
-        align-items: center;
-      }
-      main .cart-item .name {
-        font-weight: 700;
-      }
-      main .cart-item .meta {
-        font-size: 0.85rem;
-        color: #6b7280;
-      }
-      main .cart-item .qty {
-        font-size: 0.85rem;
-      }
-      main .cart-item .remove {
-        justify-self: end;
-        border: 1px solid #f3d2d8;
-        background: #fff5f7;
-        color: #b4232c;
-        border-radius: 10px;
-        padding: 0.25rem 0.5rem;
-        cursor: pointer;
-      }
-      main .cart-footer {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 0.6rem;
-        margin-top: 0.8rem;
-        flex-wrap: wrap;
-      }
-      main .cart-total {
-        font-weight: 800;
-      }
-      main .cart-actions {
-        display: flex;
-        gap: 0.5rem;
-      }
-      main .btn-clear {
-        border: 1px solid #e5e7eb;
-        background: #fff;
-        border-radius: 12px;
-        padding: 0.5rem 0.8rem;
-        cursor: pointer;
-      }
-      main .btn-checkout {
-        background: #20a44c;
-        color: #fff;
-        border: 1px solid transparent;
-        border-radius: 12px;
-        padding: 0.55rem 0.9rem;
-        cursor: pointer;
-      }
-
-      /* toast (kept global for visibility) */
-      main .cart-toast {
-        position: fixed;
-        right: 1rem;
-        bottom: 1rem;
-        z-index: 50;
-        background: #111827;
-        color: #fff;
-        padding: 0.7rem 1rem;
-        border-radius: 12px;
-        box-shadow: 0 14px 38px rgba(0, 0, 0, 0.28);
-        opacity: 0;
-        transform: translateY(8px);
-        pointer-events: none;
-      }
-      main .cart-toast.show {
-        animation: toastIn 0.24s ease forwards,
-          toastOut 0.24s ease 2.2s forwards;
-      }
-      @keyframes toastIn {
-        to {
-          opacity: 1;
-          transform: none;
-        }
-      }
-      @keyframes toastOut {
-        to {
-          opacity: 0;
-          transform: translateY(8px);
-        }
-      }
-
-      @media (max-width: 980px) {
-        main .cart-sheet {
-          left: 0.5rem;
-          right: 0.5rem;
-          max-height: 70vh;
-        }
-      }
+      @keyframes shimmer{ 0%{transform:translateX(-100%);} 100%{transform:translateX(100%);} }
+      .sk-chip{ width:70px; height:22px; border-radius:999px; background:#eef2f7; position:relative; overflow:hidden; }
     </style>
   </head>
 
@@ -710,42 +117,15 @@
           </div>
         </div>
         <div class="sidebar">
-          <a href="dashboard.html">
-            <span class="material-icons-sharp">dashboard</span>
-            <h3>Dashboard</h3>
-          </a>
-          <a href="job.html">
-            <span class="material-icons-sharp">work</span>
-            <h3>Jobs</h3>
-          </a>
-          <a href="myApplication.html">
-            <span class="material-icons-sharp">receipt</span>
-            <h3>My Application</h3>
-          </a>
-          <a href="courses.html">
-            <span class="material-icons-sharp">school</span>
-            <h3>Courses</h3>
-          </a>
-          <a href="shop.html" class="active">
-            <span class="material-icons-sharp">shopping_cart</span>
-            <h3>Shop</h3>
-          </a>
-          <a href="earnings.html">
-            <span class="material-icons-sharp">account_balance</span>
-            <h3>Earnings</h3>
-          </a>
-          <a href="documents.html">
-            <span class="material-icons-sharp">file_copy</span>
-            <h3>Documents</h3>
-          </a>
-          <a href="settings.html">
-            <span class="material-icons-sharp">settings</span>
-            <h3>Settings</h3>
-          </a>
-          <a href="#" id="logout-btn">
-            <span class="material-icons-sharp">logout</span>
-            <h3>Logout</h3>
-          </a>
+          <a href="dashboard.html"><span class="material-icons-sharp">dashboard</span><h3>Dashboard</h3></a>
+          <a href="job.html"><span class="material-icons-sharp">work</span><h3>Jobs</h3></a>
+          <a href="myApplication.html"><span class="material-icons-sharp">receipt</span><h3>My Application</h3></a>
+          <a href="courses.html"><span class="material-icons-sharp">school</span><h3>Courses</h3></a>
+          <a href="shop.html" class="active"><span class="material-icons-sharp">shopping_cart</span><h3>Shop</h3></a>
+          <a href="earnings.html"><span class="material-icons-sharp">account_balance</span><h3>Earnings</h3></a>
+          <a href="documents.html"><span class="material-icons-sharp">file_copy</span><h3>Documents</h3></a>
+          <a href="settings.html"><span class="material-icons-sharp">settings</span><h3>Settings</h3></a>
+          <a href="#" id="logout-btn"><span class="material-icons-sharp">logout</span><h3>Logout</h3></a>
         </div>
       </aside>
       <!-- End of Sidebar Section -->
@@ -754,496 +134,190 @@
       <main>
         <div class="titlePageDiv">
           <h1>Shop for your tools!</h1>
-          <p>Find parts and gear, then view full details on the right.</p>
+          <p>Pick a product to see details, then open it in Shopee or Lazada.</p>
         </div>
 
-        <div class="cart-toast" role="status" aria-live="polite"></div>
-
         <section class="shop-grid">
-          <!-- LEFT: product list -->
+          <!-- LEFT: product list (dynamic) -->
           <section class="panel">
             <h2>Products</h2>
-            <ul class="product-list">
-              <li class="product-card">
-                <a href="#p1">
-                  <div class="thumb">
-                    <img
-                      src="../images/profile-1.jpg"
-                      class="productImage"
-                      alt="product image"
-                    />
-                  </div>
-                  <div class="meta">
-                    <h3>Cat6 Ethernet Cable (10m)</h3>
-                    <p>Sold: 312</p>
-                  </div>
-                  <div class="price">₱450</div>
-                </a>
-              </li>
-              <li class="product-card">
-                <a href="#p2">
-                  <div class="thumb">
-                    <img
-                      src="../images/profile-1.jpg"
-                      class="productImage"
-                      alt="product image"
-                    />
-                  </div>
-                  <div class="meta">
-                    <h3>4MP PoE CCTV Camera</h3>
-                    <p>Sold: 128</p>
-                  </div>
-                  <div class="price">₱2,950</div>
-                </a>
-              </li>
-              <li class="product-card">
-                <a href="#p3">
-                  <div class="thumb">
-                    <img
-                      src="../images/profile-1.jpg"
-                      class="productImage"
-                      alt="product image"
-                    />
-                  </div>
-                  <div class="meta">
-                    <h3>Smart Wi-Fi Plug</h3>
-                    <p>Sold: 540</p>
-                  </div>
-                  <div class="price">₱699</div>
-                </a>
-              </li>
-            </ul>
+            <ul class="product-list" id="productList"></ul>
           </section>
 
-          <!-- RIGHT: details -->
+          <!-- RIGHT: details (dynamic) -->
           <section class="panel details-panel">
-            <!-- p1 -->
-            <article id="p1" class="product-detail" data-id="p1">
-              <div class="detail-head">
-                <div class="detail-thumb">
-                  <img
-                    src="../images/profile-1.jpg"
-                    class="productImage"
-                    alt="product image"
-                  />
-                </div>
-                <div class="title-price">
-                  <h3>Cat6 Ethernet Cable (10m)</h3>
-                  <div class="badges">
-                    <span class="badge">Networking</span>
-                  </div>
-                  <div class="sold-small">Sold: 312</div>
-                </div>
-                <div class="price">₱450</div>
-              </div>
-
-              <div class="detail-grid">
-                <div class="field">
-                  <h4>Shipping</h4>
-                  <p>Ships in 2–3 days</p>
-                </div>
-
-                <div class="field">
-                  <h4>Variations</h4>
-                  <div class="options">
-                    <label class="choice"
-                      ><input type="radio" name="p1-color" checked /><span
-                        class="chip"
-                        >Blue</span
-                      ></label
-                    >
-                    <label class="choice"
-                      ><input type="radio" name="p1-color" /><span class="chip"
-                        >Black</span
-                      ></label
-                    >
-                    <label class="choice"
-                      ><input type="radio" name="p1-length" /><span class="chip"
-                        >5m</span
-                      ></label
-                    >
-                    <label class="choice"
-                      ><input type="radio" name="p1-length" checked /><span
-                        class="chip"
-                        >10m</span
-                      ></label
-                    >
-                    <label class="choice"
-                      ><input type="radio" name="p1-length" /><span class="chip"
-                        >20m</span
-                      ></label
-                    >
-                  </div>
-                </div>
-
-                <div class="field desc">
-                  <h4>Description / Specs</h4>
-                  <p>
-                    Cat6 UTP, 24AWG copper, 1Gbps rated up to 100m, snagless
-                    boots.
-                  </p>
-                </div>
-
-                <div class="field">
-                  <h4>Quantity</h4>
-                  <div class="qty-row">
-                    <input class="qty-input" type="number" min="1" value="1" />
-                    <div class="actions">
-                      <button class="btn btn-outline" type="button">
-                        Add to cart
-                      </button>
-                      <button class="btn btn-primary" type="button">
-                        Buy now
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </article>
-
-            <!-- p2 -->
-            <article id="p2" class="product-detail" data-id="p2">
-              <div class="detail-head">
-                <div class="detail-thumb">IMG</div>
-                <div class="title-price">
-                  <h3>4MP PoE CCTV Camera</h3>
-                  <div class="badges">
-                    <span class="badge">CCTV</span
-                    ><span class="badge">PoE</span>
-                  </div>
-                  <div class="sold-small">Sold: 128</div>
-                </div>
-                <div class="price">₱2,950</div>
-              </div>
-
-              <div class="detail-grid">
-                <div class="field">
-                  <h4>Shipping</h4>
-                  <p>Ships in 3–5 days</p>
-                </div>
-
-                <div class="field">
-                  <h4>Variations</h4>
-                  <div class="options">
-                    <label class="choice"
-                      ><input type="radio" name="p2-color" checked /><span
-                        class="chip"
-                        >White</span
-                      ></label
-                    >
-                    <label class="choice"
-                      ><input type="radio" name="p2-color" /><span class="chip"
-                        >Black</span
-                      ></label
-                    >
-                    <label class="choice"
-                      ><input type="radio" name="p2-storage" checked /><span
-                        class="chip"
-                        >32GB</span
-                      ></label
-                    >
-                    <label class="choice"
-                      ><input type="radio" name="p2-storage" /><span
-                        class="chip"
-                        >64GB</span
-                      ></label
-                    >
-                  </div>
-                </div>
-
-                <div class="field desc">
-                  <h4>Description / Specs</h4>
-                  <p>
-                    4MP (2688×1520) @ 30fps, IR 30m, IP67, H.265, ONVIF, PoE
-                    IEEE 802.3af.
-                  </p>
-                </div>
-
-                <div class="field">
-                  <h4>Quantity</h4>
-                  <div class="qty-row">
-                    <input class="qty-input" type="number" min="1" value="1" />
-                    <div class="actions">
-                      <button class="btn btn-outline" type="button">
-                        Add to cart
-                      </button>
-                      <button class="btn btn-primary" type="button">
-                        Buy now
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </article>
-
-            <!-- p3 -->
-            <article id="p3" class="product-detail" data-id="p3">
-              <div class="detail-head">
-                <div class="detail-thumb">IMG</div>
-                <div class="title-price">
-                  <h3>Smart Wi-Fi Plug</h3>
-                  <div class="badges">
-                    <span class="badge">Electrical</span
-                    ><span class="badge">Smart Home</span>
-                  </div>
-                  <div class="sold-small">Sold: 540</div>
-                </div>
-                <div class="price">₱699</div>
-              </div>
-
-              <div class="detail-grid">
-                <div class="field">
-                  <h4>Shipping</h4>
-                  <p>Ships next day</p>
-                </div>
-
-                <div class="field">
-                  <h4>Variations</h4>
-                  <div class="options">
-                    <label class="choice"
-                      ><input type="radio" name="p3-color" checked /><span
-                        class="chip"
-                        >White</span
-                      ></label
-                    >
-                    <label class="choice"
-                      ><input type="radio" name="p3-color" /><span class="chip"
-                        >Black</span
-                      ></label
-                    >
-                  </div>
-                </div>
-
-                <div class="field desc">
-                  <h4>Description / Specs</h4>
-                  <p>
-                    2.4GHz Wi-Fi, 10A max, works with Alexa/Google, energy
-                    monitoring.
-                  </p>
-                </div>
-
-                <div class="field">
-                  <h4>Quantity</h4>
-                  <div class="qty-row">
-                    <input class="qty-input" type="number" min="1" value="1" />
-                    <div class="actions">
-                      <button class="btn btn-outline" type="button">
-                        Add to cart
-                      </button>
-                      <button class="btn btn-primary" type="button">
-                        Buy now
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </article>
-
-            <!-- shown when nothing selected -->
-            <div class="placeholder">
-              Select a product on the left to see full details.
-            </div>
-
-            <!-- CART: sheet + sticky bar live at the very bottom of details panel -->
-            <section id="cartSheet" class="cart-sheet" aria-hidden="true">
-              <div class="cart-header">
-                <h2>My Cart</h2>
-                <button class="cart-close" aria-label="Close cart">
-                  <span class="material-icons-sharp">close</span>
-                </button>
-              </div>
-              <ul class="cart-items"></ul>
-              <div class="cart-footer">
-                <div class="cart-total">Total: ₱0</div>
-                <div class="cart-actions">
-                  <button class="btn-clear" type="button">
-                    <span
-                      class="material-icons-sharp"
-                      style="vertical-align: middle; font-size: 18px"
-                      >delete</span
-                    >
-                    Clear
-                  </button>
-                  <button class="btn-checkout" type="button">
-                    <span
-                      class="material-icons-sharp"
-                      style="vertical-align: middle; font-size: 18px"
-                      >shopping_cart_checkout</span
-                    >
-                    Checkout
-                  </button>
-                </div>
-              </div>
-            </section>
-
-            <div class="cart-bar">
-              <button
-                class="cart-toggle"
-                aria-expanded="false"
-                aria-controls="cartSheet"
-              >
-                <span class="material-icons-sharp" aria-hidden="true"
-                  >shopping_cart</span
-                >
-                <span class="cart-label">Cart</span>
-                <span class="cart-count">0</span>
-              </button>
-            </div>
+            <article id="detail" class="product-detail"></article>
+            <div class="placeholder" id="placeholder">Select a product on the left to see full details.</div>
           </section>
         </section>
       </main>
     </div>
 
-    <script>
-      // --- Minimal cart logic (scoped to MAIN/DETAILS PANEL) ---
-      (function () {
-        const main = document.querySelector("main");
-        const panel = main.querySelector(".details-panel");
-        const toast = main.querySelector(".cart-toast");
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="module">
+      import { SUPABASE_URL, SUPABASE_ANON_KEY } from "../../../supabase.js";
 
-        const sheet = panel.querySelector("#cartSheet");
-        const toggleBtn = panel.querySelector(".cart-toggle");
-        const closeBtn = panel.querySelector(".cart-close");
-        const listEl = panel.querySelector(".cart-items");
-        const totalEl = panel.querySelector(".cart-total");
-        const clearBtn = panel.querySelector(".btn-clear");
-        const checkoutBtn = panel.querySelector(".btn-checkout");
-        const countEl = panel.querySelector(".cart-count");
+      // Clients
+      const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { db: { schema: "shop" } });
 
-        const currency = (n) =>
-          "₱" + (n || 0).toLocaleString("en-PH", { maximumFractionDigits: 2 });
-        const parsePrice = (txt) =>
-          Number(String(txt).replace(/[^\d.]/g, "")) || 0;
+      // DOM
+      const listEl = document.getElementById("productList");
+      const detailEl = document.getElementById("detail");
+      const placeholderEl = document.getElementById("placeholder");
 
-        let cart = []; // { key, id, name, options, qty, price }
-        const keyOf = (id, options) => id + "|" + options.join(",");
+      // Helpers
+      const php = new Intl.NumberFormat("en-PH", { style:"currency", currency:"PHP", maximumFractionDigits:0 });
+      const escapeHtml = (s)=> String(s||"").replace(/[&<>"']/g,(m)=>({"&":"&amp;","<":"&lt;","&gt;":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+      function productExternalUrl(p){
+        const link = (p.product_link||"").trim();
+        if (link && /^https?:\/\//i.test(link)) return link;
+        const q = encodeURIComponent(p.product_name || "");
+        if (p.platform === "Shopee") return `https://shopee.ph/search?keyword=${q}`;
+        if (p.platform === "Lazada") return `https://www.lazada.com.ph/catalog/?q=${q}`;
+        return "#";
+      }
 
-        function getSelectedOptions(detail) {
-          const checked = detail.querySelectorAll(".choice input:checked");
-          return Array.from(checked).map((inp) =>
-            inp.closest("label").innerText.trim()
-          );
-        }
-
-        function addToCart(fromButton) {
-          const detail = fromButton.closest(".product-detail");
-          if (!detail) return;
-
-          const id = detail.dataset.id || detail.id;
-          const name =
-            detail.querySelector(".title-price h3")?.textContent.trim() ||
-            "Item";
-          const price = parsePrice(
-            detail.querySelector(".price")?.textContent || "0"
-          );
-          const qty = Math.max(
-            1,
-            parseInt(detail.querySelector(".qty-input")?.value || "1", 10)
-          );
-          const options = getSelectedOptions(detail);
-          const key = keyOf(id, options);
-
-          const existing = cart.find((i) => i.key === key);
-          if (existing) existing.qty += qty;
-          else cart.push({ key, id, name, options, qty, price });
-
-          renderCart();
-          showToast(`${name} ×${qty} added to cart`);
-          openCart(true);
-        }
-
-        function removeItem(key) {
-          cart = cart.filter((i) => i.key !== key);
-          renderCart();
-        }
-
-        function clearCart() {
-          cart = [];
-          renderCart();
-        }
-
-        function renderCart() {
-          listEl.innerHTML = "";
-          let total = 0;
-          cart.forEach((item) => {
-            const sub = item.qty * item.price;
-            total += sub;
-            const li = document.createElement("li");
-            li.className = "cart-item";
-            li.innerHTML = `
-            <div class="name">${item.name}</div>
-            <button class="remove" data-key="${
-              item.key
-            }" type="button"><span class="material-icons-sharp" style="font-size:18px;vertical-align:middle">remove_shopping_cart</span> Remove</button>
-            <div class="meta">${item.options.join(" · ") || "—"}</div>
-            <div class="qty">Qty: ${item.qty} · ${currency(item.price)} ea</div>
-            <div class="sub" style="grid-column:1 / -1; text-align:right; font-weight:700;">${currency(
-              sub
-            )}</div>
+      // Skeleton list while loading
+      function showSkeletonList(count=6){
+        listEl.classList.add("sk-list");
+        listEl.innerHTML = "";
+        for (let i=0; i<count; i++){
+          const li = document.createElement("li");
+          li.className = "product-card";
+          li.innerHTML = `
+            <div style="display:grid; grid-template-columns:56px 1fr auto; gap:.8rem; padding:.75rem; align-items:center;">
+              <div class="sk-thumb shimmer"></div>
+              <div>
+                <div class="sk-line shimmer" style="width:70%; margin-bottom:6px;"></div>
+                <div class="sk-line shimmer" style="width:40%;"></div>
+              </div>
+              <div class="sk-line shimmer" style="width:60px;"></div>
+            </div>
           `;
-            listEl.appendChild(li);
-          });
-
-          totalEl.textContent = `Total: ${currency(total)}`;
-          const count = cart.reduce((n, i) => n + i.qty, 0);
-          countEl.textContent = count;
-
-          if (cart.length === 0) {
-            const empty = document.createElement("li");
-            empty.className = "cart-item";
-            empty.innerHTML = `<div class="name" style="font-weight:600">Cart is empty</div><div class="meta">Pick a product then click “Add to cart”.</div>`;
-            listEl.appendChild(empty);
-          }
+          listEl.appendChild(li);
         }
+      }
 
-        function showToast(msg) {
-          toast.textContent = msg;
-          toast.classList.remove("show");
-          void toast.offsetWidth;
-          toast.classList.add("show");
+      // Load only published products
+      async function fetchPublished(){
+        const { data, error } = await supabase
+          .from("products")
+          .select("id, product_name, price, platform, product_link, image_url, features, description, is_published")
+          .eq("is_published", true)
+          .order("created_at", { ascending:false });
+        if (error) throw error;
+        return data || [];
+      }
+
+      function renderList(items){
+        listEl.classList.remove("sk-list");
+        listEl.innerHTML = "";
+        if (!items.length){
+          listEl.innerHTML = `<li style="color:#6b7280; padding:.5rem .25rem;">No published products yet.</li>`;
+          return;
         }
-
-        function openCart(forceOpen) {
-          const isOpen = sheet.classList.contains("open");
-          const shouldOpen = forceOpen ?? !isOpen;
-          if (shouldOpen) {
-            sheet.classList.add("open");
-            sheet.setAttribute("aria-hidden", "false");
-            toggleBtn.setAttribute("aria-expanded", "true");
-          } else {
-            sheet.classList.remove("open");
-            sheet.setAttribute("aria-hidden", "true");
-            toggleBtn.setAttribute("aria-expanded", "false");
-          }
+        for (const p of items){
+          const li = document.createElement("li");
+          li.className = "product-card";
+          const price = php.format(Number(p.price||0));
+          const imgHtml = p.image_url
+            ? `<img src="${escapeHtml(p.image_url)}" class="productImage" alt="${escapeHtml(p.product_name)}">`
+            : `<div class="productImage">IMG</div>`;
+          li.innerHTML = `
+            <a href="#">
+              <div class="thumb">${imgHtml}</div>
+              <div class="meta">
+                <h3>${escapeHtml(p.product_name)}</h3>
+              </div>
+              <div class="price">${price}</div>
+            </a>
+          `;
+          // clicking anywhere opens details on the right
+          li.querySelector("a").addEventListener("click",(e)=>{ e.preventDefault(); renderDetail(p); });
+          listEl.appendChild(li);
         }
+      }
 
-        // Wire up buttons
-        main.querySelectorAll(".actions .btn.btn-outline").forEach((btn) => {
-          if ((btn.textContent || "").toLowerCase().includes("add to cart")) {
-            btn.addEventListener("click", () => addToCart(btn));
+      function renderDetail(p){
+        const price = php.format(Number(p.price||0));
+        const imgHtml = p.image_url ? `<img src="${escapeHtml(p.image_url)}" class="productImage" alt="${escapeHtml(p.product_name)}" style="width:100%; height:100%; object-fit:cover;">` : "";
+        const features = Array.isArray(p.features) ? p.features : [];
+        const btnLabel = p.platform ? `Open in ${escapeHtml(p.platform)}` : "Open product";
+        const link = productExternalUrl(p);
+        const descriptionHtml = escapeHtml(p.description || "");
+
+        detailEl.classList.add("active");
+        placeholderEl.style.display = "none";
+        detailEl.innerHTML = `
+          <div class="detail-head">
+            <div class="detail-thumb">${imgHtml || "IMG"}</div>
+            <div class="title-price">
+              <h3>${escapeHtml(p.product_name)}</h3>
+              <div class="badges">
+                ${features.slice(0,6).map(f=>`<span class="badge">${escapeHtml(f)}</span>`).join("")}
+              </div>
+              <div class="sold-small">${escapeHtml(p.platform || "—")}</div>
+            </div>
+            <div class="price">${price}</div>
+          </div>
+
+          <div class="detail-grid">
+            <div class="field">
+              <h4>Where to buy</h4>
+              <p>We’ll send you to the merchant to complete your purchase.</p>
+              <div class="actions" style="margin-top:.6rem;">
+                <a class="btn btn-primary" href="${link}" target="_blank" rel="noopener">
+                  <span class="material-icons-sharp" style="vertical-align:middle; font-size:18px">open_in_new</span>
+                  ${btnLabel}
+                </a>
+                <button class="btn btn-outline" type="button" id="copyLinkBtn">
+                  <span class="material-icons-sharp" style="vertical-align:middle; font-size:18px">link</span>
+                  Copy link
+                </button>
+              </div>
+            </div>
+
+            <!-- NEW: Description block -->
+            <div class="field desc">
+              <h4>Description / Specs</h4>
+              <p>${descriptionHtml || "No description provided."}</p>
+            </div>
+
+            <div class="field desc">
+              <h4>Notes</h4>
+              <p>This listing is provided via our affiliates. Availability and price may change on the merchant’s page.</p>
+            </div>
+          </div>
+        `;
+
+        // Copy link handler
+        detailEl.querySelector("#copyLinkBtn")?.addEventListener("click", async ()=>{
+          try{
+            await navigator.clipboard.writeText(link);
+            alert("Product link copied!");
+          }catch{
+            prompt("Copy this link:", link);
           }
         });
+      }
 
-        listEl.addEventListener("click", (e) => {
-          const btn = e.target.closest(".remove");
-          if (btn) removeItem(btn.dataset.key);
-        });
+      async function init(){
+        showSkeletonList(6);
+        try{
+          const items = await fetchPublished();
+          renderList(items);
+          if (items.length){ renderDetail(items[0]); }
+        }catch(e){
+          listEl.classList.remove("sk-list");
+          listEl.innerHTML = `<li style="color:#b4232c; padding:.5rem .25rem;">Failed to load products: ${e.message}</li>`;
+        }
+      }
 
-        clearBtn.addEventListener("click", clearCart);
-        checkoutBtn.addEventListener("click", () => {
-          if (!cart.length) {
-            showToast("Your cart is empty.");
-            return;
-          }
-          alert("Demo checkout — plug in your checkout flow here.");
-        });
-
-        toggleBtn.addEventListener("click", () => openCart());
-        closeBtn.addEventListener("click", () => openCart(false));
-
-        renderCart();
-      })();
+      init();
     </script>
+
+    <!-- Your global scripts (unchanged) -->
     <script src="../../general_files/index.js"></script>
     <script type="module" src="../../general_files/session.js"></script>
   </body>

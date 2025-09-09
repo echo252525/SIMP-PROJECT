@@ -1,782 +1,718 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet"/>
+    <link rel="stylesheet" href="../css_files/sideBar.css" />
+    <title>Manage Your Shop!</title>
+    <style>
+      :root {
+        --ink: #1c2430; --muted: #6c7a8a; --line: #e7edf3; --bg: #f8fbfd; --card: #ffffff;
+        --brand: #20a44c; --danger: #e53935; --pill: #eef6ff; --radius: 14px;
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet" />
-  <link rel="stylesheet" href="../css_files/sideBar.css" />
-  <title>Manage Your Shop!</title>
-  <style>
-    :root {
-      --ink: #1c2430;
-      --muted: #6c7a8a;
-      --line: #e7edf3;
-      --bg: #f8fbfd;
-      --card: #ffffff;
-      --brand: #20a44c;
-      --danger: #e53935;
-      --pill: #eef6ff;
-      --radius: 14px;
-    }
-
-    main {
-      margin-top: 1.4rem;
-    }
-
-    img {
-      display: block;
-      width: 100%;
-      object-fit: cover;
-    }
-
-    /* Header */
-    .page-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
-
-    .page-head h1 {
-      margin: 0;
-      color: var(--ink);
-    }
-
-    .page-head p {
-      margin: .25rem 0 0;
-      color: var(--muted);
-    }
-
-    .head-actions {
-      display: flex;
-      gap: .6rem;
-      align-items: center;
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: .45rem;
-      padding: .65rem .9rem;
-      border-radius: 10px;
-      border: 1px solid var(--line);
-      background: #fff;
-      cursor: pointer;
-      transition: .15s ease;
-      font-weight: 600;
-      color: var(--ink);
-    }
-
-    .btn:hover {
-      transform: translateY(-1px);
-    }
-
-    .btn.primary {
-      background: var(--brand);
-      color: #fff;
-      border-color: var(--brand);
-    }
-
-    .btn.ghost {
-      background: transparent;
-    }
-
-    .btn.danger {
-      background: var(--danger);
-      color: #fff;
-      border-color: var(--danger);
-    }
-
-    .btn.icon {
-      padding: .5rem .6rem;
-    }
-
-    .btn .material-icons-sharp {
-      font-size: 20px;
-    }
-
-    /* Controls */
-    .controls {
-      margin: 1rem 0;
-      display: flex;
-      gap: .6rem;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-
-    .controls .field {
-      background: #fff;
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      padding: .5rem .7rem;
-      display: flex;
-      gap: .5rem;
-      align-items: center;
-    }
-
-    .controls input[type="text"],
-    .controls input[type="number"],
-    .controls select {
-      border: none;
-      outline: none;
-      font: inherit;
-      color: var(--ink);
-      min-width: 160px;
-      background: transparent;
-    }
-
-    .controls .price-range {
-      display: flex;
-      gap: .4rem;
-      align-items: center;
-    }
-
-    .controls label {
-      color: var(--muted);
-      font-size: .9rem;
-    }
-
-    /* Grid */
-    .grid {
-      display: grid;
-      gap: 1rem;
-      grid-template-columns: repeat(12, 1fr);
-    }
-
-    .card {
-      grid-column: span 3;
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-    }
-
-    @media (max-width:1200px) {
-      .card {
-        grid-column: span 6;
+        /* extras for publish UI */
+        --ok: #16a34a;
+        --ok-bg: #e8f7ee;
+        --draft: #6b7280;
+        --draft-bg: #f3f4f6;
       }
-    }
+      main{ margin-top:1.4rem; } img{ display:block; width:100%; object-fit:cover; }
+      .page-head{ display:flex; justify-content:space-between; align-items:flex-start; gap:1rem; flex-wrap:wrap; }
+      .page-head h1{ margin:0; color:var(--ink); } .page-head p{ margin:.25rem 0 0; color:var(--muted); }
+      .head-actions{ display:flex; gap:.6rem; align-items:center; }
+      .btn{ display:inline-flex; align-items:center; gap:.45rem; padding:.65rem .9rem; border-radius:10px; border:1px solid var(--line); background:#fff; cursor:pointer; transition:.15s ease; font-weight:600; color:var(--ink); }
+      .btn:hover{ transform:translateY(-1px); } .btn.primary{ background:var(--brand); color:#fff; border-color:var(--brand); }
+      .btn.ghost{ background:transparent; } .btn.danger{ background:var(--danger); color:#fff; border-color:var(--danger); }
+      .btn.icon{ padding:.5rem .6rem; } .btn .material-icons-sharp{ font-size:20px; }
 
-    @media (max-width:720px) {
-      .card {
-        grid-column: span 12;
+      .controls{ margin:1rem 0; display:flex; gap:.6rem; flex-wrap:wrap; align-items:center; }
+      .controls .field{ background:#fff; border:1px solid var(--line); border-radius:10px; padding:.5rem .7rem; display:flex; gap:.5rem; align-items:center; }
+      .controls input[type="text"], .controls input[type="number"], .controls select{ border:none; outline:none; font:inherit; color:var(--ink); min-width:160px; background:transparent; }
+      .controls .price-range{ display:flex; gap:.4rem; align-items:center; }
+      .controls label{ color:var(--muted); font-size:.9rem; }
+
+      .grid{ display:grid; gap:1rem; grid-template-columns:repeat(12,1fr); }
+      .card{ grid-column:span 3; background:var(--card); border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; display:flex; flex-direction:column; }
+      @media (max-width:1200px){ .card{ grid-column:span 6; } } @media (max-width:720px){ .card{ grid-column:span 12; } }
+      .card .thumb{ aspect-ratio:1/1; background:#f1f5f9; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+      .card .thumb img{ width:100%; height:100%; object-fit:cover; }
+      .card .body{ padding:.9rem; display:flex; flex-direction:column; gap:.5rem; }
+      .title-row{ display:flex; justify-content:space-between; gap:.6rem; align-items:start; }
+      .title-row h3{ margin:0; font-size:1.05rem; color:#1f2937; }
+      .price{ font-weight:700; }
+      .features{ display:flex; flex-wrap:wrap; gap:.4rem; margin:.25rem 0 .2rem; }
+      .chip{ font-size:.85rem; padding:.25rem .5rem; border-radius:999px; background:var(--pill); border:1px solid var(--line); color:#1c2430; }
+      .actions{ display:flex; gap:.5rem; margin-top:.25rem; flex-wrap:wrap; }
+      .empty{ border:1px dashed var(--line); background:#fff; border-radius:var(--radius); display:flex; align-items:center; justify-content:center; padding:2.2rem; color:var(--muted); gap:.6rem; }
+
+      .modal-backdrop{ position:fixed; inset:0; background:rgba(17,24,39,.6); display:none; align-items:center; justify-content:center; z-index:50; }
+      .modal{ width:min(720px,92vw); background:#fff; border-radius:16px; border:1px solid var(--line); overflow:hidden; }
+      .modal header{ padding:1rem; border-bottom:1px solid var(--line); display:flex; justify-content:space-between; align-items:center; }
+      .modal header h3{ margin:0; }
+      .modal .content{ padding:1rem; display:grid; grid-template-columns:1fr 1fr; gap:.9rem; }
+      .modal .content .full{ grid-column:1 / -1; }
+      .modal .content label{ display:block; font-weight:600; color:#1c2430; margin-bottom:.25rem; }
+      .modal .content input, .modal .content select, .modal .content textarea{ width:100%; border:1px solid var(--line); border-radius:10px; padding:.6rem .7rem; font:inherit; outline:none; }
+      .modal footer{ padding:1rem; border-top:1px solid var(--line); display:flex; justify-content:flex-end; gap:.6rem; }
+      .show{ display:flex; }
+
+      .platform-badge{ font-size:.75rem; font-weight:700; letter-spacing:.02em; padding:.2rem .5rem; border-radius:6px; border:1px solid var(--line); background:#fafafa; color:#555; }
+      .badge-row{ display:flex; gap:.4rem; align-items:center; }
+
+      /* small helper for inline hint text */
+      .hint { font-size: 12px; color: #6c7a8a; margin-top: 4px; }
+
+      /* tiny helper for the publish toggle row */
+      .publish-row{ display:flex; align-items:center; gap:.6rem; margin-top:.25rem; font-size:.9rem; color:#1f2937; }
+
+      /* ===== Pretty Toggle Switch for Publish ===== */
+      .switch{ position:relative; width:48px; height:28px; display:inline-block; }
+      .switch input{ opacity:0; width:0; height:0; }
+      .slider{ position:absolute; cursor:pointer; inset:0; background:#e5e7eb; transition:.2s ease; border-radius:999px; border:1px solid #d1d5db; }
+      .slider::before{ content:""; position:absolute; height:22px; width:22px; left:3px; top:50%; transform:translateY(-50%); background:white; border-radius:50%; transition:.2s ease; box-shadow:0 1px 2px rgba(16,24,40,.12); }
+      .switch input:checked + .slider{ background:#22c55e33; border-color:#16a34a55; }
+      .switch input:checked + .slider::before{ transform:translate(20px,-50%); background:#16a34a; }
+
+      /* Status pill */
+      .status-pill{
+        display:inline-flex; align-items:center; gap:.4rem; padding:.2rem .5rem; border-radius:999px; font-weight:700; font-size:.75rem; border:1px solid;
       }
-    }
+      .status-pill.ok{ color:var(--ok); background:var(--ok-bg); border-color:#b7e3c7; }
+      .status-pill.draft{ color:var(--draft); background:var(--draft-bg); border-color:#e5e7eb; }
 
-    .card .thumb {
-      aspect-ratio: 1 / 1;
-      /* square thumbnail */
-      background: #f1f5f9;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-    }
+      /* Hide default text label visually but keep for a11y */
+      .sr-only{ position:absolute !important; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); border:0; }
 
-    .card .thumb img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .card .body {
-      padding: .9rem;
-      display: flex;
-      flex-direction: column;
-      gap: .5rem;
-    }
-
-    .title-row {
-      display: flex;
-      justify-content: space-between;
-      gap: .6rem;
-      align-items: start;
-    }
-
-    .title-row h3 {
-      margin: 0;
-      font-size: 1.05rem;
-      color: var(--ink);
-    }
-
-    .price {
-      font-weight: 700;
-    }
-
-    .features {
-      display: flex;
-      flex-wrap: wrap;
-      gap: .4rem;
-      margin: .25rem 0 .2rem;
-    }
-
-    .chip {
-      font-size: .85rem;
-      padding: .25rem .5rem;
-      border-radius: 999px;
-      background: var(--pill);
-      border: 1px solid var(--line);
-      color: var(--ink);
-    }
-
-    .actions {
-      display: flex;
-      gap: .5rem;
-      margin-top: .25rem;
-      flex-wrap: wrap;
-    }
-
-    .empty {
-      border: 1px dashed var(--line);
-      background: #fff;
-      border-radius: var(--radius);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 2.2rem;
-      color: var(--muted);
-      gap: .6rem;
-    }
-
-    /* Modal */
-    .modal-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(17, 24, 39, .6);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 50;
-    }
-
-    .modal {
-      width: min(720px, 92vw);
-      background: #fff;
-      border-radius: 16px;
-      border: 1px solid var(--line);
-      overflow: hidden;
-    }
-
-    .modal header {
-      padding: 1rem;
-      border-bottom: 1px solid var(--line);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .modal header h3 {
-      margin: 0;
-    }
-
-    .modal .content {
-      padding: 1rem;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: .9rem;
-    }
-
-    .modal .content .full {
-      grid-column: 1 / -1;
-    }
-
-    .modal .content label {
-      display: block;
-      font-weight: 600;
-      color: var(--ink);
-      margin-bottom: .25rem;
-    }
-
-    .modal .content input,
-    .modal .content select,
-    .modal .content textarea {
-      width: 100%;
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      padding: .6rem .7rem;
-      font: inherit;
-      outline: none;
-    }
-
-    .modal footer {
-      padding: 1rem;
-      border-top: 1px solid var(--line);
-      display: flex;
-      justify-content: flex-end;
-      gap: .6rem;
-    }
-
-    .show {
-      display: flex;
-    }
-
-    /* Tiny helpers */
-    .platform-badge {
-      font-size: .75rem;
-      font-weight: 700;
-      letter-spacing: .02em;
-      padding: .2rem .5rem;
-      border-radius: 6px;
-      border: 1px solid var(--line);
-      background: #fafafa;
-      color: #555;
-    }
-
-    .badge-row {
-      display: flex;
-      gap: .4rem;
-      align-items: center;
-    }
-  </style>
-</head>
-
-<body>
-  <div class="container">
-    <!-- Sidebar Section (unchanged) -->
-    <aside>
-      <div class="toggle">
-        <div class="logo">
-          <img src="../../../img/simpLogo.png" alt="SIMP Logo" />
-          <h2>SIMP<span class="danger">Project</span></h2>
+      /* ===== Skeleton Loading ===== */
+      .skeleton-card{ grid-column:span 3; border:1px solid var(--line); border-radius:var(--radius); background:var(--card); overflow:hidden; }
+      @media (max-width:1200px){ .skeleton-card{ grid-column:span 6; } }
+      @media (max-width:720px){ .skeleton-card{ grid-column:span 12; } }
+      .sk-thumb{ aspect-ratio:1/1; background: #eef2f7; position:relative; overflow:hidden; }
+      .sk-body{ padding:.9rem; display:flex; flex-direction:column; gap:.6rem; }
+      .sk-line{ height:14px; width:100%; border-radius:8px; background:#eef2f7; position:relative; overflow:hidden; }
+      .sk-line.w-60{ width:60%; } .sk-line.w-40{ width:40%; } .sk-line.w-80{ width:80%; }
+      .sk-chip-row{ display:flex; gap:.4rem; flex-wrap:wrap; }
+      .sk-chip{ width:70px; height:22px; border-radius:999px; background:#eef2f7; position:relative; overflow:hidden; }
+      .shimmer::after{
+        content:""; position:absolute; inset:0; transform:translateX(-100%);
+        background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.6) 50%, rgba(255,255,255,0) 100%);
+        animation: shimmer 1.2s infinite;
+      }
+      @keyframes shimmer{
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Sidebar -->
+      <aside>
+        <div class="toggle">
+          <div class="logo">
+            <img src="../../../img/simpLogo.png" alt="SIMP Logo" />
+            <h2>SIMP<span class="danger">Project</span></h2>
+          </div>
+          <div class="close" id="close-btn"><span class="material-icons-sharp">close</span></div>
         </div>
-        <div class="close" id="close-btn">
-          <span class="material-icons-sharp">close</span>
+        <div class="sidebar">
+          <a href="dashboard.html"><span class="material-icons-sharp">dashboard</span><h3>Dashboard</h3></a>
+          <a href="workerVerification.html"><span class="material-icons-sharp">engineering</span><h3>Workers<br/>Verification</h3></a>
+          <a href="jobVerification.html"><span class="material-icons-sharp">work</span><h3>Jobs<br/>Verification</h3></a>
+          <a href="jobApplicationVerification.html"><span class="material-icons-sharp">approval</span><h3>Application<br/>Verification</h3></a>
+          <a href="adminVerification.html"><span class="material-icons-sharp">shield</span><h3>Admin<br/>Verification</h3></a>
+          <a href="manageShop.html" class="active"><span class="material-icons-sharp">shop</span><h3>Manage<br/>Shop</h3></a>
+          <a href="paymentsRequest.html"><span class="material-icons-sharp">payments</span><h3>Payments<br/>Request</h3></a>
+          <a href="courses.html"><span class="material-icons-sharp">school</span><h3>Course<br/>Publisher</h3></a>
+          <a href="#"><span class="material-icons-sharp">settings</span><h3>Settings</h3></a>
+          <a href="#" id="logout-btn"><span class="material-icons-sharp">logout</span><h3>Logout</h3></a>
         </div>
-      </div>
+      </aside>
 
-      <div class="sidebar">
-        <a href="dashboard.html"><span class="material-icons-sharp">dashboard</span>
-          <h3>Dashboard</h3>
-        </a>
-        <a href="workerVerification.html"><span class="material-icons-sharp">engineering</span>
-          <h3>Workers<br>Verification</h3>
-        </a>
-        <a href="jobVerification.html"><span class="material-icons-sharp">work</span>
-          <h3>Jobs<br>Verification</h3>
-        </a>
-        <a href="jobApplicationVerification.html"><span class="material-icons-sharp">approval</span>
-          <h3>Application<br>Verification</h3>
-        </a>
-        <a href="adminVerification.html"><span class="material-icons-sharp">shield</span>
-          <h3>Admin<br>Verification</h3>
-        </a>
-        <a href="paymentsRequest.html"><span class="material-icons-sharp">payments</span>
-          <h3>Payments<br>Request</h3>
-        </a>
-        <a href="courses.html"><span class="material-icons-sharp">school</span>
-          <h3>Course<br>Publisher</h3>
-        </a>
-        <a href="manageShop.html" class="active"><span class="material-icons-sharp">shop</span>
-          <h3>Manage<br>Shop</h3>
-        </a>
-        <a href="#"><span class="material-icons-sharp">settings</span>
-          <h3>Settings</h3>
-        </a>
-        <a href="#" id="logout-btn"><span class="material-icons-sharp">logout</span>
-          <h3>Logout</h3>
-        </a>
-      </div>
-    </aside>
-    <!-- End of Sidebar Section -->
-
-    <!-- Main Content -->
-    <main>
-      <!-- Page header -->
-      <div class="page-head">
-        <div>
-          <h1>Manage Your Shop</h1>
-          <p>Add, search, and filter affiliate products from Shopee or Lazada.</p>
-        </div>
+      <!-- Main -->
+      <main>
+        <div class="page-head">
+          <div>
+            <h1>Manage Your Shop</h1>
+            <p>Add, search, and filter affiliate products from Shopee or Lazada.</p>
+          </div>
         <div class="head-actions">
-          <button class="btn primary" id="open-add-modal">
-            <span class="material-icons-sharp">add</span> Add Product
-          </button>
-          <button class="btn ghost" id="clear-storage" title="Clear local demo data">
-            <span class="material-icons-sharp">restart_alt</span> Reset Demo
-          </button>
-        </div>
-      </div>
-
-      <!-- Controls -->
-      <div class="controls">
-        <div class="field" style="flex:1 1 320px;">
-          <span class="material-icons-sharp">search</span>
-          <input id="searchInput" type="text" placeholder="Search by name or feature…">
+            <button class="btn primary" id="open-add-modal"><span class="material-icons-sharp">add</span> Add Product</button>
+            <button class="btn ghost" id="clear-storage" title="Reset demo (truncate + seed)"><span class="material-icons-sharp">restart_alt</span> Reset Demo</button>
+          </div>
         </div>
 
-        <div class="field">
-          <label for="platformFilter">Platform</label>
-          <select id="platformFilter">
-            <option value="">All</option>
-            <option value="Shopee">Shopee</option>
-            <option value="Lazada">Lazada</option>
-          </select>
+        <!-- Controls -->
+        <div class="controls">
+          <div class="field" style="flex:1 1 320px">
+            <span class="material-icons-sharp">search</span>
+            <input id="searchInput" type="text" placeholder="Search by name or feature…" />
+          </div>
+
+          <div class="field">
+            <label for="platformFilter">Platform</label>
+            <select id="platformFilter">
+              <option value="">All</option>
+              <option value="Shopee">Shopee</option>
+              <option value="Lazada">Lazada</option>
+            </select>
+          </div>
+
+          <div class="field price-range">
+            <label>₱</label>
+            <input id="minPrice" type="number" placeholder="Min" min="0" step="1" style="width:100px" />
+            <span>–</span>
+            <input id="maxPrice" type="number" placeholder="Max" min="0" step="1" style="width:100px" />
+          </div>
+
+          <div class="field">
+            <label for="favOnly">Favorites only</label>
+            <input id="favOnly" type="checkbox" style="transform:translateY(2px)" />
+          </div>
+
+          <button class="btn ghost" id="resetFilters"><span class="material-icons-sharp">filter_alt_off</span> Reset</button>
         </div>
 
-        <div class="field price-range">
-          <label>₱</label>
-          <input id="minPrice" type="number" placeholder="Min" min="0" step="1" style="width:100px;">
-          <span>–</span>
-          <input id="maxPrice" type="number" placeholder="Max" min="0" step="1" style="width:100px;">
+        <!-- Grid -->
+        <section id="grid" class="grid"></section>
+
+        <div id="emptyState" class="empty" style="display:none">
+          <span class="material-icons-sharp">inventory_2</span>
+          <span>No products yet. Click “Add Product” to get started.</span>
         </div>
-
-        <div class="field">
-          <label for="favOnly">Favorites only</label>
-          <input id="favOnly" type="checkbox" style="transform:translateY(2px);">
-        </div>
-
-        <!-- Removed Apply button by request -->
-        <button class="btn ghost" id="resetFilters"><span class="material-icons-sharp">filter_alt_off</span>
-          Reset</button>
-      </div>
-
-      <!-- Grid -->
-      <section id="grid" class="grid">
-        <!-- Cards injected here -->
-      </section>
-
-      <div id="emptyState" class="empty" style="display:none;">
-        <span class="material-icons-sharp">inventory_2</span>
-        <span>No products yet. Click “Add Product” to get started.</span>
-      </div>
-    </main>
-  </div>
-
-  <!-- Add / Edit Product Modal -->
-  <div id="addModal" class="modal-backdrop" aria-hidden="true">
-    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="addModalTitle">
-      <header>
-        <h3 id="addModalTitle">Add Product</h3>
-        <button class="btn ghost" id="close-add-modal" aria-label="Close">
-          <span class="material-icons-sharp">close</span>
-        </button>
-      </header>
-      <div class="content">
-        <div class="full">
-          <label for="prodName">Product Name</label>
-          <input id="prodName" type="text" placeholder="e.g., TP-Link Deco S7 Mesh Wi-Fi" required>
-        </div>
-
-        <div>
-          <label for="prodPrice">Price (PHP)</label>
-          <input id="prodPrice" type="number" min="0" step="1" placeholder="e.g., 3990" required>
-        </div>
-
-        <div>
-          <label for="prodPlatform">Platform</label>
-          <select id="prodPlatform">
-            <option value="Shopee">Shopee</option>
-            <option value="Lazada">Lazada</option>
-          </select>
-        </div>
-
-        <div class="full">
-          <label for="prodLink">Product Link (Shopee/Lazada)</label>
-          <input id="prodLink" type="url" placeholder="https://shopee.ph/... or https://www.lazada.com.ph/...">
-        </div>
-
-        <div class="full">
-          <label for="prodImage">Image URL</label>
-          <input id="prodImage" type="url" placeholder="https://...jpg / png / webp">
-        </div>
-
-        <div class="full">
-          <label for="prodFeatures">Features (comma-separated)</label>
-          <textarea id="prodFeatures" rows="3" placeholder="Dual-band, Mesh ready, Up to 300 sqm coverage"></textarea>
-        </div>
-      </div>
-      <footer>
-        <button class="btn" id="cancelAdd">Cancel</button>
-        <button class="btn primary" id="saveProduct">Save Product</button>
-      </footer>
+      </main>
     </div>
-  </div>
 
-  <script>
-    // ---- Simple local store (swap these to DB calls later without touching UI wiring)
-    let editingProductId = null;
-    const STORAGE_KEY = 'shopProducts';
-    const FAV_KEY = 'shopFavorites';
+    <!-- Add / Edit Product Modal -->
+    <div id="addModal" class="modal-backdrop" aria-hidden="true">
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="addModalTitle">
+        <header>
+          <h3 id="addModalTitle">Add Product</h3>
+          <button class="btn ghost" id="close-add-modal" aria-label="Close"><span class="material-icons-sharp">close</span></button>
+        </header>
+        <div class="content">
+          <div class="full">
+            <label for="prodName">Product Name</label>
+            <input id="prodName" type="text" placeholder="e.g., TP-Link Deco S7 Mesh Wi-Fi" required />
+          </div>
+          <div>
+            <label for="prodPrice">Price (PHP)</label>
+            <input id="prodPrice" type="number" min="0" step="1" placeholder="e.g., 3990" required />
+          </div>
+          <div>
+            <label for="prodPlatform">Platform</label>
+            <select id="prodPlatform">
+              <option value="Shopee">Shopee</option>
+              <option value="Lazada">Lazada</option>
+            </select>
+          </div>
+          <div class="full">
+            <label for="prodLink">Product Link (Shopee/Lazada)</label>
+            <input id="prodLink" type="url" placeholder="https://shopee.ph/... or https://www.lazada.com.ph/..." />
+          </div>
 
-    const fmtPHP = new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP', maximumFractionDigits: 0 });
+          <!-- === Upload only; URL auto from bucket === -->
+          <div class="full">
+            <label for="prodImageFile">Upload Image (to bucket)</label>
+            <input id="prodImageFile" type="file" accept="image/*" />
+            <div class="hint">For new products, the image URL is set automatically after upload.</div>
+          </div>
 
-    const $ = (sel, root = document) => root.querySelector(sel);
-    const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+          <!-- Wrapped so we can hide it in Add mode only -->
+          <div id="imageUrlGroup" class="full">
+            <label for="prodImage">Image URL</label>
+            <input id="prodImage" type="url" placeholder="https://...jpg / png / webp" />
+          </div>
 
-    const grid = $('#grid');
-    const emptyState = $('#emptyState');
+          <div class="full">
+            <label for="prodFeatures">Features (comma-separated)</label>
+            <textarea id="prodFeatures" rows="3" placeholder="Dual-band, Mesh ready, Up to 300 sqm coverage"></textarea>
+          </div>
 
-    const searchInput = $('#searchInput');
-    const platformFilter = $('#platformFilter');
-    const minPrice = $('#minPrice');
-    const maxPrice = $('#maxPrice');
-    const favOnly = $('#favOnly');
+          <!-- NEW: Description field (included in insert/update only) -->
+          <div class="full">
+            <label for="prodDescription">Description (optional)</label>
+            <textarea id="prodDescription" rows="4" placeholder="Short product description shown on product pages or listings."></textarea>
+          </div>
+        </div>
+        <footer>
+          <button class="btn" id="cancelAdd">Cancel</button>
+          <button class="btn primary" id="saveProduct">Save Product</button>
+        </footer>
+      </div>
+    </div>
 
-    const resetFiltersBtn = $('#resetFilters');
+    <!-- Supabase -->
+     <script src="../../general_files/index.js"></script>
+    <script type="module" src="../../general_files/session.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="module">
+      import { SUPABASE_URL, SUPABASE_ANON_KEY } from "../../../supabase.js";
 
-    const addModal = $('#addModal');
-    const openAddModalBtn = $('#open-add-modal');
-    const closeAddModalBtn = $('#close-add-modal');
-    const cancelAddBtn = $('#cancelAdd');
-    const saveProductBtn = $('#saveProduct');
+      // --- Supabase client (shop schema) ---
+      const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { db: { schema: "shop" } });
+      // separate client for Storage (default schema)
+      const supaStorage = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    const prodName = $('#prodName');
-    const prodPrice = $('#prodPrice');
-    const prodPlatform = $('#prodPlatform');
-    const prodLink = $('#prodLink');
-    const prodImage = $('#prodImage');
-    const prodFeatures = $('#prodFeatures');
+      // --- UI helpers & state ---
+      const fmtPHP = new Intl.NumberFormat("en-PH", { style:"currency", currency:"PHP", maximumFractionDigits:0 });
+      const $ = (s, r=document)=>r.querySelector(s); const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
+      const grid=$("#grid"), emptyState=$("#emptyState");
 
-    const clearStorage = $('#clear-storage');
+      const searchInput=$("#searchInput"), platformFilter=$("#platformFilter"), minPrice=$("#minPrice"), maxPrice=$("#maxPrice"), favOnly=$("#favOnly");
+      const resetFiltersBtn=$("#resetFilters");
+      const addModal=$("#addModal"), openAddModalBtn=$("#open-add-modal"), closeAddModalBtn=$("#close-add-modal"), cancelAddBtn=$("#cancelAdd"), saveProductBtn=$("#saveProduct");
+      const prodName=$("#prodName"), prodPrice=$("#prodPrice"), prodPlatform=$("#prodPlatform"), prodLink=$("#prodLink"), prodImage=$("#prodImage"), prodFeatures=$("#prodFeatures");
+      const prodImageFile=$("#prodImageFile");
+      const imageUrlGroup = $("#imageUrlGroup");
+      const clearStorage=$("#clear-storage");
+      const prodDesc=$("#prodDescription"); // NEW: description control
 
-    function loadProducts() {
-      try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
-      catch { return []; }
-    }
-    function saveProducts(arr) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
-    }
-    function loadFavs() {
-      try { return new Set(JSON.parse(localStorage.getItem(FAV_KEY)) || []); }
-      catch { return new Set(); }
-    }
-    function saveFavs(set) {
-      localStorage.setItem(FAV_KEY, JSON.stringify(Array.from(set)));
-    }
+      const FAV_KEY = "shopFavorites";
+      const loadFavs = () => { try { return new Set(JSON.parse(localStorage.getItem(FAV_KEY)) || []); } catch { return new Set(); } };
+      const saveFavs = set => localStorage.setItem(FAV_KEY, JSON.stringify(Array.from(set)));
 
-    function uid() { return 'p_' + Math.random().toString(36).slice(2, 10); }
+      let editingProductId = null;
+      let cache = []; // last fetched rows (mapped)
+      let currentEditingImageUrl = null; // track old image url for update/delete
 
-    // Seed demo if empty
-    function seedDemo() {
-      const demo = [
-        {
-          id: uid(),
-          name: 'TP-Link Deco S7 Mesh Wi-Fi',
-          price: 3990,
-          image: 'https://images.unsplash.com/photo-1587825140400-9b9df7e2f206?q=80&w=1200&auto=format&fit=crop',
-          features: ['Dual-band', 'Mesh ready', 'Up to 300 sqm'],
-          platform: 'Shopee',
-          link: 'https://shopee.ph/'
-        },
-        {
-          id: uid(),
-          name: 'Xiaomi Smart Camera C200',
-          price: 1590,
-          image: 'https://images.unsplash.com/photo-1589254066213-a0c9dc853511?q=80&w=1200&auto=format&fit=crop',
-          features: ['1080p', 'Night vision', 'Motion detect'],
-          platform: 'Lazada',
-          link: 'https://www.lazada.com.ph/'
-        }
-      ];
-      saveProducts(demo);
-    }
-
-    // Render using current control values (kept pure for easy DB swap)
-    function render() {
-      const products = loadProducts();
-      const favs = loadFavs();
-
-      const q = searchInput.value.trim().toLowerCase();
-      const pf = platformFilter.value;
-      const minP = minPrice.value ? Number(minPrice.value) : null;
-      const maxP = maxPrice.value ? Number(maxPrice.value) : null;
-      const favOnlyOn = favOnly.checked;
-
-      const filtered = products.filter(p => {
-        if (pf && p.platform !== pf) return false;
-        if (minP !== null && p.price < minP) return false;
-        if (maxP !== null && p.price > maxP) return false;
-        if (favOnlyOn && !favs.has(p.id)) return false;
-        if (q) {
-          const hay = (p.name + ' ' + (p.features || []).join(' ')).toLowerCase();
-          if (!hay.includes(q)) return false;
-        }
-        return true;
+      // --- DB <-> UI mapping ---
+      const mapRowToUI = (r)=>({
+        id: r.id,
+        name: r.product_name,
+        price: Number(r.price),
+        platform: r.platform,
+        link: r.product_link || "",
+        image: r.image_url || "",
+        features: r.features || [],
+        description: r.description || "", // NEW
+        published: !!r.is_published
       });
 
-      grid.innerHTML = '';
-
-      if (filtered.length === 0) {
-        emptyState.style.display = 'flex';
-        return;
-      } else {
-        emptyState.style.display = 'none';
+      // --- Storage helpers ---
+      function getPublicUrlFromPath(path){
+        return supaStorage.storage.from("products").getPublicUrl(path).data.publicUrl;
       }
 
-      for (const p of filtered) {
-        const card = document.createElement('article');
-        card.className = 'card';
-        card.innerHTML = `
-          <div class="thumb">${p.image ? `<img src="${p.image}" alt="${p.name}">` : ''}</div>
-          <div class="body">
-            <div class="title-row">
-              <div>
-                <h3>${p.name}</h3>
-                <div class="badge-row">
-                  <span class="platform-badge">${p.platform}</span>
-                </div>
+      function getPathFromPublicUrl(publicUrl){
+        try {
+          const marker = "/storage/v1/object/public/products/";
+          const idx = publicUrl.indexOf(marker);
+          if (idx === -1) return null;
+          return publicUrl.substring(idx + marker.length);
+        } catch { return null; }
+      }
+
+      async function uploadImageToBucket(file, productId){
+        const safeName = file.name.replace(/[^\w.\-]/g, "_");
+        const path = `product_${productId}/${Date.now()}_${safeName}`;
+        const { data, error } = await supaStorage.storage
+          .from("products")
+          .upload(path, file, { cacheControl: "3600", upsert: true });
+        if (error) throw error;
+        return { path, publicUrl: getPublicUrlFromPath(path) };
+      }
+
+      async function removeImageFromBucketByUrl(publicUrl){
+        const path = getPathFromPublicUrl(publicUrl);
+        if (!path) return;
+        const { error } = await supaStorage.storage.from("products").remove([path]);
+        if (error) throw error;
+      }
+
+      // --- URL helper for View More ---
+      function productExternalUrl(p){
+        const link = (p.link || "").trim();
+        if (link && /^https?:\/\//i.test(link)) return link;
+        const q = encodeURIComponent(p.name || "");
+        if (p.platform === "Shopee") return `https://shopee.ph/search?keyword=${q}`;
+        if (p.platform === "Lazada") return `https://www.lazada.com.ph/catalog/?q=${q}`;
+        return "#";
+      }
+
+      // --- CRUD: Supabase ---
+      async function db_listProducts() {
+        const { data, error } = await supabase
+          .from("products")
+          .select("id, product_name, price, platform, product_link, image_url, features, description, is_published, created_at, updated_at")
+          .order("created_at", { ascending: false });
+        if (error) throw error;
+        return (data || []).map(mapRowToUI);
+      }
+
+      async function db_insertProduct(p) {
+        let imageUrlToSave = p.image || null;
+
+        if (p.file) {
+          const prePayload = {
+            product_name: p.name,
+            price: p.price,
+            platform: p.platform,
+            product_link: p.link || null,
+            image_url: null,
+            features: p.features || [],
+            description: p.description || null, // NEW
+            is_published: false
+          };
+          const pre = await supabase.from("products").insert(prePayload).select().single();
+          if (pre.error) throw pre.error;
+
+          const newId = pre.data.id;
+          const uploaded = await uploadImageToBucket(p.file, newId);
+          imageUrlToSave = uploaded.publicUrl;
+
+          const { data: upd, error: updErr } = await supabase
+            .from("products")
+            .update({ image_url: imageUrlToSave })
+            .eq("id", newId)
+            .select()
+            .single();
+          if (updErr) throw updErr;
+          return mapRowToUI(upd);
+        } else {
+          const payload = {
+            product_name: p.name,
+            price: p.price,
+            platform: p.platform,
+            product_link: p.link || null,
+            image_url: imageUrlToSave,
+            features: p.features || [],
+            description: p.description || null, // NEW
+            is_published: false
+          };
+          const { data, error } = await supabase.from("products").insert(payload).select().single();
+          if (error) throw error;
+          return mapRowToUI(data);
+        }
+      }
+
+      async function db_updateProduct(id, p) {
+        let imageUrlToSave = (typeof p.image === "string") ? p.image : null;
+
+        if (p.file) {
+          const uploaded = await uploadImageToBucket(p.file, id);
+          imageUrlToSave = uploaded.publicUrl;
+
+          if (currentEditingImageUrl && getPathFromPublicUrl(currentEditingImageUrl)) {
+            try { await removeImageFromBucketByUrl(currentEditingImageUrl); } catch (e) { console.warn("Old image delete failed:", e.message); }
+          }
+        } else if (editingProductId) {
+          imageUrlToSave = currentEditingImageUrl;
+        }
+
+        const payload = {
+          product_name: p.name,
+          price: p.price,
+          platform: p.platform,
+          product_link: p.link || null,
+          image_url: imageUrlToSave || null,
+          features: p.features || [],
+          description: p.description || null // NEW
+        };
+        const { data, error } = await supabase.from("products").update(payload).eq("id", id).select().single();
+        if (error) throw error;
+        return mapRowToUI(data);
+      }
+
+      async function db_updatePublished(id, flag){
+        const { data, error } = await supabase
+          .from("products")
+          .update({ is_published: !!flag })
+          .eq("id", id)
+          .select("id, product_name, price, platform, product_link, image_url, features, description, is_published")
+          .single();
+        if (error) throw error;
+        return mapRowToUI(data);
+      }
+
+      async function db_deleteProduct(id) {
+        const { data: rows, error: selErr } = await supabase.from("products").select("image_url").eq("id", id).limit(1);
+        if (selErr) throw selErr;
+        const imageUrl = rows && rows[0] ? rows[0].image_url : null;
+
+        const { error } = await supabase.from("products").delete().eq("id", id);
+        if (error) throw error;
+
+        if (imageUrl && getPathFromPublicUrl(imageUrl)) {
+          try { await removeImageFromBucketByUrl(imageUrl); } catch (e) { console.warn("Image removal failed:", e.message); }
+        }
+      }
+
+      // Optional: Reset + seed demo (truncate user-visible rows)
+      async function db_resetAndSeed() {
+        const existing = await supabase.from("products").select("id, image_url");
+        if (!existing.error && existing.data?.length) {
+          for (const r of existing.data) {
+            if (r.image_url && getPathFromPublicUrl(r.image_url)) {
+              try { await removeImageFromBucketByUrl(r.image_url); } catch(e){ console.warn("seed cleanup image failed:", e.message); }
+            }
+          }
+        }
+        const del = await supabase.from("products").delete().neq("id", "00000000-0000-0000-0000-000000000000");
+        if (del.error) throw del.error;
+
+        // (no demo inserts)
+      }
+
+      // ===== Skeleton helpers =====
+      function showLoadingSkeleton(count = 8){
+        grid.innerHTML = "";
+        emptyState.style.display = "none";
+        for (let i=0;i<count;i++){
+          const sk = document.createElement("article");
+          sk.className = "skeleton-card";
+          sk.innerHTML = `
+            <div class="sk-thumb shimmer"></div>
+            <div class="sk-body">
+              <div class="sk-line w-80 shimmer"></div>
+              <div class="sk-line w-40 shimmer"></div>
+              <div class="sk-chip-row">
+                <div class="sk-chip shimmer"></div>
+                <div class="sk-chip shimmer"></div>
+                <div class="sk-chip shimmer"></div>
               </div>
-              <div class="price">${fmtPHP.format(p.price)}</div>
-            </div>
-            <div class="features">
-              ${(p.features || []).slice(0, 6).map(f => `<span class="chip">${escapeHtml(f)}</span>`).join('')}
-            </div>
-            <div class="actions">
-              <button class="btn icon" data-action="fav" data-id="${p.id}" title="Add to favorites">
-                <span class="material-icons-sharp">${loadFavs().has(p.id) ? 'favorite' : 'favorite_border'}</span>
-                ${loadFavs().has(p.id) ? 'Favorited' : 'Favorite'}
-              </button>
-              <a class="btn" href="${p.link || '#'}" target="_blank" rel="noopener" title="Open in app/site">
-                <span class="material-icons-sharp">open_in_new</span> View More
-              </a>
-              <button class="btn" data-action="edit" data-id="${p.id}" title="Edit product">
-                <span class="material-icons-sharp">edit</span> Edit
-              </button>
-              <button class="btn danger icon" data-action="delete" data-id="${p.id}" title="Delete product">
-                <span class="material-icons-sharp">delete</span> Delete
-              </button>
-            </div>
-          </div>
-        `;
-        grid.appendChild(card);
-      }
-    }
-
-    function escapeHtml(s) {
-      return String(s).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
-    }
-
-    // Modal helpers
-    function openAddModal(product = null) {
-      addModal.classList.add('show');
-      addModal.setAttribute('aria-hidden', 'false');
-      if (product) {
-        editingProductId = product.id;
-        $('#addModalTitle').textContent = 'Edit Product';
-        prodName.value = product.name;
-        prodPrice.value = product.price;
-        prodPlatform.value = product.platform;
-        prodLink.value = product.link;
-        prodImage.value = product.image;
-        prodFeatures.value = (product.features || []).join(', ');
-      } else {
-        editingProductId = null;
-        $('#addModalTitle').textContent = 'Add Product';
-        prodName.value = '';
-        prodPrice.value = '';
-        prodPlatform.value = 'Shopee';
-        prodLink.value = '';
-        prodImage.value = '';
-        prodFeatures.value = '';
-      }
-      setTimeout(() => prodName.focus(), 0);
-    }
-    function closeAddModal() {
-      addModal.classList.remove('show');
-      addModal.setAttribute('aria-hidden', 'true');
-    }
-
-    // Events
-    if (openAddModalBtn) openAddModalBtn.addEventListener('click', () => openAddModal());
-    if (closeAddModalBtn) closeAddModalBtn.addEventListener('click', closeAddModal);
-    if (cancelAddBtn) cancelAddBtn.addEventListener('click', closeAddModal);
-    addModal.addEventListener('click', (e) => { if (e.target === addModal) closeAddModal(); });
-
-    saveProductBtn.addEventListener('click', () => {
-      const name = prodName.value.trim();
-      const price = Number(prodPrice.value);
-      const platform = prodPlatform.value;
-      const link = prodLink.value.trim();
-      const image = prodImage.value.trim();
-      const features = prodFeatures.value.split(',').map(s => s.trim()).filter(Boolean);
-
-      if (!name || !(price >= 0) || !platform) {
-        alert('Please provide a valid name, price, and platform.');
-        return;
+              <div class="sk-line w-60 shimmer"></div>
+            </div>`;
+          grid.appendChild(sk);
+        }
       }
 
-      let products = loadProducts();
-
-      if (editingProductId) {
-        // Update existing
-        products = products.map(p => p.id === editingProductId
-          ? { ...p, name, price, platform, link, image, features }
-          : p);
-      } else {
-        // Add new
-        products.unshift({ id: uid(), name, price, platform, link, image, features });
+      // --- Render ---
+      function escapeHtml(s){
+        return String(s).replace(/[&<>"']/g,(m)=>({"&":"&amp;","<":"&lt;","&gt;":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
       }
 
-      saveProducts(products);
-      closeAddModal();
-      render();
-    });
+      async function render() {
+        showLoadingSkeleton(8);
+        try {
+          cache = await db_listProducts();
+        } catch (e) {
+          console.error(e);
+          grid.innerHTML = "";
+          emptyState.style.display = "flex";
+          emptyState.querySelector("span:last-child").textContent = `Error loading products: ${e.message}`;
+          return;
+        }
 
-    // Card actions
-    grid.addEventListener('click', (e) => {
-      const btn = e.target.closest('button[data-action]');
-      if (!btn) return;
-      const id = btn.getAttribute('data-id');
-      const action = btn.getAttribute('data-action');
-
-      if (action === 'fav') {
         const favs = loadFavs();
-        if (favs.has(id)) favs.delete(id); else favs.add(id);
-        saveFavs(favs);
-        render();
+        const q = searchInput.value.trim().toLowerCase();
+        const pf = platformFilter.value;
+        const minP = minPrice.value ? Number(minPrice.value) : null;
+        const maxP = maxPrice.value ? Number(maxPrice.value) : null;
+        const favOnlyOn = favOnly.checked;
+
+        const filtered = cache.filter((p)=>{
+          if (pf && p.platform !== pf) return false;
+          if (minP !== null && p.price < minP) return false;
+          if (maxP !== null && p.price > maxP) return false;
+          if (favOnlyOn && !favs.has(p.id)) return false;
+          if (q) {
+            const hay = (p.name + " " + (p.features||[]).join(" ")).toLowerCase();
+            if (!hay.includes(q)) return false;
+          }
+          return true;
+        });
+
+        grid.innerHTML = "";
+        if (!filtered.length) { emptyState.style.display = "flex"; return; }
+        emptyState.style.display = "none";
+
+        for (const p of filtered) {
+          const viewUrl = productExternalUrl(p);
+          const card = document.createElement("article");
+          card.className = "card";
+          card.innerHTML = `
+            <div class="thumb">${p.image ? `<img src="${p.image}" alt="${escapeHtml(p.name)}">` : ""}</div>
+            <div class="body">
+              <div class="title-row">
+                <div>
+                  <h3>${escapeHtml(p.name)}</h3>
+                  <div class="badge-row">
+                    <span class="platform-badge">${escapeHtml(p.platform)}</span>
+                  </div>
+                  <div class="publish-row">
+                    <span class="status-pill ${p.published ? "ok" : "draft"}">${p.published ? "Published" : "Draft"}</span>
+                    <label class="switch" title="${p.published ? "Unpublish" : "Publish"}">
+                      <input type="checkbox" id="pub_${p.id}" class="pub-toggle" data-action="toggle-publish" data-id="${p.id}" ${p.published ? "checked" : ""} />
+                      <span class="slider"></span>
+                    </label>
+                    <!-- Keep original text label (a11y) -->
+                    <label for="pub_${p.id}" class="sr-only">${p.published ? "Published" : "Not published"}</label>
+                  </div>
+                </div>
+                <div class="price">${fmtPHP.format(p.price)}</div>
+              </div>
+              <div class="features">
+                ${(p.features||[]).slice(0,6).map(f=>`<span class="chip">${escapeHtml(f)}</span>`).join("")}
+              </div>
+              <div class="actions">
+                <button class="btn icon" data-action="fav" data-id="${p.id}" title="Add to favorites">
+                  <span class="material-icons-sharp">${loadFavs().has(p.id) ? "favorite" : "favorite_border"}</span>
+                  ${loadFavs().has(p.id) ? "Favorited" : "Favorite"}
+                </button>
+                <a class="btn" href="${viewUrl}" target="_blank" rel="noopener">
+                  <span class="material-icons-sharp">open_in_new</span> View More
+                </a>
+                <button class="btn" data-action="edit" data-id="${p.id}" style="${p.published ? "display:none" : ""}">
+                  <span class="material-icons-sharp">edit</span> Edit
+                </button>
+                <button class="btn danger icon" data-action="delete" data-id="${p.id}" style="${p.published ? "display:none" : ""}">
+                  <span class="material-icons-sharp">delete</span> Delete
+                </button>
+              </div>
+            </div>`;
+          grid.appendChild(card);
+        }
       }
 
-      if (action === 'delete') {
-        if (!confirm('Delete this product?')) return;
-        const products = loadProducts().filter(p => p.id !== id);
-        saveProducts(products);
-        const favs = loadFavs(); favs.delete(id); saveFavs(favs);
-        render();
+      // --- Modal helpers ---
+      function openAddModal(product=null){
+        addModal.classList.add("show"); addModal.setAttribute("aria-hidden","false");
+        prodImageFile.value = "";
+
+        if (product){
+          editingProductId = product.id;
+          currentEditingImageUrl = product.image || null;
+          $("#addModalTitle").textContent = "Edit Product";
+          prodName.value = product.name; prodPrice.value = product.price; prodPlatform.value = product.platform;
+          prodLink.value = product.link || "";
+          prodImage.value = "";
+          prodImage.disabled = true;
+          prodImage.placeholder = "Image managed via bucket. Choose a file to replace.";
+          imageUrlGroup.style.display = "";
+          prodFeatures.value = (product.features||[]).join(", ");
+          prodDesc.value = product.description || ""; // NEW
+        } else {
+          editingProductId = null; currentEditingImageUrl = null;
+          $("#addModalTitle").textContent = "Add Product";
+          prodName.value=""; prodPrice.value=""; prodPlatform.value="Shopee"; prodLink.value="";
+          imageUrlGroup.style.display = "none";
+          prodImage.value=""; prodImage.disabled = true;
+          prodFeatures.value="";
+          prodDesc.value=""; // NEW
+        }
+        setTimeout(()=>prodName.focus(),0);
       }
+      function closeAddModal(){ addModal.classList.remove("show"); addModal.setAttribute("aria-hidden","true"); }
 
-      if (action === 'edit') {
-        const product = loadProducts().find(p => p.id === id);
-        if (product) openAddModal(product);
-      }
-    });
+      // --- Events ---
+      openAddModalBtn?.addEventListener("click", ()=>openAddModal());
+      closeAddModalBtn?.addEventListener("click", closeAddModal);
+      cancelAddBtn?.addEventListener("click", closeAddModal);
+      addModal.addEventListener("click", (e)=>{ if (e.target === addModal) closeAddModal(); });
 
-    // Live filters (no Apply button)
-    const rerender = () => render();
-    searchInput.addEventListener('input', rerender);
-    platformFilter.addEventListener('change', rerender);
-    minPrice.addEventListener('input', rerender);
-    maxPrice.addEventListener('input', rerender);
-    favOnly.addEventListener('change', rerender);
+      saveProductBtn.addEventListener("click", async ()=>{
+        const name = prodName.value.trim();
+        const price = Number(prodPrice.value);
+        const platform = prodPlatform.value;
+        const link = prodLink.value.trim();
+        const image = prodImage.value.trim();
+        const features = prodFeatures.value.split(",").map(s=>s.trim()).filter(Boolean);
+        const description = prodDesc.value.trim(); // NEW
+        const file = prodImageFile.files && prodImageFile.files[0] ? prodImageFile.files[0] : null;
 
-    // Reset filters
-    resetFiltersBtn.addEventListener('click', () => {
-      searchInput.value = '';
-      platformFilter.value = '';
-      minPrice.value = '';
-      maxPrice.value = '';
-      favOnly.checked = false;
-      render();
-    });
+        if (!name || !(price >= 0) || !platform){ alert("Please provide a valid name, price, and platform."); return; }
+        if (!editingProductId) {
+          if (!file) {
+            alert("Please upload an image. The URL will be set automatically after upload.");
+            return;
+          }
+        }
 
-    // Reset demo storage
-    if (clearStorage) clearStorage.addEventListener('click', () => {
-      if (!confirm('This will clear local demo products and favorites. Continue?')) return;
-      localStorage.removeItem(STORAGE_KEY);
-      localStorage.removeItem(FAV_KEY);
-      seedDemo();
-      render();
-    });
+        const effectiveImage = editingProductId
+          ? (file ? "" : (currentEditingImageUrl || ""))
+          : "";
 
-    // Init
-    (function init() {
-      if (!loadProducts().length) seedDemo();
-      render();
-    })();
-  </script>
-</body>
+        try {
+          if (editingProductId){
+            await db_updateProduct(editingProductId, { name, price, platform, link, image: effectiveImage, features, description, file }); // NEW
+          } else {
+            await db_insertProduct({ name, price, platform, link, image: effectiveImage, features, description, file }); // NEW
+          }
+          closeAddModal();
+          render();
+        } catch (e) {
+          alert("Save failed: " + e.message);
+        }
+      });
 
+      grid.addEventListener("click", async (e)=>{
+        const btn = e.target.closest("button[data-action]"); if (!btn) return;
+        const id = btn.getAttribute("data-id"); const action = btn.getAttribute("data-action");
+
+        if (action === "fav"){
+          const favs = loadFavs(); favs.has(id) ? favs.delete(id) : favs.add(id); saveFavs(favs); render(); return;
+        }
+        if (action === "delete"){
+          if (!confirm("Delete this product (and its image)?")) return;
+          try { await db_deleteProduct(id); render(); } catch (err){ alert("Delete failed: " + err.message); }
+          return;
+        }
+        if (action === "edit"){
+          const p = cache.find(x=>x.id===id);
+          if (p) openAddModal(p);
+          return;
+        }
+      });
+
+      // Handle publish toggle (event delegation with 'change')
+      grid.addEventListener("change", async (e)=>{
+        const chk = e.target.closest('input[type="checkbox"][data-action="toggle-publish"]');
+        if (!chk) return;
+        const id = chk.getAttribute("data-id");
+        const next = chk.checked;
+        const row = chk.closest(".publish-row");
+        const pill = row?.querySelector(".status-pill");
+        const card = chk.closest(".card");
+        const editBtn = card?.querySelector('button[data-action="edit"]');
+        const delBtn  = card?.querySelector('button[data-action="delete"]');
+
+        // Require confirmation when moving to Published
+        if (next) {
+          const ok = confirm("Publish this product? It will no longer be editable or deletable unless you unpublish.");
+          if (!ok) { chk.checked = false; return; }
+        }
+
+        try{
+          await db_updatePublished(id, next);
+          // Update UI text/colors
+          if (pill){
+            pill.textContent = next ? "Published" : "Draft";
+            pill.classList.toggle("ok", next);
+            pill.classList.toggle("draft", !next);
+          }
+          // Hide or show edit/delete based on publish state
+          if (editBtn) editBtn.style.display = next ? "none" : "";
+          if (delBtn)  delBtn.style.display  = next ? "none" : "";
+        }catch(err){
+          alert("Failed to update publish status: " + err.message);
+          // revert UI
+          chk.checked = !next;
+        }
+      });
+
+      const rerender = ()=>render();
+      searchInput.addEventListener("input", rerender);
+      platformFilter.addEventListener("change", rerender);
+      minPrice.addEventListener("input", rerender);
+      maxPrice.addEventListener("input", rerender);
+      favOnly.addEventListener("change", rerender);
+
+      resetFiltersBtn.addEventListener("click", ()=>{
+        searchInput.value=""; platformFilter.value=""; minPrice.value=""; maxPrice.value=""; favOnly.checked=false; render();
+      });
+
+      clearStorage?.addEventListener("click", async ()=>{
+        if (!confirm("This will DELETE all products and try to remove their images in the products bucket. Continue?")) return;
+        try { await db_resetAndSeed(); localStorage.removeItem(FAV_KEY); render(); }
+        catch(e){ alert("Reset failed: " + e.message); }
+      });
+
+      // --- Init ---
+      (async function init(){
+        await render();
+      })();
+    </script>
+  </body>
 </html>
