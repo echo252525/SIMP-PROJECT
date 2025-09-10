@@ -738,7 +738,8 @@
 
       const nameEl = document.getElementById("admin-name");
       const roleEl = document.getElementById("admin-role");
-      if (!nameEl || !roleEl) return;
+      const photoImg = document.querySelector(".profile-photo img");
+      if (!nameEl || !roleEl || !photoImg) return;
 
       try {
         // Get current user (requires a valid session)
@@ -747,9 +748,9 @@
         const user = userRes?.user;
         if (!user?.id) { return; }
 
-        // Look up admin record by id (PK references auth.users.id)
+        // Look up admin record by id (include admin_profile_url)
         const { data: adminRow, error: adminErr } = await fromInSchema(client, "public", "admin")
-          .select("id, name, role, email, phone")
+          .select("id, name, role, email, phone, admin_profile_url")
           .eq("id", user.id)
           .limit(1)
           .maybeSingle();
@@ -768,6 +769,58 @@
 
         nameEl.textContent = composedName;
         roleEl.textContent = (roleStr || "").toString().charAt(0).toUpperCase() + (roleStr || "").toString().slice(1);
+
+        // === NEW: Load profile photo from storage (admin_profile bucket) with fallback initials ===
+        const path = adminRow?.admin_profile_url || null;
+
+        // helper to sign URL
+        async function signAvatar(p) {
+          try {
+            const { data, error } = await client.storage.from("admin_profile").createSignedUrl(p, 3600);
+            if (error) return null;
+            return data?.signedUrl || null;
+          } catch { return null; }
+        }
+
+        // helper to generate an SVG initials avatar as a data URL
+        function initialsFrom(nameOrEmail) {
+          const s = String(nameOrEmail || "").trim();
+          if (!s) return "AD";
+          const parts = s.split(/\s+/).filter(Boolean);
+          if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+          if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+          const emailLocal = s.split("@")[0] || "AD";
+          return emailLocal.slice(0, 2).toUpperCase();
+        }
+        function initialsDataUrl(text) {
+          const bg = "#E2E8F0";   // slate-200
+          const fg = "#1C2430";   // brand ink
+          const svg =
+            `<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128">
+               <rect width="100%" height="100%" fill="${bg}"/>
+               <text x="50%" y="52%" dominant-baseline="middle" text-anchor="middle"
+                     font-family="system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial"
+                     font-weight="700" font-size="48" fill="${fg}">${text}</text>
+             </svg>`;
+          return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
+        }
+
+        if (path) {
+          const signed = await signAvatar(path);
+          if (signed) {
+            photoImg.src = signed;
+            photoImg.alt = "Profile photo";
+          } else {
+            // fallback to initials image
+            const initials = initialsFrom(composedName || user.email);
+            photoImg.src = initialsDataUrl(initials);
+            photoImg.alt = initials;
+          }
+        } else {
+          const initials = initialsFrom(composedName || user.email);
+          photoImg.src = initialsDataUrl(initials);
+          photoImg.alt = initials;
+        }
       } catch (e) {
         console.error("updateLoggedInAdminInfo exception:", e);
       }
@@ -790,7 +843,7 @@
     updateNewApplicationsTable(); // by job (counts + last applicant)
     updatePublishedCoursesPanel(); // published courses on right panel
     updatePaymentsRequestsPanel(); // << ADDED: payments requests on right panel
-    updateLoggedInAdminInfo();     // show logged-in admin name & role
+    updateLoggedInAdminInfo();     // show logged-in admin name, role, and **profile photo**
   </script>
 </body>
 </html>

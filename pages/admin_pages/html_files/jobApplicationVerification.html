@@ -461,8 +461,11 @@
       import { SUPABASE_URL, SUPABASE_ANON_KEY } from "../../../supabase.js";
       const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-      // ---- Storage bucket for installer documents ----
+      // ---- Storage buckets ----
+      // Existing bucket for installer documents (resumes, etc.)
       const STORAGE_BUCKET = "documents_review";
+      // NEW: default bucket used for job pictures. Change this if your job images live elsewhere.
+      const JOBS_BUCKET = "jobs";
 
       // ======= State =======
       let applications = []; // jobs.job_application rows
@@ -504,6 +507,7 @@
         /\.(png|jpe?g|gif|webp|bmp|svg)(\?.*)?$/i.test(url);
       const isPdfUrl = (url = "") => /\.pdf(\?.*)?$/i.test(url);
 
+      // For installer documents (resume, etc.)
       async function urlFor(path) {
         if (!path) return null;
         const clean = String(path).trim();
@@ -512,6 +516,38 @@
           .createSignedUrl(clean, 600);
         if (!error && data?.signedUrl) return data.signedUrl;
         const pub = supabase.storage.from(STORAGE_BUCKET).getPublicUrl(clean);
+        return pub.data?.publicUrl || null;
+      }
+
+      // NEW: Resolve a job picture to a signed URL.
+      // Accepts:
+      // - Absolute HTTP(S) URLs
+      // - "bucket:relative/path.jpg"
+      // - "relative/path.jpg" (assumes JOBS_BUCKET)
+      async function urlForJobPicture(rawPath) {
+        if (!rawPath) return null;
+        const raw = String(rawPath).trim();
+
+        // If already absolute (e.g., CDN), return as-is
+        if (/^https?:\/\//i.test(raw)) return raw;
+
+        // If formatted like "bucket:the/path.jpg"
+        let bucket = JOBS_BUCKET;
+        let path = raw;
+        const m = raw.match(/^([a-z0-9_\-]+):(.+)$/i);
+        if (m) {
+          bucket = m[1];
+          path = m[2];
+        }
+
+        // Try signed URL first
+        const { data, error } = await supabase.storage
+          .from(bucket)
+          .createSignedUrl(path, 600);
+        if (!error && data?.signedUrl) return data.signedUrl;
+
+        // Fallback: public URL (if bucket/object is public)
+        const pub = supabase.storage.from(bucket).getPublicUrl(path);
         return pub.data?.publicUrl || null;
       }
 
@@ -528,9 +564,7 @@
 
         if (appErr) {
           console.error(appErr);
-          $(
-            "#jobList"
-          ).innerHTML = `<div class="empty">Failed to load applications: ${appErr.message}</div>`;
+          $("#jobList").innerHTML = `<div class="empty">Failed to load applications: ${appErr.message}</div>`;
           return;
         }
 
@@ -540,15 +574,9 @@
         );
 
         if (!applications.length) {
-          $(
-            "#jobList"
-          ).innerHTML = `<div class="empty">No job applications (excluding overdue) to show.</div>`;
-          $(
-            "#jobDetails"
-          ).innerHTML = `<div class="empty">No jobs to display.</div>`;
-          $(
-            "#applicantsWrap"
-          ).innerHTML = `<div class="empty">No job selected.</div>`;
+          $("#jobList").innerHTML = `<div class="empty">No job applications (excluding overdue) to show.</div>`;
+          $("#jobDetails").innerHTML = `<div class="empty">No jobs to display.</div>`;
+          $("#applicantsWrap").innerHTML = `<div class="empty">No job selected.</div>`;
           $("#globalActions").style.display = "none";
           return;
         }
@@ -570,9 +598,7 @@
 
         if (jobErr) {
           console.error(jobErr);
-          $(
-            "#jobList"
-          ).innerHTML = `<div class="empty">Failed to load jobs: ${jobErr.message}</div>`;
+          $("#jobList").innerHTML = `<div class="empty">Failed to load jobs: ${jobErr.message}</div>`;
           return;
         }
         jobs = jobRows || [];
@@ -721,12 +747,8 @@
 
         const job = jobMap.get(jobId);
         if (!job) {
-          $(
-            "#jobDetails"
-          ).innerHTML = `<div class="empty">Failed to load job details.</div>`;
-          $(
-            "#applicantsWrap"
-          ).innerHTML = `<div class="empty">Failed to load applicants.</div>`;
+          $("#jobDetails").innerHTML = `<div class="empty">Failed to load job details.</div>`;
+          $("#applicantsWrap").innerHTML = `<div class="empty">Failed to load applicants.</div>`;
           $("#globalActions").style.display = "none";
           return;
         }
@@ -739,31 +761,30 @@
       }
 
       function renderJobDetails(job) {
+        // Render first with an empty/placeholder image, then resolve to a signed URL
         $("#jobDetails").innerHTML = `
           <div class="detail-header">
-            <img class="job-photo" src="${
-              job.job_picture_url || ""
-            }" alt="Job photo" />
-            <h3 style="margin:4px 0 0; color: var(--ink);">${
-              job.job_title || "Untitled job"
-            }</h3>
+            <img class="job-photo" src="" alt="Job photo" />
+            <h3 style="margin:4px 0 0; color: var(--ink);">${job.job_title || "Untitled job"}</h3>
           </div>
           <div class="detail-grid">
-            <div class="kv"><label>Category</label><span>${
-              job.job_category || "—"
-            }</span></div>
-            <div class="kv"><label>Difficulty</label><span>${difficultyLabel(
-              job.job_difficulty
-            )}</span></div>
-            <div class="kv"><label>Date & Time</label><span>${fmtDateTime(
-              job.job_date,
-              job.job_time
-            )}</span></div>
-            <div class="kv"><label>Location</label><span>${
-              job.job_location || "—"
-            }</span></div>
+            <div class="kv"><label>Category</label><span>${job.job_category || "—"}</span></div>
+            <div class="kv"><label>Difficulty</label><span>${difficultyLabel(job.job_difficulty)}</span></div>
+            <div class="kv"><label>Date & Time</label><span>${fmtDateTime(job.job_date, job.job_time)}</span></div>
+            <div class="kv"><label>Location</label><span>${job.job_location || "—"}</span></div>
           </div>
         `;
+
+        // Resolve to a signed URL (non-blocking for the rest of the render)
+        (async () => {
+          try {
+            const resolved = await urlForJobPicture(job.job_picture_url || "");
+            const imgEl = $(".job-photo");
+            if (imgEl) imgEl.src = resolved || "";
+          } catch (e) {
+            console.error("Failed to resolve job picture URL:", e);
+          }
+        })();
       }
 
       // NEW: applicant profile modal (row click)
@@ -777,24 +798,12 @@
 
         const infoGrid = `
           <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:12px">
-            <div class="kv"><label>Full Name</label><span>${
-              inst.name || "—"
-            }</span></div>
-            <div class="kv"><label>Profession</label><span>${
-              inst.profession || "—"
-            }</span></div>
-            <div class="kv"><label>Highest Qualification</label><span>${
-              inst.highestQualification || "—"
-            }</span></div>
-            <div class="kv"><label>Employment Status</label><span>${
-              inst.employmentStatus || "—"
-            }</span></div>
-            <div class="kv"><label>Applied</label><span>${new Date(
-              appRow.applied_at
-            ).toLocaleString()}</span></div>
-            <div class="kv"><label>Application Status</label><span>${String(
-              appRow.status
-            ).toUpperCase()}</span></div>
+            <div class="kv"><label>Full Name</label><span>${inst.name || "—"}</span></div>
+            <div class="kv"><label>Profession</label><span>${inst.profession || "—"}</span></div>
+            <div class="kv"><label>Highest Qualification</label><span>${inst.highestQualification || "—"}</span></div>
+            <div class="kv"><label>Employment Status</label><span>${inst.employmentStatus || "—"}</span></div>
+            <div class="kv"><label>Applied</label><span>${new Date(appRow.applied_at).toLocaleString()}</span></div>
+            <div class="kv"><label>Application Status</label><span>${String(appRow.status).toUpperCase()}</span></div>
           </div>
         `;
 
@@ -903,9 +912,7 @@
 
           tr.innerHTML = `
             <td class="select-radio">
-              <input type="radio" name="hireSelect" id="${radioId}" value="${
-            a.application_id
-          }" ${disabledAttr}/>
+              <input type="radio" name="hireSelect" id="${radioId}" value="${a.application_id}" ${disabledAttr}/>
             </td>
             <td>${w.name || "—"} ${
             statusLower === "approved"
@@ -974,11 +981,9 @@
 
         const job = jobMap.get(activeJobId);
         const typed = prompt(
-          `Double-check: type HIRE to confirm hiring for "${
-            job?.job_title || "this job"
-          }".`
+          `Double-check: type HIRE to confirm hiring for "${job?.job_title || "this job"}".`
         );
-        if (!typed || typed.trim().toUpperCase() !== "HIRE") {
+        if (typed?.trim().toUpperCase() !== "HIRE") {
           alert("Hiring cancelled.");
           return;
         }

@@ -169,6 +169,50 @@
         }
       }
       /*==END==*/
+
+      /* === Avatar (added, non-breaking) === */
+      .profile-row {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 0.6rem;
+      }
+      .avatar-wrap {
+        position: relative;
+        width: 96px;
+        height: 96px;
+        border-radius: 50%;
+        border: 1px solid #e7edf3;
+        background: #f1f5f9;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .avatar-fallback {
+        font-weight: 800;
+        color: #1c2430;
+        user-select: none;
+        font-size: 1.3rem;
+        letter-spacing: 0.5px;
+      }
+      .avatar-img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: none;
+      }
+      .avatar-wrap.has-image .avatar-img {
+        display: block;
+      }
+      .avatar-actions .hint {
+        font-size: 0.85rem;
+        color: #6c7a8a;
+        margin-top: 0.2rem;
+      }
     </style>
   </head>
   <body>
@@ -266,6 +310,27 @@
               <strong>Superadmins</strong> cannot.
             </p>
 
+            <!-- NEW: Profile photo row -->
+            <div class="profile-row">
+              <div class="avatar-wrap" id="avatar-wrap">
+                <img id="avatar-img" class="avatar-img" alt="Profile photo" />
+                <div id="avatar-fallback" class="avatar-fallback">—</div>
+              </div>
+              <div class="avatar-actions">
+                <button id="avatar-btn" class="btn btn-ghost">
+                  <span class="material-icons-sharp">photo_camera</span>
+                  Change photo
+                </button>
+                <div class="hint">.jpg, .png, or .webp (max 5MB)</div>
+              </div>
+              <input
+                id="avatar-input"
+                type="file"
+                accept="image/*"
+                style="display: none"
+              />
+            </div>
+
             <div class="form-grid">
               <div>
                 <label>Email</label>
@@ -342,8 +407,16 @@
       const deleteBtn = $("#delete-btn");
       const statusMsg = $("#status-msg");
 
+      // Avatar elements
+      const avatarWrap = $("#avatar-wrap");
+      const avatarImg = $("#avatar-img");
+      const avatarFallback = $("#avatar-fallback");
+      const avatarBtn = $("#avatar-btn");
+      const avatarInput = $("#avatar-input");
+
       let currentUser = null;
       let adminRowInitial = null;
+      let currentAvatarPath = null; // storage path like "<uid>/avatar.jpg"
 
       function setEdit(on) {
         nameEl.disabled = !on;
@@ -392,6 +465,47 @@
         deleteBtn.style.display = canDelete ? "inline-flex" : "none";
       }
 
+      function initialsFrom(name, email) {
+        const n = (name || "").trim();
+        if (n) {
+          const parts = n.split(/\s+/).filter(Boolean);
+          if (parts.length >= 2)
+            return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+          if (parts.length === 1)
+            return parts[0].slice(0, 2).toUpperCase();
+        }
+        const e = (email || "").split("@")[0] || "";
+        return (e.slice(0, 2) || "AD").toUpperCase();
+      }
+
+      async function signAvatarUrl(path) {
+        try {
+          const { data, error } = await supa.storage
+            .from("admin_profile")
+            .createSignedUrl(path, 3600);
+          if (error) return null;
+          return data?.signedUrl || null;
+        } catch {
+          return null;
+        }
+      }
+
+      async function refreshAvatarDisplay(path, name, email) {
+        avatarFallback.textContent = initialsFrom(name, email);
+        if (path) {
+          const signed = await signAvatarUrl(path);
+          if (signed) {
+            avatarImg.src = signed;
+            avatarWrap.classList.add("has-image");
+            currentAvatarPath = path;
+            return;
+          }
+        }
+        // fallback (no image)
+        avatarImg.removeAttribute("src");
+        avatarWrap.classList.remove("has-image");
+      }
+
       function fillForm(row, userEmail) {
         emailEl.value = userEmail || row.email || "";
         nameEl.value = row.name || "";
@@ -402,6 +516,9 @@
         createdAtEl.textContent = fmt(row.created_at);
         updatedAtEl.textContent = fmt(row.updated_at);
         showDeleteForRole(role);
+
+        currentAvatarPath = row.admin_profile_url || null;
+        refreshAvatarDisplay(currentAvatarPath, row.name, userEmail || row.email);
       }
 
       async function load() {
@@ -415,7 +532,7 @@
 
         const { data: row, error } = await supa
           .from("admin")
-          .select("id,email,name,phone,role,created_at,updated_at")
+          .select("id,email,name,phone,role,created_at,updated_at,admin_profile_url")
           .eq("id", currentUser.id)
           .maybeSingle();
 
@@ -449,7 +566,7 @@
           .from("admin")
           .update({ name: newName, phone: newPhone })
           .eq("id", currentUser.id)
-          .select("id,email,name,phone,role,created_at,updated_at")
+          .select("id,email,name,phone,role,created_at,updated_at,admin_profile_url")
           .maybeSingle();
         saveBtn.disabled = false;
 
@@ -537,11 +654,112 @@
         }, 800);
       }
 
+      // === Avatar upload/change ===
+      function validImage(file) {
+        if (!file) return "No file selected.";
+        const allowed = ["image/jpeg", "image/png", "image/webp"];
+        if (!allowed.includes(file.type))
+          return "Unsupported type. Use JPG, PNG, or WEBP.";
+        const max = 5 * 1024 * 1024;
+        if (file.size > max) return "Image too large (max 5MB).";
+        return null;
+      }
+
+      function chooseExt(file) {
+        const byName = (file?.name || "").split(".").pop()?.toLowerCase();
+        if (["jpg", "jpeg", "png", "webp"].includes(byName)) return byName;
+        if (file?.type === "image/png") return "png";
+        if (file?.type === "image/webp") return "webp";
+        return "jpg";
+      }
+
+      async function uploadAvatar(file) {
+        const err = validImage(file);
+        if (err) {
+          setStatus(err, "error");
+          return;
+        }
+
+        // Optimistic preview
+        try {
+          const blobUrl = URL.createObjectURL(file);
+          avatarImg.src = blobUrl;
+          avatarWrap.classList.add("has-image");
+        } catch {}
+
+        avatarBtn.disabled = true;
+        setStatus("Uploading photo…");
+
+        const ext = chooseExt(file);
+        const newPath = `${currentUser.id}/avatar.${ext}`;
+        const oldPath = currentAvatarPath && currentAvatarPath !== newPath ? currentAvatarPath : null;
+
+        // Upload (upsert) to private bucket using RLS
+        const { error: upErr } = await supa.storage
+          .from("admin_profile")
+          .upload(newPath, file, {
+            cacheControl: "3600",
+            upsert: true,
+            contentType: file.type || "image/*",
+          });
+
+        if (upErr) {
+          console.error(upErr);
+          setStatus(upErr.message || "Upload failed.", "error");
+          avatarBtn.disabled = false;
+          // revert optimistic preview if needed
+          await refreshAvatarDisplay(currentAvatarPath, nameEl.value, emailEl.value);
+          return;
+        }
+
+        // Optionally remove old file if path changed (keeps bucket tidy)
+        if (oldPath) {
+          try {
+            await supa.storage.from("admin_profile").remove([oldPath]);
+          } catch (_) {
+            // best-effort cleanup; ignore failure
+          }
+        }
+
+        // Update DB with storage path (NOT the signed URL)
+        const { data: updated, error: updErr } = await supa
+          .from("admin")
+          .update({ admin_profile_url: newPath })
+          .eq("id", currentUser.id)
+          .select("id,email,name,phone,role,created_at,updated_at,admin_profile_url")
+          .maybeSingle();
+
+        if (updErr) {
+          console.error(updErr);
+          setStatus(updErr.message || "Saved, but failed to update profile path.", "error");
+          avatarBtn.disabled = false;
+          // still try to show image
+          await refreshAvatarDisplay(newPath, nameEl.value, emailEl.value);
+          return;
+        }
+
+        // Refresh with a fresh signed URL
+        adminRowInitial = JSON.parse(JSON.stringify(updated));
+        currentAvatarPath = updated.admin_profile_url || newPath;
+        await refreshAvatarDisplay(currentAvatarPath, updated.name, updated.email || emailEl.value);
+
+        avatarBtn.disabled = false;
+        setStatus("Profile photo updated.", "success");
+      }
+
       // Wire up
       editBtn.addEventListener("click", () => setEdit(true));
       saveBtn.addEventListener("click", () => save());
       cancelBtn.addEventListener("click", () => cancelEdit());
       deleteBtn.addEventListener("click", () => deleteAccount());
+
+      avatarBtn.addEventListener("click", () => avatarInput.click());
+      avatarInput.addEventListener("change", (e) => {
+        const file = e.target.files?.[0];
+        if (file) uploadAvatar(file);
+        // reset for same-file reselect
+        e.target.value = "";
+      });
 
       // Init
       load();

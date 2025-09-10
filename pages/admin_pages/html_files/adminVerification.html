@@ -99,6 +99,14 @@
         justify-content: center;
         font-weight: 700;
         color: #1f2a3a;
+        overflow: hidden;
+      }
+      .avatar.cover {
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        color: transparent; /* hide initials when image present */
+        text-indent: -9999px;
       }
       .pill {
         font-size: 0.75rem;
@@ -388,6 +396,9 @@
       let admins = []; // loaded admin rows
       let activeAdminId = null;
 
+      // NEW: cache of signed avatar URLs keyed by admin id
+      const avatarCache = {};
+
       // Helpers
       const cap = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
       const roleDot = (role) => {
@@ -404,6 +415,44 @@
           .join("")
           .toUpperCase()
           .slice(0, 2) || "?";
+
+      function applyAvatarToEl(el, url) {
+        if (!el) return;
+        if (url) {
+          el.classList.add("cover");
+          el.style.backgroundImage = `url("${url}")`;
+          el.textContent = ""; // hide initials text
+        } else {
+          el.classList.remove("cover");
+          el.style.backgroundImage = "";
+        }
+      }
+
+      async function signAvatar(path) {
+        if (!path) return null;
+        try {
+          const { data, error } = await supabase.storage
+            .from("admin_profile")
+            .createSignedUrl(path, 3600);
+          if (error) return null;
+          return data?.signedUrl || null;
+        } catch {
+          return null;
+        }
+      }
+
+      async function hydrateAvatars(rows) {
+        const jobs = rows.map(async (a) => {
+          const path = a?.admin_profile_url || null;
+          if (!path) {
+            avatarCache[a.id] = null;
+            return;
+          }
+          const url = await signAvatar(path);
+          avatarCache[a.id] = url || null;
+        });
+        await Promise.allSettled(jobs);
+      }
 
       // Auth & load
       document.addEventListener("DOMContentLoaded", async () => {
@@ -448,7 +497,10 @@
       async function refreshAdmins() {
         const { data, error } = await supabase
           .from("admin")
-          .select("id, email, name, phone, role, created_at")
+          .select(
+            // ADDED: admin_profile_url to fetch image path
+            "id, email, name, phone, role, created_at, admin_profile_url"
+          )
           .order("created_at", { ascending: false });
 
         if (error) {
@@ -460,6 +512,10 @@
           return;
         }
         admins = data || [];
+
+        // NEW: prefetch signed URLs for avatars
+        await hydrateAvatars(admins);
+
         renderAdminList();
         if (admins.length) {
           const first = admins[0];
@@ -504,11 +560,13 @@
               ? ' <span class="pill you">You</span>'
               : "";
 
-          const avatarHTML = `<div class="avatar">${initials(
+          // Avatar element with data-id so we can apply image easily
+          const avatar = `<div class="avatar" data-avatar-id="${a.id}">${initials(
             a.name || a.email
           )}</div>`;
+
           item.innerHTML = `
-            ${avatarHTML}
+            ${avatar}
             <div>
               <div style="font-weight:700">${
                 a.name || "(no name)"
@@ -519,6 +577,12 @@
             a.role ? cap(a.role) : "Pending"
           }</span>
           `;
+
+          // Apply avatar image if available
+          const avatarEl = item.querySelector(
+            `[data-avatar-id="${a.id}"]`
+          );
+          applyAvatarToEl(avatarEl, avatarCache[a.id]);
 
           item.addEventListener("click", () => {
             activeAdminId = a.id;
@@ -542,7 +606,54 @@
             ? ' <span class="pill you">This is you</span>'
             : "";
 
-        // Decide actions
+        detailsPane.innerHTML = `
+          <div class="head">
+            <div class="avatar" id="detailAvatar" style="width:72px; height:72px; font-size:1.2rem;">${initials(
+              admin.name || admin.email
+            )}</div>
+            <div>
+              <div class="name">
+                ${admin.name || "(no name)"}
+                <span class="pill" id="statusPill">${roleBadge}</span>${youHeaderBadge}
+              </div>
+              <div class="meta">Created: ${when}</div>
+            </div>
+            <div style="margin-left:auto; display:flex; gap:8px;">
+              ${renderActionsFor(admin).join("") || ""}
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="card">
+              <h4>Basic Information</h4>
+              <div class="info-list">
+                <div><span class="label">Full Name</span>${
+                  admin.name || "—"
+                }</div>
+                <div><span class="label">Email</span>${admin.email || "—"}</div>
+                <div><span class="label">Phone</span>${admin.phone || "—"}</div>
+                <div><span class="label">Role</span>${roleLabel}</div>
+              </div>
+            </div>
+
+            <div class="card">
+              <h4>Notes</h4>
+              <p style="margin:0; color:var(--muted); font-size:.95rem;">
+                Approve pending applicants carefully. Only super administrators can promote admins or demote them back to pending.
+              </p>
+            </div>
+          </div>
+        `;
+
+        // Apply detail avatar image if exists
+        const detailAvatarEl = detailsPane.querySelector("#detailAvatar");
+        applyAvatarToEl(detailAvatarEl, avatarCache[admin.id]);
+
+        // Wire actions
+        wireActionsFor(admin);
+      }
+
+      function renderActionsFor(admin) {
         const actions = [];
         if (currentRole === "admin") {
           if ((admin.role || "pending") === "pending") {
@@ -575,47 +686,10 @@
             // Viewing superadmin -> no actions
           }
         }
+        return actions;
+      }
 
-        detailsPane.innerHTML = `
-          <div class="head">
-            <div class="avatar" style="width:72px; height:72px; font-size:1.2rem;">${initials(
-              admin.name || admin.email
-            )}</div>
-            <div>
-              <div class="name">
-                ${admin.name || "(no name)"}
-                <span class="pill" id="statusPill">${roleBadge}</span>${youHeaderBadge}
-              </div>
-              <div class="meta">Created: ${when}</div>
-            </div>
-            <div style="margin-left:auto; display:flex; gap:8px;">
-              ${actions.join("") || ""}
-            </div>
-          </div>
-
-          <div class="grid-2">
-            <div class="card">
-              <h4>Basic Information</h4>
-              <div class="info-list">
-                <div><span class="label">Full Name</span>${
-                  admin.name || "—"
-                }</div>
-                <div><span class="label">Email</span>${admin.email || "—"}</div>
-                <div><span class="label">Phone</span>${admin.phone || "—"}</div>
-                <div><span class="label">Role</span>${roleLabel}</div>
-              </div>
-            </div>
-
-            <div class="card">
-              <h4>Notes</h4>
-              <p style="margin:0; color:var(--muted); font-size:.95rem;">
-                Approve pending applicants carefully. Only super administrators can promote admins or demote them back to pending.
-              </p>
-            </div>
-          </div>
-        `;
-
-        // Wire actions
+      function wireActionsFor(admin) {
         const approveBtn = detailsPane.querySelector("#approveBtn");
         const rejectBtn = detailsPane.querySelector("#rejectBtn");
         const demoteBtn = detailsPane.querySelector("#demoteBtn");
@@ -642,7 +716,6 @@
           });
         if (promoteBtn)
           promoteBtn.addEventListener("click", async () => {
-            // Direct swap: current superadmin -> admin, target admin -> superadmin
             if (
               !confirm(
                 "Transfer SUPERADMIN to this user and become ADMIN yourself?"
