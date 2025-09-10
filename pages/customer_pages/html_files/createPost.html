@@ -509,6 +509,9 @@
       import { SUPABASE_URL, SUPABASE_ANON_KEY } from "../../../supabase.js";
       const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+      // === Private storage bucket for job pictures (must exist & be "private") ===
+      const JOB_PICS_BUCKET = "jobs"; // change if your bucket name is different
+
       // ========= Helpers for INTERVAL <-> hours =========
       function intervalToHours(v) {
         if (v == null) return null;
@@ -543,6 +546,67 @@
       function hoursToInterval(hours) {
         const h = Math.max(0, parseInt(hours, 10) || 0);
         return `${String(h).padStart(2, "0")}:00:00`; // "HH:MM:SS"
+      }
+
+      // ========= Signed URL helpers for Supabase Storage =========
+      function parsePublicBucketAndPath(publicUrl) {
+        try {
+          const marker = "/storage/v1/object/public/";
+          const i = publicUrl.indexOf(marker);
+          if (i === -1) return null;
+          const rest = publicUrl.substring(i + marker.length); // "<bucket>/<path>"
+          const slash = rest.indexOf("/");
+          if (slash === -1) return null;
+          const bucket = rest.substring(0, slash);
+          const path = rest.substring(slash + 1);
+          return { bucket, path };
+        } catch {
+          return null;
+        }
+      }
+      // Accepts:
+      //  - Full public URL -> { bucket, path }
+      //  - "bucket::path"  -> { bucket, path }
+      //  - "plain/path.jpg" -> { bucket: JOB_PICS_BUCKET, path }
+      function parseStorageRef(ref) {
+        if (!ref) return null;
+        const s = String(ref).trim();
+        if (/^https?:\/\//i.test(s)) {
+          const parsed = parsePublicBucketAndPath(s);
+          return parsed || null;
+        }
+        const bi = s.indexOf("::");
+        if (bi > 0) {
+          return { bucket: s.slice(0, bi), path: s.slice(bi + 2) };
+        }
+        return { bucket: JOB_PICS_BUCKET, path: s };
+      }
+      async function createSignedUrl(bucket, path, expires = 3600) {
+        const { data, error } = await supabase.storage
+          .from(bucket)
+          .createSignedUrl(path, expires);
+        if (error) throw error;
+        return data.signedUrl;
+      }
+      async function resolveSignedUrl(ref) {
+        if (!ref) return null;
+
+        // External non-Supabase URL: just use it.
+        if (/^https?:\/\//i.test(ref) && !ref.includes("/storage/v1/object/")) {
+          return ref;
+        }
+
+        const parsed = parseStorageRef(ref);
+        if (!parsed) return null;
+
+        try {
+          return await createSignedUrl(parsed.bucket, parsed.path, 3600);
+        } catch (e) {
+          console.warn("Failed to create signed URL:", e.message);
+          // Fall back to original ref if it looks like a public URL
+          if (/^https?:\/\//i.test(ref)) return ref;
+          return null;
+        }
       }
 
       // ========= DOM hooks =========
@@ -735,16 +799,24 @@
           inputDate.value = ORIGINAL_JOB.job_date ?? "";
           inputTime.value = ORIGINAL_JOB.job_time ?? "";
 
-          // 👇 Parse interval (e.g., "03:00:00" or "PT3H") -> hours and populate
+          // Parse interval -> hours and populate
           const hrs = intervalToHours(ORIGINAL_JOB.job_duration);
-          inputDuration.value = hrs ?? 1; // default to 1 if null
+          inputDuration.value = hrs ?? 1;
 
           inputDesc.value = ORIGINAL_JOB.job_description || "";
           inputLocation.value = ORIGINAL_JOB.job_location || "";
 
+          // Signed preview for existing photo (supports old public URLs or stored paths)
           if (ORIGINAL_JOB.job_picture_url) {
-            dzImg.src = ORIGINAL_JOB.job_picture_url;
-            dzThumb.style.display = "block";
+            try {
+              const signed = await resolveSignedUrl(
+                ORIGINAL_JOB.job_picture_url
+              );
+              if (signed) {
+                dzImg.src = signed;
+                dzThumb.style.display = "block";
+              }
+            } catch {}
           }
         }
       }
@@ -781,23 +853,32 @@
           return;
         }
 
-        // Upload picture if chosen
-        let pictureUrl = ORIGINAL_JOB?.job_picture_url || null;
+        // Upload picture if chosen — store PATH (not public URL), then always use signed URLs at read-time
+        let pictureRef = ORIGINAL_JOB?.job_picture_url || null; // could be old public URL or a stored path
+
         if (fileInput.files && fileInput.files.length > 0) {
           const file = fileInput.files[0];
           const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
-          const filePath = `${user.id}/${Date.now()}.${ext}`;
+          const safeName = file.name.replace(/[^\w.\-]/g, "_");
+          const filePath = `${user.id}/${Date.now()}_${safeName}.${ext}`;
           const { error: upErr } = await supabase.storage
-            .from("jobs")
-            .upload(filePath, file);
+            .from(JOB_PICS_BUCKET)
+            .upload(filePath, file, { upsert: true });
           if (upErr) {
             alert("Error uploading picture: " + upErr.message);
             return;
           }
-          const { data: pub } = supabase.storage
-            .from("jobs")
-            .getPublicUrl(filePath);
-          pictureUrl = pub.publicUrl;
+          // Store just the path (private), e.g. "userId/timestamp_name.jpg"
+          pictureRef = filePath;
+
+          // Update preview with a fresh signed URL
+          try {
+            const previewUrl = await resolveSignedUrl(pictureRef);
+            if (previewUrl) {
+              dzImg.src = previewUrl;
+              dzThumb.style.display = "block";
+            }
+          } catch {}
         }
 
         // Build payload (convert hours -> INTERVAL)
@@ -813,9 +894,9 @@
           job_location: inputLocation.value.trim(),
           job_date: inputDate.value,
           job_time: inputTime.value,
-          job_duration: job_duration_interval, // ✅ send proper interval
+          job_duration: job_duration_interval,
           job_pay: parseFloat(inputPay.value),
-          job_picture_url: pictureUrl,
+          job_picture_url: pictureRef, // store path or legacy URL; readers will resolve signed URL
         };
 
         if (!EDIT_MODE) {
@@ -862,7 +943,6 @@
             return;
           }
           alert("Changes saved!");
-          // optional: go back to list
           window.location.href = "myJobPosts.html";
         }
       });

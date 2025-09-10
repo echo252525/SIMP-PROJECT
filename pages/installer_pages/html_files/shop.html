@@ -158,7 +158,7 @@
     <script type="module">
       import { SUPABASE_URL, SUPABASE_ANON_KEY } from "../../../supabase.js";
 
-      // Clients
+      // Supabase (point DB default schema to "shop"; storage is schema-agnostic)
       const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { db: { schema: "shop" } });
 
       // DOM
@@ -166,9 +166,95 @@
       const detailEl = document.getElementById("detail");
       const placeholderEl = document.getElementById("placeholder");
 
-      // Helpers
+      // ===== Signed URL helpers for product images =====
+      // If your bucket name is different, change this:
+      const DEFAULT_PRODUCT_BUCKET = "shop_products";
+
+      function escapeHtml(s){
+        return String(s||"").replace(/[&<>"']/g,(m)=>(
+          { "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[m]
+        ));
+      }
+
+      // Parse a Supabase *public* storage URL -> { bucket, path }
+      function parsePublicBucketAndPath(publicUrl){
+        try{
+          const marker = '/storage/v1/object/public/';
+          const i = publicUrl.indexOf(marker);
+          if (i === -1) return null;
+          const rest = publicUrl.substring(i + marker.length);
+          const slash = rest.indexOf('/');
+          if (slash === -1) return null;
+          const bucket = rest.substring(0, slash);
+          let path = rest.substring(slash + 1);
+          try { path = decodeURIComponent(path); } catch {}
+          return { bucket, path: path.replace(/^\/+/, '') };
+        }catch{ return null; }
+      }
+
+      // Accepts:
+      //  - Full Supabase public URL (we'll sign it)
+      //  - "bucket::path/to/file.jpg"
+      //  - "relative/path.jpg" (assumes DEFAULT_PRODUCT_BUCKET)
+      //  - External http(s) (left as-is)
+      function parseStorageRef(ref){
+        if (!ref) return null;
+        const s = String(ref).trim();
+
+        // Non-supabase external URL -> passthrough later
+        if (/^https?:\/\//i.test(s) && !s.includes('/storage/v1/object/')) {
+          return { externalUrl: s };
+        }
+
+        // Supabase public URL
+        if (s.includes('/storage/v1/object/public/')) {
+          const parsed = parsePublicBucketAndPath(s);
+          return parsed ? { bucket: parsed.bucket, path: parsed.path } : null;
+        }
+
+        // "bucket::path"
+        const bi = s.indexOf('::');
+        if (bi > 0){
+          let path = s.slice(bi + 2);
+          try { path = decodeURIComponent(path); } catch {}
+          return { bucket: s.slice(0, bi), path: path.replace(/^\/+/, '') };
+        }
+
+        // plain relative path -> default bucket
+        let path = s;
+        try { path = decodeURIComponent(path); } catch {}
+        return { bucket: DEFAULT_PRODUCT_BUCKET, path: path.replace(/^\/+/, '') };
+      }
+
+      async function createSignedUrl(bucket, path, expires = 3600){
+        const { data, error } = await supabase.storage.from(bucket).createSignedUrl(path, expires);
+        if (error) throw error;
+        return data.signedUrl;
+      }
+
+      async function resolveProductImageSignedUrl(image_url){
+        if (!image_url) return null;
+
+        // External (non-supabase) http(s) -> leave as-is
+        if (/^https?:\/\//i.test(image_url) && !image_url.includes('/storage/v1/object/')) {
+          return image_url;
+        }
+
+        const ref = parseStorageRef(image_url);
+        if (!ref) return null;
+
+        if (ref.externalUrl) return ref.externalUrl;
+
+        try {
+          return await createSignedUrl(ref.bucket, ref.path, 60 * 60); // 1 hour
+        } catch (e) {
+          console.warn("Signing product image failed:", e?.message || e);
+          return null;
+        }
+      }
+
+      // ===== Other helpers =====
       const php = new Intl.NumberFormat("en-PH", { style:"currency", currency:"PHP", maximumFractionDigits:0 });
-      const escapeHtml = (s)=> String(s||"").replace(/[&<>"']/g,(m)=>({"&":"&amp;","<":"&lt;","&gt;":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
       function productExternalUrl(p){
         const link = (p.product_link||"").trim();
         if (link && /^https?:\/\//i.test(link)) return link;
@@ -203,27 +289,33 @@
       async function fetchPublished(){
         const { data, error } = await supabase
           .from("products")
-          .select("id, product_name, price, platform, product_link, image_url, features, description, is_published")
+          .select("id, product_name, price, platform, product_link, image_url, features, description, is_published, created_at")
           .eq("is_published", true)
           .order("created_at", { ascending:false });
         if (error) throw error;
         return data || [];
       }
 
-      function renderList(items){
+      async function renderList(items){
         listEl.classList.remove("sk-list");
         listEl.innerHTML = "";
         if (!items.length){
           listEl.innerHTML = `<li style="color:#6b7280; padding:.5rem .25rem;">No published products yet.</li>`;
           return;
         }
-        for (const p of items){
+
+        // Resolve all image URLs up front
+        const signedUrls = await Promise.all(items.map(p => resolveProductImageSignedUrl(p.image_url)));
+
+        items.forEach((p, idx) => {
           const li = document.createElement("li");
           li.className = "product-card";
           const price = php.format(Number(p.price||0));
-          const imgHtml = p.image_url
-            ? `<img src="${escapeHtml(p.image_url)}" class="productImage" alt="${escapeHtml(p.product_name)}">`
+          const src = signedUrls[idx];
+          const imgHtml = src
+            ? `<img src="${escapeHtml(src)}" class="productImage" alt="${escapeHtml(p.product_name)}" onerror="this.onerror=null;this.src='../images/profile-4.jpg';">`
             : `<div class="productImage">IMG</div>`;
+
           li.innerHTML = `
             <a href="#">
               <div class="thumb">${imgHtml}</div>
@@ -233,15 +325,22 @@
               <div class="price">${price}</div>
             </a>
           `;
-          // clicking anywhere opens details on the right
-          li.querySelector("a").addEventListener("click",(e)=>{ e.preventDefault(); renderDetail(p); });
+
+          li.querySelector("a").addEventListener("click", async (e)=>{
+            e.preventDefault();
+            await renderDetail(p);
+          });
+
           listEl.appendChild(li);
-        }
+        });
       }
 
-      function renderDetail(p){
+      async function renderDetail(p){
         const price = php.format(Number(p.price||0));
-        const imgHtml = p.image_url ? `<img src="${escapeHtml(p.image_url)}" class="productImage" alt="${escapeHtml(p.product_name)}" style="width:100%; height:100%; object-fit:cover;">` : "";
+        const signed = await resolveProductImageSignedUrl(p.image_url);
+        const imgHtml = signed
+          ? `<img src="${escapeHtml(signed)}" class="productImage" alt="${escapeHtml(p.product_name)}" style="width:100%; height:100%; object-fit:cover;" onerror="this.onerror=null;this.src='../images/profile-4.jpg';">`
+          : "";
         const features = Array.isArray(p.features) ? p.features : [];
         const btnLabel = p.platform ? `Open in ${escapeHtml(p.platform)}` : "Open product";
         const link = productExternalUrl(p);
@@ -278,7 +377,6 @@
               </div>
             </div>
 
-            <!-- NEW: Description block -->
             <div class="field desc">
               <h4>Description / Specs</h4>
               <p>${descriptionHtml || "No description provided."}</p>
@@ -306,11 +404,11 @@
         showSkeletonList(6);
         try{
           const items = await fetchPublished();
-          renderList(items);
-          if (items.length){ renderDetail(items[0]); }
+          await renderList(items);
+          if (items.length){ await renderDetail(items[0]); }
         }catch(e){
           listEl.classList.remove("sk-list");
-          listEl.innerHTML = `<li style="color:#b4232c; padding:.5rem .25rem;">Failed to load products: ${e.message}</li>`;
+          listEl.innerHTML = `<li style="color:#b4232c; padding:.5rem .25rem;">Failed to load products: ${escapeHtml(e.message || e)}</li>`;
         }
       }
 

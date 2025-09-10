@@ -276,7 +276,6 @@
         color: #334155;
         border-color: #e2e8f0;
       }
-      /* NEW: overdue + done */
       .status-overdue {
         background: #fff1f2;
         color: #be123c;
@@ -288,142 +287,54 @@
         border-color: #a7f3d0;
       }
 
-      /* Animations & micro-interactions (unchanged) */
+      /* Animations & micro-interactions */
       main {
         --brand: #20a44c;
         --accent: #20647c;
         scroll-behavior: smooth;
       }
       @keyframes fadeUp {
-        from {
-          opacity: 0;
-          transform: translateY(6px);
-        }
-        to {
-          opacity: 1;
-          transform: none;
-        }
+        from { opacity: 0; transform: translateY(6px); }
+        to { opacity: 1; transform: none; }
       }
-      main .titlePageDiv h1 {
-        animation: fadeUp 0.28s ease both;
-      }
-      main .titlePageDiv p {
-        animation: fadeUp 0.28s ease 0.06s both;
-      }
+      main .titlePageDiv h1 { animation: fadeUp 0.28s ease both; }
+      main .titlePageDiv p { animation: fadeUp 0.28s ease 0.06s both; }
       @keyframes cardIn {
-        from {
-          opacity: 0;
-          transform: translateY(10px);
-        }
-        to {
-          opacity: 1;
-          transform: none;
-        }
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: none; }
       }
-      main .cards > .applicationsDiv {
-        animation: cardIn 0.34s ease both;
-      }
-      main .cards > .applicationsDiv:nth-child(2) {
-        animation-delay: 0.05s;
-      }
-      main .cards > .applicationsDiv:nth-child(3) {
-        animation-delay: 0.1s;
-      }
-      main .cards > .applicationsDiv:nth-child(4) {
-        animation-delay: 0.15s;
-      }
-      main .applicationsDiv {
-        transition: transform 0.12s ease, box-shadow 0.22s ease,
-          border-color 0.2s ease;
-      }
-      main .applicationsDiv:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 14px 32px rgba(0, 0, 0, 0.08);
-      }
+      main .cards > .applicationsDiv { animation: cardIn 0.34s ease both; }
+      main .cards > .applicationsDiv:nth-child(2) { animation-delay: 0.05s; }
+      main .cards > .applicationsDiv:nth-child(3) { animation-delay: 0.1s; }
+      main .cards > .applicationsDiv:nth-child(4) { animation-delay: 0.15s; }
+      main .applicationsDiv { transition: transform 0.12s ease, box-shadow 0.22s ease, border-color 0.2s ease; }
+      main .applicationsDiv:hover { transform: translateY(-2px); box-shadow: 0 14px 32px rgba(0, 0, 0, 0.08); }
       main .applicationsDiv::before {
-        content: "";
-        position: absolute;
-        left: 0;
-        top: 0;
-        height: 4px;
-        width: 25%;
-        background: linear-gradient(90deg, var(--accent), var(--brand));
-        transition: width 0.35s ease, background 0.25s ease;
+        content: ""; position: absolute; left: 0; top: 0; height: 4px; width: 25%;
+        background: linear-gradient(90deg, var(--accent), var(--brand)); transition: width 0.35s ease, background 0.25s ease;
       }
-      main .applicationsDiv:has(.status-viewed)::before {
-        width: 50%;
-      }
-      main .applicationsDiv:has(.status-accepted)::before {
-        width: 100%;
-      }
-      main .applicationsDiv:has(.status-rejected)::before {
-        width: 100%;
-        background: linear-gradient(90deg, #e11d48, #f97316);
-      }
-      @keyframes shine {
-        to {
-          transform: translateX(250%) rotate(25deg);
-        }
-      }
-      main .thumb {
-        position: relative;
-        overflow: hidden;
-      }
-      main .thumb img {
-        transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
-      }
-      main .applicationsDiv:hover .thumb img {
-        transform: scale(1.04);
-      }
+      main .applicationsDiv:has(.status-viewed)::before { width: 50%; }
+      main .applicationsDiv:has(.status-accepted)::before { width: 100%; }
+      main .applicationsDiv:has(.status-rejected)::before { width: 100%; background: linear-gradient(90deg, #e11d48, #f97316); }
+      @keyframes shine { to { transform: translateX(250%) rotate(25deg); } }
+      main .thumb { position: relative; overflow: hidden; }
+      main .thumb img { transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
+      main .applicationsDiv:hover .thumb img { transform: scale(1.04); }
       main .thumb::after {
-        content: "";
-        position: absolute;
-        top: -50%;
-        left: -60%;
-        width: 60%;
-        height: 200%;
-        background: linear-gradient(
-          120deg,
-          rgba(255, 255, 255, 0) 0,
-          rgba(255, 255, 255, 0.45) 50%,
-          rgba(255, 255, 255, 0) 100%
-        );
-        transform: translateX(-150%) rotate(25deg);
-        pointer-events: none;
+        content: ""; position: absolute; top: -50%; left: -60%; width: 60%; height: 200%;
+        background: linear-gradient(120deg, rgba(255,255,255,0) 0, rgba(255,255,255,0.45) 50%, rgba(255,255,255,0) 100%);
+        transform: translateX(-150%) rotate(25deg); pointer-events: none;
       }
-      main .applicationsDiv:hover .thumb::after {
-        animation: shine 0.9s ease;
-      }
+      main .applicationsDiv:hover .thumb::after { animation: shine 0.9s ease; }
       @keyframes acceptPulse {
-        0%,
-        100% {
-          box-shadow: 0 0 0 0 rgba(32, 164, 76, 0);
-        }
-        50% {
-          box-shadow: 0 0 0 6px rgba(32, 164, 76, 0.16);
-        }
+        0%, 100% { box-shadow: 0 0 0 0 rgba(32, 164, 76, 0); }
+        50% { box-shadow: 0 0 0 6px rgba(32, 164, 76, 0.16); }
       }
-      main .status {
-        transition: transform 0.12s ease, box-shadow 0.2s ease;
-      }
-      main .status:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 6px 14px rgba(0, 0, 0, 0.07);
-      }
-      main .status-accepted {
-        animation: acceptPulse 2.2s ease-in-out infinite;
-      }
-      .dropdown-content a .material-icons {
-        font-size: 18px;
-        vertical-align: middle;
-        margin-right: 0.35rem;
-      }
-      @media (prefers-reduced-motion: reduce) {
-        main * {
-          animation: none !important;
-          transition: none !important;
-        }
-      }
+      main .status { transition: transform 0.12s ease, box-shadow 0.2s ease; }
+      main .status:hover { transform: translateY(-1px); box-shadow: 0 6px 14px rgba(0,0,0,0.07); }
+      main .status-accepted { animation: acceptPulse 2.2s ease-in-out infinite; }
+      .dropdown-content a .material-icons { font-size: 18px; vertical-align: middle; margin-right: 0.35rem; }
+      @media (prefers-reduced-motion: reduce) { main * { animation: none !important; transition: none !important; } }
     </style>
   </head>
 
@@ -535,7 +446,6 @@
                 ><span class="material-icons" aria-hidden="true">pending</span
                 >Pending</a
               >
-              <!-- NEW options for filtering if you like (not required for buttons) -->
               <a href="#" data-status="overdue"
                 ><span class="material-icons" aria-hidden="true">event_busy</span
                 >Overdue</a
@@ -574,75 +484,88 @@
       const statusLabel = document.getElementById("statusLabel");
       const searchInput = document.getElementById("searchInput");
 
-      // Status presentation map (EXTENDED with overdue + done)
+      // Status presentation map
       const STATUS_MAP = Object.freeze({
-        pending: {
-          class: "status-pending",
-          label: "Pending",
-          icon: "hourglass_top",
-        },
+        pending: { class: "status-pending", label: "Pending", icon: "hourglass_top" },
         viewed: { class: "status-viewed", label: "Viewed", icon: "visibility" },
-        approved: {
-          class: "status-accepted",
-          label: "Approved",
-          icon: "task_alt",
-        },
-        rejected: {
-          class: "status-rejected",
-          label: "Rejected",
-          icon: "close",
-        },
-        overdue: {
-          class: "status-overdue",
-          label: "Overdue",
-          icon: "event_busy",
-        },
-        done: {
-          class: "status-done",
-          label: "Done",
-          icon: "check_circle",
-        },
+        approved: { class: "status-accepted", label: "Approved", icon: "task_alt" },
+        rejected: { class: "status-rejected", label: "Rejected", icon: "close" },
+        overdue: { class: "status-overdue", label: "Overdue", icon: "event_busy" },
+        done: { class: "status-done", label: "Done", icon: "check_circle" },
       });
 
       // Local state
-      let ALL_APPS = []; // fetched from DB
-      const FILTERS = { q: "", status: "" }; // status "" means "All"
+      let ALL_APPS = [];
+      const FILTERS = { q: "", status: "" };
 
       // Utils
       const esc = (str) =>
-        String(str ?? "").replace(
-          /[&<>"']/g,
-          (s) =>
-            ({
-              "&": "&amp;",
-              "<": "&lt;",
-              ">": "&gt;",
-              '"': "&quot;",
-              "'": "&#39;",
-            }[s])
-        );
+        String(str ?? "").replace(/[&<>"']/g, (s) => (
+          { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[s]
+        ));
       const fmtPeso = (n) => {
         const v = typeof n === "string" ? parseFloat(n) : n;
         return isNaN(v)
           ? "0.00"
-          : v.toLocaleString("en-PH", {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            });
+          : v.toLocaleString("en-PH", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
       };
-      const fmtDate = (d) =>
-        d ? new Date(d + "T00:00:00").toLocaleDateString() : "";
+      const fmtDate = (d) => (d ? new Date(d + "T00:00:00").toLocaleDateString() : "");
       const fmtTime = (t) => (t ? String(t).slice(0, 5) : "");
 
-      // If job images are in a storage bucket, compute a public URL; else allow full URLs
-      function publicJobImageUrl(rawPath) {
-        if (!rawPath) return "";
-        if (/^https?:\/\//i.test(rawPath)) return rawPath;
-        const clean = String(rawPath)
-          .replace(/^\/+/, "")
-          .replace(/^jobs\//, "");
-        const { data } = sb.storage.from("jobs").getPublicUrl(clean);
-        return data?.publicUrl || "";
+      /* ===== Signed URL helpers for job images ===== */
+      const DEFAULT_JOB_PICS_BUCKET = "jobs"; // adjust if needed
+
+      function parsePublicBucketAndPath(publicUrl){
+        try{
+          const marker = '/storage/v1/object/public/';
+          const i = publicUrl.indexOf(marker);
+          if (i === -1) return null;
+          const rest = publicUrl.substring(i + marker.length);
+          const slash = rest.indexOf('/');
+          if (slash === -1) return null;
+          const bucket = rest.substring(0, slash);
+          let path = rest.substring(slash + 1);
+          try { path = decodeURIComponent(path); } catch {}
+          return { bucket, path: path.replace(/^\/+/, '') };
+        }catch{ return null; }
+      }
+
+      // Accepts: full public Storage URL, "bucket::path", or "plain/path" (assumes DEFAULT_JOB_PICS_BUCKET)
+      function parseStorageRef(ref){
+        if (!ref) return null;
+        const s = String(ref).trim();
+        if (/^https?:\/\//i.test(s)){
+          // supabase public URL -> parse; external http(s) (non-supabase) -> passthrough later
+          const parsed = parsePublicBucketAndPath(s);
+          return parsed || null;
+        }
+        const bi = s.indexOf('::');
+        if (bi > 0){
+          let path = s.slice(bi + 2);
+          try { path = decodeURIComponent(path); } catch {}
+          return { bucket: s.slice(0, bi), path: path.replace(/^\/+/, '') };
+        }
+        let path = s;
+        try { path = decodeURIComponent(path); } catch {}
+        return { bucket: DEFAULT_JOB_PICS_BUCKET, path: path.replace(/^\/+/, '') };
+      }
+
+      async function createSignedUrl(bucket, path, expires = 3600){
+        const { data, error } = await sb.storage.from(bucket).createSignedUrl(path, expires);
+        if (error) throw error;
+        return data.signedUrl;
+      }
+
+      async function resolveJobPictureSignedUrl(job_picture_url){
+        if (!job_picture_url) return null;
+        // Non-supabase absolute URL (e.g., CDN or external) -> passthrough
+        if (/^https?:\/\//i.test(job_picture_url) && !job_picture_url.includes('/storage/v1/object/')) {
+          return job_picture_url;
+        }
+        const ref = parseStorageRef(job_picture_url);
+        if (!ref) return null;
+        try { return await createSignedUrl(ref.bucket, ref.path, 3600); }
+        catch(e){ console.warn('Signing job image failed:', e?.message || e); return null; }
       }
 
       function updateStatusButtonLabel() {
@@ -656,10 +579,7 @@
 
         // Filter by status
         const st = (FILTERS.status || "").trim().toLowerCase();
-        if (st)
-          list = list.filter(
-            (a) => String(a.status || "").toLowerCase() === st
-          );
+        if (st) list = list.filter((a) => String(a.status || "").toLowerCase() === st);
 
         // Search across title, description, location
         const q = (FILTERS.q || "").trim().toLowerCase();
@@ -676,46 +596,32 @@
         renderApplications(list);
       }
 
-      function renderApplications(rows) {
+      async function renderApplications(rows) {
         container.innerHTML = "";
         if (!rows || rows.length === 0) {
-          container.innerHTML = `<p>No applications found${
-            FILTERS.status || FILTERS.q ? " for current filters." : "."
-          }</p>`;
+          container.innerHTML = `<p>No applications found${FILTERS.status || FILTERS.q ? " for current filters." : "."}</p>`;
           return;
         }
 
-        for (const app of rows) {
+        // sign all images in parallel for smoother render
+        const signedUrls = await Promise.all(
+          rows.map(r => resolveJobPictureSignedUrl(r.job?.job_picture_url))
+        );
+
+        rows.forEach((app, idx) => {
           const job = app.job || {};
           const st = String(app.status || "").toLowerCase();
           const statusInfo = STATUS_MAP[st] || STATUS_MAP["pending"];
-          const imgUrl =
-            publicJobImageUrl(job.job_picture_url) || "../images/profile-4.jpg";
+          const imgUrl = signedUrls[idx] || "../images/profile-4.jpg";
 
-          // Decide button label/visibility based on application status
-          // - approved  -> "Mark as Done"
-          // - overdue   -> "Delete"
-          // - rejected  -> "Delete Application"
-          // - viewed    -> "Cancel Application"
-          // - pending   -> "Cancel Application"
-          // - done      -> NO BUTTON
+          // Decide button label/visibility
           let actionLabel = null;
           let actionIcon = null;
-          if (st === "approved") {
-            actionLabel = "Mark as Done";
-            actionIcon = "done_all";
-          } else if (st === "overdue") {
-            actionLabel = "Delete";
-            actionIcon = "delete";
-          } else if (st === "rejected") {
-            actionLabel = "Delete Application";
-            actionIcon = "delete";
-          } else if (st === "viewed" || st === "pending") {
-            actionLabel = "Cancel Application";
-            actionIcon = "cancel";
-          } else if (st === "done") {
-            actionLabel = null; // hide button
-          }
+          if (st === "approved") { actionLabel = "Mark as Done"; actionIcon = "done_all"; }
+          else if (st === "overdue") { actionLabel = "Delete"; actionIcon = "delete"; }
+          else if (st === "rejected") { actionLabel = "Delete Application"; actionIcon = "delete"; }
+          else if (st === "viewed" || st === "pending") { actionLabel = "Cancel Application"; actionIcon = "cancel"; }
+          else if (st === "done") { actionLabel = null; }
 
           const card = document.createElement("article");
           card.className = "applicationsDiv";
@@ -772,9 +678,7 @@
                 </div>
               </div>
 
-              <div class="desc">${esc(
-                job.job_description || "No description provided."
-              )}</div>
+              <div class="desc">${esc(job.job_description || "No description provided.")}</div>
             </div>
             ${
               actionLabel
@@ -788,14 +692,13 @@
 
           container.appendChild(card);
 
-          // ADD: wire up the action button to perform the proper DB action
           if (actionLabel) {
             const btn = card.querySelector(".apply");
             btn?.addEventListener("click", async () => {
               await handleAction(app, st);
             });
           }
-        }
+        });
       }
 
       // === Helper: current logged-in installer id ===
@@ -805,7 +708,7 @@
         return data?.user?.id ?? null;
       }
 
-      // === ADDED: centralized handler for card button actions ===
+      // === Centralized handler for card actions ===
       async function handleAction(app, status) {
         try {
           const id = app.application_id;
@@ -818,54 +721,41 @@
             if (!ok) return;
 
             // 1) Update application status -> done
-            const { error } = await sb
-              .schema("jobs")
-              .from("job_application")
-              .update({ status: "done" })
-              .eq("application_id", id);
+            {
+              const { error } = await sb
+                .schema("jobs")
+                .from("job_application")
+                .update({ status: "done" })
+                .eq("application_id", id);
+              if (error) throw error;
+            }
 
-            if (error) throw error;
-
-            // 2) Update the related job.job_status -> done
+            // 2) Update job status -> done
             if (app.job_id) {
               const { error: jobErr } = await sb
                 .schema("jobs")
                 .from("job")
                 .update({ job_status: "done" })
                 .eq("job_id", app.job_id);
-
               if (jobErr) throw jobErr;
             }
 
-            // 3) INSERT / UPSERT into earnings.payments (defaults to 'unpaid')
-            //    - Uses current auth user's id as installer_id
-            //    - Uses ON CONFLICT to avoid duplicate rows for same installer+job
+            // 3) Upsert payment record
             const installerId = await getCurrentUserId();
             if (!installerId) {
-              alert(
-                "Done status saved, but unable to identify current user for payment record."
-              );
+              alert("Done status saved, but unable to identify current user for payment record.");
             } else if (!app.job_id) {
-              alert(
-                "Done status saved, but no job_id found to create payment record."
-              );
+              alert("Done status saved, but no job_id found to create payment record.");
             } else {
-              const payload = {
-                installer_id: installerId,
-                job_id: app.job_id,
-                // payment_status will default to 'unpaid' in DB
-              };
-
+              const payload = { installer_id: installerId, job_id: app.job_id };
               const { error: payErr } = await sb
                 .schema("earnings")
                 .from("payments")
                 .upsert([payload], {
                   onConflict: "installer_id,job_id",
-                  ignoreDuplicates: false, // upsert will update timestamps via trigger
+                  ignoreDuplicates: false,
                 });
-
               if (payErr) {
-                // Common case if RLS forbids INSERT for installers
                 console.error("payments upsert error:", payErr);
                 const msg =
                   payErr.code === "42501"
@@ -873,16 +763,11 @@
                     : `Payment record could not be created: ${payErr.message}`;
                 alert(msg);
               } else {
-                // Success
-                alert(
-                  "Application marked as Done. Job marked as Done. Payment record created/updated."
-                );
+                alert("Application marked as Done. Job marked as Done. Payment record created/updated.");
               }
             }
           } else if (status === "pending" || status === "viewed") {
-            const ok = confirm(
-              "Cancel this application? This will permanently delete it."
-            );
+            const ok = confirm("Cancel this application? This will permanently delete it.");
             if (!ok) return;
 
             const { error } = await sb
@@ -890,13 +775,10 @@
               .from("job_application")
               .delete()
               .eq("application_id", id);
-
             if (error) throw error;
             alert("Application cancelled and deleted.");
           } else if (status === "overdue") {
-            const ok = confirm(
-              "Delete this overdue application? This will permanently delete it."
-            );
+            const ok = confirm("Delete this overdue application? This will permanently delete it.");
             if (!ok) return;
 
             const { error } = await sb
@@ -904,13 +786,10 @@
               .from("job_application")
               .delete()
               .eq("application_id", id);
-
             if (error) throw error;
             alert("Overdue application deleted.");
           } else if (status === "rejected") {
-            const ok = confirm(
-              "Delete this rejected application? This will permanently delete it."
-            );
+            const ok = confirm("Delete this rejected application? This will permanently delete it.");
             if (!ok) return;
 
             const { error } = await sb
@@ -918,11 +797,9 @@
               .from("job_application")
               .delete()
               .eq("application_id", id);
-
             if (error) throw error;
             alert("Rejected application deleted.");
           } else if (status === "done") {
-            // No button shown for done; guard just in case.
             alert("This application is already done.");
             return;
           }
@@ -947,24 +824,19 @@
 
         if (appErr) {
           console.error("Error fetching applications:", appErr);
-          container.innerHTML = `<p>Error loading applications: ${esc(
-            appErr.message
-          )}</p>`;
+          container.innerHTML = `<p>Error loading applications: ${esc(appErr.message)}</p>`;
           return;
         }
 
-        // 2) Load the jobs those apps reference (from jobs schema)
-        const jobIds = [
-          ...new Set((apps || []).map((a) => a.job_id).filter(Boolean)),
-        ];
+        // 2) Load the jobs those apps reference
+        const jobIds = [...new Set((apps || []).map((a) => a.job_id).filter(Boolean))];
 
         let jobsById = {};
         if (jobIds.length) {
           const { data: jobs, error: jobErr } = await sb
             .schema("jobs")
             .from("job")
-            .select(
-              `
+            .select(`
               job_id,
               job_title,
               job_category,
@@ -975,35 +847,27 @@
               job_pay,
               job_description,
               job_picture_url
-            `
-            )
+            `)
             .in("job_id", jobIds);
 
           if (jobErr) {
             console.error("Error fetching jobs:", jobErr);
-            container.innerHTML = `<p>Error loading jobs: ${esc(
-              jobErr.message
-            )}</p>`;
+            container.innerHTML = `<p>Error loading jobs: ${esc(jobErr.message)}</p>`;
             return;
           }
 
           jobsById = Object.fromEntries((jobs || []).map((j) => [j.job_id, j]));
         }
 
-        // 3) Stitch: put the job under each application
-        ALL_APPS = (apps || []).map((a) => ({
-          ...a,
-          job: jobsById[a.job_id] || null,
-        }));
+        // 3) Stitch
+        ALL_APPS = (apps || []).map((a) => ({ ...a, job: jobsById[a.job_id] || null }));
         applyFiltersAndRender();
       }
 
       // --- UI wiring: dropdown open/close ---
       document.addEventListener("click", (e) => {
         const dd = e.target.closest(".dropdown");
-        document
-          .querySelectorAll(".dropdown")
-          .forEach((d) => d.classList.remove("open"));
+        document.querySelectorAll(".dropdown").forEach((d) => d.classList.remove("open"));
         if (dd && dd.id === "statusDropdown") dd.classList.add("open");
       });
 

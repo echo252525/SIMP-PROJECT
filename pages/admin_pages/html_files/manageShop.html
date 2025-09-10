@@ -60,13 +60,10 @@
       .platform-badge{ font-size:.75rem; font-weight:700; letter-spacing:.02em; padding:.2rem .5rem; border-radius:6px; border:1px solid var(--line); background:#fafafa; color:#555; }
       .badge-row{ display:flex; gap:.4rem; align-items:center; }
 
-      /* small helper for inline hint text */
       .hint { font-size: 12px; color: #6c7a8a; margin-top: 4px; }
 
-      /* tiny helper for the publish toggle row */
       .publish-row{ display:flex; align-items:center; gap:.6rem; margin-top:.25rem; font-size:.9rem; color:#1f2937; }
 
-      /* ===== Pretty Toggle Switch for Publish ===== */
       .switch{ position:relative; width:48px; height:28px; display:inline-block; }
       .switch input{ opacity:0; width:0; height:0; }
       .slider{ position:absolute; cursor:pointer; inset:0; background:#e5e7eb; transition:.2s ease; border-radius:999px; border:1px solid #d1d5db; }
@@ -74,17 +71,14 @@
       .switch input:checked + .slider{ background:#22c55e33; border-color:#16a34a55; }
       .switch input:checked + .slider::before{ transform:translate(20px,-50%); background:#16a34a; }
 
-      /* Status pill */
       .status-pill{
         display:inline-flex; align-items:center; gap:.4rem; padding:.2rem .5rem; border-radius:999px; font-weight:700; font-size:.75rem; border:1px solid;
       }
       .status-pill.ok{ color:var(--ok); background:var(--ok-bg); border-color:#b7e3c7; }
       .status-pill.draft{ color:var(--draft); background:var(--draft-bg); border-color:#e5e7eb; }
 
-      /* Hide default text label visually but keep for a11y */
       .sr-only{ position:absolute !important; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); border:0; }
 
-      /* ===== Skeleton Loading ===== */
       .skeleton-card{ grid-column:span 3; border:1px solid var(--line); border-radius:var(--radius); background:var(--card); overflow:hidden; }
       @media (max-width:1200px){ .skeleton-card{ grid-column:span 6; } }
       @media (max-width:720px){ .skeleton-card{ grid-column:span 12; } }
@@ -284,17 +278,14 @@
         price: Number(r.price),
         platform: r.platform,
         link: r.product_link || "",
-        image: r.image_url || "",
+        image: r.image_url || "",               // NOTE: now stores PATH (preferred) or legacy public URL
         features: r.features || [],
-        description: r.description || "", // NEW
+        description: r.description || "",
         published: !!r.is_published
       });
 
-      // --- Storage helpers ---
-      function getPublicUrlFromPath(path){
-        return supaStorage.storage.from("products").getPublicUrl(path).data.publicUrl;
-      }
-
+      // --- Storage helpers (Signed URL flow) ---
+      // Extract storage path from legacy public URL
       function getPathFromPublicUrl(publicUrl){
         try {
           const marker = "/storage/v1/object/public/products/";
@@ -304,21 +295,53 @@
         } catch { return null; }
       }
 
+      // Normalize whatever is in DB (path or old public URL) into a storage path
+      function normalizeToPath(imageValue){
+        if (!imageValue) return null;
+        if (/^https?:\/\//i.test(imageValue)) {
+          return getPathFromPublicUrl(imageValue);
+        }
+        // assume already a storage path like "product_<id>/file.png"
+        return imageValue;
+      }
+
+      async function createSignedUrlFromPath(path, expiresInSec = 3600){
+        const { data, error } = await supaStorage.storage
+          .from("products")
+          .createSignedUrl(path, expiresInSec);
+        if (error) throw error;
+        return data.signedUrl;
+      }
+
+      // Upload and return PATH (not public URL)
       async function uploadImageToBucket(file, productId){
         const safeName = file.name.replace(/[^\w.\-]/g, "_");
         const path = `product_${productId}/${Date.now()}_${safeName}`;
-        const { data, error } = await supaStorage.storage
+        const { error } = await supaStorage.storage
           .from("products")
           .upload(path, file, { cacheControl: "3600", upsert: true });
         if (error) throw error;
-        return { path, publicUrl: getPublicUrlFromPath(path) };
+        return { path };
       }
 
-      async function removeImageFromBucketByUrl(publicUrl){
-        const path = getPathFromPublicUrl(publicUrl);
+      // Remove by whatever is stored (path or public URL)
+      async function removeImageFromBucket(imageValue){
+        const path = normalizeToPath(imageValue) || null;
         if (!path) return;
         const { error } = await supaStorage.storage.from("products").remove([path]);
         if (error) throw error;
+      }
+
+      // Signed URL resolver used by renderer
+      async function resolveSignedImageUrl(imageValue){
+        const path = normalizeToPath(imageValue);
+        if (!path) return null;
+        try {
+          return await createSignedUrlFromPath(path, 3600); // 1 hour
+        } catch (e){
+          console.warn("sign image failed:", e.message);
+          return null;
+        }
       }
 
       // --- URL helper for View More ---
@@ -342,9 +365,10 @@
       }
 
       async function db_insertProduct(p) {
-        let imageUrlToSave = p.image || null;
+        let imageValueToSave = p.image || null; // we now store PATH here
 
         if (p.file) {
+          // Insert stub to get id
           const prePayload = {
             product_name: p.name,
             price: p.price,
@@ -352,7 +376,7 @@
             product_link: p.link || null,
             image_url: null,
             features: p.features || [],
-            description: p.description || null, // NEW
+            description: p.description || null,
             is_published: false
           };
           const pre = await supabase.from("products").insert(prePayload).select().single();
@@ -360,11 +384,11 @@
 
           const newId = pre.data.id;
           const uploaded = await uploadImageToBucket(p.file, newId);
-          imageUrlToSave = uploaded.publicUrl;
+          imageValueToSave = uploaded.path; // store PATH
 
           const { data: upd, error: updErr } = await supabase
             .from("products")
-            .update({ image_url: imageUrlToSave })
+            .update({ image_url: imageValueToSave })
             .eq("id", newId)
             .select()
             .single();
@@ -376,9 +400,9 @@
             price: p.price,
             platform: p.platform,
             product_link: p.link || null,
-            image_url: imageUrlToSave,
+            image_url: imageValueToSave, // may be null or path
             features: p.features || [],
-            description: p.description || null, // NEW
+            description: p.description || null,
             is_published: false
           };
           const { data, error } = await supabase.from("products").insert(payload).select().single();
@@ -388,17 +412,17 @@
       }
 
       async function db_updateProduct(id, p) {
-        let imageUrlToSave = (typeof p.image === "string") ? p.image : null;
+        let imageValueToSave = (typeof p.image === "string") ? p.image : null;
 
         if (p.file) {
           const uploaded = await uploadImageToBucket(p.file, id);
-          imageUrlToSave = uploaded.publicUrl;
+          imageValueToSave = uploaded.path; // store PATH
 
-          if (currentEditingImageUrl && getPathFromPublicUrl(currentEditingImageUrl)) {
-            try { await removeImageFromBucketByUrl(currentEditingImageUrl); } catch (e) { console.warn("Old image delete failed:", e.message); }
+          if (currentEditingImageUrl) {
+            try { await removeImageFromBucket(currentEditingImageUrl); } catch (e) { console.warn("Old image delete failed:", e.message); }
           }
         } else if (editingProductId) {
-          imageUrlToSave = currentEditingImageUrl;
+          imageValueToSave = currentEditingImageUrl; // path or legacy URL preserved
         }
 
         const payload = {
@@ -406,9 +430,9 @@
           price: p.price,
           platform: p.platform,
           product_link: p.link || null,
-          image_url: imageUrlToSave || null,
+          image_url: imageValueToSave || null,
           features: p.features || [],
-          description: p.description || null // NEW
+          description: p.description || null
         };
         const { data, error } = await supabase.from("products").update(payload).eq("id", id).select().single();
         if (error) throw error;
@@ -429,13 +453,13 @@
       async function db_deleteProduct(id) {
         const { data: rows, error: selErr } = await supabase.from("products").select("image_url").eq("id", id).limit(1);
         if (selErr) throw selErr;
-        const imageUrl = rows && rows[0] ? rows[0].image_url : null;
+        const imageVal = rows && rows[0] ? rows[0].image_url : null;
 
         const { error } = await supabase.from("products").delete().eq("id", id);
         if (error) throw error;
 
-        if (imageUrl && getPathFromPublicUrl(imageUrl)) {
-          try { await removeImageFromBucketByUrl(imageUrl); } catch (e) { console.warn("Image removal failed:", e.message); }
+        if (imageVal) {
+          try { await removeImageFromBucket(imageVal); } catch (e) { console.warn("Image removal failed:", e.message); }
         }
       }
 
@@ -444,15 +468,13 @@
         const existing = await supabase.from("products").select("id, image_url");
         if (!existing.error && existing.data?.length) {
           for (const r of existing.data) {
-            if (r.image_url && getPathFromPublicUrl(r.image_url)) {
-              try { await removeImageFromBucketByUrl(r.image_url); } catch(e){ console.warn("seed cleanup image failed:", e.message); }
+            if (r.image_url) {
+              try { await removeImageFromBucket(r.image_url); } catch(e){ console.warn("seed cleanup image failed:", e.message); }
             }
           }
         }
         const del = await supabase.from("products").delete().neq("id", "00000000-0000-0000-0000-000000000000");
         if (del.error) throw del.error;
-
-        // (no demo inserts)
       }
 
       // ===== Skeleton helpers =====
@@ -518,12 +540,22 @@
         if (!filtered.length) { emptyState.style.display = "flex"; return; }
         emptyState.style.display = "none";
 
+        // Resolve signed URLs in parallel for better UX
+        const signedUrls = await Promise.all(
+          filtered.map(async (p) => ({
+            id: p.id,
+            url: await resolveSignedImageUrl(p.image)
+          }))
+        );
+        const urlMap = new Map(signedUrls.map(x => [x.id, x.url]));
+
         for (const p of filtered) {
           const viewUrl = productExternalUrl(p);
+          const imgUrl = urlMap.get(p.id);
           const card = document.createElement("article");
           card.className = "card";
           card.innerHTML = `
-            <div class="thumb">${p.image ? `<img src="${p.image}" alt="${escapeHtml(p.name)}">` : ""}</div>
+            <div class="thumb">${imgUrl ? `<img src="${imgUrl}" alt="${escapeHtml(p.name)}">` : ""}</div>
             <div class="body">
               <div class="title-row">
                 <div>
@@ -537,7 +569,6 @@
                       <input type="checkbox" id="pub_${p.id}" class="pub-toggle" data-action="toggle-publish" data-id="${p.id}" ${p.published ? "checked" : ""} />
                       <span class="slider"></span>
                     </label>
-                    <!-- Keep original text label (a11y) -->
                     <label for="pub_${p.id}" class="sr-only">${p.published ? "Published" : "Not published"}</label>
                   </div>
                 </div>
@@ -558,7 +589,8 @@
                   <span class="material-icons-sharp">edit</span> Edit
                 </button>
                 <button class="btn danger icon" data-action="delete" data-id="${p.id}" style="${p.published ? "display:none" : ""}">
-                  <span class="material-icons-sharp">delete</span> Delete
+                  <span class="material-icons-sharp">delete</span>
+                  Delete
                 </button>
               </div>
             </div>`;
@@ -573,7 +605,7 @@
 
         if (product){
           editingProductId = product.id;
-          currentEditingImageUrl = product.image || null;
+          currentEditingImageUrl = product.image || null; // path or legacy url
           $("#addModalTitle").textContent = "Edit Product";
           prodName.value = product.name; prodPrice.value = product.price; prodPlatform.value = product.platform;
           prodLink.value = product.link || "";
@@ -582,7 +614,7 @@
           prodImage.placeholder = "Image managed via bucket. Choose a file to replace.";
           imageUrlGroup.style.display = "";
           prodFeatures.value = (product.features||[]).join(", ");
-          prodDesc.value = product.description || ""; // NEW
+          prodDesc.value = product.description || "";
         } else {
           editingProductId = null; currentEditingImageUrl = null;
           $("#addModalTitle").textContent = "Add Product";
@@ -590,7 +622,7 @@
           imageUrlGroup.style.display = "none";
           prodImage.value=""; prodImage.disabled = true;
           prodFeatures.value="";
-          prodDesc.value=""; // NEW
+          prodDesc.value="";
         }
         setTimeout(()=>prodName.focus(),0);
       }
@@ -609,7 +641,7 @@
         const link = prodLink.value.trim();
         const image = prodImage.value.trim();
         const features = prodFeatures.value.split(",").map(s=>s.trim()).filter(Boolean);
-        const description = prodDesc.value.trim(); // NEW
+        const description = prodDesc.value.trim();
         const file = prodImageFile.files && prodImageFile.files[0] ? prodImageFile.files[0] : null;
 
         if (!name || !(price >= 0) || !platform){ alert("Please provide a valid name, price, and platform."); return; }
@@ -626,9 +658,9 @@
 
         try {
           if (editingProductId){
-            await db_updateProduct(editingProductId, { name, price, platform, link, image: effectiveImage, features, description, file }); // NEW
+            await db_updateProduct(editingProductId, { name, price, platform, link, image: effectiveImage, features, description, file });
           } else {
-            await db_insertProduct({ name, price, platform, link, image: effectiveImage, features, description, file }); // NEW
+            await db_insertProduct({ name, price, platform, link, image: effectiveImage, features, description, file });
           }
           closeAddModal();
           render();
@@ -668,7 +700,6 @@
         const editBtn = card?.querySelector('button[data-action="edit"]');
         const delBtn  = card?.querySelector('button[data-action="delete"]');
 
-        // Require confirmation when moving to Published
         if (next) {
           const ok = confirm("Publish this product? It will no longer be editable or deletable unless you unpublish.");
           if (!ok) { chk.checked = false; return; }
@@ -676,18 +707,15 @@
 
         try{
           await db_updatePublished(id, next);
-          // Update UI text/colors
           if (pill){
             pill.textContent = next ? "Published" : "Draft";
             pill.classList.toggle("ok", next);
             pill.classList.toggle("draft", !next);
           }
-          // Hide or show edit/delete based on publish state
           if (editBtn) editBtn.style.display = next ? "none" : "";
           if (delBtn)  delBtn.style.display  = next ? "none" : "";
         }catch(err){
           alert("Failed to update publish status: " + err.message);
-          // revert UI
           chk.checked = !next;
         }
       });

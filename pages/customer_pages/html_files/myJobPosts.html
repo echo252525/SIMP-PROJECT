@@ -410,6 +410,9 @@
   <script type="module" src="../../general_files/session.js"></script>
 
   <script type="module">
+    // ---------- CONFIG: set to your private Storage bucket for job photos ----------
+    const DEFAULT_JOB_PICS_BUCKET = 'jobs'; // <<< IMPORTANT: should match your Create page uploader
+
     // ---------- Supabase helpers ----------
     async function ensureSupabaseClient() {
       if (window.supabaseClient && typeof window.supabaseClient.from === "function") return window.supabaseClient;
@@ -517,6 +520,78 @@
       return `${String(h).padStart(2, '0')}:00:00`;
     }
 
+    // ---------- Storage helpers (Signed URL) ----------
+
+    // Parse public Storage URL into {bucket, path}
+    function parsePublicBucketAndPath(publicUrl){
+      try{
+        const marker = '/storage/v1/object/public/';
+        const i = publicUrl.indexOf(marker);
+        if (i === -1) return null;
+        const rest = publicUrl.substring(i + marker.length); // "<bucket>/<path%2Fmaybe-encoded>"
+        const slash = rest.indexOf('/');
+        if (slash === -1) return null;
+        const bucket = rest.substring(0, slash);
+        let path = rest.substring(slash + 1);
+        // Normalize: decode and strip leading slashes
+        try { path = decodeURIComponent(path); } catch {}
+        path = path.replace(/^\/+/, '');
+        return { bucket, path };
+      }catch{ return null; }
+    }
+
+    // Accepts:
+    //  - full public URL -> {bucket, path}
+    //  - "bucket::path"  -> {bucket, path}
+    //  - "plain/path.jpg" -> {bucket: DEFAULT_JOB_PICS_BUCKET, path}
+    function parseStorageRef(ref){
+      if (!ref) return null;
+      const s = String(ref).trim();
+      if (/^https?:\/\//i.test(s)){
+        const parsed = parsePublicBucketAndPath(s);
+        return parsed || null;
+      }
+      const bi = s.indexOf('::');
+      if (bi > 0){
+        let path = s.slice(bi + 2);
+        try { path = decodeURIComponent(path); } catch {}
+        path = path.replace(/^\/+/, '');
+        return { bucket: s.slice(0, bi), path };
+      }
+      let path = s;
+      try { path = decodeURIComponent(path); } catch {}
+      path = path.replace(/^\/+/, '');
+      return { bucket: DEFAULT_JOB_PICS_BUCKET, path };
+    }
+
+    async function createSignedUrl(bucket, path, expires = 3600){
+      const client = await ensureSupabaseClient();
+      const { data, error } = await client.storage.from(bucket).createSignedUrl(path, expires);
+      if (error) throw error;
+      return data.signedUrl;
+    }
+
+    async function resolveJobPictureSignedUrl(job_picture_url){
+      if (!job_picture_url) return null;
+
+      // External non-Supabase URL: just use it.
+      if (/^https?:\/\//i.test(job_picture_url) && !job_picture_url.includes('/storage/v1/object/')){
+        return job_picture_url;
+      }
+
+      const ref = parseStorageRef(job_picture_url);
+      if (!ref) return null;
+
+      try {
+        return await createSignedUrl(ref.bucket, ref.path, 3600);
+      } catch (e){
+        console.warn('Signing path failed:', e.message, 'bucket=', ref.bucket, 'path=', ref.path);
+        // If it looked like a public URL and signing failed, show original
+        if (/^https?:\/\//i.test(job_picture_url)) return job_picture_url;
+        return null;
+      }
+    }
+
     // ---------- DOM refs ----------
     const cardsContainer = document.getElementById('cardsContainer');
     const emptyState = document.getElementById('emptyState');
@@ -577,7 +652,7 @@
       const statusNorm = (status.toLowerCase()==='active') ? 'approved'
                         : (status.toLowerCase()==='completed') ? 'done'
                         : status.toLowerCase();
-      const detailsUrl = `#`; // we'll open modal instead
+      const detailsUrl = `#`; // open modal
 
       const durHrs = job._duration_hours;
       const durChip = (durHrs != null && !Number.isNaN(durHrs)) ? `
@@ -740,19 +815,36 @@
       jobStatusText.textContent = status.charAt(0).toUpperCase()+status.slice(1);
     }
 
-    function fillJobModal(job){
+    async function setJobHeroImage(job){
+      const ref = job.job_picture_url && String(job.job_picture_url).trim();
+      if (!ref){
+        jobHero.style.display = 'none';
+        jobHero.removeAttribute('src');
+        return;
+      }
+      const signed = await resolveJobPictureSignedUrl(ref);
+      if (signed){
+        jobHero.src = signed;
+        jobHero.style.display = 'block';
+      }else{
+        if (/^https?:\/\//i.test(ref)){
+          jobHero.src = ref;
+          jobHero.style.display = 'block';
+        }else{
+          jobHero.style.display = 'none';
+          jobHero.removeAttribute('src');
+        }
+      }
+    }
+
+    async function fillJobModal(job){
       CURRENT_JOB = job;
       const status = (job.job_status || 'pending').toLowerCase();
 
       jobTitleEl.textContent = job.job_title || '—';
       setBadge(status);
 
-      if (job.job_picture_url){
-        jobHero.src = job.job_picture_url;
-        jobHero.style.display = 'block';
-      } else {
-        jobHero.style.display = 'none';
-      }
+      await setJobHeroImage(job);
 
       mCategory.textContent = job.job_category || '—';
       mDiff.textContent = difficultyToText(job.job_difficulty);
@@ -779,30 +871,23 @@
       if (status === 'done' || status === 'completed'){
         // no buttons
       } else if (assigned){
-        // Only "View Installer"
         const v = document.createElement('button');
         v.className = 'btn btn-ghost';
         v.innerHTML = `<span class="material-icons-sharp">badge</span> View Installer`;
         v.addEventListener('click', () => openInstallerProfile(job.installer_id_assigned));
         modalBtns.appendChild(v);
       } else if (status === 'overdue'){
-        // === Re-edit date only; set back to Pending ===
         reschedWrap.style.display = 'block';
-
-        // Title -> "Re-edit Date"
         if (reschedTitleRow) {
           reschedTitleRow.innerHTML = `<span class="material-icons-sharp">event</span>Re-edit Date`;
         }
-        // Hide time row (keep DOM intact)
         if (reschedTimeRow) reschedTimeRow.style.display = 'none';
 
         const today = new Date();
         const yyyy = today.getFullYear(), mm = String(today.getMonth()+1).padStart(2,'0'), dd = String(today.getDate()).padStart(2,'0');
-        // default & min
         reschedDate.value = job.job_date || `${yyyy}-${mm}-${dd}`;
         reschedDate.min = `${yyyy}-${mm}-${dd}`;
 
-        // Keep existing time (do not change)
         reschedSubmit.textContent = 'Save Date';
         reschedSubmit.onclick = async () => {
           const nd = reschedDate.value;
@@ -823,13 +908,11 @@
 
         modalBtns.append(edit, del);
       } else if (status === 'approved' || status === 'active'){
-        // Only allowed if NOT assigned
         const edit = document.createElement('a');
         edit.className = 'btn btn-primary';
         edit.href = `createPost.html?job_id=${encodeURIComponent(job.job_id)}`;
         edit.innerHTML = `<span class="material-icons-sharp">edit</span> Edit (will set Pending)`;
         edit.addEventListener('click', async (e) => {
-          // set to pending first
           e.preventDefault();
           const ok = await updateJob(job.job_id, { job_status: 'pending' }, 'Status set to Pending for editing.');
           if (ok) {
@@ -845,7 +928,6 @@
 
         modalBtns.append(edit, del);
       } else if (status === 'rejected'){
-        // allow delete
         const del = document.createElement('button');
         del.className = 'btn btn-danger';
         del.innerHTML = `<span class="material-icons-sharp">delete</span> Delete`;
@@ -867,7 +949,6 @@
         console.error(error);
         return false;
       }
-      // reflect locally
       const idx = JOBS.findIndex(j => j.job_id === job_id);
       if (idx >= 0) {
         JOBS[idx] = { ...JOBS[idx], ...updates };
@@ -908,7 +989,6 @@
         if (error){ console.error(error); }
         if (data){ inst = data; INSTALLER_BY_ID.set(installerId, data); }
       }
-      // Fill UI
       const name = inst?.name || '—';
       instAvatar.textContent = initials(name);
       instName.textContent = name;
@@ -931,7 +1011,7 @@
     statusFilter.addEventListener('change', applyClientFilters);
     sortSelect.addEventListener('change', sortClient);
 
-    // Cache job before nav (for both buttons)
+    // Card clicks (details/edit)
     cardsContainer.addEventListener('click', (e) => {
       const card = e.target.closest('.job-card');
       if (!card) return;
@@ -939,16 +1019,16 @@
       const job = JOBS.find(j => j.job_id === jobId);
       if (!job) return;
 
-      // Details -> open modal (prevent navigation)
       const detailsLink = e.target.closest('a.btn-details');
       if (detailsLink){
         e.preventDefault();
-        fillJobModal(job);
-        showJobModal();
+        (async () => {
+          await fillJobModal(job); // includes async signed URL resolution
+          showJobModal();
+        })();
         return;
       }
 
-      // Edit click from card (hidden, but kept): set pending first if approved/active (and not assigned)
       const editLink = e.target.closest('a.btn-edit');
       if (editLink){
         try { sessionStorage.setItem('edit_job_cache', JSON.stringify(job)); } catch {}
