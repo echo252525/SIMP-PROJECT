@@ -121,8 +121,9 @@
       background: #fff; border:1px solid var(--card-border); border-radius:12px; padding:.5rem .6rem;
     }
     .avatar{
-      width:30px; height:30px; border-radius:50%; background:#111827; color:#fff; display:grid; place-items:center; font-size:.8rem; font-weight:700;
+      width:30px; height:30px; border-radius:50%; background:#111827; color:#fff; display:grid; place-items:center; font-size:.8rem; font-weight:700; overflow:hidden;
     }
+    .avatar img{ width:100%; height:100%; object-fit:cover; display:none; }
     .installer .name{ font-weight:600; color:#111827; }
     .installer .muted{ color:var(--muted); font-size:.86rem; }
 
@@ -210,7 +211,8 @@
 
     /* Installer modal */
     .inst-top{ display:flex; gap:12px; align-items:center; }
-    .inst-avatar{ width:56px; height:56px; border-radius:50%; background:#111827; color:#fff; display:grid; place-items:center; font-weight:800; }
+    .inst-avatar{ width:56px; height:56px; border-radius:50%; background:#111827; color:#fff; display:grid; place-items:center; font-weight:800; overflow:hidden; position:relative; }
+    .inst-avatar-img{ width:56px; height:56px; border-radius:50%; object-fit:cover; display:none; }
     .inst-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
     @media (max-width: 700px){ .inst-grid{ grid-template-columns:1fr; } }
 
@@ -382,6 +384,7 @@
         <div class="divider"></div>
         <div class="inst-top">
           <div id="instAvatar" class="inst-avatar">IN</div>
+          <img id="instAvatarImg" class="inst-avatar-img" alt="Installer photo" />
           <div>
             <div id="instName" style="font-weight:800; font-size:1.15rem;">—</div>
             <div id="instEmail" class="muted">—</div>
@@ -410,8 +413,9 @@
   <script type="module" src="../../general_files/session.js"></script>
 
   <script type="module">
-    // ---------- CONFIG: set to your private Storage bucket for job photos ----------
-    const DEFAULT_JOB_PICS_BUCKET = 'jobs'; // <<< IMPORTANT: should match your Create page uploader
+    // ---------- CONFIG: defaults ----------
+    const DEFAULT_JOB_PICS_BUCKET = 'jobs';
+    const DEFAULT_INSTALLER_PICS_BUCKET = 'installer_profile';
 
     // ---------- Supabase helpers ----------
     async function ensureSupabaseClient() {
@@ -424,7 +428,7 @@
 
       let url, key;
       try {
-        const mod = await import("../../../supabase.js"); // optional module with keys
+        const mod = await import("../../../supabase.js");
         url = mod.SUPABASE_URL; key = mod.SUPABASE_ANON_KEY;
       } catch (_) {}
       if (!url) url = window.SUPABASE_URL;
@@ -521,30 +525,24 @@
     }
 
     // ---------- Storage helpers (Signed URL) ----------
-
-    // Parse public Storage URL into {bucket, path}
     function parsePublicBucketAndPath(publicUrl){
       try{
         const marker = '/storage/v1/object/public/';
         const i = publicUrl.indexOf(marker);
         if (i === -1) return null;
-        const rest = publicUrl.substring(i + marker.length); // "<bucket>/<path%2Fmaybe-encoded>"
+        const rest = publicUrl.substring(i + marker.length);
         const slash = rest.indexOf('/');
         if (slash === -1) return null;
         const bucket = rest.substring(0, slash);
         let path = rest.substring(slash + 1);
-        // Normalize: decode and strip leading slashes
         try { path = decodeURIComponent(path); } catch {}
         path = path.replace(/^\/+/, '');
         return { bucket, path };
       }catch{ return null; }
     }
 
-    // Accepts:
-    //  - full public URL -> {bucket, path}
-    //  - "bucket::path"  -> {bucket, path}
-    //  - "plain/path.jpg" -> {bucket: DEFAULT_JOB_PICS_BUCKET, path}
-    function parseStorageRef(ref){
+    // Keep original parseStorageRef intact. Add a variant with a default bucket argument.
+    function parseStorageRefWithDefault(ref, defaultBucket){
       if (!ref) return null;
       const s = String(ref).trim();
       if (/^https?:\/\//i.test(s)){
@@ -561,7 +559,7 @@
       let path = s;
       try { path = decodeURIComponent(path); } catch {}
       path = path.replace(/^\/+/, '');
-      return { bucket: DEFAULT_JOB_PICS_BUCKET, path };
+      return { bucket: defaultBucket, path };
     }
 
     async function createSignedUrl(bucket, path, expires = 3600){
@@ -573,21 +571,33 @@
 
     async function resolveJobPictureSignedUrl(job_picture_url){
       if (!job_picture_url) return null;
-
-      // External non-Supabase URL: just use it.
       if (/^https?:\/\//i.test(job_picture_url) && !job_picture_url.includes('/storage/v1/object/')){
         return job_picture_url;
       }
-
-      const ref = parseStorageRef(job_picture_url);
+      // Use job default bucket
+      const ref = parseStorageRefWithDefault(job_picture_url, DEFAULT_JOB_PICS_BUCKET);
       if (!ref) return null;
-
       try {
         return await createSignedUrl(ref.bucket, ref.path, 3600);
       } catch (e){
-        console.warn('Signing path failed:', e.message, 'bucket=', ref.bucket, 'path=', ref.path);
-        // If it looked like a public URL and signing failed, show original
+        console.warn('Signing job image failed:', e.message, 'bucket=', ref.bucket, 'path=', ref.path);
         if (/^https?:\/\//i.test(job_picture_url)) return job_picture_url;
+        return null;
+      }
+    }
+
+    async function resolveInstallerPictureSignedUrl(profile_pic_url){
+      if (!profile_pic_url) return null;
+      if (/^https?:\/\//i.test(profile_pic_url) && !profile_pic_url.includes('/storage/v1/object/')){
+        return profile_pic_url;
+      }
+      const ref = parseStorageRefWithDefault(profile_pic_url, DEFAULT_INSTALLER_PICS_BUCKET);
+      if (!ref) return null;
+      try {
+        return await createSignedUrl(ref.bucket, ref.path, 3600);
+      } catch (e){
+        console.warn('Signing installer image failed:', e.message, 'bucket=', ref.bucket, 'path=', ref.path);
+        if (/^https?:\/\//i.test(profile_pic_url)) return profile_pic_url;
         return null;
       }
     }
@@ -625,6 +635,7 @@
     const installerModal = document.getElementById('installerModal');
     const instCloseBtn = document.getElementById('instCloseBtn');
     const instAvatar = document.getElementById('instAvatar');
+    const instAvatarImg = document.getElementById('instAvatarImg');
     const instName = document.getElementById('instName');
     const instEmail = document.getElementById('instEmail');
     const instPhone = document.getElementById('instPhone');
@@ -652,7 +663,33 @@
       const statusNorm = (status.toLowerCase()==='active') ? 'approved'
                         : (status.toLowerCase()==='completed') ? 'done'
                         : status.toLowerCase();
-      const detailsUrl = `#`; // open modal
+
+      // Installer block
+      let installerName = "Unassigned";
+      let installerId = null;
+      let hasInstaller = false;
+      if (job.installer_id_assigned && INSTALLER_BY_ID.has(job.installer_id_assigned)) {
+        const inst = INSTALLER_BY_ID.get(job.installer_id_assigned);
+        installerName = inst?.name || "Assigned";
+        installerId = inst?.id || job.installer_id_assigned;
+        hasInstaller = true;
+      }
+      const avatarText = initials(installerName);
+
+      // Status label: if approved + assigned, show assignment
+      let statusLabel = status.charAt(0).toUpperCase()+status.slice(1);
+      if ((status.toLowerCase()==='approved' || status.toLowerCase()==='active') && hasInstaller){
+        statusLabel = `Approved • Assigned to ${escapeHtml(installerName)}`;
+      }
+
+      // status icon
+      const statusIcon =
+        status.toLowerCase()==='approved' || status.toLowerCase()==='active' ? 'verified' :
+        status.toLowerCase()==='pending' ? 'hourglass_empty' :
+        status.toLowerCase()==='overdue' ? 'warning' :
+        status.toLowerCase()==='done' || status.toLowerCase()==='completed' ? 'check_circle' :
+        status.toLowerCase()==='rejected' ? 'block' :
+        status.toLowerCase()==='viewed' ? 'visibility' : 'info';
 
       const durHrs = job._duration_hours;
       const durChip = (durHrs != null && !Number.isNaN(durHrs)) ? `
@@ -660,27 +697,19 @@
           <span class="material-icons-sharp" style="font-size:1rem;">schedule</span>${durHrs}h
         </span>` : "";
 
-      let installerName = "Unassigned";
-      if (job.installer_id_assigned && INSTALLER_BY_ID.has(job.installer_id_assigned)) {
-        installerName = INSTALLER_BY_ID.get(job.installer_id_assigned)?.name || "Assigned";
-      }
-      const hasInstaller = installerName !== "Unassigned";
-      const avatarText = initials(installerName);
-
       return `
-        <div class="job-card" data-job-id="${job.job_id}" data-title="${title.toLowerCase()}" data-status="${status.toLowerCase()}" data-status-norm="${statusNorm}">
+        <div class="job-card"
+             data-job-id="${job.job_id}"
+             data-title="${title.toLowerCase()}"
+             data-status="${status.toLowerCase()}"
+             data-status-norm="${statusNorm}"
+             ${installerId ? `data-installer-id="${installerId}"` : ``}
+        >
           <div class="job-head">
             <h3 class="job-title" title="${title}">${title}</h3>
             <span class="status-badge ${statusCls}">
-              <span class="material-icons-sharp" style="font-size:1rem;">${
-                status.toLowerCase()==='approved' || status.toLowerCase()==='active' ? 'verified' :
-                status.toLowerCase()==='pending' ? 'hourglass_empty' :
-                status.toLowerCase()==='overdue' ? 'warning' :
-                status.toLowerCase()==='done' || status.toLowerCase()==='completed' ? 'check_circle' :
-                status.toLowerCase()==='rejected' ? 'block' :
-                status.toLowerCase()==='viewed' ? 'visibility' : 'info'
-              }</span>
-              ${status.charAt(0).toUpperCase()+status.slice(1)}
+              <span class="material-icons-sharp" style="font-size:1rem;">${statusIcon}</span>
+              ${statusLabel}
             </span>
           </div>
 
@@ -698,7 +727,10 @@
           </div>
 
           <div class="installer" title="${hasInstaller ? 'Assigned installer' : 'No installer assigned'}">
-            <div class="avatar" style="${hasInstaller ? '' : 'background:#6b7280;'}">${avatarText}</div>
+            <div class="avatar">
+              <img alt="Installer photo" />
+              <span class="avatar-initials">${avatarText}</span>
+            </div>
             <div>
               <div class="name">${escapeHtml(installerName)}</div>
               <div class="muted">${hasInstaller ? 'Assigned' : 'Unassigned'}</div>
@@ -706,7 +738,7 @@
           </div>
 
           <div class="actions">
-            <a class="btn btn-ghost btn-details" href="${detailsUrl}">
+            <a class="btn btn-ghost btn-details" href="#">
               <span class="material-icons-sharp">visibility</span> Details
             </a>
             <a class="btn btn-primary btn-edit" href="createPost.html?job_id=${encodeURIComponent(job.job_id)}">
@@ -726,9 +758,42 @@
       emptyState.style.display = "none";
       cardsContainer.innerHTML = JOBS.map(cardHtml).join("");
       applyClientFilters();
+      // After rendering, hydrate installer avatars with signed URLs
+      hydrateInstallerAvatars().catch(console.warn);
     }
 
-    // ---------- Data loader ----------
+    // Fetch & attach profile images to cards
+    async function hydrateInstallerAvatars(){
+      const cards = Array.from(cardsContainer.querySelectorAll('.job-card[data-installer-id]'));
+      if (!cards.length) return;
+
+      // For each card, if we have a profile_pic_url for that installer, sign and set <img>
+      await Promise.all(cards.map(async (card) => {
+        const instId = card.getAttribute('data-installer-id');
+        const inst = INSTALLER_BY_ID.get(instId);
+        if (!inst) return;
+
+        const url = inst.profile_pic_url;
+        if (!url) return;
+
+        try{
+          const signed = await resolveInstallerPictureSignedUrl(url);
+          if (!signed) return;
+          const av = card.querySelector('.avatar');
+          const img = av?.querySelector('img');
+          const initialsEl = av?.querySelector('.avatar-initials');
+          if (img){
+            img.src = signed;
+            img.style.display = 'block';
+            if (initialsEl) initialsEl.style.display = 'none';
+          }
+        }catch(err){
+          console.warn('Avatar hydrate fail:', err?.message || err);
+        }
+      }));
+    }
+
+    // ---------- Data loader (original) ----------
     async function loadMyJobs() {
       const client = await ensureSupabaseClient();
       if (!client) return;
@@ -742,7 +807,7 @@
       const userId = u.user.id;
 
       const { data: jobs, error } = await fromInSchema(client, "jobs", "job")
-        .select("job_id, job_title, job_category, job_difficulty, job_pay, job_date, job_time, job_status, created_at, installer_id_assigned, job_duration, job_picture_url, job_location, job_description")
+        .select("job_id, job_title, job_category, job_difficulty, job_pay, job_date, job_time, job_status, created_at, installer_id_assigned, job_duration, job_picture_url, job_location, job_description, scheduled_ts")
         .eq("posted_by", userId)
         .order("created_at", { ascending: false })
         .limit(300);
@@ -759,7 +824,7 @@
       INSTALLER_BY_ID = new Map();
       if (installerIds.length){
         const { data: installers, error: insErr } = await fromInSchema(client, "public", "installer")
-          .select("id, name, email")
+          .select("id, name, email, profile_pic_url")
           .in("id", installerIds)
           .limit(1000);
         if (insErr) {
@@ -772,35 +837,116 @@
       render();
     }
 
-    // ---------- Client filters + sorting ----------
+    // ---------- Server-side filtered & sorted loader ----------
+    function mapSort(mode){
+      switch (mode){
+        case 'created_asc':  return [{ column:'created_at',   ascending:true  }];
+        case 'created_desc': return [{ column:'created_at',   ascending:false }];
+        case 'date_asc':     return [{ column:'scheduled_ts', ascending:true  }];
+        case 'date_desc':    return [{ column:'scheduled_ts', ascending:false }];
+        case 'pay_asc':      return [{ column:'job_pay',      ascending:true  }];
+        case 'pay_desc':     return [{ column:'job_pay',      ascending:false }];
+        default:             return [{ column:'created_at',   ascending:false }];
+      }
+    }
+
+    function expandStatusFilter(value){
+      const v = String(value||'').toLowerCase();
+      if (!v) return null;
+      if (v === 'approved') return ['approved','active'];
+      if (v === 'done')     return ['done','completed'];
+      return [v];
+    }
+
+    async function loadMyJobsWithFilters(){
+      const client = await ensureSupabaseClient();
+      if (!client) return;
+
+      const { data: u, error: uErr } = await client.auth.getUser();
+      if (uErr || !u?.user?.id) {
+        console.error("auth.getUser error:", uErr);
+        cardsContainer.innerHTML = `<div class="empty"><span class="material-icons-sharp">person_off</span><span>Please log in to see your jobs.</span></div>`;
+        return;
+      }
+      const userId = u.user.id;
+
+      const statusVal = statusFilter.value;
+      const sortVal = sortSelect.value;
+      const searchVal = (searchInput.value || "").trim();
+
+      let q = fromInSchema(client, "jobs", "job")
+        .select("job_id, job_title, job_category, job_difficulty, job_pay, job_date, job_time, job_status, created_at, installer_id_assigned, job_duration, job_picture_url, job_location, job_description, scheduled_ts")
+        .eq("posted_by", userId);
+
+      const statusList = expandStatusFilter(statusVal);
+      if (statusList){
+        if (statusList.length === 1){
+          q = q.eq("job_status", statusList[0]);
+        } else {
+          q = q.in("job_status", statusList);
+        }
+      }
+
+      if (searchVal.length >= 2){
+        const term = `%${searchVal.replace(/%/g,'').replace(/_/g,'')}%`;
+        q = q.or([
+          `job_title.ilike.${term}`,
+          `job_description.ilike.${term}`,
+          `job_category.ilike.${term}`,
+          `job_location.ilike.${term}`
+        ].join(','));
+      }
+
+      const sortSpec = mapSort(sortVal);
+      for (const s of sortSpec){
+        q = q.order(s.column, { ascending: s.ascending, nullsFirst: false });
+      }
+
+      q = q.limit(300);
+
+      const { data: jobs, error } = await q;
+      if (error){
+        console.error("jobs fetch error (filtered):", error);
+        await loadMyJobs(); // fallback
+        return;
+      }
+
+      JOBS = (jobs || []).map(j => ({ ...j, _duration_hours: intervalToHours(j.job_duration) }));
+
+      // Installers (include profile_pic_url)
+      const installerIds = Array.from(new Set(JOBS.map(j => j.installer_id_assigned).filter(Boolean)));
+      INSTALLER_BY_ID = new Map();
+      if (installerIds.length){
+        const { data: installers, error: insErr } = await fromInSchema(client, "public", "installer")
+          .select("id, name, email, profile_pic_url")
+          .in("id", installerIds)
+          .limit(1000);
+        if (insErr) {
+          console.error("installer fetch error:", insErr);
+        } else {
+          (installers || []).forEach(i => INSTALLER_BY_ID.set(i.id, i));
+        }
+      }
+
+      render();
+    }
+
+    // ---------- Client filters ----------
     function applyClientFilters(){
-      const searchValue = searchInput.value.toLowerCase().trim();
-      const statusValue = statusFilter.value.toLowerCase().trim();
+      const searchValue = (searchInput.value || '').toLowerCase().trim();
+      const statusValue = (statusFilter.value || '').toLowerCase().trim();
 
       const cards = Array.from(cardsContainer.querySelectorAll('.job-card'));
       for (const card of cards){
         const title = card.getAttribute('data-title') || '';
-        the_st = card.getAttribute('data-status') || '';
-        const st = the_st; // keep original naming intact
-        const stn = card.getAttribute('data-status-norm') || st;
-        const matchesSearch = !searchValue || title.includes(searchValue);
+        const st = (card.getAttribute('data-status') || '').toLowerCase();
+        const stn = (card.getAttribute('data-status-norm') || st).toLowerCase();
+
         const matchesStatus = !statusValue || st === statusValue || stn === statusValue;
+        const matchesSearch = !searchValue || title.includes(searchValue);
+
         card.style.display = (matchesSearch && matchesStatus) ? '' : 'none';
       }
-    }
-
-    function sortClient(){
-      const mode = sortSelect.value;
-      const by = (a,b,k,dir=1)=> (a[k] > b[k] ? 1 : a[k] < b[k] ? -1 : 0)*dir;
-
-      if (mode === 'created_desc') JOBS.sort((a,b)=> by(a,b,'created_at',-1));
-      else if (mode === 'created_asc') JOBS.sort((a,b)=> by(a,b,'created_at',+1));
-      else if (mode === 'date_desc') JOBS.sort((a,b)=> by(a,b,'job_date',-1));
-      else if (mode === 'date_asc') JOBS.sort((a,b)=> by(a,b,'job_date',+1));
-      else if (mode === 'pay_desc') JOBS.sort((a,b)=> (Number(b.job_pay||0) - Number(a.job_pay||0)));
-      else if (mode === 'pay_asc') JOBS.sort((a,b)=> (Number(a.job_pay||0) - Number(b.job_pay||0)));
-
-      render();
     }
 
     // ---------- Modal helpers ----------
@@ -854,13 +1000,33 @@
       mLocation.textContent = job.job_location || '—';
       mDesc.textContent = job.job_description || '—';
 
-      // Installer label
+      // Installer label + photo (if available)
       let instLabel = 'Unassigned';
+      let profileUrl = null;
       if (job.installer_id_assigned && INSTALLER_BY_ID.has(job.installer_id_assigned)){
         const i = INSTALLER_BY_ID.get(job.installer_id_assigned);
         instLabel = i?.name || 'Assigned';
+        profileUrl = i?.profile_pic_url || null;
       }
       mInstaller.textContent = instLabel;
+
+      // Try to show installer profile photo in modal header block
+      instAvatar.style.display = 'grid';
+      instAvatar.textContent = initials(instLabel);
+      instAvatarImg.style.display = 'none';
+      instAvatarImg.removeAttribute('src');
+      if (profileUrl){
+        try {
+          const signed = await resolveInstallerPictureSignedUrl(profileUrl);
+          if (signed){
+            instAvatar.textContent = '';
+            instAvatarImg.src = signed;
+            instAvatarImg.style.display = 'block';
+          }
+        } catch (e){
+          console.warn('Installer modal avatar signing failed:', e?.message || e);
+        }
+      }
 
       // Actions
       modalBtns.innerHTML = '';
@@ -981,16 +1147,35 @@
     async function openInstallerProfile(installerId){
       const client = await ensureSupabaseClient();
       let inst = INSTALLER_BY_ID.get(installerId);
-      if (!inst || !inst.email || !inst.phone){
+      if (!inst || !inst.email || !('phone' in inst) || !('profile_pic_url' in inst)){
         const { data, error } = await fromInSchema(client, 'public', 'installer')
-          .select('id, name, email, phone, profession, employer, "highestQualification", "employmentStatus", levelstatus')
+          .select('id, name, email, phone, profession, employer, "highestQualification", "employmentStatus", levelstatus, profile_pic_url')
           .eq('id', installerId)
           .maybeSingle();
         if (error){ console.error(error); }
         if (data){ inst = data; INSTALLER_BY_ID.set(installerId, data); }
       }
+
       const name = inst?.name || '—';
       instAvatar.textContent = initials(name);
+      instAvatar.style.display = 'grid';
+      instAvatarImg.style.display = 'none';
+      instAvatarImg.removeAttribute('src');
+
+      // Try photo
+      if (inst?.profile_pic_url){
+        try {
+          const signed = await resolveInstallerPictureSignedUrl(inst.profile_pic_url);
+          if (signed){
+            instAvatar.textContent = '';
+            instAvatarImg.src = signed;
+            instAvatarImg.style.display = 'block';
+          }
+        } catch(e){
+          console.warn('Installer profile modal photo failed:', e?.message || e);
+        }
+      }
+
       instName.textContent = name;
       instEmail.textContent = inst?.email || '—';
       instPhone.textContent = inst?.phone || '—';
@@ -1005,11 +1190,20 @@
 
     // ---------- Events ----------
     searchInput.addEventListener('input', () => {
-      if (searchInput.value.trim() === '') { statusFilter.value = ''; }
       applyClientFilters();
+      const q = (searchInput.value || '').trim();
+      if (q.length >= 2 || q.length === 0){
+        loadMyJobsWithFilters();
+      }
     });
-    statusFilter.addEventListener('change', applyClientFilters);
-    sortSelect.addEventListener('change', sortClient);
+
+    statusFilter.addEventListener('change', () => {
+      loadMyJobsWithFilters();
+    });
+
+    sortSelect.addEventListener('change', () => {
+      loadMyJobsWithFilters();
+    });
 
     // Card clicks (details/edit)
     cardsContainer.addEventListener('click', (e) => {
@@ -1023,7 +1217,7 @@
       if (detailsLink){
         e.preventDefault();
         (async () => {
-          await fillJobModal(job); // includes async signed URL resolution
+          await fillJobModal(job);
           showJobModal();
         })();
         return;
@@ -1051,7 +1245,9 @@
     window.addEventListener('keydown', (e)=> { if (e.key === 'Escape'){ hideJobModal(); hideInstModal(); } });
 
     // ---------- Init ----------
-    loadMyJobs();
+    loadMyJobs().then(() => {
+      loadMyJobsWithFilters();
+    });
   </script>
 </body>
 </html>

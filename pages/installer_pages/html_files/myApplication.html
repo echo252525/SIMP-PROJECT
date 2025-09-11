@@ -409,7 +409,7 @@
             />
           </div>
 
-          <div class="dropdown" id="statusDropdown">
+        <div class="dropdown" id="statusDropdown">
             <button class="dropbtn" id="statusBtn">
               <span
                 class="material-icons"
@@ -730,12 +730,12 @@
               if (error) throw error;
             }
 
-            // 2) Update job status -> done
+            // 2) Update job status -> done  (also refresh updated_at)
             if (app.job_id) {
               const { error: jobErr } = await sb
                 .schema("jobs")
                 .from("job")
-                .update({ job_status: "done" })
+                .update({ job_status: "done", updated_at: new Date().toISOString() })
                 .eq("job_id", app.job_id);
               if (jobErr) throw jobErr;
             }
