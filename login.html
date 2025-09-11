@@ -15,8 +15,8 @@
       --card-bg: rgba(255, 255, 255, 0.15);
       --glass-border: 1px solid rgba(255, 255, 255, 0.3);
       --shadow: 0 8px 30px rgba(32, 100, 124, 0.2);
-      --brand-grad-a: #ff5858;
-      --brand-grad-b: #ff6b6b;
+      --brand-grad-a: #20647c;
+      --brand-grad-b: #20a44c;
     }
 
     * {
@@ -103,14 +103,14 @@
 
     /* Gradient halves (like your screenshots) */
     .left-grad {
-      background: linear-gradient(135deg, #ff6a3d, #ff416c);
+      background: linear-gradient(135deg, #20a44c, #20647c);
       color: #fff;
       border-top-left-radius: 26px;
       border-bottom-left-radius: 26px;
     }
 
     .right-grad {
-      background: linear-gradient(135deg, #ff416c, #ff6a3d);
+      background: linear-gradient(135deg, #20a44c, #20647c);
       color: #fff;
       border-top-right-radius: 26px;
       border-bottom-right-radius: 26px;
@@ -139,29 +139,27 @@
     .loginDiv {
       position: absolute;
       inset: 0;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
       margin: auto;
-      width: 460px;
-      max-width: 92%;
+      width: 100%;
+      max-width: 500px;
       height: auto;
       padding: 3rem 2.5rem;
-      border-radius: 25px;
-      background: var(--card-bg);
-      -webkit-backdrop-filter: blur(12px);
-      backdrop-filter: blur(12px);
-      border: var(--glass-border);
-      box-shadow: var(--shadow);
-      color: #1c2430;
+      background-color: white;
       z-index: 2;
       transition: transform .55s cubic-bezier(.2, .8, .2, 1);
     }
 
     /* Slider states: move the form toward the chosen side */
     .mode-installer .loginDiv {
-      transform: translateX(-200px);
+      transform: translateX(-50%);
     }
 
     .mode-customer .loginDiv {
-      transform: translateX(200px);
+      transform: translateX(50%);
     }
 
     .loginDiv .backBtn {
@@ -194,9 +192,8 @@
     }
 
     .loginDiv h2 {
-      color: #20647c;
+      color: black;
       margin-bottom: 10px;
-      text-align: center;
     }
 
     .role-pill {
@@ -209,12 +206,11 @@
       font-size: 12px;
       font-weight: 700;
       color: #111827;
-      margin: 0 auto 10px;
     }
 
     .loginDiv button {
       position: relative;
-      width: 100%;
+      width: 98%;
       padding: 0.8rem;
       border: none;
       border-radius: 12px;
@@ -238,11 +234,11 @@
 
     input,
     select {
-      width: 100%;
+      width: 98%;
       padding: 13px;
       margin: 8px 0;
       border: 1px solid #ccc;
-      border-radius: 8px;
+      border-radius: 12px;
     }
 
     /* hide the role dropdown but keep it in DOM for your JS */
@@ -265,19 +261,28 @@
 
     p.footer-note a {
       text-decoration: none;
-      color: var(--azure-blue)
-    }
-
-    p.footer-note a:active {
-      color: var(--green)
     }
 
     /* small screens */
     @media (max-width: 820px) {
-      .auth-shell { height: 640px; }
-      .side { grid-template-columns: 1fr; }
-      .left-grad, .right-grad { border-radius: 0; }
-      .loginDiv { transform: translateX(0) !important; width: 520px; max-width: 92%; }
+      .auth-shell {
+        height: 640px;
+      }
+
+      .side {
+        grid-template-columns: 1fr;
+      }
+
+      .left-grad,
+      .right-grad {
+        border-radius: 0;
+      }
+
+      .loginDiv {
+        transform: translateX(0) !important;
+        width: 520px;
+        max-width: 92%;
+      }
     }
   </style>
 
@@ -462,26 +467,29 @@
     <div class="side">
       <div class="pane left-grad">
         <div>
-          <h1>Welcome Back!</h1>
-          <p>Sign in as <strong>Installer</strong> to manage jobs, documents, and earnings.</p>
-          <button class="ghost-btn" onclick="chooseInstaller()">SIGN IN AS INSTALLER</button>
+          <img src="img/simpHappyMascotLogo.png" style="max-width:100px; width:95%;">
+          <h1>Welcome Back, Simpsters!</h1>
+          <p>Log in as <strong>Installer</strong> to manage jobs, documents, and earnings.</p>
+          <button class="ghost-btn" onclick="chooseInstaller()">LOG IN AS INSTALLER</button>
         </div>
       </div>
       <div class="pane right-grad">
         <div>
-          <h1>Hello, Friend!</h1>
-          <p>Sign in as <strong>Customer</strong> to post jobs and track your requests.</p>
-          <button class="ghost-btn" onclick="chooseCustomer()">SIGN IN AS CUSTOMER</button>
+          <img src="img/simpHappyMascotLogo.png" style="max-width:100px; width:95%;">
+          <h1>Hello, Simpsters!</h1>
+          <p>Log in as <strong>Customer</strong> to post jobs and track your requests.</p>
+          <button class="ghost-btn" onclick="chooseCustomer()">LOG IN AS CUSTOMER</button>
         </div>
       </div>
     </div>
 
     <!-- Your original login card (kept, lightly enhanced) -->
     <div class="loginDiv">
-      <button class="backBtn" onclick="window.location.href='index.html'"><span class="material-icons-sharp">arrow_back</span></button>
+      <button class="backBtn" onclick="window.location.href='index.html'"><span
+          class="material-icons-sharp">arrow_back</span></button>
       <div class="loginDivHeader">
-        <img src="img/simpHappyMascotLogo.png" alt="SIMP logo">
-        <h2>Login – SIMP Project</h2>
+        <br><br><br>
+        <h2>Login</h2>
         <div class="role-pill">
           <span class="material-icons-sharp" style="font-size:16px">person</span>
           <span id="activeRoleText">Logging in as Customer</span>

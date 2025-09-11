@@ -353,15 +353,13 @@
 
 <body>
   <div class="adminLoginDiv">
-    <button class="backBtn" onclick="history.back()"><span class="material-icons-sharp">arrow_back</span></button>
-
     <div class="auth-card">
       <div class="auth-inner">
         <div class="columns">
           <!-- LEFT: Sign in form -->
           <div class="form-side">
             <div class="panel-shell form-login">
-              
+              <button class="backBtn" onclick="history.back()"><span class="material-icons-sharp">arrow_back</span></button>
               <h3>Sign in</h3>
 
               <div id="notice" class="notice hidden"></div>
@@ -384,6 +382,7 @@
           <!-- RIGHT: Sign up form -->
           <div class="form-side">
             <div class="panel-shell form-signup">
+              <button class="backBtn" onclick="history.back()"><span class="material-icons-sharp">arrow_back</span></button>
               <h3>Create Account</h3>
 
               <div class="row">
@@ -415,14 +414,14 @@
               <!-- Right side (default, login view) -->
               <div class="hello">
                 <img src="img/simpHappyMascotLogo.png" style="max-width:100px; width:95%;">
-                <h2>Hello, Simpters!</h2>
+                <h2>Hello, Simpsters!</h2>
                 <p>Enter your personal details and start journey with us</p>
                 <button id="ctaSignUpBtn" class="btn-ghost">SIGN UP</button>
               </div>
               <!-- Left side (signup view) -->
               <div class="welcome">
                 <img src="img/simpHappyMascotLogo.png" style="max-width:100px; width:95%;">
-                <h2>Welcome Back, Simpters!</h2>
+                <h2>Welcome Back, Simpsters!</h2>
                 <p>To keep connected with us please login with your personal info</p>
                 <button id="ctaLoginBtn" class="btn-ghost">SIGN IN</button>
               </div>
@@ -433,7 +432,6 @@
 
       <!-- Hidden header + tabs (kept for compatibility) -->
       <div class="adminLoginDivHeader" aria-hidden="true">
-        <img src="img/simpHappyMascotLogo.png" alt="SIMP mascot">
         <h2>SIMP Project – Welcome!</h2>
         <div class="hint">
           This page is only for <b>Admin</b> accounts. New sign-ups are created as
