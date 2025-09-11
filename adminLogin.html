@@ -20,14 +20,8 @@
       --grad: linear-gradient(135deg, #20a44c, #20647c);
     }
 
-    * {
-      box-sizing: border-box
-    }
-
-    html,
-    body {
-      height: 100%
-    }
+    * { box-sizing: border-box }
+    html, body { height: 100% }
 
     body {
       margin: 0;
@@ -66,11 +60,7 @@
       background: #fff;
     }
 
-    .auth-inner {
-      position: relative;
-      height: 100%;
-      width: 100%;
-    }
+    .auth-inner { position: relative; height: 100%; width: 100%; }
 
     .columns {
       position: absolute;
@@ -87,10 +77,7 @@
       padding: 34px;
     }
 
-    .panel-shell {
-      width: 100%;
-      max-width: 420px;
-    }
+    .panel-shell { width: 100%; max-width: 420px; }
 
     .panel-shell h3 {
       margin: 0 0 1rem;
@@ -99,23 +86,10 @@
       font-size: 36px
     }
 
-    .row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px
-    }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px }
+    .row-1 { display: grid; grid-template-columns: 1fr; gap: 12px }
 
-    .row-1 {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 12px
-    }
-
-    label {
-      font-size: 13px;
-      color: #374151;
-      display: block
-    }
+    label { font-size: 13px; color: #374151; display: block }
 
     input {
       width: 100%;
@@ -127,69 +101,24 @@
       transition: border-color .2s, box-shadow .2s;
       background: #f1f3f6;
     }
-
     input:focus {
       border-color: #9ac7d7;
       box-shadow: 0 0 0 3px rgba(32, 100, 124, .12);
       background: #fff
     }
 
-    .actions {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin-top: 14px
-    }
+    .actions { display: flex; justify-content: center; gap: 10px; margin-top: 14px }
 
-    .btn {
-      border: 0;
-      border-radius: 999px;
-      cursor: pointer;
-      padding: 12px 26px;
-      font-weight: 800
-    }
+    .btn { border: 0; border-radius: 999px; cursor: pointer; padding: 12px 26px; font-weight: 800 }
+    .btn-primary { background: #20a44c; color: #fff }
+    .btn-primary:hover { filter: brightness(.96) }
 
-    .btn-primary {
-      background: #20a44c;
-      color: #fff
-    }
+    .hint { font-size: 12px; color: var(--muted); text-align: center; margin-top: 10px }
 
-    .btn-primary:hover {
-      filter: brightness(.96)
-    }
-
-    .hint {
-      font-size: 12px;
-      color: var(--muted);
-      text-align: center;
-      margin-top: 10px
-    }
-
-    /* Keep your notices & modal styles */
-    .notice {
-      background: #fef3c7;
-      border: 1px solid #f59e0b;
-      color: #92400e;
-      padding: 10px 12px;
-      border-radius: 10px;
-      margin: 12px 0
-    }
-
-    .success {
-      background: #ecfdf5;
-      border: 1px solid #10b981;
-      color: #065f46
-    }
-
-    .error {
-      background: #fee2e2;
-      border: 1px solid #ef4444;
-      color: #991b1b
-    }
-
-    .hidden {
-      display: none
-    }
+    .notice { background: #fef3c7; border: 1px solid #f59e0b; color: #92400e; padding: 10px 12px; border-radius: 10px; margin: 12px 0 }
+    .success { background: #ecfdf5; border: 1px solid #10b981; color: #065f46 }
+    .error { background: #fee2e2; border: 1px solid #ef4444; color: #991b1b }
+    .hidden { display: none }
 
     #emailConfirmModal {
       position: fixed;
@@ -200,7 +129,6 @@
       justify-content: center;
       z-index: 50
     }
-
     #emailConfirmModal .modal-content {
       background: #fff;
       padding: 24px;
@@ -209,7 +137,7 @@
       max-width: 400px
     }
 
-    /* ===== Overlay panel that SWAPS sides ===== */
+    /* ===== Overlay panel that SWAPS sides (desktop) ===== */
     .overlay {
       position: absolute;
       top: 0;
@@ -220,7 +148,6 @@
       transition: transform .6s cubic-bezier(.22, .61, .36, 1);
       z-index: 2;
     }
-
     .overlay .block {
       position: absolute;
       inset: 0;
@@ -232,24 +159,9 @@
       text-align: center;
       padding: 34px;
     }
-
-    .overlay .content {
-      max-width: 420px
-    }
-
-    .overlay h2 {
-      font-size: 40px;
-      line-height: 1.05;
-      margin: 0 0 12px;
-      font-weight: 900
-    }
-
-    .overlay p {
-      opacity: .95;
-      margin: 0 0 28px;
-      font-size: 16px;
-      line-height: 1.5
-    }
+    .overlay .content { max-width: 420px }
+    .overlay h2 { font-size: 40px; line-height: 1.05; margin: 0 0 12px; font-weight: 900 }
+    .overlay p { opacity: .95; margin: 0 0 28px; font-size: 16px; line-height: 1.5 }
 
     .btn-ghost {
       border: 2px solid rgba(255, 255, 255, .9);
@@ -260,93 +172,114 @@
       font-weight: 800;
       pointer-events: auto;
     }
-
-    .btn-ghost:hover {
-      background: rgba(255, 255, 255, .12)
-    }
+    .btn-ghost:hover { background: rgba(255, 255, 255, .12) }
 
     /* Default: LOGIN view — overlay sits on RIGHT half */
-    .adminLoginDiv:not(.mode-signup) .overlay {
-      transform: translateX(0%);
-    }
-
+    .adminLoginDiv:not(.mode-signup) .overlay { transform: translateX(0%); }
     /* SIGNUP view — overlay slides LEFT to cover the left half */
-    .adminLoginDiv.mode-signup .overlay {
-      transform: translateX(-100%);
-    }
+    .adminLoginDiv.mode-signup .overlay { transform: translateX(-100%); }
 
     /* Swap overlay texts depending on mode */
-    .welcome,
-    .hello {
-      display: none
-    }
+    .welcome, .hello { display: none }
+    .adminLoginDiv.mode-signup .welcome { display: block }
+    .adminLoginDiv:not(.mode-signup) .hello { display: block }
 
-    .adminLoginDiv.mode-signup .welcome {
-      display: block
-    }
-
-    /* left text (Welcome Back!) */
-    .adminLoginDiv:not(.mode-signup) .hello {
-      display: block
-    }
-
-    /* right text (Hello, Friend!) */
-
-    /* Form visibility transitions (fade & slide) */
-    .form-login,
-    .form-signup {
-      transition: opacity .45s ease, transform .45s ease;
-    }
-
-    .form-login {
-      opacity: 1;
-      transform: translateX(0px);
-    }
-
-    .form-signup {
-      opacity: 0;
-      transform: translateX(20px);
-      pointer-events: none;
-    }
-
-    .mode-signup .form-login {
-      opacity: 0;
-      transform: translateX(-20px);
-      pointer-events: none;
-    }
-
-    .mode-signup .form-signup {
-      opacity: 1;
-      transform: translateX(0px);
-      pointer-events: auto;
-    }
+    /* Form visibility transitions (desktop fade) */
+    .form-login, .form-signup { transition: opacity .45s ease, transform .45s ease; }
+    .form-login { opacity: 1; transform: translateX(0px); }
+    .form-signup { opacity: 0; transform: translateX(20px); pointer-events: none; }
+    .mode-signup .form-login { opacity: 0; transform: translateX(-20px); pointer-events: none; }
+    .mode-signup .form-signup { opacity: 1; transform: translateX(0px); pointer-events: auto; }
 
     /* Keep original tabs (hidden visually) for compatibility */
-    .tabs {
-      display: none
+    .tabs { display: none }
+
+    /* ---------- MOBILE / SMALL SCREENS ---------- */
+    /* Hidden by default on desktop */
+    .mobile-tabs { display: none; }
+
+    @media (max-width: 900px) {
+      .adminLoginDiv {
+        width: min(560px, 100vw);
+        height: 640px; /* taller for stacked UI */
+      }
+
+      /* Show compact top tabs for mobile */
+      .mobile-tabs {
+        position: absolute;
+        top: 8px;
+        left: 12px;
+        right: 12px;
+        z-index: 3;
+        display: grid; /* becomes visible only on mobile */
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        background: rgba(255, 255, 255, .8);
+        backdrop-filter: blur(6px);
+        padding: 8px;
+        border-radius: 14px;
+        border: 1px solid #eef2f7;
+        box-shadow: 0 6px 20px rgba(17, 24, 39, .08);
+      }
+      .seg {
+        font-weight: 800;
+        font-size: 13px;
+        padding: 10px 0;
+        border-radius: 10px;
+        border: 1px solid #e6ecf4;
+        color: #334155;
+        background: #fff;
+        cursor: pointer;
+      }
+      .seg.active {
+        color: #fff;
+        border-color: transparent;
+        background: linear-gradient(135deg, #20a44c, #20647c);
+      }
+
+      /* Hide overlay on mobile (we’ll slide the forms themselves) */
+      .overlay { display: none }
+
+      /* Make the two panels sit side-by-side horizontally and slide */
+      .columns {
+        position: absolute;
+        top: 56px; /* leave room for the mobile tabs */
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        width: 200%;
+        height: calc(100% - 56px);
+        transition: transform .45s ease;
+      }
+      .form-side {
+        width: 50%;
+        align-items: flex-start;
+        padding: 20px 18px 22px;
+        overflow-y: auto;
+      }
+      .panel-shell { max-width: 520px; margin: 8px auto 24px; }
+      .panel-shell h3 { font-size: 26px; margin-bottom: 10px; }
+      .row { grid-template-columns: 1fr; gap: 10px }  /* stack inputs on mobile */
+      input { padding: 11px 12px; border-radius: 12px; }
+      .actions .btn { padding: 12px 18px; }
+
+      /* Slide the whole strip left/right to reveal one panel */
+      .adminLoginDiv:not(.mode-signup) .columns { transform: translateX(0%); }
+      .adminLoginDiv.mode-signup .columns { transform: translateX(-50%); }
+
+      /* Don’t fade forms on mobile; keep full opacity for clarity while sliding */
+      .form-login, .form-signup { opacity: 1 !important; transform: none !important; pointer-events: auto !important; }
+
+      /* Softer card radius on mobile */
+      .auth-card { border-radius: 16px; }
     }
 
-    /* Mobile: stack vertically, degrade overlay motion */
-    @media (max-width:900px) {
-      .auth-card {
-        border-radius: 16px
-      }
-
-      .columns {
-        display: block
-      }
-
-      .form-side {
-        padding: 26px
-      }
-
-      .overlay {
-        display: none
-      }
-
-      .panel-shell {
-        max-width: 520px
-      }
+    /* Extra tiny phones */
+    @media (max-width: 420px) {
+      .adminLoginDiv { height: 680px; }
+      .panel-shell h3 { font-size: 24px; }
+      .seg { font-size: 12px; padding: 9px 0; }
     }
   </style>
 </head>
@@ -355,6 +288,13 @@
   <div class="adminLoginDiv">
     <div class="auth-card">
       <div class="auth-inner">
+
+        <!-- MOBILE segmented control (auto-hidden on desktop, visible under 900px) -->
+        <div class="mobile-tabs">
+          <button id="mobSignIn" class="seg active" type="button">Sign in</button>
+          <button id="mobSignUp" class="seg" type="button">Sign up</button>
+        </div>
+
         <div class="columns">
           <!-- LEFT: Sign in form -->
           <div class="form-side">
@@ -407,7 +347,7 @@
           </div>
         </div>
 
-        <!-- OVERLAY that moves left/right -->
+        <!-- OVERLAY that moves left/right (desktop only) -->
         <div class="overlay" aria-hidden="true">
           <div class="block">
             <div class="content">
@@ -457,7 +397,6 @@
   </div>
 
   <script type="module">
-    /* ===== Your original logic, with minimal wiring ===== */
     import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
     import { SUPABASE_URL, SUPABASE_ANON_KEY } from "/supabase.js";
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -469,16 +408,37 @@
 
     // Mode toggle
     const container = document.querySelector(".adminLoginDiv");
-    const tabs = document.querySelectorAll(".tab"); // hidden visually, kept for compatibility
+    const tabs = document.querySelectorAll(".tab");
     function switchTab(key) {
       tabs.forEach(x => x.classList.toggle("active", x.dataset.tab === key));
       container.classList.toggle("mode-signup", key === "signup");
+      // mobile segmented control state
+      const si = document.getElementById("mobSignIn");
+      const su = document.getElementById("mobSignUp");
+      if (si && su) {
+        const isSignup = key === "signup";
+        si.classList.toggle("active", !isSignup);
+        su.classList.toggle("active", isSignup);
+      }
       hideNotice();
     }
 
-    // CTA buttons
+    // Desktop overlay CTAs
     document.getElementById("ctaSignUpBtn").addEventListener("click", () => switchTab("signup"));
     document.getElementById("ctaLoginBtn").addEventListener("click", () => switchTab("login"));
+
+    // Mobile segmented buttons
+    const mobTabs = document.querySelector(".mobile-tabs");
+    const mql = window.matchMedia("(max-width: 900px)");
+    const applyMobTabsVisibility = () => {
+      // Keep CSS as the source of truth; this only avoids stale inline styles on resize.
+      mobTabs.style.display = mql.matches ? "grid" : "none";
+    };
+    applyMobTabsVisibility();
+    mql.addEventListener?.("change", applyMobTabsVisibility);
+
+    document.getElementById("mobSignIn")?.addEventListener("click", () => switchTab("login"));
+    document.getElementById("mobSignUp")?.addEventListener("click", () => switchTab("signup"));
 
     // ===== Data helpers (kept) =====
     async function getAdminRow(userId) {
@@ -578,5 +538,4 @@
     (async () => { switchTab("login"); await refreshLoginState(); })();
   </script>
 </body>
-
 </html>
