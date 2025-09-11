@@ -1,143 +1,356 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet" />
   <title>SIMP Project – Admin Login / Sign Up</title>
   <style>
     @import url("https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap");
 
-    :root{
-      --azure:#20647c;
-      --green:#20a44c;
-      --ink:#1c2430;
-      --muted:#6b7280;
-      --line:#e7edf3;
-      --bg:#f6f8fb;
-      --shadow:0 28px 60px rgba(17,24,39,.14);
-      --grad:linear-gradient(135deg,#ff5b45,#ff2f73);
+    :root {
+      --azure: #20647c;
+      --green: #20a44c;
+      --ink: #1c2430;
+      --muted: #6b7280;
+      --line: #e7edf3;
+      --bg: #f6f8fb;
+      --shadow: 0 28px 60px rgba(17, 24, 39, .14);
+      --grad: linear-gradient(135deg, #20a44c, #20647c);
     }
 
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
-      font-family:"Raleway",system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
-      background:linear-gradient(135deg,#f8fbfd,#e7edf3);
-      display:flex;align-items:center;justify-content:center;
+    * {
+      box-sizing: border-box
+    }
+
+    html,
+    body {
+      height: 100%
+    }
+
+    body {
+      margin: 0;
+      font-family: "Raleway", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(135deg, #f8fbfd, #e7edf3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     /* ===== Root container (kept) ===== */
-    .adminLoginDiv{
-      width:min(980px,95vw);
-      height:560px;
-      position:relative;
+    .adminLoginDiv {
+      width: min(980px, 95vw);
+      height: 560px;
+      position: relative;
     }
-    .adminLoginDiv .backBtn{
-      position:absolute;top:-54px;left:0;background:none;border:0;cursor:pointer;color:#000
+
+    .adminLoginDiv .backBtn {
+      position: absolute;
+      top: -54px;
+      left: 0;
+      background: none;
+      border: 0;
+      cursor: pointer;
+      color: #000
     }
 
     /* ===== Card grid (2 columns) ===== */
-    .auth-card{
-      position:relative;
-      height:100%; width:100%;
-      border-radius:18px; overflow:hidden; box-shadow:var(--shadow);
-      background:#fff;
+    .auth-card {
+      position: relative;
+      height: 100%;
+      width: 100%;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      background: #fff;
     }
-    .auth-inner{
-      position:relative; height:100%; width:100%;
+
+    .auth-inner {
+      position: relative;
+      height: 100%;
+      width: 100%;
     }
-    .columns{
-      position:absolute; inset:0;
-      display:grid; grid-template-columns:1fr 1fr;
+
+    .columns {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
     }
 
     /* ===== Forms (left & right) ===== */
-    .form-side{
-      display:flex; align-items:center; justify-content:center;
-      padding:34px;
+    .form-side {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 34px;
     }
-    .panel-shell{
-      width:100%; max-width:420px;
+
+    .panel-shell {
+      width: 100%;
+      max-width: 420px;
     }
-    .panel-shell h3{margin:0 0 1rem; color:#000; font-weight:800; font-size:36px}
-    .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    .row-1{display:grid;grid-template-columns:1fr;gap:12px}
-    label{font-size:13px;color:#374151;display:block}
-    input{
-      width:100%;margin-top:6px;padding:12px 12px;border:1px solid #d7dee7;border-radius:10px;outline:none;
-      transition:border-color .2s, box-shadow .2s;
-      background:#f1f3f6;
+
+    .panel-shell h3 {
+      margin: 0 0 1rem;
+      color: #000;
+      font-weight: 800;
+      font-size: 36px
     }
-    input:focus{border-color:#9ac7d7;box-shadow:0 0 0 3px rgba(32,100,124,.12);background:#fff}
-    .actions{display:flex;justify-content:center;gap:10px;margin-top:14px}
-    .btn{
-      border:0;border-radius:999px;cursor:pointer;padding:12px 26px;font-weight:800
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px
     }
-    .btn-primary{background:#ff5b45;color:#fff}
-    .btn-primary:hover{filter:brightness(.96)}
-    .hint{font-size:12px;color:var(--muted);text-align:center;margin-top:10px}
+
+    .row-1 {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px
+    }
+
+    label {
+      font-size: 13px;
+      color: #374151;
+      display: block
+    }
+
+    input {
+      width: 100%;
+      margin-top: 6px;
+      padding: 12px 12px;
+      border: 1px solid #d7dee7;
+      border-radius: 10px;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+      background: #f1f3f6;
+    }
+
+    input:focus {
+      border-color: #9ac7d7;
+      box-shadow: 0 0 0 3px rgba(32, 100, 124, .12);
+      background: #fff
+    }
+
+    .actions {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 14px
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 999px;
+      cursor: pointer;
+      padding: 12px 26px;
+      font-weight: 800
+    }
+
+    .btn-primary {
+      background: #20a44c;
+      color: #fff
+    }
+
+    .btn-primary:hover {
+      filter: brightness(.96)
+    }
+
+    .hint {
+      font-size: 12px;
+      color: var(--muted);
+      text-align: center;
+      margin-top: 10px
+    }
 
     /* Keep your notices & modal styles */
-    .notice{background:#fef3c7;border:1px solid #f59e0b;color:#92400e;padding:10px 12px;border-radius:10px;margin:12px 0}
-    .success{background:#ecfdf5;border:1px solid #10b981;color:#065f46}
-    .error{background:#fee2e2;border:1px solid #ef4444;color:#991b1b}
-    .hidden{display:none}
-    #emailConfirmModal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:50}
-    #emailConfirmModal .modal-content{background:#fff;padding:24px;border-radius:12px;text-align:center;max-width:400px}
+    .notice {
+      background: #fef3c7;
+      border: 1px solid #f59e0b;
+      color: #92400e;
+      padding: 10px 12px;
+      border-radius: 10px;
+      margin: 12px 0
+    }
+
+    .success {
+      background: #ecfdf5;
+      border: 1px solid #10b981;
+      color: #065f46
+    }
+
+    .error {
+      background: #fee2e2;
+      border: 1px solid #ef4444;
+      color: #991b1b
+    }
+
+    .hidden {
+      display: none
+    }
+
+    #emailConfirmModal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 50
+    }
+
+    #emailConfirmModal .modal-content {
+      background: #fff;
+      padding: 24px;
+      border-radius: 12px;
+      text-align: center;
+      max-width: 400px
+    }
 
     /* ===== Overlay panel that SWAPS sides ===== */
-    .overlay{
-      position:absolute; top:0; left:50%;
-      width:50%; height:100%;
-      pointer-events:none;
-      transition:transform .6s cubic-bezier(.22,.61,.36,1);
-      z-index:2;
+    .overlay {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 50%;
+      height: 100%;
+      pointer-events: none;
+      transition: transform .6s cubic-bezier(.22, .61, .36, 1);
+      z-index: 2;
     }
-    .overlay .block{
-      position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
-      background:var(--grad); color:#fff; text-align:center; padding:34px;
+
+    .overlay .block {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--grad);
+      color: #fff;
+      text-align: center;
+      padding: 34px;
     }
-    .overlay .content{max-width:420px}
-    .overlay h2{font-size:40px;line-height:1.05;margin:0 0 12px;font-weight:900}
-    .overlay p{opacity:.95;margin:0 0 28px;font-size:16px;line-height:1.5}
-    .btn-ghost{
-      border:2px solid rgba(255,255,255,.9); background:transparent; color:#fff;
-      border-radius:999px; padding:12px 28px; font-weight:800; pointer-events:auto;
+
+    .overlay .content {
+      max-width: 420px
     }
-    .btn-ghost:hover{background:rgba(255,255,255,.12)}
+
+    .overlay h2 {
+      font-size: 40px;
+      line-height: 1.05;
+      margin: 0 0 12px;
+      font-weight: 900
+    }
+
+    .overlay p {
+      opacity: .95;
+      margin: 0 0 28px;
+      font-size: 16px;
+      line-height: 1.5
+    }
+
+    .btn-ghost {
+      border: 2px solid rgba(255, 255, 255, .9);
+      background: transparent;
+      color: #fff;
+      border-radius: 999px;
+      padding: 12px 28px;
+      font-weight: 800;
+      pointer-events: auto;
+    }
+
+    .btn-ghost:hover {
+      background: rgba(255, 255, 255, .12)
+    }
 
     /* Default: LOGIN view — overlay sits on RIGHT half */
-    .adminLoginDiv:not(.mode-signup) .overlay{ transform:translateX(0%); }
+    .adminLoginDiv:not(.mode-signup) .overlay {
+      transform: translateX(0%);
+    }
+
     /* SIGNUP view — overlay slides LEFT to cover the left half */
-    .adminLoginDiv.mode-signup .overlay{ transform:translateX(-100%); }
+    .adminLoginDiv.mode-signup .overlay {
+      transform: translateX(-100%);
+    }
 
     /* Swap overlay texts depending on mode */
-    .welcome, .hello { display:none }
-    .adminLoginDiv.mode-signup .welcome { display:block }   /* left text (Welcome Back!) */
-    .adminLoginDiv:not(.mode-signup) .hello { display:block }/* right text (Hello, Friend!) */
+    .welcome,
+    .hello {
+      display: none
+    }
+
+    .adminLoginDiv.mode-signup .welcome {
+      display: block
+    }
+
+    /* left text (Welcome Back!) */
+    .adminLoginDiv:not(.mode-signup) .hello {
+      display: block
+    }
+
+    /* right text (Hello, Friend!) */
 
     /* Form visibility transitions (fade & slide) */
-    .form-login, .form-signup{ transition:opacity .45s ease, transform .45s ease; }
-    .form-login{ opacity:1; transform:translateX(0px); }
-    .form-signup{ opacity:0; transform:translateX(20px); pointer-events:none; }
-    .mode-signup .form-login{ opacity:0; transform:translateX(-20px); pointer-events:none; }
-    .mode-signup .form-signup{ opacity:1; transform:translateX(0px); pointer-events:auto; }
+    .form-login,
+    .form-signup {
+      transition: opacity .45s ease, transform .45s ease;
+    }
+
+    .form-login {
+      opacity: 1;
+      transform: translateX(0px);
+    }
+
+    .form-signup {
+      opacity: 0;
+      transform: translateX(20px);
+      pointer-events: none;
+    }
+
+    .mode-signup .form-login {
+      opacity: 0;
+      transform: translateX(-20px);
+      pointer-events: none;
+    }
+
+    .mode-signup .form-signup {
+      opacity: 1;
+      transform: translateX(0px);
+      pointer-events: auto;
+    }
 
     /* Keep original tabs (hidden visually) for compatibility */
-    .tabs{display:none}
+    .tabs {
+      display: none
+    }
 
     /* Mobile: stack vertically, degrade overlay motion */
-    @media (max-width:900px){
-      .auth-card{border-radius:16px}
-      .columns{display:block}
-      .form-side{padding:26px}
-      .overlay{display:none}
-      .panel-shell{max-width:520px}
+    @media (max-width:900px) {
+      .auth-card {
+        border-radius: 16px
+      }
+
+      .columns {
+        display: block
+      }
+
+      .form-side {
+        padding: 26px
+      }
+
+      .overlay {
+        display: none
+      }
+
+      .panel-shell {
+        max-width: 520px
+      }
     }
   </style>
 </head>
+
 <body>
   <div class="adminLoginDiv">
     <button class="backBtn" onclick="history.back()"><span class="material-icons-sharp">arrow_back</span></button>
@@ -148,16 +361,17 @@
           <!-- LEFT: Sign in form -->
           <div class="form-side">
             <div class="panel-shell form-login">
+              
               <h3>Sign in</h3>
 
               <div id="notice" class="notice hidden"></div>
 
               <div class="row-1">
                 <label>Email
-                  <input id="loginEmail" type="email" autocomplete="email" required/>
+                  <input id="loginEmail" type="email" autocomplete="email" required />
                 </label>
                 <label>Password
-                  <input id="loginPassword" type="password" autocomplete="current-password" required/>
+                  <input id="loginPassword" type="password" autocomplete="current-password" required />
                 </label>
               </div>
               <div class="hint">Forgot your password?</div>
@@ -174,17 +388,17 @@
 
               <div class="row">
                 <div><label>Full Name
-                  <input id="suName" type="text" required/></label></div>
+                    <input id="suName" type="text" required /></label></div>
                 <div><label>Phone (optional)
-                  <input id="suPhone" type="tel"/></label></div>
+                    <input id="suPhone" type="tel" /></label></div>
               </div>
               <div class="row-1">
                 <label>Email
-                  <input id="suEmail" type="email" required/></label>
+                  <input id="suEmail" type="email" required /></label>
               </div>
               <div class="row-1">
                 <label>Password
-                  <input id="suPassword" type="password" minlength="6" required/></label>
+                  <input id="suPassword" type="password" minlength="6" required /></label>
                 <div class="hint">Minimum 6 characters. New sign-ups are <b>pending</b> until admin approval.</div>
               </div>
               <div class="actions">
@@ -235,7 +449,8 @@
     <div id="emailConfirmModal">
       <div class="modal-content">
         <h3>Confirm Your Email</h3>
-        <p>We’ve sent a confirmation link to your email. Please check your inbox and click the link to activate your account.</p>
+        <p>We’ve sent a confirmation link to your email. Please check your inbox and click the link to activate your
+          account.</p>
         <button id="goToEmailBtn" class="btn btn-primary">Go to My Email</button>
       </div>
     </div>
@@ -249,118 +464,119 @@
 
     // Notices
     const noticeEl = document.getElementById("notice");
-    function showNotice(msg,type=""){ noticeEl.textContent=msg; noticeEl.classList.remove("hidden","success","error"); if(type==="success") noticeEl.classList.add("success"); if(type==="error") noticeEl.classList.add("error"); }
-    function hideNotice(){ noticeEl.classList.add("hidden"); noticeEl.classList.remove("success","error"); noticeEl.textContent=""; }
+    function showNotice(msg, type = "") { noticeEl.textContent = msg; noticeEl.classList.remove("hidden", "success", "error"); if (type === "success") noticeEl.classList.add("success"); if (type === "error") noticeEl.classList.add("error"); }
+    function hideNotice() { noticeEl.classList.add("hidden"); noticeEl.classList.remove("success", "error"); noticeEl.textContent = ""; }
 
     // Mode toggle
     const container = document.querySelector(".adminLoginDiv");
     const tabs = document.querySelectorAll(".tab"); // hidden visually, kept for compatibility
-    function switchTab(key){
-      tabs.forEach(x=>x.classList.toggle("active",x.dataset.tab===key));
-      container.classList.toggle("mode-signup", key==="signup");
+    function switchTab(key) {
+      tabs.forEach(x => x.classList.toggle("active", x.dataset.tab === key));
+      container.classList.toggle("mode-signup", key === "signup");
       hideNotice();
     }
 
     // CTA buttons
-    document.getElementById("ctaSignUpBtn").addEventListener("click",()=>switchTab("signup"));
-    document.getElementById("ctaLoginBtn").addEventListener("click",()=>switchTab("login"));
+    document.getElementById("ctaSignUpBtn").addEventListener("click", () => switchTab("signup"));
+    document.getElementById("ctaLoginBtn").addEventListener("click", () => switchTab("login"));
 
     // ===== Data helpers (kept) =====
-    async function getAdminRow(userId){
+    async function getAdminRow(userId) {
       const { data, error } = await supabase.from("admin").select("*").eq("id", userId).maybeSingle();
-      if(error) throw error; return data;
+      if (error) throw error; return data;
     }
-    async function ensureAdminRowNow(user,overrides={}){
-      const payload={
-        id:user.id,email:user.email,
-        name:user.user_metadata?.name||overrides.name||"Admin User",
-        phone:user.user_metadata?.phone||overrides.phone||null,
-        role:"pending",
+    async function ensureAdminRowNow(user, overrides = {}) {
+      const payload = {
+        id: user.id, email: user.email,
+        name: user.user_metadata?.name || overrides.name || "Admin User",
+        phone: user.user_metadata?.phone || overrides.phone || null,
+        role: "pending",
       };
       const { error } = await supabase.from("admin").insert([payload]);
-      if(error) throw error;
+      if (error) throw error;
     }
-    function openEmailProvider(email){
-      const emailProvider = email.split("@")[1]?.toLowerCase()||"";
-      let providerUrl="https://mail.google.com";
-      if(emailProvider.includes("yahoo")) providerUrl="https://mail.yahoo.com";
-      else if(emailProvider.includes("outlook")||emailProvider.includes("hotmail")||emailProvider.includes("live")) providerUrl="https://outlook.live.com/mail";
-      else if(emailProvider.includes("icloud")) providerUrl="https://www.icloud.com/mail";
-      document.getElementById("goToEmailBtn").onclick=()=>window.open(providerUrl,"_blank");
-      document.getElementById("emailConfirmModal").style.display="flex";
+    function openEmailProvider(email) {
+      const emailProvider = email.split("@")[1]?.toLowerCase() || "";
+      let providerUrl = "https://mail.google.com";
+      if (emailProvider.includes("yahoo")) providerUrl = "https://mail.yahoo.com";
+      else if (emailProvider.includes("outlook") || emailProvider.includes("hotmail") || emailProvider.includes("live")) providerUrl = "https://outlook.live.com/mail";
+      else if (emailProvider.includes("icloud")) providerUrl = "https://www.icloud.com/mail";
+      document.getElementById("goToEmailBtn").onclick = () => window.open(providerUrl, "_blank");
+      document.getElementById("emailConfirmModal").style.display = "flex";
     }
 
     // ===== SIGN UP (kept) =====
-    document.getElementById("signUpBtn").addEventListener("click", async ()=>{
+    document.getElementById("signUpBtn").addEventListener("click", async () => {
       hideNotice();
-      const name=document.getElementById("suName").value.trim();
-      const phone=document.getElementById("suPhone").value.trim();
-      const email=document.getElementById("suEmail").value.trim();
-      const password=document.getElementById("suPassword").value;
+      const name = document.getElementById("suName").value.trim();
+      const phone = document.getElementById("suPhone").value.trim();
+      const email = document.getElementById("suEmail").value.trim();
+      const password = document.getElementById("suPassword").value;
 
-      if(!name||!email||!password||password.length<6){
-        showNotice("Please fill all required fields (password min 6 chars).","error"); return;
+      if (!name || !email || !password || password.length < 6) {
+        showNotice("Please fill all required fields (password min 6 chars).", "error"); return;
       }
-      try{
-        const { data:authData, error:authError } = await supabase.auth.signUp({
-          email,password,options:{ data:{ name, phone, role:"admin" } },
+      try {
+        const { data: authData, error: authError } = await supabase.auth.signUp({
+          email, password, options: { data: { name, phone, role: "admin" } },
         });
-        if(authError) throw authError;
+        if (authError) throw authError;
 
-        if(authData.session && authData.user){
-          await ensureAdminRowNow(authData.user,{ name, phone });
-          showNotice("Sign up successful. Your admin profile is now pending approval.","success");
+        if (authData.session && authData.user) {
+          await ensureAdminRowNow(authData.user, { name, phone });
+          showNotice("Sign up successful. Your admin profile is now pending approval.", "success");
           switchTab("login");
-        }else{
+        } else {
           openEmailProvider(email);
-          showNotice("Sign up successful. Please confirm your email. After confirming, log in — your admin profile will be set to pending automatically.","success");
+          showNotice("Sign up successful. Please confirm your email. After confirming, log in — your admin profile will be set to pending automatically.", "success");
           switchTab("login");
         }
-      }catch(err){
+      } catch (err) {
         console.error(err);
-        showNotice("Sign up error: "+(err.message||"Unknown error"),"error");
+        showNotice("Sign up error: " + (err.message || "Unknown error"), "error");
       }
     });
 
     // ===== LOGIN (kept) =====
-    const loginBtn=document.getElementById("loginBtn");
-    async function refreshLoginState(){
-      const { data:{ user } } = await supabase.auth.getUser();
-      if(!user) return;
-      try{
+    const loginBtn = document.getElementById("loginBtn");
+    async function refreshLoginState() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      try {
         let row = await getAdminRow(user.id);
-        if(!row){ await ensureAdminRowNow(user); row = await getAdminRow(user.id); }
+        if (!row) { await ensureAdminRowNow(user); row = await getAdminRow(user.id); }
 
-        if(row.role==="pending"){
-          window.location.href="pages/admin_pages/html_files/waiting.html"; return;
+        if (row.role === "pending") {
+          window.location.href = "pages/admin_pages/html_files/waiting.html"; return;
         }
-        if(row.role==="admin"||row.role==="superadmin"){
-          window.location.href="pages/admin_pages/html_files/dashboard.html";
-        }else{
-          showNotice("Unknown role status.","error");
+        if (row.role === "admin" || row.role === "superadmin") {
+          window.location.href = "pages/admin_pages/html_files/dashboard.html";
+        } else {
+          showNotice("Unknown role status.", "error");
         }
-      }catch(e){
+      } catch (e) {
         console.error(e);
-        showNotice("Failed to fetch admin status: "+(e.message||"Unknown error"),"error");
+        showNotice("Failed to fetch admin status: " + (e.message || "Unknown error"), "error");
       }
     }
-    loginBtn.addEventListener("click", async ()=>{
+    loginBtn.addEventListener("click", async () => {
       hideNotice();
-      const email=document.getElementById("loginEmail").value.trim();
-      const password=document.getElementById("loginPassword").value;
-      if(!email||!password){ showNotice("Please enter email and password.","error"); return; }
-      try{
-        const { error } = await supabase.auth.signInWithPassword({ email,password });
-        if(error) throw error;
+      const email = document.getElementById("loginEmail").value.trim();
+      const password = document.getElementById("loginPassword").value;
+      if (!email || !password) { showNotice("Please enter email and password.", "error"); return; }
+      try {
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) throw error;
         await refreshLoginState();
-      }catch(err){
+      } catch (err) {
         console.error(err);
-        showNotice("Login error: "+(err.message||"Unknown error"),"error");
+        showNotice("Login error: " + (err.message || "Unknown error"), "error");
       }
     });
 
     // On load
-    (async ()=>{ switchTab("login"); await refreshLoginState(); })();
+    (async () => { switchTab("login"); await refreshLoginState(); })();
   </script>
 </body>
+
 </html>
