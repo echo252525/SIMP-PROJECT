@@ -4,10 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="../css_files/sideBar.css" />
-    <link
-      href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet" />
     <title>Jobs Verification</title>
 
     <style>
@@ -121,7 +118,7 @@
         display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 600;
       }
       .btn.primary { background: var(--brand); color: #fff; border-color: var(--brand); }
-      .btn.reject { background: #fff5f5; color: var(--danger); border-color: #ffd7d7; }
+      .btn.reject { background: #fff5f5; color: #e53935; border-color: #ffd7d7; }
       .btn.warn { background: #fff8e1; color: #8a6d0a; border-color: #fde68a; }
       .btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
@@ -176,12 +173,17 @@
                 <input id="jobSearchInput" type="text" placeholder="Search title, category, location…" />
               </div>
               <div style="margin-bottom: 0.6rem">
-                <select id="jobStatusFilter" style="width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; background: #fcfeff; outline: none;">
+                <select
+                  id="jobStatusFilter"
+                  style="width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; background: #fcfeff; outline: none;"
+                >
                   <option value="">All statuses</option>
                   <option value="pending">Pending</option>
                   <option value="viewed">Viewed</option>
                   <option value="approved">Approved</option>
                   <option value="rejected">Rejected</option>
+                  <option value="done">Done</option>
+                  <option value="overdue">Overdue</option>
                 </select>
               </div>
               <div id="jobList" class="list"></div>
@@ -204,140 +206,141 @@
 
     <script type="module">
       // ========= CONFIG =========
-      const DEFAULT_JOB_PICS_BUCKET = 'jobs'; // change if your bucket is named differently
+      var DEFAULT_JOB_PICS_BUCKET = 'jobs';
 
       // ========= Supabase client =========
-      const { createClient } = supabase;
+      var createClient = supabase.createClient;
       import { SUPABASE_URL, SUPABASE_ANON_KEY } from "../../../supabase.js";
-      const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      var sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
       // ========= DOM refs =========
-      const jobSearchInput = document.getElementById("jobSearchInput");
-      const jobStatusFilter = document.getElementById("jobStatusFilter");
-      const jobList = document.getElementById("jobList");
-      const emptyJobs = document.getElementById("emptyJobs");
-      const jobDetailsPane = document.getElementById("jobDetailsPane");
-      const toastEl = document.getElementById("toast");
+      var jobSearchInput = document.getElementById("jobSearchInput");
+      var jobStatusFilter = document.getElementById("jobStatusFilter");
+      var jobList = document.getElementById("jobList");
+      var emptyJobs = document.getElementById("emptyJobs");
+      var jobDetailsPane = document.getElementById("jobDetailsPane");
+      var toastEl = document.getElementById("toast");
 
       // ========= State =========
-      let ALL_JOBS = [];
-      let activeJobId = null;
+      var ALL_JOBS = [];
+      var activeJobId = null;
 
       // ========= Utils =========
-      const showToast = (msg, ms = 2400) => {
+      function showToast(msg, ms) {
+        if (typeof ms !== "number") ms = 2400;
         toastEl.textContent = msg;
         toastEl.classList.add("show");
-        setTimeout(() => toastEl.classList.remove("show"), ms);
-      };
-      const esc = (s) =>
-        String(s ?? "").replace(/[&<>"']/g, (c) => ({
-          "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
-        }[c]));
-      const peso = (n) => {
-        const v = typeof n === "string" ? parseFloat(n) : n;
-        return isNaN(v)
-          ? "0.00"
-          : v.toLocaleString("en-PH", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-      };
-      const fmtDate = (d) => d ? new Date(d + "T00:00:00").toLocaleDateString() : "";
-      const fmtTime = (t) => (t ? String(t).slice(0, 5) : "");
-      const nice = (status) => {
-        const s = (status ?? "").toLowerCase();
+        setTimeout(function () { toastEl.classList.remove("show"); }, ms);
+      }
+
+      function esc(s) {
+        var str = (s === undefined || s === null) ? "" : String(s);
+        return str.replace(/[&<>"']/g, function (c) {
+          var map = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
+          return map[c];
+        });
+      }
+
+      function peso(n) {
+        var v = typeof n === "string" ? parseFloat(n) : n;
+        if (isNaN(v)) return "0.00";
+        return v.toLocaleString("en-PH", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      }
+
+      function fmtDate(d) {
+        if (!d) return "";
+        return new Date(d + "T00:00:00").toLocaleDateString();
+      }
+
+      function fmtTime(t) { return t ? String(t).slice(0, 5) : ""; }
+
+      function nice(status) {
+        var s = (status || "").toLowerCase();
         if (!s) return "Pending";
         return s.charAt(0).toUpperCase() + s.slice(1);
-      };
+      }
 
       // ========= Signed URL helpers =========
       function parsePublicBucketAndPath(publicUrl){
         try{
-          const marker = '/storage/v1/object/public/';
-          const i = publicUrl.indexOf(marker);
+          var marker = '/storage/v1/object/public/';
+          var i = publicUrl.indexOf(marker);
           if (i === -1) return null;
-          const rest = publicUrl.substring(i + marker.length); // "<bucket>/<path%2Fmaybe-encoded>"
-          const slash = rest.indexOf('/');
+          var rest = publicUrl.substring(i + marker.length);
+          var slash = rest.indexOf('/');
           if (slash === -1) return null;
-          const bucket = rest.substring(0, slash);
-          let path = rest.substring(slash + 1);
-          try { path = decodeURIComponent(path); } catch {}
+          var bucket = rest.substring(0, slash);
+          var path = rest.substring(slash + 1);
+          try { path = decodeURIComponent(path); } catch(e){}
           path = path.replace(/^\/+/, '');
-          return { bucket, path };
-        }catch{ return null; }
+          return { bucket: bucket, path: path };
+        }catch(e){ return null; }
       }
 
-      // Accepts:
-      // - Full public Storage URL
-      // - "bucket::path"
-      // - "plain/path.jpg"  (assumes DEFAULT_JOB_PICS_BUCKET)
       function parseStorageRef(ref){
         if (!ref) return null;
-        const s = String(ref).trim();
+        var s = String(ref).trim();
         if (/^https?:\/\//i.test(s)){
-          const parsed = parsePublicBucketAndPath(s);
+          var parsed = parsePublicBucketAndPath(s);
           return parsed || null;
         }
-        const bi = s.indexOf('::');
+        var bi = s.indexOf('::');
         if (bi > 0){
-          let path = s.slice(bi + 2);
-          try { path = decodeURIComponent(path); } catch {}
-          path = path.replace(/^\/+/, '');
-          return { bucket: s.slice(0, bi), path };
+          var p1 = s.slice(bi + 2);
+          try { p1 = decodeURIComponent(p1); } catch(e){}
+          p1 = p1.replace(/^\/+/, '');
+          return { bucket: s.slice(0, bi), path: p1 };
         }
-        let path = s;
-        try { path = decodeURIComponent(path); } catch {}
-        path = path.replace(/^\/+/, '');
-        return { bucket: DEFAULT_JOB_PICS_BUCKET, path };
+        var p2 = s;
+        try { p2 = decodeURIComponent(p2); } catch(e){}
+        p2 = p2.replace(/^\/+/, '');
+        return { bucket: DEFAULT_JOB_PICS_BUCKET, path: p2 };
       }
 
-      async function createSignedUrl(bucket, path, expires = 3600){
-        const { data, error } = await sb.storage.from(bucket).createSignedUrl(path, expires);
-        if (error) throw error;
-        return data.signedUrl;
+      async function createSignedUrl(bucket, path, expires){
+        if (typeof expires !== "number") expires = 3600;
+        var out = await sb.storage.from(bucket).createSignedUrl(path, expires);
+        if (out.error) throw out.error;
+        return out.data.signedUrl;
       }
 
-      // Resolve whatever is stored in job_picture_url into a signed URL (or null)
       async function resolveJobPictureSignedUrl(job_picture_url){
         if (!job_picture_url) return null;
-
-        // External (non-Supabase) URL: pass-through
-        if (/^https?:\/\//i.test(job_picture_url) && !job_picture_url.includes('/storage/v1/object/')){
+        if (/^https?:\/\//i.test(job_picture_url) && job_picture_url.indexOf('/storage/v1/object/') === -1){
           return job_picture_url;
         }
-
-        const ref = parseStorageRef(job_picture_url);
+        var ref = parseStorageRef(job_picture_url);
         if (!ref) return null;
-
         try {
           return await createSignedUrl(ref.bucket, ref.path, 3600);
         } catch (e){
-          console.warn('Signing path failed:', e.message, 'bucket=', ref.bucket, 'path=', ref.path);
-          // If it looked like a public URL, fall back to original
           if (/^https?:\/\//i.test(job_picture_url)) return job_picture_url;
           return null;
         }
       }
 
-      // ========= Status updates (with enum fallback for viewed/pending) =========
+      // ========= Status updates =========
       async function updateJobStatus(jobId, desiredStatus) {
-        const payload = desiredStatus
+        var payload = desiredStatus
           ? { job_status: desiredStatus, updated_at: new Date().toISOString() }
           : { job_status: null, updated_at: new Date().toISOString() };
 
-        const { error: e1 } = await sb.schema("jobs").from("job").update(payload).eq("job_id", jobId);
-        if (!e1) return { ok: true, stored: desiredStatus ?? null };
+        var r1 = await sb.schema("jobs").from("job").update(payload).eq("job_id", jobId);
+        if (!r1.error) return { ok: true, stored: desiredStatus || null };
 
-        const enumErr = /enum|invalid input value/i.test(e1.message || "");
-        const wantsFallback = desiredStatus && (desiredStatus === "viewed" || desiredStatus === "pending");
+        var enumErr = /enum|invalid input value/i.test(r1.error.message || "");
+        var wantsFallback = desiredStatus && (desiredStatus === "viewed" || desiredStatus === "pending");
         if (enumErr && wantsFallback) {
-          const { error: e2 } = await sb
+          var r2 = await sb
             .schema("jobs")
             .from("job")
             .update({ job_status: null, updated_at: new Date().toISOString() })
             .eq("job_id", jobId);
-          if (!e2) return { ok: true, stored: null, note: "fallback-null" };
-          return { ok: false, error: e2 };
+          if (!r2.error) return { ok: true, stored: null, note: "fallback-null" };
+          return { ok: false, error: r2.error };
         }
 
-        return { ok: false, error: e1 };
+        return { ok: false, error: r1.error };
       }
 
       // ========= Load + Render =========
@@ -346,114 +349,102 @@
         emptyJobs.style.display = "none";
         jobDetailsPane.innerHTML = '<div class="empty-state">Loading…</div>';
 
-        const { data, error } = await sb
+        var res = await sb
           .schema("jobs")
           .from("job")
-          .select(`
-            job_id,
-            posted_by,
-            job_title,
-            job_description,
-            job_difficulty,
-            job_category,
-            job_location,
-            job_date,
-            job_time,
-            job_pay,
-            job_picture_url,
-            job_status,
-            created_at
-          `)
+          .select("job_id, posted_by, job_title, job_description, job_difficulty, job_category, job_location, job_date, job_time, job_pay, job_picture_url, job_status, created_at")
           .order("created_at", { ascending: false });
 
-        if (error) {
-          console.error(error);
+        if (res.error) {
           jobDetailsPane.innerHTML = '<div class="empty-state">Failed to load jobs.</div>';
           emptyJobs.style.display = "block";
-          showToast(error.message || "Load error");
+          showToast(res.error.message || "Load error");
           return;
         }
 
-        // Resolve signed URLs concurrently
-        const jobs = data || [];
-        const signedUrls = await Promise.all(
-          jobs.map(j => resolveJobPictureSignedUrl(j.job_picture_url))
-        );
-
-        ALL_JOBS = jobs.map((j, idx) => ({
-          id: j.job_id,
-          photo: signedUrls[idx] || "../images/profile-4.jpg",
-          title: j.job_title,
-          category: j.job_category,
-          difficulty: j.job_difficulty,
-          pay: j.job_pay,
-          datetime: `${fmtDate(j.job_date)} ${fmtTime(j.job_time)}`,
-          location: j.job_location,
-          status: j.job_status ?? "", // "" -> Pending in UI
-          createdAt: j.created_at,
+        var jobs = res.data || [];
+        var signedUrls = await Promise.all(jobs.map(function (j) {
+          return resolveJobPictureSignedUrl(j.job_picture_url);
         }));
 
-        renderJobList();
+        ALL_JOBS = jobs.map(function (j, idx) {
+          return {
+            id: j.job_id,
+            photo: signedUrls[idx] || "../images/profile-4.jpg",
+            title: j.job_title,
+            category: j.job_category,
+            difficulty: j.job_difficulty,
+            pay: j.job_pay,
+            datetime: fmtDate(j.job_date) + " " + fmtTime(j.job_time),
+            location: j.job_location,
+            status: j.job_status || "",
+            createdAt: j.created_at
+          };
+        });
+
+        renderJobList("");
 
         if (ALL_JOBS.length) {
-          const first = ALL_JOBS[0];
+          var first = ALL_JOBS[0];
           activeJobId = first.id;
           await ensureViewed(first);
           renderJobDetails(first);
-          setTimeout(() => {
-            document.querySelector(`#jobList .item[data-id="${first.id}"]`)?.classList.add("active", "read");
-          });
+          setTimeout(function () {
+            var el = document.querySelector('#jobList .item[data-id="' + first.id + '"]');
+            if (el) el.classList.add("active", "read");
+          }, 0);
         } else {
           jobDetailsPane.innerHTML = '<div class="empty-state">No jobs found.</div>';
         }
       }
 
-      function renderJobList(filter = "") {
+      function renderJobList(filter) {
+        if (typeof filter !== "string") filter = "";
         jobList.innerHTML = "";
-        const q = (filter || "").trim().toLowerCase();
-        const selectedStatus = (jobStatusFilter?.value || "").toLowerCase();
+        var q = filter.trim().toLowerCase();
+        var selectedStatus = (jobStatusFilter && jobStatusFilter.value ? jobStatusFilter.value : "").toLowerCase();
 
-        const filtered = (ALL_JOBS || []).filter((j) => {
-          const hay = `${(j.title || "").toLowerCase()}|${(j.category || "").toLowerCase()}|${(j.location || "").toLowerCase()}`;
-          const hit = !q || hay.includes(q);
-          const statusForFilter = (j.status || "pending").toLowerCase();
-          const statusOk = !selectedStatus || statusForFilter === selectedStatus;
+        var filtered = (ALL_JOBS || []).filter(function (j) {
+          var hay = ((j.title || "") + "|" + (j.category || "") + "|" + (j.location || "")).toLowerCase();
+          var hit = !q || hay.indexOf(q) !== -1;
+          var statusForFilter = (j.status || "pending").toLowerCase();
+          var statusOk = !selectedStatus || statusForFilter === selectedStatus;
           return hit && statusOk;
         });
 
         emptyJobs.style.display = filtered.length ? "none" : "block";
 
-        filtered.forEach((j) => {
-          const item = document.createElement("div");
+        filtered.forEach(function (j) {
+          var item = document.createElement("div");
           item.className = "item";
-          item.dataset.id = j.id;
+          item.setAttribute("data-id", j.id);
           if (j.id === activeJobId) item.classList.add("active");
 
-          const s = (j.status || "").toLowerCase();
+          var s = (j.status || "").toLowerCase();
           if (s === "viewed") item.classList.add("read");
           else if (!s || s === "pending") item.classList.add("pending");
 
-          item.innerHTML = `
-            <img class="thumb" src="${j.photo}" alt="${esc(j.title)}"
-                 onerror="this.onerror=null;this.src='../images/profile-4.jpg';">
-            <div>
-              <div style="font-weight:700">${esc(j.title)}</div>
-              <div style="font-size:.85rem;color:var(--muted)">${esc(j.category || "Uncategorized")} · ${esc(j.location || "—")}</div>
-            </div>
-            <span class="pill">${esc(nice(j.status || "pending"))}</span>
-          `;
+          item.innerHTML =
+            '<img class="thumb" src="' + j.photo + '" alt="' + esc(j.title) + '" onerror="this.onerror=null;this.src=\'../images/profile-4.jpg\';">' +
+            '<div>' +
+              '<div style="font-weight:700">' + esc(j.title) + '</div>' +
+              '<div style="font-size:.85rem;color:var(--muted)">' + esc(j.category || "Uncategorized") + ' · ' + esc(j.location || "—") + '</div>' +
+            '</div>' +
+            '<span class="pill">' + esc(nice(j.status || "pending")) + '</span>';
 
-          item.addEventListener("click", async () => {
+          item.addEventListener("click", function () {
             activeJobId = j.id;
-            document.querySelectorAll("#jobList .item").forEach((i) => i.classList.remove("active"));
+            var rows = document.querySelectorAll("#jobList .item");
+            for (var i = 0; i < rows.length; i++) rows[i].classList.remove("active");
             item.classList.add("active");
 
-            await ensureViewed(j);
-            item.classList.remove("pending");
-            item.classList.add("read");
-            item.querySelector(".pill").textContent = nice(j.status || "pending");
-
-            renderJobDetails(j);
+            ensureViewed(j).then(function () {
+              item.classList.remove("pending");
+              item.classList.add("read");
+              var pill = item.querySelector(".pill");
+              if (pill) pill.textContent = nice(j.status || "pending");
+              renderJobDetails(j);
+            });
           });
 
           jobList.appendChild(item);
@@ -465,129 +456,139 @@
       }
 
       function renderJobDetails(job) {
-        jobDetailsPane.innerHTML = `
-          <div class="head" style="display:block; padding:0;">
-            <img src="${job.photo}" alt="${esc(job.title)}"
-                 style="width:100%; height:240px; object-fit:cover; border-radius:12px 12px 0 0; margin-bottom:12px;"
-                 onerror="this.onerror=null;this.src='../images/profile-4.jpg';">
-            <div style="padding:0 16px 12px;">
-              <div class="name">${esc(job.title)}</div>
-              <div class="meta">
-                <span class="kv"><strong>Category:</strong> ${esc(job.category || "Uncategorized")}</span>
-                <span class="kv"><strong>Difficulty:</strong> ${esc(job.difficulty ?? "—")}</span>
-                <span class="kv"><strong>Pay:</strong> ₱${peso(job.pay)}</span>
-              </div>
-            </div>
-          </div>
+        jobDetailsPane.innerHTML =
+          '<div class="head" style="display:block; padding:0;">' +
+            '<img src="' + job.photo + '" alt="' + esc(job.title) + '" ' +
+                 'style="width:100%; height:240px; object-fit:cover; border-radius:12px 12px 0 0; margin-bottom:12px;" ' +
+                 'onerror="this.onerror=null;this.src=\'../images/profile-4.jpg\';">' +
+            '<div style="padding:0 16px 12px;">' +
+              '<div class="name">' + esc(job.title) + '</div>' +
+              '<div class="meta">' +
+                '<span class="kv"><strong>Category:</strong> ' + esc(job.category || "Uncategorized") + '</span>' +
+                '<span class="kv"><strong>Difficulty:</strong> ' + esc(job.difficulty != null ? job.difficulty : "—") + '</span>' +
+                '<span class="kv"><strong>Pay:</strong> ₱' + peso(job.pay) + '</span>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
 
-          <div class="grid-2">
-            <div class="card">
-              <h4>Schedule</h4>
-              <div class="info-list">
-                <div><span class="label">Date / Time</span>${esc(job.datetime || "—")}</div>
-                <div><span class="label">Status</span><span class="pill" id="jobStatusPill">${esc(nice(job.status || "pending"))}</span></div>
-              </div>
-            </div>
+          '<div class="grid-2">' +
+            '<div class="card">' +
+              '<h4>Schedule</h4>' +
+              '<div class="info-list">' +
+                '<div><span class="label">Date / Time</span>' + esc(job.datetime || "—") + '</div>' +
+                '<div><span class="label">Status</span><span class="pill" id="jobStatusPill">' + esc(nice(job.status || "pending")) + '</span></div>' +
+              '</div>' +
+            '</div>' +
 
-            <div class="card">
-              <h4>Location</h4>
-              <div class="info-list">
-                <div style="grid-column: 1 / -1;"><span class="label">Address</span>${esc(job.location || "Not specified")}</div>
-              </div>
-            </div>
-          </div>
+            '<div class="card">' +
+              '<h4>Location</h4>' +
+              '<div class="info-list">' +
+                '<div style="grid-column: 1 / -1;"><span class="label">Address</span>' + esc(job.location || "Not specified") + '</div>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
 
-          <div class="actions-row" id="actionsRow"></div>
-        `;
+          '<div class="actions-row" id="actionsRow"></div>';
 
-        const actionsRow = document.getElementById("actionsRow");
+        var actionsRow = document.getElementById("actionsRow");
         actionsRow.innerHTML = "";
 
-        const s = (job.status || "pending").toLowerCase();
+        var s = (job.status || "pending").toLowerCase();
+
+        // If already done or overdue, do not show any action buttons
+        if (s === "done" || s === "overdue") {
+          return;
+        }
 
         if (s !== "approved") {
-          const approveBtn = document.createElement("button");
+          var approveBtn = document.createElement("button");
           approveBtn.className = "btn primary";
           approveBtn.textContent = "Approve";
-          approveBtn.addEventListener("click", () => changeStatus(job, "approved"));
+          approveBtn.addEventListener("click", function () { changeStatus(job, "approved"); });
           actionsRow.appendChild(approveBtn);
         }
 
         if (s !== "rejected") {
-          const rejectBtn = document.createElement("button");
+          var rejectBtn = document.createElement("button");
           rejectBtn.className = "btn reject";
           rejectBtn.textContent = "Reject";
-          rejectBtn.addEventListener("click", () => changeStatus(job, "rejected"));
+          rejectBtn.addEventListener("click", function () { changeStatus(job, "rejected"); });
           actionsRow.appendChild(rejectBtn);
         }
 
         if (s === "rejected") {
-          const revertBtn = document.createElement("button");
+          var revertBtn = document.createElement("button");
           revertBtn.className = "btn warn";
           revertBtn.textContent = "Revert to Viewed";
-          revertBtn.addEventListener("click", () => changeStatus(job, "viewed")); // falls back to NULL if enum doesn't allow
+          revertBtn.addEventListener("click", function () { changeStatus(job, "viewed"); });
           actionsRow.appendChild(revertBtn);
         }
       }
 
       async function changeStatus(job, target) {
-        const prev = job.status;
+        var prev = job.status;
         job.status = target; // optimistic
         updateActiveRowBadge(job);
         renderJobDetails(job);
 
-        const res = await updateJobStatus(job.id, target);
+        var res = await updateJobStatus(job.id, target);
         if (!res.ok) {
           job.status = prev; // rollback
           updateActiveRowBadge(job);
           renderJobDetails(job);
-          const msg = res.error?.message || "Update failed (check RLS/enum)";
+          var msg = (res.error && res.error.message) ? res.error.message : "Update failed (check RLS/enum)";
           showToast(msg);
-          console.error("Update error:", res.error);
           return;
         }
 
         if (target === "viewed" && res.stored === null) {
-          job.status = "viewed"; // UI label if enum disallows
+          job.status = "viewed";
         }
 
-        renderJobList(jobSearchInput?.value || "");
-        showToast(`Status updated to ${nice(job.status)}`);
+        renderJobList(jobSearchInput ? jobSearchInput.value : "");
+        showToast("Status updated to " + nice(job.status));
       }
 
       function updateActiveRowBadge(job) {
-        const row = document.querySelector(`#jobList .item[data-id="${job.id}"]`);
+        var row = document.querySelector('#jobList .item[data-id="' + job.id + '"]');
         if (row) {
-          row.querySelector(".pill").textContent = nice(job.status || "pending");
-          row.classList.remove("pending", "read");
-          const s = (job.status || "").toLowerCase();
+          var pill = row.querySelector(".pill");
+          if (pill) pill.textContent = nice(job.status || "pending");
+          row.classList.remove("pending");
+          row.classList.remove("read");
+          var s = (job.status || "").toLowerCase();
           if (s === "viewed") row.classList.add("read");
           else if (!s || s === "pending") row.classList.add("pending");
         }
-        const pill = document.getElementById("jobStatusPill");
-        if (pill) pill.textContent = nice(job.status || "pending");
+        var pill2 = document.getElementById("jobStatusPill");
+        if (pill2) pill2.textContent = nice(job.status || "pending");
       }
 
       async function ensureViewed(job) {
-        const s = (job.status || "").toLowerCase();
+        var s = (job.status || "").toLowerCase();
         if (!s || s === "pending") {
-          const prev = job.status || "";
+          var prev = job.status || "";
           job.status = "viewed";
           updateActiveRowBadge(job);
-          const res = await updateJobStatus(job.id, "viewed");
+          var res = await updateJobStatus(job.id, "viewed");
           if (!res.ok) {
             job.status = prev;
             updateActiveRowBadge(job);
-            console.warn("Could not set viewed:", res.error?.message || res.error);
           }
         }
       }
 
       // ========= Events =========
-      jobSearchInput?.addEventListener("input", (e) => renderJobList(e.target.value));
-      jobStatusFilter?.addEventListener("change", () => renderJobList(jobSearchInput?.value || ""));
+      if (jobSearchInput) {
+        jobSearchInput.addEventListener("input", function (e) { renderJobList(e.target.value); });
+      }
+      if (jobStatusFilter) {
+        jobStatusFilter.addEventListener("change", function () {
+          renderJobList(jobSearchInput ? jobSearchInput.value : "");
+        });
+      }
 
-      document.addEventListener("DOMContentLoaded", loadJobs);
+      document.addEventListener("DOMContentLoaded", function () { loadJobs(); });
     </script>
   </body>
 </html>

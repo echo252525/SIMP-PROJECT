@@ -784,9 +784,16 @@
             w.fullName.toLowerCase().includes(q) ||
             w.email.toLowerCase().includes(q) ||
             (w.phone || "").toLowerCase().includes(q);
+
+          const wStatus = (w.profileStatus || "pending").toLowerCase();
+
+          // ✅ CHANGE: when filtering "approved", include both "approved" and "verified"
           const inStatus =
             !selectedStatus ||
-            (w.profileStatus || "pending").toLowerCase() === selectedStatus;
+            (selectedStatus === "approved"
+              ? (wStatus === "approved" || wStatus === "verified")
+              : wStatus === selectedStatus);
+
           return inText && inStatus;
         });
 
