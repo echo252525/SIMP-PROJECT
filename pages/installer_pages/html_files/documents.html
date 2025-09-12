@@ -158,6 +158,9 @@
       .icon-btn .material-icons-sharp {
         font-size: 20px;
       }
+      .mobile-only {
+        display: none;
+      }
 
       .preview-body {
         padding: 10px;
@@ -177,7 +180,8 @@
       }
       .preview-body iframe,
       .preview-body embed,
-      .preview-body img {
+      .preview-body img,
+      .preview-body object {
         width: 100%;
         height: 100%;
         border: 0;
@@ -391,9 +395,94 @@
         border-radius: 8px;
       }
 
+      /* ======= Responsive adjustments ======= */
+      @media (max-width: 1100px) {
+        .titlePageDiv h1 {
+          font-size: 1.35rem;
+        }
+        .titlePageDiv p {
+          font-size: 0.92rem;
+        }
+      }
+
       @media (max-width: 980px) {
         main .docs-grid {
           grid-template-columns: 1fr;
+        }
+        /* Make each doc item stack nicely */
+        main .doc-item {
+          padding: 1rem 1rem;
+          flex-direction: column;
+          align-items: stretch;
+          gap: 0.75rem;
+        }
+        main .dropzone {
+          width: 100%;
+          justify-content: center;
+        }
+        .preview-header::before {
+          content: "";
+          display: block;
+          position: absolute;
+          left: 50%;
+          transform: translateX(-50%);
+          top: 8px;
+          width: 46px;
+          height: 4px;
+          border-radius: 999px;
+          background: #dbe2ea;
+        }
+        .mobile-only {
+          display: inline-grid;
+        }
+      }
+
+      /* ======= Mobile preview as a modal/bottom-sheet ======= */
+      .preview-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.35);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s ease;
+        z-index: 9990;
+      }
+      @media (min-width: 981px) {
+        .preview-backdrop {
+          display: none;
+        }
+      }
+
+      @media (max-width: 980px) {
+        /* default hidden, slides up when body has .preview-open */
+        main .doc-preview {
+          position: fixed;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          top: auto;
+          height: 82vh;
+          max-height: 90vh;
+          border-radius: 18px 18px 0 0;
+          border: 1px solid #e5e7eb;
+          transform: translateY(105%);
+          transition: transform 0.28s ease;
+          z-index: 10000;
+          box-shadow: 0 -20px 50px rgba(0, 0, 0, 0.22);
+          background: #fff;
+        }
+        .preview-header {
+          position: sticky;
+          top: 0;
+          z-index: 1;
+          background: #f8fafc;
+        }
+        body.preview-open .preview-backdrop {
+          opacity: 1;
+          pointer-events: auto;
+        }
+        body.preview-open main .doc-preview {
+          transform: translateY(0);
         }
       }
     </style>
@@ -466,10 +555,18 @@
             <!-- Dynamically injected -->
           </div>
 
-          <div class="doc-preview">
+          <div class="doc-preview" aria-label="Document preview">
             <div class="preview-header">
               <h3 id="previewTitle">Preview</h3>
               <div class="preview-actions">
+                <!-- Mobile-only close for the preview sheet -->
+                <button
+                  id="previewClose"
+                  class="icon-btn mobile-only"
+                  title="Close preview"
+                >
+                  <span class="material-icons-sharp">close</span>
+                </button>
                 <a
                   id="previewOpen"
                   class="icon-btn"
@@ -502,6 +599,9 @@
         </div>
       </main>
     </div>
+
+    <!-- Backdrop for mobile preview (non-intrusive on desktop) -->
+    <div id="previewBackdrop" class="preview-backdrop" aria-hidden="true"></div>
 
     <!-- Approval Hold Modal -->
     <div
@@ -558,6 +658,33 @@
       const modalCloseEl = document.getElementById("modalClose");
       const modalGoReviewEl = document.getElementById("modalGoReview");
       let autoRedirectTimer = null;
+
+      /* ==== Mobile preview controls (added) ==== */
+      const previewCloseBtn = document.getElementById("previewClose");
+      const previewBackdrop = document.getElementById("previewBackdrop");
+      const isMobile = () => window.matchMedia("(max-width: 980px)").matches;
+      const openMobilePreview = () => {
+        if (isMobile()) {
+          document.body.classList.add("preview-open");
+          previewBackdrop.setAttribute("aria-hidden", "false");
+        }
+      };
+      const closeMobilePreview = () => {
+        document.body.classList.remove("preview-open");
+        previewBackdrop.setAttribute("aria-hidden", "true");
+      };
+      previewCloseBtn.addEventListener("click", closeMobilePreview);
+      previewBackdrop.addEventListener("click", closeMobilePreview);
+      window.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          closeMobilePreview();
+        }
+      });
+      window.addEventListener("resize", () => {
+        if (!isMobile()) {
+          closeMobilePreview();
+        }
+      });
 
       function showReviewHoldModal() {
         modalEl.classList.add("show");
@@ -639,7 +766,7 @@
         return {
           signedViewUrl: viewData.signedUrl,
           signedDownloadUrl: dlData.signedUrl,
-          filename
+          filename,
         };
       }
 
@@ -669,6 +796,7 @@
         previewDownloadEl.removeAttribute("download");
       }
 
+      // ---------- UPDATED: robust cross-device preview ----------
       function renderPreviewFromUrl(label, url) {
         previewTitleEl.textContent = label;
 
@@ -685,34 +813,54 @@
         const ext = extOf(url);
         const safeUrl = encodeURI(url);
 
-        previewOpenEl.href = safeUrl;
-        previewOpenEl.style.display = "inline-grid";
-        previewDownloadEl.href = safeUrl;
-        previewDownloadEl.setAttribute("download", filename || "file");
-        previewDownloadEl.style.display = "inline-grid";
-
-        const isImage = ["png", "jpg", "jpeg", "gif", "webp"].includes(ext);
+        // Decide best viewer per file type (favor Google Viewer for mobile & PDFs/Office)
+        const isImage = [
+          "png",
+          "jpg",
+          "jpeg",
+          "gif",
+          "webp",
+          "bmp",
+          "svg",
+        ].includes(ext);
         const isPdf = ext === "pdf";
         const isOffice = ["doc", "docx", "xls", "xlsx", "ppt", "pptx"].includes(
           ext
         );
 
+        // Defaults for the action buttons
+        let openHref = safeUrl;
+
         if (isImage) {
+          // Inline <img> works across devices
           previewBodyEl.innerHTML = `<img src="${safeUrl}" alt="${filename}">`;
+          // PDFs
         } else if (isPdf) {
+          // Try inline first (desktop). Your "Open" button should point to safeUrl for a new-tab fallback.
           previewBodyEl.innerHTML = `<embed src="${safeUrl}#toolbar=1&navpanes=0&scrollbar=1" type="application/pdf">`;
+
+          // Office docs
         } else if (isOffice) {
-          const viewerSrc =
-            "https://view.officeapps.live.com/op/embed.aspx?src=" +
-            encodeURIComponent(safeUrl);
-          previewBodyEl.innerHTML = `<iframe src="${viewerSrc}" allowfullscreen></iframe>`;
+          const office = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(
+            safeUrl
+          )}`;
+          openHref = office; // your "Open" button
+          previewBodyEl.innerHTML = `<iframe src="${office}" allowfullscreen></iframe>`;
         } else {
+          // Unknown type: simple fallback
           previewBodyEl.innerHTML = `
-          <div class="preview-placeholder">
-            <p style="margin:0 0 8px 0;">Cannot preview this file type.</p>
-            <a href="${safeUrl}" target="_blank" rel="noopener">Open in new tab</a>
-          </div>`;
+            <div class="preview-placeholder">
+              <p style="margin:0 0 8px 0;">Cannot preview this file type.</p>
+              <a href="${safeUrl}" target="_blank" rel="noopener">Open in new tab</a>
+            </div>`;
         }
+
+        // Wire the action buttons
+        previewOpenEl.href = openHref;
+        previewOpenEl.style.display = "inline-grid";
+        previewDownloadEl.href = safeUrl;
+        previewDownloadEl.setAttribute("download", filename || "file");
+        previewDownloadEl.style.display = "inline-grid";
       }
 
       // === UPDATED: keep function name; internally do async resolution for private bucket
@@ -722,6 +870,7 @@
         // If already an external URL, render directly
         if (isUrl(value)) {
           renderPreviewFromUrl(label, value);
+          openMobilePreview();
           return;
         }
 
@@ -733,13 +882,14 @@
               // fallback to public builder (will still return empty if value is empty)
               const url = publicDocUrl(value, installerId);
               renderPreviewFromUrl(label, url);
+              openMobilePreview();
               return;
             }
 
             const { signedViewUrl, signedDownloadUrl, filename } =
               await createSignedPreviewAndDownload(key);
 
-            // Wire actions with signed URLs
+            // Wire actions with signed URLs (render will re-apply open href for non-images)
             previewTitleEl.textContent = label;
             previewOpenEl.href = signedViewUrl;
             previewOpenEl.style.display = "inline-grid";
@@ -747,12 +897,17 @@
             previewDownloadEl.setAttribute("download", filename);
             previewDownloadEl.style.display = "inline-grid";
 
-            // Render using the signed view URL
+            // Render using the signed view URL (handles image/pdf/office)
             renderPreviewFromUrl(label, signedViewUrl);
           } catch (e) {
-            console.warn("Signed URL failed, falling back to public URL:", e?.message || e);
+            console.warn(
+              "Signed URL failed, falling back to public URL:",
+              e?.message || e
+            );
             const url = publicDocUrl(value, installerId);
             renderPreviewFromUrl(label, url);
+          } finally {
+            openMobilePreview();
           }
         })();
       }
@@ -924,6 +1079,7 @@
 
         previewBodyEl.innerHTML = "";
         previewBodyEl.appendChild(container);
+        openMobilePreview();
       }
 
       async function showCertificatePreview(
@@ -950,7 +1106,10 @@
             dlUrl = viewUrl;
           }
         } catch (e) {
-          console.warn("Signed URL (cert) failed, fallback to public:", e?.message || e);
+          console.warn(
+            "Signed URL (cert) failed, fallback to public:",
+            e?.message || e
+          );
           viewUrl = publicDocUrl(path, installerId);
           dlUrl = viewUrl;
         }
@@ -961,7 +1120,10 @@
         renderPreviewFromUrl(name, viewUrl);
 
         // Wire actions for this selected item
-        previewOpenEl.href = viewUrl;
+        // (renderPreviewFromUrl may switch to Google Viewer for PDFs/Office)
+        // Keep download as direct URL so filename works
+        previewOpenEl.href =
+          document.querySelector(".preview-body iframe")?.src || viewUrl;
         previewOpenEl.style.display = "inline-grid";
         previewDownloadEl.href = dlUrl;
         previewDownloadEl.setAttribute("download", name || "file");
@@ -977,10 +1139,14 @@
         previewBodyEl.innerHTML = `
           <div class="preview-toolbar">
             <div class="group">
-              <button class="btn small" id="prevCertBtn" ${canPrev ? "" : "disabled"}>
+              <button class="btn small" id="prevCertBtn" ${
+                canPrev ? "" : "disabled"
+              }>
                 <span class="material-icons-sharp">chevron_left</span> Prev
               </button>
-              <button class="btn small" id="nextCertBtn" ${canNext ? "" : "disabled"}>
+              <button class="btn small" id="nextCertBtn" ${
+                canNext ? "" : "disabled"
+              }>
                 Next <span class="material-icons-sharp">chevron_right</span>
               </button>
             </div>
@@ -1017,6 +1183,8 @@
             }
           });
         }
+
+        openMobilePreview();
       }
 
       // ---------- Rendering ----------
@@ -1052,6 +1220,13 @@
 
         const meta = wrapper.querySelector(".doc-meta");
         meta.addEventListener("click", () => onClick?.());
+
+        /* NEW: make the whole card open preview (except when clicking the dropzone) */
+        wrapper.addEventListener("click", (e) => {
+          if (!e.target.closest(".dropzone")) {
+            onClick?.();
+          }
+        });
 
         const dz = wrapper.querySelector(".dropzone");
         const input = document.createElement("input");
@@ -1201,6 +1376,7 @@
               previewBodyEl.innerHTML = `<div class="preview-placeholder"><span>No file uploaded.</span></div>`;
               previewOpenEl.style.display = "none";
               previewDownloadEl.style.display = "none";
+              openMobilePreview();
               return;
             }
             showCertificatesChooser(installerId, certs, certStatuses);
