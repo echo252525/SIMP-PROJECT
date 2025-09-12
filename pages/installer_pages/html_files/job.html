@@ -14,7 +14,9 @@
     />
     <title>Jobs</title>
     <style>
-      /* ===== MAIN CONTENT (new) ===== */
+      /* (Topbar removed — sidebar responsiveness handled in index.js) */
+
+      /* ===== MAIN CONTENT (kept) ===== */
       main { margin-top: 1.4rem; }
       .page-header { display: flex; flex-direction: column; gap: 0.4rem; }
       .page-header h1 { color: #1c2430; }
@@ -54,26 +56,27 @@
         cursor: pointer; font-weight: 600; background: #3bbf67; color: #fff;
       }
 
-      .cards { margin-top: 1.4rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1.4rem; }
+      .cards { margin-top: 1.4rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1.0rem; }
+      @media (min-width: 1280px){ .cards { grid-template-columns: repeat(3, 1fr); } }
       @media (max-width: 900px) { .cards { grid-template-columns: 1fr; } }
 
-      .job-card { background: var(--color-white); border-radius: 20px; box-shadow: var(--box-shadow); overflow: hidden; display: flex; flex-direction: column; }
+      .job-card { background: var(--color-white); border-radius: 16px; box-shadow: var(--box-shadow); overflow: hidden; display: flex; flex-direction: column; }
       .thumb img { width: 100%; height: 200px; object-fit: cover; }
       .job-card .content { padding: 1rem 1.2rem; }
       .job-card .title { font-weight: 700; }
-      .meta-row { display: flex; align-items: center; gap: 0.6rem; margin: 0.6rem 0 0.2rem; }
+      .meta-row { display: flex; align-items: center; gap: 0.6rem; margin: 0.6rem 0 0.2rem; flex-wrap: wrap; }
       .pill { font-size: 0.72rem; line-height: 1; padding: 0.42rem 0.8rem; border-radius: 999px; background: #eef2f7; color: #6b7280; border: 1px solid #e5e7eb; }
       .info-grid { display: grid; gap: 0.6rem; margin: 0.6rem 0 0.8rem; }
       .info-grid .label { font-weight: 700; }
       .desc { font-size: 0.86rem; margin: 0.4rem 0 1rem; }
-      .apply { margin: 0 1.2rem 1.2rem; border-radius: 999px; background: #3bbf67; color: #fff; font-weight: 600; padding: 0.8rem 1rem; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+      .apply { margin: 0 1.0rem 1.0rem; border-radius: 999px; background: #3bbf67; color: #fff; font-weight: 600; padding: 0.7rem 1rem; display: flex; align-items: center; justify-content: center; cursor: pointer; }
       .apply:hover { filter: brightness(0.95); }
       .scroll-tip { text-align: center; color: var(--color-info-dark); margin: 1rem 0 2rem; font-size: 0.85rem; }
 
-      .contentFirstRow { display: flex; align-items: center; justify-content: space-between; }
+      .contentFirstRow { display: flex; align-items: center; justify-content: space-between; gap: .6rem; }
       .dropbtn .current { color: #6b7280; font-weight: 500; margin-left: 0.3rem; }
 
-      /* ===== Modal (Job Application) ===== */
+      /* ===== Modal (kept) ===== */
       .modal-backdrop { position: fixed; inset: 0; background: rgba(17, 24, 39, 0.45); display: none; align-items: center; justify-content: center; z-index: 10000; }
       .modal-backdrop.show { display: flex; }
       .job-modal {
@@ -108,7 +111,7 @@
       }
       .toast.show { display: block; }
 
-      /* ====== MAP ====== */
+      /* ====== MAP (kept, with mobile minimap) ====== */
       .mapWrap { margin-top: 1.2rem; background: #fff; border-radius: 18px; box-shadow: var(--box-shadow); border: 1px solid #e5e7eb; overflow: hidden; position: relative; }
       .mapControls {
         display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; padding: 0.8rem;
@@ -144,9 +147,76 @@
       .job-pin-wrap { position: relative; transform: translate(-50%, -100%); }
       .job-pin-tail { position: absolute; left: 50%; bottom: -10px; transform: translateX(-50%) rotate(45deg); width: 12px; height: 12px; background: var(--pin); box-shadow: 0 4px 8px rgba(0,0,0,.2); }
       .job-pin-emo { filter: drop-shadow(0 1px 1px rgba(0,0,0,.3)); }
+
+      /* ====== MOBILE FILTER ICON + PANEL ====== */
+      .filtersIconBtn {
+        display: none;
+        align-items: center; justify-content: center;
+        width: 44px; height: 44px; border-radius: 12px; border: 1px solid #e5e7eb; background: #fff; cursor: pointer;
+      }
+
+      /* Backdrop for mobile filter modal (new) */
+      .mfp-backdrop {
+        position: fixed; inset: 0; background: rgba(17,24,39,.45);
+        display: none; z-index: 10002;
+      }
+      .mfp-backdrop.show { display: block; }
+
+      /* Bottom sheet base (kept), will be overridden to modal on small screens */
+      .mobileFilterPanel {
+        display: none;
+        position: fixed; left: 0; right: 0; bottom: 0;
+        background: #fff; border-top-left-radius: 16px; border-top-right-radius: 16px;
+        box-shadow: 0 -20px 40px rgba(17,24,39,.25); z-index: 10003; padding: 14px;
+      }
+      .mobileFilterPanel.show { display: block; }
+      .mfp-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+      .mfp-title { font-weight: 800; }
+      .mfp-row { display: grid; gap: 10px; }
+      .mfp-row .btn { padding: .6rem .9rem; border-radius: 12px; border: 1px solid #e5e7eb; background: #fff; font-weight: 700; width: 100%; text-align: left; }
+      .mfp-apply { margin-top: 8px; width: 100%; border: none; border-radius: 12px; padding: .8rem 1rem; background: #22c55e; color: #fff; font-weight: 800; }
+
+      /* Hide desktop dropdown buttons on mobile; show icon + modal */
+      @media (max-width: 720px) {
+        .searchBarDiv {
+          grid-template-columns: 1fr auto; /* search + icon */
+        }
+        .searchBarDiv .dropdown { display: none; }
+        .filtersIconBtn { display: inline-flex; }
+        /* Minimap */
+        #jobsMap { height: 260px; }
+        /* Locate icon-only: hide text inside .mapControls first button */
+        #locateBtn { padding: 8px; width: 40px; height: 40px; display: inline-flex; align-items:center; justify-content:center; }
+        #locateBtn .btn-text { display: none; }
+
+        /* Dense “All Jobs” list */
+        .job-card { border-radius: 12px; }
+        .job-card .thumb { display: none; } /* hide big image */
+        .job-card .content { padding: 12px; }
+        .job-card .contentFirstRow { align-items: flex-start; }
+        .job-card .title { font-size: 0.98rem; }
+        .meta-row .pill { padding: 0.3rem 0.55rem; font-size: 0.68rem; }
+        .info-grid { grid-template-columns: 1fr; gap: 0.35rem; margin: 0.4rem 0 0.6rem; }
+        .desc { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: .6rem; }
+        .apply { margin: 0 12px 12px; padding: .6rem .9rem; }
+
+        /* === Turn the filter panel into a centered MODAL (not full screen) === */
+        .mobileFilterPanel {
+          left: 50%; right: auto; bottom: auto; top: 50%;
+          transform: translate(-50%, -50%);
+          width: min(560px, 92vw);
+          max-height: 80vh;
+          padding: 16px;
+          border-radius: 16px; /* full rounded */
+          box-shadow: 0 24px 60px rgba(0,0,0,.30);
+          overflow: auto; /* content scrolls inside */
+        }
+      }
     </style>
   </head>
   <body>
+    <!-- (Topbar removed) -->
+
     <div class="container">
       <!-- Sidebar Section -->
       <aside>
@@ -177,12 +247,19 @@
           <p>Explore career opportunities near you.</p>
         </div>
 
-        <!-- SEARCH + FILTERS -->
+        <!-- SEARCH + FILTERS (desktop keeps dropdowns; mobile shows icon + sheet/modal) -->
         <div class="searchBarDiv">
           <div class="searchDiv">
             <span class="material-icons-sharp">search</span>
             <input id="searchInput" type="text" placeholder="Search jobs (title, description, location)" />
           </div>
+
+          <!-- Mobile filters icon -->
+          <button id="filtersIconBtn" class="filtersIconBtn" title="Filters" aria-haspopup="dialog" aria-controls="mobileFilterPanel">
+            <span class="material-icons-sharp">tune</span>
+          </button>
+
+          <!-- Original dropdowns (desktop) -->
           <div class="dropdown" data-filter="price">
             <button class="dropbtn">Price<span class="current" id="priceLabel"></span></button>
             <div class="dropdown-content">
@@ -205,13 +282,47 @@
           </div>
         </div>
 
+        <!-- Backdrop for the mobile filter modal (new) -->
+        <div id="mfpBackdrop" class="mfp-backdrop" aria-hidden="true"></div>
+
+        <!-- Mobile Filter Panel (now behaves like a centered modal on small screens) -->
+        <div id="mobileFilterPanel" class="mobileFilterPanel" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="mfpTitle">
+          <div class="mfp-header">
+            <div id="mfpTitle" class="mfp-title">Filters</div>
+            <button id="mfpClose" class="filtersIconBtn" aria-label="Close filters"><span class="material-icons-sharp">close</span></button>
+          </div>
+          <div class="mfp-row">
+            <div>
+              <div style="font-weight:700;margin-bottom:6px;">Price</div>
+              <div class="price-controls" style="padding:0;">
+                <div class="row">
+                  <input id="mMinPrice" type="number" step="0.01" min="0" placeholder="Min ₱" />
+                  <input id="mMaxPrice" type="number" step="0.01" min="0" placeholder="Max ₱" />
+                </div>
+              </div>
+            </div>
+            <div>
+              <div style="font-weight:700;margin:8px 0 6px;">Category</div>
+              <div id="mCategoryMenu"></div>
+            </div>
+            <div>
+              <div style="font-weight:700;margin:8px 0 6px;">Level</div>
+              <div id="mLevelMenu"></div>
+            </div>
+          </div>
+          <button id="mfpApply" class="mfp-apply">Apply Filters</button>
+        </div>
+
         <h2 class="section-title">See nearby jobs near you</h2>
         <p class="section-sub">Tap <strong>Locate me</strong> to find jobs within your chosen radius.</p>
 
         <!-- MAP -->
         <section class="mapWrap">
           <div class="mapControls">
-            <button id="locateBtn" class="btn"><span class="material-icons-sharp" style="font-size:1rem;">my_location</span> Locate me</button>
+            <button id="locateBtn" class="btn" title="Locate me">
+              <span class="material-icons-sharp" style="font-size:1rem;">my_location</span>
+              <span class="btn-text"> Locate me</span>
+            </button>
             <div class="right">
               <label for="radiusSelect" style="color:#374151;">Radius:</label>
               <select id="radiusSelect" class="btn" title="Search radius (km)">
@@ -242,7 +353,7 @@
       <div></div>
     </div>
 
-    <!-- Job Application Modal -->
+    <!-- Job Application Modal (kept) -->
     <div id="applyModal" class="modal-backdrop" aria-hidden="true">
       <div class="job-modal" role="dialog" aria-modal="true" aria-labelledby="jobModalTitle">
         <div class="banner" id="fitBanner" style="display: none">
@@ -293,9 +404,15 @@
       crossorigin=""
     ></script>
 
+    <!-- (Drawer helper removed — handled in index.js) -->
+
+    <!-- ======= YOUR EXISTING APP SCRIPT (UNCHANGED core) + mobile filter glue ======= -->
     <script type="module">
+      /* ===== retain all your original code; we append a small section at the end
+         to drive the mobile filter panel using the same FILTERS/applyFilters() ===== */
+
       // ====== CONFIG ======
-      const DEFAULT_JOB_PICS_BUCKET = 'jobs'; // change if your bucket differs
+      const DEFAULT_JOB_PICS_BUCKET = 'jobs';
 
       const { createClient } = supabase;
       import { SUPABASE_URL, SUPABASE_ANON_KEY } from "../../../supabase.js";
@@ -306,57 +423,25 @@
       const $$ = (sel) => Array.from(document.querySelectorAll(sel));
       const esc = (str) =>
         String(str ?? "").replace(/[&<>"']/g, (s) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[s]));
-      const fmtPeso = (n) => {
-        const v = typeof n === "string" ? parseFloat(n) : n;
-        return isNaN(v) ? "-" : v.toLocaleString("en-PH", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-      };
+      const fmtPeso = (n) => { const v = typeof n === "string" ? parseFloat(n) : n; return isNaN(v) ? "-" : v.toLocaleString("en-PH", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); };
       const fmtDate = (d) => d ? new Date(d + "T00:00:00").toLocaleDateString() : "-";
       const fmtTime = (t) => (t ? String(t).slice(0, 5) : "");
       function showToast(msg, ms = 2800) { const el = $("#toast"); el.textContent = msg; el.classList.add("show"); setTimeout(() => el.classList.remove("show"), ms); }
 
-      // ======= Signed URL helpers (images) =======
-      function parsePublicBucketAndPath(publicUrl){
-        try{
-          const marker = '/storage/v1/object/public/';
-          const i = publicUrl.indexOf(marker);
-          if (i === -1) return null;
-          const rest = publicUrl.substring(i + marker.length);
-          const slash = rest.indexOf('/');
-          if (slash === -1) return null;
-          const bucket = rest.substring(0, slash);
-          let path = rest.substring(slash + 1);
-          try { path = decodeURIComponent(path); } catch {}
-          path = path.replace(/^\/+/, '');
-          return { bucket, path };
-        }catch{ return null; }
-      }
-      // Accepts: full public Storage URL, "bucket::path", or "plain/path" (assumes DEFAULT_JOB_PICS_BUCKET)
-      function parseStorageRef(ref){
-        if (!ref) return null;
-        const s = String(ref).trim();
-        if (/^https?:\/\//i.test(s)){ const parsed = parsePublicBucketAndPath(s); return parsed || null; }
-        const bi = s.indexOf('::');
-        if (bi > 0){ let path = s.slice(bi + 2); try { path = decodeURIComponent(path); } catch {} path = path.replace(/^\/+/, ''); return { bucket: s.slice(0, bi), path }; }
-        let path = s; try { path = decodeURIComponent(path); } catch {} path = path.replace(/^\/+/, ''); return { bucket: DEFAULT_JOB_PICS_BUCKET, path };
-      }
-      async function createSignedUrl(bucket, path, expires = 3600){
-        const { data, error } = await sb.storage.from(bucket).createSignedUrl(path, expires);
-        if (error) throw error;
-        return data.signedUrl;
-      }
+      /* --- SIGNED URL helpers, state, rendering, applyFilters, map, modal, etc. --- */
+      function parsePublicBucketAndPath(publicUrl){ try{ const marker='/storage/v1/object/public/'; const i=publicUrl.indexOf(marker); if(i===-1)return null; const rest=publicUrl.substring(i+marker.length); const slash=rest.indexOf('/'); if(slash===-1)return null; const bucket=rest.substring(0,slash); let path=rest.substring(slash+1); try{path=decodeURIComponent(path);}catch{} path=path.replace(/^\/+/, ''); return {bucket,path}; }catch{return null;} }
+      function parseStorageRef(ref){ if(!ref)return null; const s=String(ref).trim(); if(/^https?:\/\//i.test(s)){ const parsed=parsePublicBucketAndPath(s); return parsed||null; } const bi=s.indexOf('::'); if(bi>0){ let path=s.slice(bi+2); try{path=decodeURIComponent(path);}catch{} path=path.replace(/^\/+/, ''); return {bucket:s.slice(0,bi), path}; } let path=s; try{path=decodeURIComponent(path);}catch{} path=path.replace(/^\/+/, ''); return {bucket:DEFAULT_JOB_PICS_BUCKET, path}; }
+      async function createSignedUrl(bucket, path, expires=3600){ const {data,error}=await sb.storage.from(bucket).createSignedUrl(path,expires); if(error) throw error; return data.signedUrl; }
       async function resolveJobPictureSignedUrl(job_picture_url){
         if (!job_picture_url) return null;
-        if (/^https?:\/\//i.test(job_picture_url) && !job_picture_url.includes('/storage/v1/object/')) return job_picture_url; // external URL passthrough
-        const ref = parseStorageRef(job_picture_url);
-        if (!ref) return null;
-        try { return await createSignedUrl(ref.bucket, ref.path, 3600); }
-        catch(e){ console.warn('Signing path failed:', e.message, ref); if (/^https?:\/\//i.test(job_picture_url)) return job_picture_url; return null; }
+        if (/^https?:\/\//i.test(job_picture_url) && !job_picture_url.includes('/storage/v1/object/')) return job_picture_url;
+        const ref=parseStorageRef(job_picture_url); if(!ref) return null;
+        try{ return await createSignedUrl(ref.bucket, ref.path, 3600); }catch(e){ console.warn('Signing path failed:', e.message, ref); if(/^https?:\/\//i.test(job_picture_url)) return job_picture_url; return null; }
       }
 
       const FIXED_CATEGORIES = ["","Electrical","Safety","Networking","CCTV","Plumbing","General Services"];
       const FIXED_LEVELS = ["", ...Array.from({ length: 10 }, (_, i) => String(i + 1))];
 
-      // ---------- state ----------
       let ALL_JOBS = [];
       let jobsChannel = null;
       const FILTERS = { q: "", minPrice: null, maxPrice: null, category: "", level: "" };
@@ -366,7 +451,6 @@
         return v !== null && v !== undefined && String(v).trim() !== "";
       }
 
-      // ---------- UI renderers ----------
       function renderJobs(list) {
         const container = $(".cards");
         container.innerHTML = "";
@@ -388,7 +472,7 @@
                 <div class="title">${esc(job.job_title)}</div>
                 <div class="meta-row">
                   <span class="pill">${esc(job.job_category || "Uncategorized")}</span>
-                  <span class="pill">Difficulty: ${esc(job.job_difficulty ?? "")}</span>
+                  <span class="pill">L${esc(job.job_difficulty ?? "")}</span>
                 </div>
               </div>
               <div class="info-grid">
@@ -410,6 +494,24 @@
         };
         $("#categoryMenu") && fillMenu($("#categoryMenu"), FIXED_CATEGORIES);
         $("#levelMenu") && fillMenu($("#levelMenu"), FIXED_LEVELS);
+
+        // Mobile panel menus
+        const fillButtons = (wrap, values, key) => {
+          wrap.innerHTML = values.map(v => `<button class="btn" data-value="${esc(v)}">${v?esc(v):'All'}</button>`).join("");
+          wrap.addEventListener('click', (e) => {
+            const b = e.target.closest('button[data-value]'); if (!b) return;
+            const val = b.getAttribute('data-value');
+            if (key === 'category') FILTERS.category = val;
+            if (key === 'level') FILTERS.level = val;
+            // visual feedback
+            wrap.querySelectorAll('button').forEach(x=>x.style.borderColor='#e5e7eb');
+            b.style.borderColor = '#22c55e';
+          }, { once: false });
+        };
+        const mc = $("#mCategoryMenu"); const ml = $("#mLevelMenu");
+        if (mc) fillButtons(mc, FIXED_CATEGORIES, 'category');
+        if (ml) fillButtons(ml, FIXED_LEVELS, 'level');
+
         updateButtonLabels();
       }
       function updateButtonLabels() {
@@ -460,15 +562,12 @@
         }
 
         const visible = (jobs || []).filter((j) => !hasAssignedInstaller(j));
-
-        // Resolve signed URLs for all visible jobs up-front
         const signed = await Promise.all(visible.map(j => resolveJobPictureSignedUrl(j.job_picture_url)));
         ALL_JOBS = visible.map((j, i) => ({ ...j, _img: signed[i] || "../images/profile-4.jpg" }));
 
         populateMenus();
         applyFilters();
 
-        // geocode for map
         MAP_prepareGeocodingForJobs(ALL_JOBS);
 
         await ensureRealtimeAuth();
@@ -492,7 +591,6 @@
         const idx = ALL_JOBS.findIndex((j) => String(j.job_id) === String(row.job_id));
         if (idx >= 0) { ALL_JOBS[idx] = { ...ALL_JOBS[idx], ...row }; }
         else { ALL_JOBS.unshift({ ...row, _img: "../images/profile-4.jpg" }); }
-        // refresh image for this row
         resolveJobPictureSignedUrl(row.job_picture_url).then(u => {
           const i = ALL_JOBS.findIndex(j => String(j.job_id) === String(row.job_id));
           if (i >= 0) { ALL_JOBS[i]._img = u || "../images/profile-4.jpg"; applyFilters(); }
@@ -520,7 +618,7 @@
           .subscribe();
       }
 
-      // ---------- dropdown UI wiring ----------
+      // ---------- dropdown UI wiring (desktop) ----------
       document.addEventListener("click", (e) => {
         const dd = e.target.closest(".dropdown");
         $$(".dropdown").forEach((d) => d.classList.remove("open"));
@@ -552,9 +650,8 @@
 
       document.addEventListener("DOMContentLoaded", loadJobs);
 
-      // ===== Modal + Application Logic =====
+      // ===== Modal + Application Logic (kept) =====
       const modal = document.getElementById("applyModal");
-      const modalBtnCancel = document.getElementById("modalCancelBtn");
       const resumeLinkEl = document.getElementById("mResumeLink");
       let CURRENT_JOB_ID = null;
 
@@ -572,8 +669,6 @@
         if (error) { console.warn("installer levelstatus lookup error", error); return null; }
         return data?.levelstatus ?? null;
       }
-
-      // Resume signed URL (already private-capable)
       function buildStorageKeyForResume(resumeFieldValue, installerId) {
         if (!resumeFieldValue) return "";
         if (/^https?:\/\//i.test(resumeFieldValue)) return "";
@@ -629,10 +724,8 @@
         await setResumeLinkInModal();
         modal.classList.add("show"); modal.setAttribute("aria-hidden", "false");
       }
-
       modal.addEventListener("click", (e) => { if (e.target === modal) closeApplyModal(); });
       document.getElementById("modalCancelBtn").addEventListener("click", closeApplyModal);
-
       document.addEventListener("click", (e) => {
         const btn = e.target.closest(".apply[data-job-id]"); if (!btn) return;
         const jobId = btn.getAttribute("data-job-id");
@@ -640,7 +733,6 @@
         if (!job) { showToast("Could not load job details."); return; }
         openApplyModal(job);
       });
-
       document.getElementById("modalApplyBtn").addEventListener("click", async () => {
         if (!CURRENT_JOB_ID) return;
         const modalBtnApply = document.getElementById("modalApplyBtn");
@@ -676,7 +768,7 @@
       });
 
       /* ================================
-         ======= MAP ADDITIONS ==========
+         ======= MAP (kept) ==========
          ================================ */
 
       function distKm(a, b) {
@@ -704,12 +796,7 @@
         const url = "https://nominatim.openstreetmap.org/search?format=json&limit=1&q=" + encodeURIComponent(trimmed);
         const p = fetch(url, { headers: { "Accept": "application/json" } })
           .then(r => r.json())
-          .then(arr => {
-            if (Array.isArray(arr) && arr.length) {
-              const { lat, lon } = arr[0]; const res = { lat: parseFloat(lat), lng: parseFloat(lon) }; lsSetAddr(trimmed, res); return res;
-            }
-            return null;
-          })
+          .then(arr => { if (Array.isArray(arr) && arr.length) { const { lat, lon } = arr[0]; const res = { lat: parseFloat(lat), lng: parseFloat(lon) }; lsSetAddr(trimmed, res); return res; } return null; })
           .catch(() => null)
           .finally(() => { GEO_PROMISES.delete(trimmed); });
         GEO_PROMISES.set(trimmed, p);
@@ -765,7 +852,7 @@
         MAP = L.map('jobsMap', { zoomControl: true });
         L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { maxZoom: 20, attribution: '&copy; OpenStreetMap &copy; CARTO' }).addTo(MAP);
         MAP_MARKERS = L.layerGroup().addTo(MAP);
-        MAP.setView([12.8797, 121.7740], 5); // Philippines default
+        MAP.setView([12.8797, 121.7740], 5);
         L.control.scale({ imperial:false }).addTo(MAP);
       }
       function MAP_setUserLocation(lat, lng) {
@@ -856,6 +943,52 @@
         if (job) openApplyModal(job);
       });
       document.addEventListener("DOMContentLoaded", () => { MAP_init(); if (ALL_JOBS.length) MAP_prepareGeocodingForJobs(ALL_JOBS); });
+
+      /* ===== MOBILE FILTER PANEL GLUE (enhanced with backdrop & ESC) ===== */
+      const mfp = $("#mobileFilterPanel");
+      const mfpOpenBtn = $("#filtersIconBtn");
+      const mfpCloseBtn = $("#mfpClose");
+      const mfpApplyBtn = $("#mfpApply");
+      const mfpBackdrop = $("#mfpBackdrop");
+
+      function openMfp(){
+        mfp.classList.add('show');
+        mfp.setAttribute('aria-hidden','false');
+        if (mfpBackdrop) { mfpBackdrop.classList.add('show'); mfpBackdrop.setAttribute('aria-hidden','false'); }
+      }
+      function closeMfp(){
+        mfp.classList.remove('show');
+        mfp.setAttribute('aria-hidden','true');
+        if (mfpBackdrop) { mfpBackdrop.classList.remove('show'); mfpBackdrop.setAttribute('aria-hidden','true'); }
+      }
+
+      mfpOpenBtn && mfpOpenBtn.addEventListener('click', openMfp);
+      mfpCloseBtn && mfpCloseBtn.addEventListener('click', closeMfp);
+      mfpBackdrop && mfpBackdrop.addEventListener('click', closeMfp); // click outside closes
+
+      mfpApplyBtn && mfpApplyBtn.addEventListener('click', ()=>{
+        const min = $("#mMinPrice").value ? Number($("#mMinPrice").value) : null;
+        const max = $("#mMaxPrice").value ? Number($("#mMaxPrice").value) : null;
+        FILTERS.minPrice = Number.isFinite(min) ? min : null;
+        FILTERS.maxPrice = Number.isFinite(max) ? max : null;
+        applyFilters();
+        closeMfp();
+      });
+
+      // Also close by pressing ESC when panel is open
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && mfp.classList.contains('show')) closeMfp();
+      });
+
+      // Keep the old outside-click closer for the bottom-sheet case,
+      // but make sure it doesn’t fight with the centered modal UX.
+      document.addEventListener('click',(e)=>{
+        if(!mfp.classList.contains('show')) return;
+        const inPanel = e.target===mfp || mfp.contains(e.target);
+        const isBtn = e.target===mfpOpenBtn || (mfpOpenBtn && mfpOpenBtn.contains(e.target));
+        const clickedBackdrop = e.target===mfpBackdrop;
+        if(!inPanel && !isBtn && !clickedBackdrop) { closeMfp(); }
+      });
     </script>
   </body>
 </html>
