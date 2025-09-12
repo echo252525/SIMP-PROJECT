@@ -69,6 +69,11 @@
       @media (max-width:980px){
         main .shop-grid{ grid-template-columns:1fr; }
         main .detail-grid{ grid-template-columns:1fr; }
+        /* hide the side details panel on phones; we'll show a modal instead */
+        main .details-panel{ display:none; }
+        /* larger touch targets */
+        main .product-card a{ grid-template-columns:64px 1fr auto; gap:1rem; padding:1rem; }
+        main .productImage{ width:64px; height:64px; }
       }
 
       /* nice list-in animation */
@@ -100,6 +105,32 @@
       }
       @keyframes shimmer{ 0%{transform:translateX(-100%);} 100%{transform:translateX(100%);} }
       .sk-chip{ width:70px; height:22px; border-radius:999px; background:#eef2f7; position:relative; overflow:hidden; }
+
+      /* ───────── Mobile Preview Modal (ADDED) ───────── */
+      .mmodal{ position:fixed; inset:0; display:none; z-index:999; }
+      .mmodal.open{ display:block; }
+      .mmodal .mm-backdrop{
+        position:absolute; inset:0; background:rgba(0,0,0,.4); backdrop-filter:saturate(120%) blur(2px);
+      }
+      .mmodal .mm-sheet{
+        position:absolute; left:0; right:0; bottom:0;
+        background:var(--card); border-radius:16px 16px 0 0;
+        box-shadow:0 -12px 32px rgba(0,0,0,.28);
+        max-height:80vh; overflow:auto; transform:translateY(8px);
+        animation:mmIn .18s ease both;
+        padding:1rem;
+      }
+      .mmodal .mm-close{
+        position:absolute; right:.5rem; top:.5rem; border:none; background:#f3f4f6; border-radius:10px; padding:.35rem; cursor:pointer;
+      }
+      .mmodal .mm-close .material-icons-sharp{ font-size:20px; }
+      .mmodal .mm-content .detail-head{ margin-top:.25rem; }
+      @keyframes mmIn{ from{opacity:.9; transform:translateY(12px);} to{opacity:1; transform:translateY(0);} }
+
+      /* Only show modal behavior on small screens */
+      @media (min-width:981px){
+        .mmodal{ display:none !important; }
+      }
     </style>
   </head>
 
@@ -151,6 +182,17 @@
           </section>
         </section>
       </main>
+    </div>
+
+    <!-- Mobile Modal (ADDED) -->
+    <div id="mobileModal" class="mmodal" aria-hidden="true">
+      <div class="mm-backdrop" tabindex="-1"></div>
+      <div class="mm-sheet" role="dialog" aria-modal="true" aria-labelledby="mm-title">
+        <button class="mm-close" type="button" aria-label="Close">
+          <span class="material-icons-sharp">close</span>
+        </button>
+        <div id="mm-content" class="mm-content"><!-- injected detail --></div>
+      </div>
     </div>
 
     <!-- Supabase -->
@@ -389,7 +431,7 @@
           </div>
         `;
 
-        // Copy link handler
+        // Copy link handler (details panel)
         detailEl.querySelector("#copyLinkBtn")?.addEventListener("click", async ()=>{
           try{
             await navigator.clipboard.writeText(link);
@@ -398,6 +440,13 @@
             prompt("Copy this link:", link);
           }
         });
+
+        // === Mobile modal preview (ADDED) ===
+        if (isMobile()) {
+          openMobileModal(detailEl.innerHTML, link);
+        } else {
+          closeMobileModal();
+        }
       }
 
       async function init(){
@@ -411,6 +460,44 @@
           listEl.innerHTML = `<li style="color:#b4232c; padding:.5rem .25rem;">Failed to load products: ${escapeHtml(e.message || e)}</li>`;
         }
       }
+
+      // ====== Mobile modal helpers (ADDED) ======
+      const modalEl = document.getElementById("mobileModal");
+      const modalContent = document.getElementById("mm-content");
+      const modalCloseBtn = modalEl.querySelector(".mm-close");
+      const modalBackdrop = modalEl.querySelector(".mm-backdrop");
+
+      function isMobile(){ return window.matchMedia("(max-width: 980px)").matches; }
+
+      function openMobileModal(html, productLink){
+        modalContent.innerHTML = html;
+        // re-bind copy button inside modal
+        modalContent.querySelector("#copyLinkBtn")?.addEventListener("click", async ()=>{
+          try{
+            await navigator.clipboard.writeText(productLink);
+            alert("Product link copied!");
+          }catch{
+            prompt("Copy this link:", productLink);
+          }
+        });
+        modalEl.classList.add("open");
+        modalEl.setAttribute("aria-hidden","false");
+        document.body.style.overflow = "hidden";
+      }
+
+      function closeMobileModal(){
+        modalEl.classList.remove("open");
+        modalEl.setAttribute("aria-hidden","true");
+        document.body.style.overflow = "";
+        modalContent.innerHTML = "";
+      }
+
+      modalCloseBtn.addEventListener("click", closeMobileModal);
+      modalBackdrop.addEventListener("click", closeMobileModal);
+      window.addEventListener("keydown", (e)=>{ if(e.key === "Escape") closeMobileModal(); });
+      window.addEventListener("resize", ()=>{
+        if (!isMobile()) closeMobileModal();
+      });
 
       init();
     </script>

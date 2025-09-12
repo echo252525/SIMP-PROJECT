@@ -114,6 +114,70 @@
     .select-toolbar .count{ color:var(--muted); }
     .row-check{ margin-right:.5rem; }
     .row-check[disabled]{ opacity:.45; cursor:not-allowed; }
+
+    /* ====================
+       EXTRA RESPONSIVE UX
+       ==================== */
+
+    /* Make tab bar easy to reach on phones */
+    @media (max-width: 980px){
+      .tabbar{
+        position: sticky; top: 0; background: var(--bg); z-index: 4; overflow-x: auto;
+      }
+      .tabbar::-webkit-scrollbar{ height:6px; }
+      .tabbar::-webkit-scrollbar-thumb{ background:#e5e7eb; border-radius:999px; }
+    }
+
+    /* Hide some table columns on very small screens for readability */
+    @media (max-width: 720px){
+      /* hide Updated At */
+      #tab-unpaid thead th:nth-child(3), #tab-unpaid tbody td:nth-child(3),
+      #tab-paid thead th:nth-child(3),   #tab-paid   tbody td:nth-child(3){ display:none; }
+      /* hide Actions column only on narrow screens */
+      #tab-unpaid thead th:nth-child(6), #tab-unpaid tbody td:nth-child(6){ display:none; }
+    }
+
+    /* --- Mobile "Filters" minimal UI --- */
+    .filter-fab{
+      position: fixed; right: 16px; bottom: 16px; z-index: 62;
+      display: none; place-items: center; gap:.4rem;
+      width:56px; height:56px; border-radius:16px; border:none; cursor:pointer;
+      background: var(--ink); color:#fff; box-shadow:0 10px 24px rgba(0,0,0,.18);
+    }
+    .filter-fab .material-icons-sharp{ font-size:24px; }
+    .filters-backdrop{
+      position: fixed; inset: 0; background: rgba(0,0,0,.35);
+      opacity: 0; pointer-events: none; transition: opacity .2s ease; z-index: 60;
+    }
+    .filter-close-btn{
+      position: fixed; right: 14px; bottom: 78px; z-index: 62; display: none;
+      border: none; background: #ffffff; color: var(--ink); border:1px solid var(--line);
+      border-radius: 10px; padding:.4rem .6rem; box-shadow:0 8px 20px rgba(0,0,0,.12);
+    }
+    .filter-close-btn .material-icons-sharp{ font-size:20px; }
+
+    @media (max-width: 980px){
+      .filter-fab, .filter-close-btn{ display: grid; }
+      /* Turn .controls into a bottom sheet */
+      .controls{
+        position: fixed; left: 0; right: 0; bottom: 0; z-index: 61;
+        max-height: 80vh; overflow: auto; padding: 1rem 1rem calc(env(safe-area-inset-bottom) + 14px);
+        background: var(--card); border-top-left-radius: 16px; border-top-right-radius: 16px;
+        box-shadow: 0 -16px 40px rgba(0,0,0,.25);
+        transform: translateY(105%); transition: transform .25s ease;
+        grid-template-columns: 1fr; gap: .75rem;
+      }
+      /* Add a small header via CSS */
+      .controls::before{
+        content: "Filters"; font-weight: 700; color: var(--ink);
+        position: sticky; top: 0; display:block; padding-bottom:.5rem; background: var(--card);
+      }
+      /* Full-width buttons for easier tapping */
+      .controls .btn{ width:100%; }
+      /* When open */
+      body.filters-open .controls{ transform: translateY(0); }
+      body.filters-open .filters-backdrop{ opacity: 1; pointer-events: auto; }
+    }
   </style>
 </head>
 
@@ -232,6 +296,15 @@
           <span class="material-icons-sharp">payments</span> Request Payout
         </button>
       </section>
+
+      <!-- Mobile filters helpers (ADDED, non-intrusive) -->
+      <button id="filterFab" class="filter-fab" aria-label="Open filters" title="Filters">
+        <span class="material-icons-sharp">tune</span>
+      </button>
+      <button id="filterClose" class="filter-close-btn" aria-label="Close filters" title="Close filters">
+        <span class="material-icons-sharp">close</span>
+      </button>
+      <div id="filtersBackdrop" class="filters-backdrop" aria-hidden="true"></div>
 
       <!-- ===== Tabs and Tables ===== -->
       <section class="tabs">
@@ -396,6 +469,19 @@
     const badgeUnpaid = document.getElementById('badge-unpaid');
     const badgePaid   = document.getElementById('badge-paid');
     const updateCounts = { unpaid: 0, paid: 0 };
+
+    // ====== Mobile filter UI (ADDED) ======
+    const filterFab = document.getElementById('filterFab');
+    const filterClose = document.getElementById('filterClose');
+    const filtersBackdrop = document.getElementById('filtersBackdrop');
+    const isMobile = () => window.matchMedia('(max-width: 980px)').matches;
+    const openFilters = () => { document.body.classList.add('filters-open'); filtersBackdrop.setAttribute('aria-hidden','false'); };
+    const closeFilters = () => { document.body.classList.remove('filters-open'); filtersBackdrop.setAttribute('aria-hidden','true'); };
+    filterFab.addEventListener('click', openFilters);
+    filterClose.addEventListener('click', closeFilters);
+    filtersBackdrop.addEventListener('click', closeFilters);
+    window.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeFilters(); });
+    window.addEventListener('resize', ()=>{ if(!isMobile()) closeFilters(); });
 
     // ========= UTILS =========
     const fmt = (n)=> CURRENCY + (Number(n)||0).toLocaleString('en-PH', {minimumFractionDigits:2, maximumFractionDigits:2});
