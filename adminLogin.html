@@ -140,7 +140,7 @@
       display: flex;
       justify-content: center;
       gap: 10px;
-      margin: 14px
+      margin-top: 14px
     }
 
     .btn {
@@ -335,7 +335,6 @@
         position: relative;
         display: grid;
         grid-template-rows: auto 1fr;
-        overflow-y: auto;
       }
 
       .adminLoginDiv {
@@ -408,7 +407,7 @@
       }
 
       .form-side {
-        overflow: visible;
+        overflow-y: auto;
         /* <-- was overflow-y: auto; remove inner scroller */
         align-items: flex-start;
         padding: 20px 18px 22px;
@@ -418,7 +417,7 @@
 
       .panel-shell {
         max-width: 520px;
-        margin: 8px auto 24px;
+        margin: 8px auto 0px;
       }
 
       /* 5) Remove heading bump that was compensating for the old overlay */
