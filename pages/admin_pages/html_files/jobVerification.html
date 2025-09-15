@@ -19,6 +19,12 @@
         --card: #ffffff;
         --pill: #eef6ff;
         --radius: 14px;
+
+        /* modal theme */
+        --modal-bg: #ffffff;
+        --modal-head: #f7fbff;
+        --shadow-lg: 0 12px 30px rgba(16,24,40,.14);
+        --shadow-xl: 0 24px 60px rgba(16,24,40,.20);
       }
 
       main { margin-top: 1.4rem; }
@@ -64,9 +70,11 @@
         grid-template-columns: 48px 1fr auto;
         align-items: center; gap: 10px; padding: 10px;
         border: 1px solid var(--line); border-radius: 12px;
-        cursor: pointer; transition: background .15s ease; background: #fff;
+        cursor: pointer; transition: background .15s ease, transform .06s ease;
+        background: #fff;
       }
       .item:hover { background: #f6fafc; }
+      .item:active { transform: scale(.997); }
       .item.active { outline: 2px solid var(--brand); }
       .item.read { background: #fff !important; }
       .item.pending { background: #f0f4f9 !important; }
@@ -116,7 +124,10 @@
         appearance: none; border: 1px solid var(--line); background: #fff;
         border-radius: 10px; padding: 9px 12px; cursor: pointer;
         display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 600;
+        transition: box-shadow .2s ease, transform .06s ease, background .2s;
       }
+      .btn:hover { box-shadow: var(--shadow-lg); background: #fafcff; }
+      .btn:active { transform: translateY(1px); }
       .btn.primary { background: var(--brand); color: #fff; border-color: var(--brand); }
       .btn.reject { background: #fff5f5; color: #e53935; border-color: #ffd7d7; }
       .btn.warn { background: #fff8e1; color: #8a6d0a; border-color: #fde68a; }
@@ -133,6 +144,54 @@
         font-size: 0.9rem; display: none; z-index: 1000;
       }
       .toast.show { display: block; }
+
+      /* ======= Aesthetic Job Details MODAL (mobile) ======= */
+      .job-modal {
+        position: fixed; inset: 0;
+        background: rgba(14,25,42,.5);
+        backdrop-filter: blur(2px);
+        display: none; align-items: center; justify-content: center;
+        padding: 20px; z-index: 1200; opacity: 0; transition: opacity .2s ease;
+      }
+      .job-modal.open { display: flex; opacity: 1; }
+      .job-modal-card {
+        width: min(1080px, 96vw);
+        height: min(85vh, 920px);
+        background: var(--modal-bg);
+        border-radius: 16px;
+        overflow: hidden;
+        display: grid; grid-template-rows: auto 1fr;
+        border: 1px solid #eef2f7;
+        box-shadow: var(--shadow-xl);
+        animation: zoomIn .18s ease-out;
+      }
+      .job-modal-head {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 12px 14px; border-bottom: 1px solid var(--line); background: var(--modal-head);
+      }
+      .job-modal-head h4 { margin: 0; font-size: 1rem; font-weight: 700; }
+      .job-modal-body { overflow: auto; -webkit-overflow-scrolling: touch; background: #fff; }
+
+      @keyframes zoomIn { from { transform: scale(.98); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+      /* ======= Mobile compact tweaks ======= */
+      @media (max-width: 980px) {
+        /* hide desktop preview; we use the modal on mobile */
+        .details { display: none; }
+
+        /* tighter item */
+        .item { grid-template-columns: 48px 1fr 24px; padding: 8px; }
+        .item .pill { justify-self: end; }
+
+        /* icon-only buttons inside modal/details on mobile */
+        .btn .material-icons-sharp { font-size: 20px; }
+        .btn .btn-text { display: none; }
+        .btn { padding: 10px; }
+      }
+
+      @media (max-width: 420px) {
+        .job-modal-card { width: 94vw; height: 80vh; }
+      }
     </style>
   </head>
 
@@ -198,6 +257,19 @@
       </main>
     </div>
 
+    <!-- Mobile Job Details Modal -->
+    <div id="jobModal" class="job-modal" role="dialog" aria-modal="true" aria-labelledby="jobModalTitle">
+      <div class="job-modal-card">
+        <div class="job-modal-head">
+          <h4 id="jobModalTitle">Job Details</h4>
+          <button id="closeJobModal" class="btn" aria-label="Close job details">
+            <span class="material-icons-sharp">close</span>
+          </button>
+        </div>
+        <div id="jobModalBody" class="job-modal-body"></div>
+      </div>
+    </div>
+
     <div id="toast" class="toast"></div>
 
     <script src="../../general_files/index.js"></script>
@@ -220,6 +292,12 @@
       var emptyJobs = document.getElementById("emptyJobs");
       var jobDetailsPane = document.getElementById("jobDetailsPane");
       var toastEl = document.getElementById("toast");
+
+      // New modal refs
+      var jobModal = document.getElementById("jobModal");
+      var jobModalBody = document.getElementById("jobModalBody");
+      var jobModalTitle = document.getElementById("jobModalTitle");
+      var closeJobModalBtn = document.getElementById("closeJobModal");
 
       // ========= State =========
       var ALL_JOBS = [];
@@ -388,7 +466,7 @@
           var first = ALL_JOBS[0];
           activeJobId = first.id;
           await ensureViewed(first);
-          renderJobDetails(first);
+          renderJobDetails(first); // desktop pane
           setTimeout(function () {
             var el = document.querySelector('#jobList .item[data-id="' + first.id + '"]');
             if (el) el.classList.add("active", "read");
@@ -443,7 +521,14 @@
               item.classList.add("read");
               var pill = item.querySelector(".pill");
               if (pill) pill.textContent = nice(j.status || "pending");
+
+              // Desktop render
               renderJobDetails(j);
+
+              // Mobile: open modal with the same content
+              if (window.matchMedia("(max-width: 980px)").matches) {
+                openJobModal(j);
+              }
             });
           });
 
@@ -455,8 +540,9 @@
         }
       }
 
-      function renderJobDetails(job) {
-        jobDetailsPane.innerHTML =
+      // === Core renderer (reused for desktop pane & modal) ===
+      function buildJobDetailsHTML(job) {
+        return (
           '<div class="head" style="display:block; padding:0;">' +
             '<img src="' + job.photo + '" alt="' + esc(job.title) + '" ' +
                  'style="width:100%; height:240px; object-fit:cover; border-radius:12px 12px 0 0; margin-bottom:12px;" ' +
@@ -488,22 +574,30 @@
             '</div>' +
           '</div>' +
 
-          '<div class="actions-row" id="actionsRow"></div>';
+          '<div class="actions-row" id="actionsRow"></div>'
+        );
+      }
 
-        var actionsRow = document.getElementById("actionsRow");
+      function renderJobDetails(job) {
+        jobDetailsPane.innerHTML = buildJobDetailsHTML(job);
+        wireActions(job, jobDetailsPane);
+      }
+
+      // Wire action buttons inside a given container (desktop pane or modal body)
+      function wireActions(job, containerEl) {
+        var actionsRow = containerEl.querySelector("#actionsRow");
+        if (!actionsRow) return;
         actionsRow.innerHTML = "";
 
         var s = (job.status || "pending").toLowerCase();
-
-        // If already done or overdue, do not show any action buttons
         if (s === "done" || s === "overdue") {
-          return;
+          return; // no actions
         }
 
         if (s !== "approved") {
           var approveBtn = document.createElement("button");
           approveBtn.className = "btn primary";
-          approveBtn.textContent = "Approve";
+          approveBtn.innerHTML = '<span class="material-icons-sharp">thumb_up</span><span class="btn-text">Approve</span>';
           approveBtn.addEventListener("click", function () { changeStatus(job, "approved"); });
           actionsRow.appendChild(approveBtn);
         }
@@ -511,7 +605,7 @@
         if (s !== "rejected") {
           var rejectBtn = document.createElement("button");
           rejectBtn.className = "btn reject";
-          rejectBtn.textContent = "Reject";
+          rejectBtn.innerHTML = '<span class="material-icons-sharp">thumb_down</span><span class="btn-text">Reject</span>';
           rejectBtn.addEventListener("click", function () { changeStatus(job, "rejected"); });
           actionsRow.appendChild(rejectBtn);
         }
@@ -519,23 +613,61 @@
         if (s === "rejected") {
           var revertBtn = document.createElement("button");
           revertBtn.className = "btn warn";
-          revertBtn.textContent = "Revert to Viewed";
+          revertBtn.innerHTML = '<span class="material-icons-sharp">history</span><span class="btn-text">Revert to Viewed</span>';
           revertBtn.addEventListener("click", function () { changeStatus(job, "viewed"); });
           actionsRow.appendChild(revertBtn);
         }
       }
 
+      // ========= Modal helpers (mobile) =========
+      function openJobModal(job) {
+        jobModalTitle.textContent = "Job Details";
+        jobModalBody.innerHTML = buildJobDetailsHTML(job);
+        wireActions(job, jobModalBody);
+        jobModal.classList.add("open");
+        // prevent page scroll behind modal
+        document.documentElement.style.overflow = "hidden";
+        document.body.style.overflow = "hidden";
+      }
+
+      function closeJobModal() {
+        jobModal.classList.remove("open");
+        jobModalBody.innerHTML = "";
+        document.documentElement.style.overflow = "";
+        document.body.style.overflow = "";
+      }
+
+      closeJobModalBtn.addEventListener("click", closeJobModal);
+      jobModal.addEventListener("click", function(e){
+        if (e.target === jobModal) closeJobModal();
+      });
+
+      // ========= Status machinery =========
       async function changeStatus(job, target) {
         var prev = job.status;
         job.status = target; // optimistic
         updateActiveRowBadge(job);
-        renderJobDetails(job);
+
+        // Update both desktop & modal views if present
+        if (jobDetailsPane && !window.matchMedia("(max-width: 980px)").matches) {
+          renderJobDetails(job);
+        }
+        if (jobModal.classList.contains("open")) {
+          jobModalBody.innerHTML = buildJobDetailsHTML(job);
+          wireActions(job, jobModalBody);
+        }
 
         var res = await updateJobStatus(job.id, target);
         if (!res.ok) {
           job.status = prev; // rollback
           updateActiveRowBadge(job);
-          renderJobDetails(job);
+          if (jobDetailsPane && !window.matchMedia("(max-width: 980px)").matches) {
+            renderJobDetails(job);
+          }
+          if (jobModal.classList.contains("open")) {
+            jobModalBody.innerHTML = buildJobDetailsHTML(job);
+            wireActions(job, jobModalBody);
+          }
           var msg = (res.error && res.error.message) ? res.error.message : "Update failed (check RLS/enum)";
           showToast(msg);
           return;
@@ -560,8 +692,11 @@
           if (s === "viewed") row.classList.add("read");
           else if (!s || s === "pending") row.classList.add("pending");
         }
-        var pill2 = document.getElementById("jobStatusPill");
-        if (pill2) pill2.textContent = nice(job.status || "pending");
+        // Update pill in whichever container is visible
+        var desktopPill = jobDetailsPane.querySelector("#jobStatusPill");
+        if (desktopPill) desktopPill.textContent = nice(job.status || "pending");
+        var modalPill = jobModalBody.querySelector("#jobStatusPill");
+        if (modalPill) modalPill.textContent = nice(job.status || "pending");
       }
 
       async function ensureViewed(job) {
@@ -587,6 +722,17 @@
           renderJobList(jobSearchInput ? jobSearchInput.value : "");
         });
       }
+      // Close modal on escape
+      document.addEventListener("keydown", function(e){
+        if (e.key === "Escape" && jobModal.classList.contains("open")) closeJobModal();
+      });
+
+      // Close modal if viewport grows beyond mobile (rotate)
+      window.addEventListener("resize", function(){
+        if (!window.matchMedia("(max-width: 980px)").matches && jobModal.classList.contains("open")) {
+          closeJobModal();
+        }
+      });
 
       document.addEventListener("DOMContentLoaded", function () { loadJobs(); });
     </script>
