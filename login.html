@@ -152,7 +152,7 @@
       background-color: white;
       z-index: 2;
       transition: transform .55s cubic-bezier(.2, .8, .2, 1);
-      border-radius: 24px;
+      border-radius: 0px;
     }
 
     /* Slider states: move the form toward the chosen side */
@@ -198,6 +198,7 @@
       margin-bottom: 10px;
       font-weight: 900;
       font-size: 36px;
+      margin-top: 20px;
     }
 
     .role-pill {
@@ -215,10 +216,6 @@
     /* NEW: compact segmented toggle for small screens (kept hidden on desktop) */
     .role-toggle {
       display: none;
-      width: 100%;
-      border-radius: 12px;
-      padding: 0px 8px 8px 8px;
-      gap: 10px;
     }
 
     .role-toggle button {
@@ -237,15 +234,16 @@
     }
 
     .loginDiv .role-toggle button {
-      background: #fff !important;
+      background: #f5f7fb !important;
       color: #111827;
-      border: 1px solid rgba(17, 24, 39, .08);
       box-shadow: none;
+      border-radius: 999px;
+      
     }
 
     html.mode-installer .role-toggle .btn-installer,
     html.mode-customer .role-toggle .btn-customer {
-      background: #20a44c !important;
+      background: linear-gradient(135deg, #20a44c, #20647c) !important;
       color: #fff !important;
       box-shadow: 0 2px 10px rgba(17, 24, 39, .06);
     }
@@ -261,7 +259,6 @@
       font-weight: bold;
       cursor: pointer;
       transition: background 0.3s ease;
-      margin-top: 12px;
     }
 
     .loginDiv button:hover {
@@ -303,13 +300,6 @@
 
     p.footer-note a {
       text-decoration: none;
-    }
-
-    /* ---------- TABLET & BELOW ---------- */
-    @media (max-width: 1024px) {
-      .auth-shell {
-        height: 620px;
-      }
     }
 
     /* ---------- MOBILE: compact + off-canvas panels ---------- */
@@ -381,9 +371,13 @@
         /* keep centered on mobile */
       }
 
+      .loginDiv .backBtn {
+        margin-top: 50px;
+      }
+
       .loginDiv h2 {
         font-size: clamp(22px, 6vw, 28px);
-        margin-top: 50px;
+        margin-top: 10px;
       }
 
       input,
@@ -399,13 +393,16 @@
       .role-toggle {
         display: flex;
         position: absolute;
-        top: 80px;
+        top: 10px;
         left: 50%;
         transform: translateX(-50%);
-        /* center it */
         width: min(100%, 600px);
-        /* width is bounded by max cap */
-        /* remove any old width:90% */
+        background-color: #f5f7fb;
+        border: 1px solid #e6e8ee;
+        border-radius: 999px;
+        gap: 6px;
+        padding: 6px;
+        box-shadow: 0 8px 20px rgba(17, 24, 39, .08);
       }
     }
 
@@ -656,7 +653,6 @@
       <button class="backBtn" onclick="window.location.href='index.html'"><span
           class="material-icons-sharp">arrow_back</span></button>
       <div class="loginDivHeader">
-        <br><br><br>
         <h2>Login</h2>
         <div class="role-pill">
           <span class="material-icons-sharp" style="font-size:16px">person</span>

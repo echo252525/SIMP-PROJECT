@@ -21,19 +21,19 @@
     }
 
     * {
-      box-sizing: border-box
+      box-sizing: border-box;
     }
 
     html,
     body {
-      height: 100%
+      height: 100%;
     }
 
     body {
       margin: 0;
       font-family: "Raleway", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
       background: linear-gradient(135deg, #f8fbfd, #e7edf3);
-      display: flex;
+      display: grid;
       align-items: center;
       justify-content: center;
     }
@@ -97,7 +97,8 @@
       margin: 0 0 1rem;
       color: #000;
       font-weight: 800;
-      font-size: 36px
+      font-size: 36px;
+      text-align: center;
     }
 
     .row {
@@ -139,7 +140,7 @@
       display: flex;
       justify-content: center;
       gap: 10px;
-      margin-top: 14px
+      margin: 14px
     }
 
     .btn {
@@ -330,46 +331,50 @@
     }
 
     @media (max-width: 900px) {
+      .auth-inner {
+        position: relative;
+        display: grid;
+        grid-template-rows: auto 1fr;
+        overflow-y: auto;
+      }
+
       .adminLoginDiv {
         width: min(560px, 100vw);
-        height: 500px;
+        height: 450px;
         margin: 50px;
         /* taller for stacked UI */
       }
 
       .adminLoginDiv .backBtn {
         top: -30px;
-        left: 0px;
+        left: 0%;
         z-index: 5;
       }
 
       /* Show compact top tabs for mobile */
       .mobile-tabs {
-        position: absolute;
-        top: 100px;
-        left: 12px;
-        right: 12px;
-        z-index: 3;
-        display: grid;
+        position: static;
+        margin: 12px;
+        z-index: 0;
+        display: none;
         /* becomes visible only on mobile */
         grid-template-columns: 1fr 1fr;
         gap: 8px;
-        background: rgba(255, 255, 255, .8);
-        backdrop-filter: blur(6px);
-        padding: 8px;
-        border-radius: 14px;
-        border: 1px solid #eef2f7;
-        box-shadow: 0 6px 20px rgba(17, 24, 39, .08);
+        padding: 6px;
+        border-radius: 999px;
+        background-color: #f5f7fb;
+        border: 1px solid #e6e8ee;
+        box-shadow: 0 8px 20px rgba(17, 24, 39, .08);
       }
 
       .seg {
         font-weight: 800;
         font-size: 13px;
         padding: 10px 0;
-        border-radius: 10px;
-        border: 1px solid #e6ecf4;
+        border-radius: 999px;
+        border: none;
         color: #334155;
-        background: #fff;
+        background-color: #f5f7fb;
         cursor: pointer;
       }
 
@@ -386,23 +391,29 @@
 
       /* Make the two panels sit side-by-side horizontally and slide */
       .columns {
-        position: absolute;
-        top: 56px;
-        /* leave room for the mobile tabs */
-        bottom: 0;
+        position: relative;
+        /* <-- was absolute */
+        top: 0;
         left: 0;
         right: 0;
+        bottom: auto;
+        height: auto;
+        /* let grid control height */
+        min-height: 0;
+        /* allow child overflow-y to size correctly */
         display: flex;
         width: 200%;
-        height: calc(100% - 56px);
         transition: transform .45s ease;
+        /* no calc(100% - 56px) needed anymore */
       }
 
       .form-side {
-        width: 50%;
+        overflow: visible;
+        /* <-- was overflow-y: auto; remove inner scroller */
         align-items: flex-start;
         padding: 20px 18px 22px;
-        overflow-y: auto;
+        width: 50%;
+        margin-top: 20px;
       }
 
       .panel-shell {
@@ -410,10 +421,10 @@
         margin: 8px auto 24px;
       }
 
+      /* 5) Remove heading bump that was compensating for the old overlay */
       .panel-shell h3 {
-        font-size: 26px;
-        margin-bottom: 10px;
-        margin-top: 90px;
+        margin-top: 0;
+        /* was 90px */
       }
 
       .row {
@@ -425,10 +436,6 @@
       input {
         padding: 11px 12px;
         border-radius: 12px;
-      }
-
-      .actions .btn {
-        padding: 12px 18px;
       }
 
       /* Slide the whole strip left/right to reveal one panel */
@@ -487,8 +494,10 @@
           <!-- LEFT: Sign in form -->
           <div class="form-side">
             <div class="panel-shell form-login">
-              <button class="backBtn" onclick="history.back()"><span
-                  class="material-icons-sharp">arrow_back</span></button>
+              <div>
+                <button class="backBtn" onclick="history.back()"><span
+                    class="material-icons-sharp">arrow_back</span></button>
+              </div>
               <h3>Sign in</h3>
 
               <div id="notice" class="notice hidden"></div>
