@@ -4,6 +4,9 @@
    - Desktop  (>1024px): <aside> is sticky; uses your built-in #close-btn normally
    - Prevents "double X": on mobile, the in-sidebar #close-btn is hidden; desktop shows it
    - Idempotent: re-running this file won't duplicate UI
+   - Enhancement (mobile):
+       • Only the BURGER BUTTON changes transparency & nudges on hover/touch
+       • Sidebar itself no longer fades — it stays solid; may still "peek" a few px if desired
    ========================================================================== */
 
 (function () {
@@ -16,6 +19,17 @@
   const MOBILE_BREAKPOINT = 1024;
   const DRAWER_WIDTH_PX   = 280;
 
+  // Sidebar (OPEN) "peek" amount (purely positional; NOT opacity)
+  const HOVER_SHIFT_PX    = 0;     // fully aligned when hovered
+  const UNHOVER_SHIFT_PX  = 8;     // slight left shift when not hovered (peek)
+  const TOUCH_HOLD_MS     = 1600;
+
+  // BURGER BUTTON transparency/shift (this is what you asked to change)
+  const BTN_UNHOVER_OPACITY = 0.55;
+  const BTN_HOVER_OPACITY   = 1.0;
+  const BTN_UNHOVER_SHIFT   = -6;  // a small nudge left when idle
+  const BTN_HOVER_SHIFT     = 0;   // back to normal on hover/focus/touch
+
   const sideMenu  = document.querySelector('aside');
   const closeBtn  = document.getElementById('close-btn');
   const darkMode  = document.querySelector('.dark-mode');
@@ -26,6 +40,7 @@
   let isMobile = false;
   let backdrop = null;
   let toggleBtn = null;
+  let touchTimer = null;
 
   /* ------------------------ helpers ------------------------ */
   const debounce = (fn, ms=120) => {
@@ -60,13 +75,49 @@
       position: 'fixed', top: '12px', left: '12px', width: '42px', height: '42px',
       display: 'none', alignItems: 'center', justifyContent: 'center',
       borderRadius: '10px', border: '1px solid #e5e7eb', background: '#fff',
-      boxShadow: '0 4px 16px rgba(17,24,39,.10)', zIndex: '10002', cursor: 'pointer'
+      boxShadow: '0 4px 16px rgba(17,24,39,.10)', zIndex: '10002', cursor: 'pointer',
+      transition: 'opacity .18s ease, transform .18s ease, box-shadow .18s ease, background .18s ease'
     });
     toggleBtn.addEventListener('click', () => {
       if (!isMobile) return;
       document.body.classList.contains('sidebar-open') ? closeSidebar() : openSidebar();
     });
     document.body.appendChild(toggleBtn);
+
+    // ——— Burger transparency/shift only on the button (mobile) ———
+    const btnHoverLook = () => {
+      if (!isMobile) return;
+      css(toggleBtn, {
+        opacity: String(BTN_HOVER_OPACITY),
+        transform: `translateX(${BTN_HOVER_SHIFT}px)`,
+        boxShadow: '0 8px 24px rgba(17,24,39,.18)'
+      });
+    };
+    const btnUnhoverLook = () => {
+      if (!isMobile) return;
+      css(toggleBtn, {
+        opacity: String(BTN_UNHOVER_OPACITY),
+        transform: `translateX(${BTN_UNHOVER_SHIFT}px)`,
+        boxShadow: '0 4px 16px rgba(17,24,39,.10)'
+      });
+    };
+
+    // expose for other functions
+    toggleBtn.__hoverLook = btnHoverLook;
+    toggleBtn.__unhoverLook = btnUnhoverLook;
+
+    // pointer/focus/touch handlers
+    toggleBtn.addEventListener('mouseenter', btnHoverLook);
+    toggleBtn.addEventListener('mouseleave', btnUnhoverLook);
+    toggleBtn.addEventListener('focusin', btnHoverLook);
+    toggleBtn.addEventListener('focusout', btnUnhoverLook);
+    toggleBtn.addEventListener('touchstart', () => {
+      if (!isMobile) return;
+      clearTouchTimer();
+      btnHoverLook();
+      touchTimer = setTimeout(btnUnhoverLook, TOUCH_HOLD_MS);
+    }, { passive: true });
+
     return toggleBtn;
   }
   function setToggleIcon(open) {
@@ -77,23 +128,49 @@
   function showToggleBtn(){ ensureToggleBtn().style.display = 'inline-flex'; }
   function hideToggleBtn(){ if (toggleBtn) toggleBtn.style.display = 'none'; }
 
+  /* ------------------------ sidebar hover (pos only, no opacity) ------------------------ */
+  function setHoverLook() {
+    if (!isMobile || !document.body.classList.contains('sidebar-open')) return;
+    css(sideMenu, { transform: `translateX(${HOVER_SHIFT_PX}px)` });
+  }
+  function setUnhoverLook() {
+    if (!isMobile || !document.body.classList.contains('sidebar-open')) return;
+    css(sideMenu, { transform: `translateX(-${UNHOVER_SHIFT_PX}px)` });
+  }
+  function clearTouchTimer() {
+    if (touchTimer) { clearTimeout(touchTimer); touchTimer = null; }
+  }
+
   /* ------------------------ mobile open/close ------------------------ */
   function openSidebar() {
     if (!isMobile) return;
-    css(sideMenu, { transform: 'translateX(0)', visibility: 'visible', boxShadow: '0 16px 48px rgba(17,24,39,.22)' });
+    css(sideMenu, {
+      transform: `translateX(-${UNHOVER_SHIFT_PX}px)`, // slight peek by default
+      visibility: 'visible',
+      boxShadow: '0 16px 48px rgba(17,24,39,.22)'
+    });
     document.body.classList.add('sidebar-open');
     showBackdrop();
     setToggleIcon(true);
     if (closeBtn) closeBtn.style.display = 'none'; // prevent double X
+    // Make the burger stand out when opened
+    toggleBtn?.__hoverLook?.();
   }
 
   function closeSidebar() {
     if (!isMobile) return;
-    css(sideMenu, { transform: 'translateX(-110%)', visibility: 'hidden', boxShadow: 'none' });
+    clearTouchTimer();
+    css(sideMenu, {
+      transform: 'translateX(-110%)',
+      visibility: 'hidden',
+      boxShadow: 'none'
+    });
     document.body.classList.remove('sidebar-open');
     hideBackdrop();
     setToggleIcon(false);
     if (closeBtn) closeBtn.style.display = ''; // restore default on next desktop switch
+    // Return burger to idle/transparent state when closed
+    toggleBtn?.__unhoverLook?.();
   }
 
   function onKeydown(e){ if (isMobile && e.key === 'Escape') closeSidebar(); }
@@ -142,7 +219,8 @@
     css(sideMenu, {
       position:'fixed', left:'0', top:'0', height:'100dvh',
       width: DRAWER_WIDTH_PX+'px', maxWidth:'86vw',
-      background:'#fff', transform:'translateX(-110%)',
+      background:'#fff',
+      transform:'translateX(-110%)',
       transition:'transform .28s ease, box-shadow .28s ease, visibility .28s ease',
       zIndex:'10001', visibility:'hidden', overflowY:'auto', overflowX:'hidden'
     });
@@ -150,6 +228,9 @@
     showToggleBtn();
     setToggleIcon(false);
     if (closeBtn) closeBtn.style.display = 'none'; // prevent double X
+
+    // Initialize burger in idle (transparent, slightly nudged) state
+    requestAnimationFrame(()=> toggleBtn?.__unhoverLook?.());
   }
 
   /* ------------------------ responsive switch ------------------------ */
@@ -160,6 +241,7 @@
 
     isMobile = nextMobile;
     document.body.classList.remove('sidebar-open'); // reset state
+    clearTouchTimer();
 
     if (isMobile) {
       applyMobile();
@@ -192,6 +274,21 @@
     const a = e.target.closest('a');
     if (a && a.getAttribute('href')) closeSidebar();
   });
+
+  // Sidebar positional hover (no opacity)
+  sideMenu.addEventListener('mouseenter', () => { if (isMobile) setHoverLook(); });
+  sideMenu.addEventListener('mouseleave', () => { if (isMobile) setUnhoverLook(); });
+  sideMenu.addEventListener('focusin', () => { if (isMobile) setHoverLook(); });
+  sideMenu.addEventListener('focusout', (e) => {
+    if (!isMobile) return;
+    if (!sideMenu.contains(e.relatedTarget)) setUnhoverLook();
+  });
+  sideMenu.addEventListener('touchstart', () => {
+    if (!isMobile) return;
+    clearTouchTimer();
+    setHoverLook();
+    touchTimer = setTimeout(setUnhoverLook, TOUCH_HOLD_MS);
+  }, { passive: true });
 
   // Boot
   syncMode();
