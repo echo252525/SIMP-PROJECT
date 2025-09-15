@@ -1385,6 +1385,58 @@
         }
       }
 
+      /* ============= NEW: Compute balance from earnings.payments (paid) ============= */
+      async function computePaidEarnings(installerId) {
+        try {
+          // 1) Get all PAID payment rows for this installer
+          const { data: pays, error: payErr } = await sb
+            .schema("earnings")
+            .from("payments")
+            .select("job_id")
+            .eq("installer_id", installerId)
+            .eq("payment_status", "paid");
+
+          if (payErr) {
+            console.warn("payments fetch error:", payErr);
+            return 0;
+          }
+          const jobIds = [...new Set((pays || []).map((p) => p.job_id))];
+          if (jobIds.length === 0) return 0;
+
+          // 2) Sum job_pay for those job_ids
+          const { data: jobs, error: jobsErr } = await sb
+            .schema("jobs")
+            .from("job")
+            .select("job_id, job_pay")
+            .in("job_id", jobIds);
+
+          if (jobsErr) {
+            console.warn("jobs fetch for earnings error:", jobsErr);
+            return 0;
+          }
+
+          let total = 0;
+          for (const j of jobs || []) {
+            const v =
+              typeof j.job_pay === "string" ? parseFloat(j.job_pay) : j.job_pay;
+            if (!isNaN(v)) total += v;
+          }
+          return total;
+        } catch (e) {
+          console.error("computePaidEarnings unexpected error:", e);
+          return 0;
+        }
+      }
+
+      async function updateBalanceFromPayments(installerId) {
+        const total = await computePaidEarnings(installerId);
+        const balText = `₱${fmtPeso(total)}`;
+        document.getElementById("balanceAmount").textContent = balText;
+        document.getElementById("balancePct").textContent = balText;
+        const circle = document.querySelector("#cardBalance svg circle");
+        setCircleProgress(circle, total > 0 ? 1 : 0);
+      }
+
       /* ============= Dashboard boot ============= */
       async function loadDashboard() {
         const inst = await resolveInstaller();
@@ -1419,7 +1471,8 @@
           renderUpcomingWork([]);
           await loadPublishedCourses(6, null);
         } else {
-          updateLevelUI(inst);
+          updateLevelUI(inst); // sets initial balance from installer table
+          await updateBalanceFromPayments(inst.id); // NEW: override balance with computed paid earnings
           await setTopRightAvatar(inst);
           const { totalJobs, applied, approved, pending } = await fetchCounts(
             inst.id

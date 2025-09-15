@@ -22,19 +22,25 @@
         --card: #ffffff;
         --pill: #eef6ff;
         --radius: 14px;
+
+        /* Modal theming */
+        --modal-bg: #ffffff;
+        --modal-head: #f7fbff;
+        --shadow-xl: 0 24px 60px rgba(16, 24, 40, 0.18);
+        --shadow-lg: 0 12px 30px rgba(16, 24, 40, 0.12);
       }
-      main {
-        margin-top: 1.4rem;
-      }
+
+      /* base */
+      body { background: var(--bg); color: var(--ink); }
+      main { margin-top: 1.4rem; }
+
       .workers-wrap {
         display: grid;
         grid-template-columns: 340px 1fr;
         gap: 1rem;
       }
       @media (max-width: 980px) {
-        .workers-wrap {
-          grid-template-columns: 1fr;
-        }
+        .workers-wrap { grid-template-columns: 1fr; }
       }
 
       .panel {
@@ -43,15 +49,9 @@
         border-radius: var(--radius);
         padding: 12px;
       }
-      .panel h3 {
-        margin: 0 0 0.5rem 0;
-        font-size: 1rem;
-      }
+      .panel h3 { margin: 0 0 0.5rem 0; font-size: 1rem; }
 
-      .search {
-        position: relative;
-        margin-bottom: 0.6rem;
-      }
+      .search { position: relative; margin-bottom: 0.6rem; }
       .search input {
         width: 100%;
         border: 1px solid var(--line);
@@ -62,55 +62,38 @@
       }
       .search .material-icons-sharp {
         position: absolute;
-        left: 10px;
-        top: 50%;
-        transform: translateY(-50%);
-        font-size: 20px;
-        color: var(--muted);
+        left: 10px; top: 50%; transform: translateY(-50%);
+        font-size: 20px; color: var(--muted);
       }
 
       .worker-list {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        max-height: 70vh;
-        overflow: auto;
+        display: flex; flex-direction: column; gap: 8px;
+        max-height: 70vh; overflow: auto;
       }
       .worker-item {
         display: grid;
         grid-template-columns: 40px 1fr auto;
-        align-items: center;
-        gap: 10px;
+        align-items: center; gap: 10px;
         padding: 10px;
         border: 1px solid var(--line);
         border-radius: 12px;
         cursor: pointer;
-        transition: background 0.15s ease;
+        transition: background 0.15s ease, transform .06s ease;
+        background: #fff;
       }
-      .worker-item:hover {
-        background: #f6fafc;
-      }
-      .worker-item.active {
-        outline: 2px solid var(--brand);
-        background: #f3fdf7;
-      }
+      .worker-item:hover { background: #f6fafc; }
+      .worker-item:active { transform: scale(0.997); }
+      .worker-item.active { outline: 2px solid var(--brand); background: #f3fdf7; }
 
       .avatar {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 1px solid var(--line);
+        width: 40px; height: 40px; border-radius: 50%;
+        object-fit: cover; border: 1px solid var(--line);
       }
 
       .pill {
-        font-size: 0.75rem;
-        background: var(--pill);
-        padding: 4px 8px;
-        border-radius: 999px;
-        color: #2463a6;
-        border: 1px solid #d6e9ff;
-        white-space: nowrap;
+        font-size: 0.75rem; background: var(--pill);
+        padding: 4px 8px; border-radius: 999px;
+        color: #2463a6; border: 1px solid #d6e9ff; white-space: nowrap;
       }
 
       .details {
@@ -120,217 +103,171 @@
         overflow: clip;
       }
       .details .head {
-        display: flex;
-        gap: 16px;
-        padding: 16px;
+        display: flex; gap: 16px; padding: 16px;
         border-bottom: 1px solid var(--line);
         align-items: center;
         background: linear-gradient(180deg, #f9fbff, #ffffff);
       }
       .details .head img {
-        width: 72px;
-        height: 72px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 1px solid var(--line);
-        background: #fff;
+        width: 72px; height: 72px; border-radius: 50%;
+        object-fit: cover; border: 1px solid var(--line); background: #fff;
       }
       .details .head .name {
-        font-size: 1.1rem;
-        font-weight: 700;
-        margin: 0 0 2px;
+        font-size: 1.1rem; font-weight: 700; margin: 0 0 2px;
+        display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
       }
 
-      .meta {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-        margin-top: 4px;
-      }
-      .meta .kv {
-        font-size: 0.85rem;
-        color: var(--muted);
-      }
+      .meta { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+      .meta .kv { font-size: 0.85rem; color: var(--muted); }
 
-      .grid-2 {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-        padding: 16px;
-      }
-      @media (max-width: 980px) {
-        .grid-2 {
-          grid-template-columns: 1fr;
-        }
-      }
+      .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 16px; }
+      @media (max-width: 980px) { .grid-2 { grid-template-columns: 1fr; } }
 
       .card {
-        border: 1px solid var(--line);
-        border-radius: 12px;
-        padding: 12px;
-        background: #fff;
+        border: 1px solid var(--line); border-radius: 12px;
+        padding: 12px; background: #fff;
       }
-      .card h4 {
-        margin: 0 0 0.6rem 0;
-        font-size: 0.95rem;
-      }
+      .card h4 { margin: 0 0 0.6rem 0; font-size: 0.95rem; }
 
-      .info-list {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 8px 12px;
-        font-size: 0.95rem;
-      }
-      @media (max-width: 640px) {
-        .info-list {
-          grid-template-columns: 1fr;
-        }
-      }
-      .info-list .label {
-        color: var(--muted);
-        font-size: 0.85rem;
-        display: block;
-      }
+      .info-list { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; font-size: 0.95rem; }
+      @media (max-width: 640px) { .info-list { grid-template-columns: 1fr; } }
+      .info-list .label { color: var(--muted); font-size: 0.85rem; display: block; }
 
-      .doc-list {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-        gap: 10px;
-      }
+      .doc-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; }
       .doc {
-        border: 1px solid var(--line);
-        border-radius: 12px;
-        padding: 10px;
-        display: grid;
-        grid-template-rows: auto auto 1fr auto;
-        gap: 6px;
-        background: #fcfeff;
+        border: 1px solid var(--line); border-radius: 12px; padding: 10px;
+        display: grid; grid-template-rows: auto auto 1fr auto; gap: 6px; background: #fcfeff;
       }
-      .doc .doc-title {
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-      }
-      .doc .actions {
-        display: flex;
-        gap: 8px;
-        margin-top: 6px;
-      }
+      .doc .doc-title { font-weight: 600; display: flex; align-items: center; gap: 6px; }
+      .doc .actions { display: flex; gap: 8px; margin-top: 6px; }
 
       .btn {
-        appearance: none;
-        border: 1px solid var(--line);
-        background: #fff;
-        border-radius: 10px;
-        padding: 8px 10px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
+        appearance: none; border: 1px solid var(--line); background: #fff;
+        border-radius: 10px; padding: 8px 10px; cursor: pointer;
+        display: inline-flex; align-items: center; justify-content: center;
+        gap: 0.5rem; line-height: 1; box-shadow: 0 0 0 rgba(0,0,0,0);
+        transition: box-shadow .2s ease, transform .06s ease, background .2s;
       }
-      .btn.primary {
-        background: var(--brand);
-        color: #fff;
-        border-color: var(--brand);
-      }
-      .btn.reject {
-        background: #fff5f5;
-        color: var(--danger);
-        border-color: #ffd7d7;
-      }
-      .btn:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-      }
+      .btn:hover { box-shadow: var(--shadow-lg); background: #fafcff; }
+      .btn:active { transform: translateY(1px); }
+      .btn.primary { background: var(--brand); color: #fff; border-color: var(--brand); }
+      .btn.reject { background: #fff5f5; color: var(--danger); border-color: #ffd7d7; }
+      .btn:disabled { opacity: 0.6; cursor: not-allowed; box-shadow: none; }
 
-      .status-dot {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        font-size: 0.85rem;
-        color: var(--muted);
-      }
-      .status-dot .dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: #cbd5e1;
-      }
-      .status-dot.approved .dot {
-        background: var(--brand);
-      }
-      .status-dot.rejected .dot {
-        background: var(--danger);
-      }
-      .status-dot.pending .dot {
-        background: #94a3b8;
-      }
-      .status-dot.missing .dot {
-        background: #cbd5e1;
-      }
+      .status-dot { display: inline-flex; align-items: center; gap: 6px; font-size: 0.85rem; color: var(--muted); }
+      .status-dot .dot { width: 8px; height: 8px; border-radius: 50%; background: #cbd5e1; }
+      .status-dot.approved .dot { background: var(--brand); }
+      .status-dot.rejected .dot { background: var(--danger); }
+      .status-dot.pending .dot { background: #94a3b8; }
+      .status-dot.missing .dot { background: #cbd5e1; }
 
-      .hint {
-        font-size: 0.85rem;
-        color: var(--muted);
-      }
+      .hint { font-size: 0.85rem; color: var(--muted); }
 
+      /* ---------- Document Preview Modal (aesthetic) ---------- */
       .modal {
-        position: fixed;
-        inset: 0;
-        background: rgba(14, 25, 42, 0.6);
-        display: none;
-        align-items: center;
-        justify-content: center;
-        padding: 20px;
-        z-index: 1000;
+        position: fixed; inset: 0;
+        background: rgba(14, 25, 42, 0.5);
+        backdrop-filter: blur(2px);
+        display: none; align-items: center; justify-content: center;
+        padding: 20px; z-index: 1000;
+        opacity: 0; transition: opacity .2s ease;
       }
-      .modal.open {
-        display: flex;
-      }
+      .modal.open { display: flex; opacity: 1; }
+
       .modal-card {
         width: min(1080px, 96vw);
         height: min(80vh, 900px);
-        background: #fff;
-        border-radius: 14px;
+        background: var(--modal-bg);
+        border-radius: 16px;
         overflow: hidden;
-        display: grid;
-        grid-template-rows: auto 1fr;
-        box-shadow: 0 20px 70px rgba(0, 0, 0, 0.25);
+        display: grid; grid-template-rows: auto 1fr;
+        box-shadow: var(--shadow-xl);
+        border: 1px solid #eef2f7;
+        animation: zoomIn .18s ease-out;
       }
       .modal-head {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 10px 12px;
-        border-bottom: 1px solid var(--line);
-        background: #f7fbff;
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 12px 14px; border-bottom: 1px solid var(--line);
+        background: var(--modal-head);
       }
-      .modal-head h4 {
-        margin: 0;
-        font-size: 0.95rem;
-        font-weight: 700;
-      }
-      .modal-body {
-        background: #fff;
-        position: relative;
-      }
+      .modal-head h4 { margin: 0; font-size: 1rem; font-weight: 700; }
+      .modal-body { background: #fff; position: relative; }
       .modal-body iframe,
-      .modal-body img {
-        width: 100%;
-        height: 100%;
-        border: 0;
-        display: block;
+      .modal-body img { width: 100%; height: 100%; border: 0; display: block; }
+
+      @keyframes zoomIn {
+        from { transform: scale(.98); opacity: 0; }
+        to   { transform: scale(1); opacity: 1; }
+      }
+
+      /* ---------- MOBILE COMPACT ENHANCEMENTS ---------- */
+      @media (max-width: 980px) {
+        /* Compact worker rows */
+        .worker-item { grid-template-columns: 40px 1fr 24px; padding: 8px; }
+        .worker-item .pill { justify-self: end; }
+        .worker-item div:nth-child(2) div:nth-child(2) {
+          font-size: 0.78rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 60vw;
+        }
+
+        /* Hide inline desktop preview on mobile. Details will appear as modal instead. */
+        .details { display: none; }
+        .details.as-modal {
+          display: grid; /* show only when toggled as modal */
+          position: fixed; inset: 0; z-index: 900;
+          background: var(--modal-bg);
+          border-radius: 16px;
+          border: 1px solid #eef2f7;
+          box-shadow: var(--shadow-xl);
+          grid-template-rows: auto 1fr;
+          overflow: hidden;
+          animation: slideUp .18s ease-out;
+        }
+        .details.as-modal .head {
+          position: sticky; top: 0; z-index: 2;
+          background: linear-gradient(180deg, #f9fbff, #ffffff);
+          border-bottom: 1px solid var(--line);
+          padding: 12px;
+        }
+        .details.as-modal .scroll-body {
+          overflow: auto; -webkit-overflow-scrolling: touch; background: #fff;
+        }
+
+        @keyframes slideUp {
+          from { transform: translateY(8px); opacity: 0; }
+          to   { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Backdrop behind details modal */
+        .mobile-backdrop {
+          position: fixed; inset: 0;
+          background: rgba(14,25,42,0.45);
+          backdrop-filter: blur(2px);
+          z-index: 880; display: none; opacity: 0; transition: opacity .2s ease;
+        }
+        .mobile-backdrop.show { display: block; opacity: 1; }
+
+        /* Icon-only buttons to save space */
+        .btn { font-size: 0; padding: 10px; }
+        .btn .material-icons-sharp { font-size: 20px; }
+        .btn .btn-text { display: none; }
+
+        /* Tight cards */
+        .card { padding: 10px; }
+        .grid-2 { padding: 12px; gap: 10px; }
+      }
+
+      /* Even smaller phones */
+      @media (max-width: 420px) {
+        .doc-list { grid-template-columns: 1fr; }
+        .details .head img { width: 56px; height: 56px; }
+        .details .head .name { font-size: 1rem; }
+        .pill { font-size: 0.7rem; padding: 3px 6px; }
+        .modal-card { width: 94vw; height: 78vh; }
       }
 
       .empty-state {
-        padding: 24px;
-        border: 1px dashed var(--line);
-        border-radius: 12px;
-        background: #fbfeff;
-        text-align: center;
-        color: var(--muted);
+        padding: 24px; border: 1px dashed var(--line); border-radius: 12px;
+        background: #fbfeff; text-align: center; color: var(--muted);
       }
     </style>
   </head>
@@ -439,6 +376,9 @@
       </main>
     </div>
 
+    <!-- Backdrop for mobile details modal -->
+    <div id="mobileBackdrop" class="mobile-backdrop"></div>
+
     <!-- Document Preview Modal -->
     <div
       id="docModal"
@@ -450,7 +390,7 @@
       <div class="modal-card">
         <div class="modal-head">
           <h4 id="docTitle">Document</h4>
-          <button class="btn" id="closeModal">
+          <button class="btn" id="closeModal" aria-label="Close document">
             <span class="material-icons-sharp">close</span>
           </button>
         </div>
@@ -470,54 +410,43 @@
       const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
       /* ------------------------------ State ------------------------------ */
-      const searchInput = document.getElementById("searchInput");
-      const statusFilter = document.getElementById("statusFilter");
-      const workerList = document.getElementById("workerList");
-      const emptyWorkers = document.getElementById("emptyWorkers");
-      const detailsPane = document.getElementById("detailsPane");
-      const docModal = document.getElementById("docModal");
-      const docBody = document.getElementById("docBody");
-      const docTitle = document.getElementById("docTitle");
+      const searchInput   = document.getElementById("searchInput");
+      const statusFilter  = document.getElementById("statusFilter");
+      const workerList    = document.getElementById("workerList");
+      const emptyWorkers  = document.getElementById("emptyWorkers");
+      const detailsPane   = document.getElementById("detailsPane");
+      const docModal      = document.getElementById("docModal");
+      const docBody       = document.getElementById("docBody");
+      const docTitle      = document.getElementById("docTitle");
+      const mobileBackdrop= document.getElementById("mobileBackdrop");
 
-      let WORKERS = []; // combined installer + docs
-      let ACTIVE_ID = null; // currently focused installer id
-      const DOC_REVIEW = new Map(); // installer_id -> [{key,type,path,url,status}...]
+      let WORKERS = [];
+      let ACTIVE_ID = null;
+      const DOC_REVIEW = new Map();
 
       /* ------------------------------ Utilities ------------------------------ */
       const cap = (s = "") => (s ? s[0].toUpperCase() + s.slice(1) : s);
 
       function pravatar(id) {
-        const num =
-          (Math.abs([...String(id)].reduce((a, c) => a + c.charCodeAt(0), 0)) %
-            70) +
-          1;
+        const num = (Math.abs([...String(id)].reduce((a, c) => a + c.charCodeAt(0), 0)) % 70) + 1;
         return `https://i.pravatar.cc/150?img=${num}`;
       }
 
-      // Build a bucket key that ALWAYS includes the owner's folder
       function withOwnerPrefix(path, ownerId) {
         if (!path) return "";
         let key = String(path).replace(/^\/+/, "");
-        if (ownerId && !key.startsWith(ownerId + "/"))
-          key = `${ownerId}/${key}`;
+        if (ownerId && !key.startsWith(ownerId + "/")) key = `${ownerId}/${key}`;
         return key;
       }
 
-      // Create a short-lived signed URL to preview private files
       async function getSignedUrlWithOwner(path, ownerId, expiresIn = 60 * 60) {
         if (!path) return "";
-        // If already a full https URL (e.g., external), just return it.
         if (/^https?:\/\//i.test(path)) return path;
-
         const key = withOwnerPrefix(path, ownerId);
         const { data, error } = await sb.storage
           .from("documents_review")
           .createSignedUrl(key, expiresIn, { download: false });
-
-        if (error) {
-          console.error("Signed URL error:", error, "for", key);
-          return "";
-        }
+        if (error) { console.error("Signed URL error:", error, "for", key); return ""; }
         return data?.signedUrl || "";
       }
 
@@ -528,21 +457,14 @@
         return dt.toLocaleString();
       }
 
-      /* ---------- NEW: avatar helpers for installer_profile bucket ---------- */
-
-      // storage://bucket/folder/file.ext -> { bucket, key }
       function parseStorageUrl(u) {
         try {
           if (typeof u !== "string") return null;
-          if (/^https?:\/\//i.test(u)) {
-            return { bucket: null, key: null, https: u };
-          }
+          if (/^https?:\/\//i.test(u)) return { bucket: null, key: null, https: u };
           const m = u.match(/^storage:\/\/([^/]+)\/(.+)$/i);
           if (!m) return null;
           return { bucket: m[1], key: m[2] };
-        } catch {
-          return null;
-        }
+        } catch { return null; }
       }
 
       async function signFromBucket(bucket, key, expiresIn = 60 * 60) {
@@ -551,47 +473,31 @@
             .from(bucket)
             .createSignedUrl(key, expiresIn, { download: false });
           if (!error && data?.signedUrl) return data.signedUrl;
-
-          // fallback to public url (in case bucket/object is public)
           const { data: pub } = sb.storage.from(bucket).getPublicUrl(key);
           return pub?.publicUrl || "";
         } catch (e) {
           console.error("Avatar signing error:", e);
-          // last try public url
           const { data: pub } = sb.storage.from(bucket).getPublicUrl(key);
           return pub?.publicUrl || "";
         }
       }
 
-      // Resolve the avatar URL from profile_pic_url, otherwise fallback to pravatar
       async function resolveProfileAvatar(profilePicUrl, ownerId) {
         if (!profilePicUrl) return pravatar(ownerId);
-
         const parsed = parseStorageUrl(profilePicUrl);
-        if (!parsed) {
-          // If it's already https or an unknown format, try to use it directly
-          if (/^https?:\/\//i.test(profilePicUrl)) return profilePicUrl;
-          return pravatar(ownerId);
-        }
+        if (!parsed) return /^https?:\/\//i.test(profilePicUrl) ? profilePicUrl : pravatar(ownerId);
         if (parsed.https) return parsed.https;
-
-        // Make sure key includes owner folder for private layouts like: <uuid>/avatar.jpg
         let key = parsed.key;
-        if (ownerId && !key.startsWith(ownerId + "/")) {
-          key = `${ownerId}/${key.replace(/^\/+/, "")}`;
-        }
-
+        if (ownerId && !key.startsWith(ownerId + "/")) key = `${ownerId}/${key.replace(/^\/+/, "")}`;
         const url = await signFromBucket(parsed.bucket, key);
         return url || pravatar(ownerId);
       }
 
       /* ------------------------------ Fetch & Build ------------------------------ */
       async function fetchWorkers() {
-        // 1) Pull all installer_documents (latest first)
         const { data: docsRows, error: docsErr } = await sb
           .from("installer_documents")
-          .select(
-            `
+          .select(`
             installer_id,
             nbi, nbi_status,
             police, police_status,
@@ -600,8 +506,7 @@
             certificates, certificates_status,
             tor, tor_status,
             status, uploaded_at, updated_at
-          `
-          )
+          `)
           .order("uploaded_at", { ascending: false });
 
         if (docsErr) {
@@ -619,27 +524,20 @@
           return;
         }
 
-        // 2) Pull installer profiles for those ids (ADD profile_pic_url)
         const ids = [...new Set(docsRows.map((r) => r.installer_id))];
         const { data: profiles, error: profErr } = await sb
           .from("installer")
-          .select(
-            'id, email, name, birthdate, age, phone, profession, "highestQualification", "employmentStatus", "mainIncomeSource", "bankName", "accountNumber", "accountHolder", "createdAt", profile_pic_url'
-          )
+          .select('id, email, name, birthdate, age, phone, profession, "highestQualification", "employmentStatus", "mainIncomeSource", "bankName", "accountNumber", "accountHolder", "createdAt", profile_pic_url')
           .in("id", ids);
 
-        if (profErr) {
-          console.error("installer error:", profErr);
-        }
-
+        if (profErr) console.error("installer error:", profErr);
         const profById = new Map((profiles || []).map((p) => [p.id, p]));
 
-        // 3) Combine (use pravatar initially; we will resolve real avatars next)
         WORKERS = docsRows.map((r) => {
           const p = profById.get(r.installer_id) || {};
           return {
             id: r.installer_id,
-            avatar: pravatar(r.installer_id), // default; will be replaced if profile_pic_url exists
+            avatar: pravatar(r.installer_id),
             fullName: p.name || "(No name)",
             birthdate: p.birthdate || "",
             age: p.age ?? "",
@@ -656,20 +554,16 @@
             createdAt: r.uploaded_at || p.createdAt || null,
             profileStatus: String(r.status || "Pending").toLowerCase(),
             _rawDocs: r,
-            _profilePicUrl: p.profile_pic_url || null, // keep raw for resolver
+            _profilePicUrl: p.profile_pic_url || null,
           };
         });
 
-        // 4) Initialize per-doc review state (store PATH; sign later)
         for (const w of WORKERS) {
-          const rows = buildDocRows(w._rawDocs); // includes .path, empty .url initially
+          const rows = buildDocRows(w._rawDocs);
           DOC_REVIEW.set(w.id, rows);
         }
 
-        // 5) Sign all docs for each installer (private bucket preview)
         await Promise.all(WORKERS.map((w) => signAllDocsForInstaller(w.id)));
-
-        // 6) Resolve avatars from installer_profile (profile_pic_url)
         await Promise.all(
           WORKERS.map(async (w) => {
             try {
@@ -677,18 +571,13 @@
                 const url = await resolveProfileAvatar(w._profilePicUrl, w.id);
                 if (url) w.avatar = url;
               }
-            } catch (e) {
-              console.warn("Avatar resolve failed for", w.id, e);
-              // keep pravatar fallback
-            }
+            } catch (e) { console.warn("Avatar resolve failed for", w.id, e); }
           })
         );
 
         renderWorkerList();
         if (WORKERS.length) {
-          const keep = WORKERS.find((w) => w.id === ACTIVE_ID)
-            ? ACTIVE_ID
-            : WORKERS[0].id;
+          const keep = WORKERS.find((w) => w.id === ACTIVE_ID) ? ACTIVE_ID : WORKERS[0].id;
           ACTIVE_ID = keep;
           const found = WORKERS.find((w) => w.id === ACTIVE_ID);
           renderDetails(found);
@@ -696,7 +585,6 @@
         }
       }
 
-      // Build rows using owner's id, but store raw path; URL is filled by signer
       function buildDocRows(raw) {
         const ownerId = raw?.installer_id || "";
         const rows = [];
@@ -707,60 +595,31 @@
           ["tor", "Transcript of Records (TOR)", "tor_status"],
           ["portfolio", "Portfolio", "portfolio_status"],
         ];
-
         for (const [key, label, statusKey] of singleDocs) {
           const path = raw?.[key] || null;
-          const st = String(
-            raw?.[statusKey] || (path ? "pending" : "missing")
-          ).toLowerCase();
-          rows.push({
-            key,
-            type: label,
-            path: path ? withOwnerPrefix(path, ownerId) : "", // keep canonical storage key
-            url: "", // filled later via signed URL
-            status: path ? st : "missing",
-          });
+          const st = String(raw?.[statusKey] || (path ? "pending" : "missing")).toLowerCase();
+          rows.push({ key, type: label, path: path ? withOwnerPrefix(path, ownerId) : "", url: "", status: path ? st : "missing" });
         }
-
         const certs = Array.isArray(raw?.certificates) ? raw.certificates : [];
-        const certStatuses = Array.isArray(raw?.certificates_status)
-          ? raw.certificates_status
-          : [];
-
+        const certStatuses = Array.isArray(raw?.certificates_status) ? raw.certificates_status : [];
         if (certs.length === 0) {
-          rows.push({
-            key: "certificates",
-            type: "Certificates (none)",
-            path: "",
-            url: "",
-            status: "missing",
-          });
+          rows.push({ key: "certificates", type: "Certificates (none)", path: "", url: "", status: "missing" });
         } else {
           certs.forEach((c, idx) => {
             const st = String(certStatuses[idx] || "pending").toLowerCase();
-            rows.push({
-              key: `certificates[${idx}]`,
-              type: `Certificate #${idx + 1}`,
-              path: withOwnerPrefix(c, ownerId),
-              url: "",
-              status: st,
-            });
+            rows.push({ key: `certificates[${idx}]`, type: `Certificate #${idx + 1}`, path: withOwnerPrefix(c, ownerId), url: "", status: st });
           });
         }
-
         return rows;
       }
 
-      // Create signed URLs for all docs of a specific installer and store them back
       async function signAllDocsForInstaller(installerId) {
         const list = (DOC_REVIEW.get(installerId) || []).slice();
         if (!list.length) return;
-
         const signed = await Promise.all(
           list.map(async (item) => {
             if (!item.path) return { ...item, url: "" };
-            // path already includes owner prefix; extract owner from it:
-            const owner = installerId; // we know folder == installerId by design
+            const owner = installerId;
             const url = await getSignedUrlWithOwner(
               item.path.replace(new RegExp("^" + owner + "/"), ""),
               owner
@@ -768,7 +627,6 @@
             return { ...item, url };
           })
         );
-
         DOC_REVIEW.set(installerId, signed);
       }
 
@@ -784,25 +642,19 @@
             w.fullName.toLowerCase().includes(q) ||
             w.email.toLowerCase().includes(q) ||
             (w.phone || "").toLowerCase().includes(q);
-
           const wStatus = (w.profileStatus || "pending").toLowerCase();
-
-          // ✅ CHANGE: when filtering "approved", include both "approved" and "verified"
           const inStatus =
             !selectedStatus ||
             (selectedStatus === "approved"
               ? (wStatus === "approved" || wStatus === "verified")
               : wStatus === selectedStatus);
-
           return inText && inStatus;
         });
 
         emptyWorkers.style.display = filtered.length ? "none" : "block";
 
         filtered
-          .sort(
-            (a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0)
-          )
+          .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))
           .forEach((w) => {
             const item = document.createElement("div");
             item.className = "worker-item";
@@ -821,9 +673,11 @@
             item.addEventListener("click", async () => {
               ACTIVE_ID = w.id;
               markActiveTile(ACTIVE_ID);
-              // Renew signed URLs on selection (in case earlier ones expired)
               await signAllDocsForInstaller(w.id);
               renderDetails(w);
+              if (window.matchMedia("(max-width: 980px)").matches) {
+                openMobileDetails();
+              }
             });
 
             workerList.appendChild(item);
@@ -831,19 +685,13 @@
       }
 
       function markActiveTile(id) {
-        document
-          .querySelectorAll(".worker-item")
-          .forEach((i) => i.classList.remove("active"));
+        document.querySelectorAll(".worker-item").forEach((i) => i.classList.remove("active"));
         const el = document.querySelector(`.worker-item[data-id="${id}"]`);
         if (el) el.classList.add("active");
       }
 
-      searchInput.addEventListener("input", (e) =>
-        renderWorkerList(e.target.value)
-      );
-      statusFilter.addEventListener("change", () =>
-        renderWorkerList(searchInput.value)
-      );
+      searchInput.addEventListener("input", (e) => renderWorkerList(e.target.value));
+      statusFilter.addEventListener("change", () => renderWorkerList(searchInput.value));
 
       /* ------------------------------ Render Details ------------------------------ */
       function renderDetails(worker) {
@@ -854,21 +702,30 @@
 
         const docs = DOC_REVIEW.get(worker.id) || [];
         const status = (worker.profileStatus || "pending").toLowerCase();
-        const isPending = status === "pending"; // controls per-doc actions
+        const isPending = status === "pending";
 
         let actionsHTML = "";
         if (status === "pending") {
           actionsHTML = `
-            <button class="btn reject" id="rejectProfileBtn">Reject Profile</button>
-            <button class="btn primary" id="approveProfileBtn">Approve Installer</button>
+            <button class="btn reject" id="rejectProfileBtn" aria-label="Reject profile">
+              <span class="material-icons-sharp">thumb_down</span> <span class="btn-text">Reject Profile</span>
+            </button>
+            <button class="btn primary" id="approveProfileBtn" aria-label="Approve installer">
+              <span class="material-icons-sharp">thumb_up</span> <span class="btn-text">Approve Installer</span>
+            </button>
           `;
         } else {
           actionsHTML = `
-            <button class="btn" id="revertPendingBtn" title="Set overall status back to Pending">
-              <span class="material-icons-sharp">history</span> Revert to Pending
+            <button class="btn" id="revertPendingBtn" title="Set overall status back to Pending" aria-label="Revert to pending">
+              <span class="material-icons-sharp">history</span> <span class="btn-text">Revert to Pending</span>
             </button>
           `;
         }
+
+        const isMobile = window.matchMedia("(max-width: 980px)").matches;
+        const closeMobileBtn = isMobile
+          ? `<button class="btn" id="closeDetailsMobile" aria-label="Close details"><span class="material-icons-sharp">close</span><span class="btn-text">Close</span></button>`
+          : "";
 
         detailsPane.innerHTML = `
           <div class="head">
@@ -876,103 +733,72 @@
             <div>
               <div class="name">
                 ${worker.fullName}
-                <span class="pill" id="profileStatusPill" style="margin-left:8px;">
-                  ${cap(worker.profileStatus || "pending")}
-                </span>
+                <span class="pill" id="profileStatusPill">${cap(worker.profileStatus || "pending")}</span>
               </div>
               <div class="meta">
-                <span class="kv"><strong>Uploaded:</strong> ${
-                  fmtDateISO(worker.createdAt) || "—"
-                }</span>
-                <span class="kv"><strong>Birthdate:</strong> ${
-                  worker.birthdate || "—"
-                }</span>
-                <span class="kv"><strong>Age:</strong> ${
-                  worker.age || "—"
-                }</span>
-                <span class="kv"><strong>Phone:</strong> ${
-                  worker.phone || "—"
-                }</span>
-                <span class="kv"><strong>Email:</strong> ${
-                  worker.email || "—"
-                }</span>
+                <span class="kv"><strong>Uploaded:</strong> ${fmtDateISO(worker.createdAt) || "—"}</span>
+                <span class="kv"><strong>Birthdate:</strong> ${worker.birthdate || "—"}</span>
+                <span class="kv"><strong>Age:</strong> ${worker.age || "—"}</span>
+                <span class="kv"><strong>Phone:</strong> ${worker.phone || "—"}</span>
+                <span class="kv"><strong>Email:</strong> ${worker.email || "—"}</span>
                 <span class="kv"><strong>Role:</strong> Worker</span>
               </div>
             </div>
 
-            <div style="display:flex; gap:8px; margin-left:auto">
+            <div style="display:flex; gap:8px; margin-left:auto; align-items:center;">
               ${actionsHTML}
+              ${closeMobileBtn}
             </div>
           </div>
 
-          <div class="grid-2">
-            <div class="card">
-              <h4>Basic Information</h4>
-              <div class="info-list">
-                <div><span class="label">Full Name</span>${worker.fullName}</div>
-                <div><span class="label">Profession</span>${
-                  worker.profession || "—"
-                }</div>
-                <div><span class="label">Highest Qualification</span>${
-                  worker.highestQualification || "—"
-                }</div>
-                <div><span class="label">Employment Status</span>${
-                  worker.employmentStatus || "—"
-                }</div>
-                <div><span class="label">Main Income Source</span>${
-                  worker.mainIncomeSource || "—"
-                }</div>
-              </div>
-            </div>
-
-            <div class="card">
-              <h4>Bank Details</h4>
-              <div class="info-list">
-                <div><span class="label">Bank Name</span>${
-                  worker.bankName || "—"
-                }</div>
-                <div><span class="label">Account Holder</span>${
-                  worker.accountHolder || "—"
-                }</div>
-                <div><span class="label">Account Number</span>${
-                  worker.accountNumber || "—"
-                }</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="card" style="margin: 0 16px 16px">
-            <h4>Submitted Documents</h4>
-            <p class="hint">Click a document to preview. Approve/Reject each individually. All present documents must be <b>Approved</b> to enable "Approve Installer". Missing files block approval.</p>
-            <div class="doc-list">
-              ${docs
-                .map(
-                  (d, idx) => `
-                <div class="doc" data-doc="${idx}">
-                  <div class="doc-title">
-                    <span class="material-icons-sharp">description</span> ${d.type}
-                  </div>
-                  <button class="btn" data-view="${idx}" ${
-                    d.url ? "" : "disabled"
-                  }>
-                    <span class="material-icons-sharp" style="font-size:18px;">visibility</span> Preview
-                  </button>
-                  <div class="status-dot ${d.status}">
-                    <span class="dot"></span>
-                    <span class="label">${cap(d.status)}</span>
-                  </div>
-                  <div class="actions" ${isPending ? "" : 'style="display:none"'}>
-                    <button class="btn primary" data-approve="${idx}" ${
-                      d.path ? "" : "disabled"
-                    }>Approve</button>
-                    <button class="btn reject" data-reject="${idx}" ${
-                      d.path ? "" : "disabled"
-                    }>Reject</button>
-                  </div>
+          <div class="scroll-body">
+            <div class="grid-2">
+              <div class="card">
+                <h4>Basic Information</h4>
+                <div class="info-list">
+                  <div><span class="label">Full Name</span>${worker.fullName}</div>
+                  <div><span class="label">Profession</span>${worker.profession || "—"}</div>
+                  <div><span class="label">Highest Qualification</span>${worker.highestQualification || "—"}</div>
+                  <div><span class="label">Employment Status</span>${worker.employmentStatus || "—"}</div>
+                  <div><span class="label">Main Income Source</span>${worker.mainIncomeSource || "—"}</div>
                 </div>
-              `
-                )
-                .join("")}
+              </div>
+
+              <div class="card">
+                <h4>Bank Details</h4>
+                <div class="info-list">
+                  <div><span class="label">Bank Name</span>${worker.bankName || "—"}</div>
+                  <div><span class="label">Account Holder</span>${worker.accountHolder || "—"}</div>
+                  <div><span class="label">Account Number</span>${worker.accountNumber || "—"}</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card" style="margin: 0 16px 16px">
+              <h4>Submitted Documents</h4>
+              <p class="hint">Click a document to preview. Approve/Reject each individually. All present documents must be <b>Approved</b> to enable "Approve Installer". Missing files block approval.</p>
+              <div class="doc-list">
+                ${docs.map((d, idx) => `
+                  <div class="doc" data-doc="${idx}">
+                    <div class="doc-title"><span class="material-icons-sharp">description</span> ${d.type}</div>
+                    <button class="btn" data-view="${idx}" ${d.url ? "" : "disabled"} aria-label="Preview ${d.type}">
+                      <span class="material-icons-sharp" style="font-size:18px;">visibility</span> <span class="btn-text">Preview</span>
+                    </button>
+                    <div class="status-dot ${d.status}">
+                      <span class="dot"></span>
+                      <span class="label">${cap(d.status)}</span>
+                    </div>
+                    <div class="actions" ${isPending ? "" : 'style="display:none"'}>
+                      <button class="btn primary" data-approve="${idx}" ${d.path ? "" : "disabled"} aria-label="Approve ${d.type}">
+                        <span class="material-icons-sharp">check</span> <span class="btn-text">Approve</span>
+                      </button>
+                      <button class="btn reject" data-reject="${idx}" ${d.path ? "" : "disabled"} aria-label="Reject ${d.type}">
+                        <span class="material-icons-sharp">close</span> <span class="btn-text">Reject</span>
+                      </button>
+                    </div>
+                  </div>
+                `).join("")}
+              </div>
             </div>
           </div>
         `;
@@ -983,8 +809,6 @@
             const idx = Number(btn.dataset.view);
             const item = (DOC_REVIEW.get(worker.id) || [])[idx];
             if (!item) return;
-
-            // If signed URL expired, try to refresh on demand
             if (!item.url && item.path) {
               const freshUrl = await getSignedUrlWithOwner(
                 item.path.replace(new RegExp("^" + worker.id + "/"), ""),
@@ -993,24 +817,11 @@
               item.url = freshUrl;
               DOC_REVIEW.set(
                 worker.id,
-                (DOC_REVIEW.get(worker.id) || []).map((x, i) =>
-                  i === idx ? item : x
-                )
+                (DOC_REVIEW.get(worker.id) || []).map((x, i) => (i === idx ? item : x))
               );
-              if (freshUrl) {
-                openDoc(item.type, freshUrl);
-                // Also enable the button for future clicks
-                btn.disabled = false;
-                return;
-              }
+              if (freshUrl) { openDoc(item.type, freshUrl); btn.disabled = false; return; }
             }
-
-            if (!item.url) {
-              alert(
-                "Preview unavailable. File missing or you lack permission."
-              );
-              return;
-            }
+            if (!item.url) { alert("Preview unavailable. File missing or you lack permission."); return; }
             openDoc(item.type, item.url);
           });
         });
@@ -1028,63 +839,46 @@
           });
         });
 
-        // Wire profile buttons based on status
+        // Profile actions
         const approveBtn = detailsPane.querySelector("#approveProfileBtn");
-        const rejectBtn = detailsPane.querySelector("#rejectProfileBtn");
-        const revertBtn = detailsPane.querySelector("#revertPendingBtn");
+        const rejectBtn  = detailsPane.querySelector("#rejectProfileBtn");
+        const revertBtn  = detailsPane.querySelector("#revertPendingBtn");
 
         if (approveBtn) {
           approveBtn.disabled = !allPresentDocsApproved(docs);
           approveBtn.addEventListener("click", async () => {
-            if (!allPresentDocsApproved(docs)) {
-              alert("You must Approve all present documents first.");
-              return;
-            }
+            if (!allPresentDocsApproved(docs)) { alert("You must Approve all present documents first."); return; }
             await setOverallStatus(worker.id, "approved");
           });
         }
+        if (rejectBtn) { rejectBtn.addEventListener("click", async () => { await setOverallStatus(worker.id, "rejected"); }); }
+        if (revertBtn) { revertBtn.addEventListener("click", async () => { await setOverallStatus(worker.id, "pending"); }); }
 
-        if (rejectBtn) {
-          rejectBtn.addEventListener("click", async () => {
-            await setOverallStatus(worker.id, "rejected");
-          });
-        }
-
-        if (revertBtn) {
-          revertBtn.addEventListener("click", async () => {
-            await setOverallStatus(worker.id, "pending");
-          });
-        }
+        // Mobile close
+        const closeMobile = document.getElementById("closeDetailsMobile");
+        if (closeMobile) closeMobile.addEventListener("click", closeMobileDetails);
       }
 
       function allPresentDocsApproved(docs) {
-        for (const d of docs) {
-          if (d.status !== "approved") return false;
-        }
+        for (const d of docs) { if (d.status !== "approved") return false; }
         return docs.length > 0;
       }
 
-      // Persist + refetch
       async function setDocStatus(installerId, docIndex, status) {
         const list = DOC_REVIEW.get(installerId) || [];
         const item = list[docIndex];
         if (!item) return;
 
-        // Optimistic UI
         item.status = status;
         DOC_REVIEW.set(installerId, list);
         const w = WORKERS.find((x) => x.id === installerId);
         if (w) renderDetails(w);
 
         try {
-          // Persist to DB
           await persistDocStatus(installerId, item.key, status);
-
-          // Re-fetch that row to keep state in sync
           const { data, error } = await sb
             .from("installer_documents")
-            .select(
-              `
+            .select(`
               installer_id,
               nbi, nbi_status,
               police, police_status,
@@ -1093,27 +887,21 @@
               certificates, certificates_status,
               tor, tor_status,
               status, uploaded_at, updated_at
-            `
-            )
+            `)
             .eq("installer_id", installerId)
             .maybeSingle();
 
           if (!error && data) {
             const freshRows = buildDocRows(data);
             DOC_REVIEW.set(installerId, freshRows);
-            // Re-sign after refresh
             await signAllDocsForInstaller(installerId);
-            if (w) {
-              w._rawDocs = data;
-              renderDetails(w);
-            }
+            if (w) { w._rawDocs = data; renderDetails(w); }
           }
         } catch (e) {
           alert("Failed to update document status: " + (e.message || e));
         }
       }
 
-      // Handles single-doc columns and certificates_status array
       async function persistDocStatus(installerId, docKey, toStatus) {
         const singleStatusCols = {
           resume: "resume_status",
@@ -1122,82 +910,56 @@
           tor: "tor_status",
           portfolio: "portfolio_status",
         };
-
         const certMatch = String(docKey).match(/^certificates\[(\d+)\]$/);
 
         if (singleStatusCols[docKey]) {
           const column = singleStatusCols[docKey];
-          const payload = {};
-          payload[column] = toStatus;
-          payload["updated_at"] = new Date().toISOString();
-
-          const { error } = await sb
-            .from("installer_documents")
-            .update(payload)
-            .eq("installer_id", installerId);
-
+          const payload = {}; payload[column] = toStatus; payload["updated_at"] = new Date().toISOString();
+          const { error } = await sb.from("installer_documents").update(payload).eq("installer_id", installerId);
           if (error) throw error;
           return;
         }
 
         if (certMatch) {
           const idx = Number(certMatch[1]);
-
           const { data, error } = await sb
             .from("installer_documents")
             .select("certificates_status")
             .eq("installer_id", installerId)
             .maybeSingle();
-
           if (error) throw error;
 
-          const current = Array.isArray(data?.certificates_status)
-            ? data.certificates_status.slice()
-            : [];
+          const current = Array.isArray(data?.certificates_status) ? data.certificates_status.slice() : [];
           while (current.length <= idx) current.push("pending");
           current[idx] = toStatus;
 
           const { error: upErr } = await sb
             .from("installer_documents")
-            .update({
-              certificates_status: current,
-              updated_at: new Date().toISOString(),
-            })
+            .update({ certificates_status: current, updated_at: new Date().toISOString() })
             .eq("installer_id", installerId);
-
           if (upErr) throw upErr;
           return;
         }
-        // Unknown key → no-op
       }
 
-      /* Overall status sync */
       async function setOverallStatus(installerId, toStatus) {
         try {
-          // Fetch current row to know what exists
           const { data: row, error: fetchErr } = await sb
             .from("installer_documents")
-            .select(
-              `
+            .select(`
               nbi, nbi_status,
               police, police_status,
               resume, resume_status,
               portfolio, portfolio_status,
               certificates, certificates_status,
               tor, tor_status
-            `
-            )
+            `)
             .eq("installer_id", installerId)
             .maybeSingle();
-
           if (fetchErr) throw fetchErr;
 
-          const updatePayload = {
-            status: toStatus,
-            updated_at: new Date().toISOString(),
-          };
+          const updatePayload = { status: toStatus, updated_at: new Date().toISOString() };
 
-          // When rejecting or reverting to pending, bulk-set per-doc statuses (for present docs)
           if (toStatus === "rejected" || toStatus === "pending") {
             const map = [
               ["resume", "resume_status"],
@@ -1206,37 +968,18 @@
               ["tor", "tor_status"],
               ["portfolio", "portfolio_status"],
             ];
-
-            for (const [fileCol, statusCol] of map) {
-              if (row && row[fileCol]) {
-                updatePayload[statusCol] = toStatus;
-              }
-            }
-
-            if (
-              row &&
-              Array.isArray(row.certificates) &&
-              row.certificates.length
-            ) {
-              updatePayload["certificates_status"] = row.certificates.map(
-                () => toStatus
-              );
+            for (const [fileCol, statusCol] of map) { if (row && row[fileCol]) updatePayload[statusCol] = toStatus; }
+            if (row && Array.isArray(row.certificates) && row.certificates.length) {
+              updatePayload["certificates_status"] = row.certificates.map(() => toStatus);
             }
           }
 
-          // Persist
-          const { error: upErr } = await sb
-            .from("installer_documents")
-            .update(updatePayload)
-            .eq("installer_id", installerId);
-
+          const { error: upErr } = await sb.from("installer_documents").update(updatePayload).eq("installer_id", installerId);
           if (upErr) throw upErr;
 
-          // Refresh local state
           const { data: fresh, error: refetchErr } = await sb
             .from("installer_documents")
-            .select(
-              `
+            .select(`
               installer_id,
               nbi, nbi_status,
               police, police_status,
@@ -1245,11 +988,9 @@
               certificates, certificates_status,
               tor, tor_status,
               status, uploaded_at, updated_at
-            `
-            )
+            `)
             .eq("installer_id", installerId)
             .maybeSingle();
-
           if (refetchErr) throw refetchErr;
 
           const w = WORKERS.find((x) => x.id === installerId);
@@ -1270,19 +1011,15 @@
         }
       }
 
-      /* ------------------------------ Modal ------------------------------ */
+      /* ------------------------------ Document Modal ------------------------------ */
       function openDoc(title, url) {
-        if (!url) {
-          alert("Preview unavailable.");
-          return;
-        }
+        if (!url) { alert("Preview unavailable."); return; }
         docTitle.textContent = title || "Document";
         docBody.innerHTML = "";
         const isImage = /\.(png|jpe?g|gif|webp|bmp|svg)($|\?)/i.test(url);
         if (isImage) {
           const img = document.createElement("img");
-          img.src = url;
-          img.alt = title;
+          img.src = url; img.alt = title;
           docBody.appendChild(img);
         } else {
           const frame = document.createElement("iframe");
@@ -1291,13 +1028,26 @@
         }
         docModal.classList.add("open");
       }
-      function closeDoc() {
-        docModal.classList.remove("open");
-        docBody.innerHTML = "";
-      }
+      function closeDoc() { docModal.classList.remove("open"); docBody.innerHTML = ""; }
       document.getElementById("closeModal").addEventListener("click", closeDoc);
-      document.getElementById("docModal").addEventListener("click", (e) => {
-        if (e.target.id === "docModal") closeDoc();
+      document.getElementById("docModal").addEventListener("click", (e) => { if (e.target.id === "docModal") closeDoc(); });
+
+      /* ---------------------- Mobile details overlay ---------------------- */
+      function openMobileDetails() {
+        detailsPane.classList.add("as-modal");
+        mobileBackdrop.classList.add("show");
+        document.documentElement.style.overflow = "hidden";
+        document.body.style.overflow = "hidden";
+      }
+      function closeMobileDetails() {
+        detailsPane.classList.remove("as-modal");
+        mobileBackdrop.classList.remove("show");
+        document.documentElement.style.overflow = "";
+        document.body.style.overflow = "";
+      }
+      mobileBackdrop.addEventListener("click", closeMobileDetails);
+      window.addEventListener("resize", () => {
+        if (!window.matchMedia("(max-width: 980px)").matches) { closeMobileDetails(); }
       });
 
       /* ------------------------------ Boot ------------------------------ */

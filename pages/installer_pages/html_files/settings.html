@@ -72,6 +72,16 @@
       .card { border: 1px solid var(--color-light); border-radius: 12px; padding: 1rem; background: #fff; margin-top: 1rem; }
       .card h2 { font-size: 1.05rem; margin: 0 0 0.6rem; }
 
+      /* simple head row to place Created At on the right */
+      .card-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 0.6rem; }
+      .meta { font-size: 0.92rem; color: #314155; display: flex; gap: 0.4rem; align-items: center; }
+      .meta .badge {
+        display: inline-flex; align-items: center; gap: .35rem;
+        background: #f3f6fa; border: 1px solid #dbe5f1; color: #233047;
+        padding: 0.25rem 0.55rem; border-radius: 999px; font-size: 0.86rem;
+      }
+      .meta .material-icons-sharp { font-size: 18px; }
+
       .row { display: grid; gap: 0.65rem; }
       @media (min-width: 860px) { .row { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
       @media (min-width: 1100px) { .row-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
@@ -98,12 +108,14 @@
       .edit-wrap { display: none; gap: 0.4rem; align-items: center; }
       .edit-wrap.show { display: flex; }
 
-      .btn { border: none; border-radius: 10px; padding: 0.55rem 0.8rem; font-weight: 700; cursor: pointer; }
+      .btn { border: none; border-radius: 10px; padding: 0.55rem 0.8rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: .45rem; }
       .btn.danger { background: var(--color-danger); color: #fff; }
       .btn.ghost { background: #eef3f9; color: #233047; }
       .btn.primary { background: var(--color-primary); color: #fff; }
       .btn.outline { background: #fff; border: 1px solid #dbe5f1; color: #233047; }
       .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+      .btn .material-icons-sharp { font-size: 18px; line-height: 1; }
 
       .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; }
 
@@ -116,7 +128,7 @@
 
       .danger-box { border: 1px solid #ffd8d6; background: #fff4f3; border-radius: 12px; padding: 1rem; color: #7a1a14; }
 
-      /* ===== NEW: Avatar Uploader ===== */
+      /* ===== Avatar Uploader ===== */
       .avatar-card {
         display: grid; grid-template-columns: auto 1fr; gap: 1rem; align-items: center;
       }
@@ -126,11 +138,67 @@
         background: linear-gradient(135deg, #6c9bcf, #1b9c85); user-select: none; overflow: hidden; border: 3px solid #eef3f9;
       }
       .avatar img { display: block; width: 100%; height: 100%; object-fit: cover; }
-      .avatar-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+      .avatar-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
       .muted { color: var(--color-info-dark); font-size: 0.9rem; }
       .avatar-hint { margin-top: 0.3rem; }
       .progress { display: none; height: 8px; border-radius: 999px; background: #eef3f9; overflow: hidden; margin-top: 0.5rem; }
       .progress > div { height: 100%; width: 0%; background: linear-gradient(90deg, #6c9bcf, #1b9c85); }
+
+      /* ====== RESPONSIVE ENHANCEMENTS ====== */
+      @media (max-width: 1100px) {
+        .container { width: 98%; gap: 1.2rem; }
+        .page { padding: 1rem 1.1rem; }
+      }
+
+      @media (max-width: 860px) {
+        /* Layout compaction */
+        .container { grid-template-columns: 1fr; width: 100%; gap: 1rem; }
+        main { margin-top: 0.8rem; }
+        .page { padding: 0.9rem 0.9rem; border-radius: 12px; box-shadow: none; }
+        .page h1 { font-size: 1.2rem; }
+        .page p.lead { font-size: 0.95rem; }
+
+        .card { padding: 0.8rem; border-radius: 10px; }
+        .row, .row-3 { grid-template-columns: 1fr !important; gap: 0.55rem; }
+        .field label { font-size: 0.95rem; }
+        .field .hint { font-size: 0.8rem; }
+
+        .value-view { min-height: 38px; padding: 0.5rem 0.6rem; }
+        .value-view .text { max-width: 70vw; }
+
+        .avatar-card { grid-template-columns: 72px 1fr; gap: 0.75rem; }
+        .avatar { width: 72px; height: 72px; font-size: 1.1rem; border-width: 2px; }
+
+        /* Icon-only buttons that shouldn't keep text/padding */
+        .avatar-actions { gap: 0.35rem; }
+
+        .iconify-on-mobile { 
+          width: 44px; height: 44px; padding: 0 !important; 
+          justify-content: center; align-items: center; 
+          border-radius: 10px; 
+        }
+        .iconify-on-mobile .btn-label { display: none !important; }
+        .iconify-on-mobile .material-icons-sharp { font-size: 20px; }
+
+        /* Keep small icon buttons tidy */
+        .icon-btn { padding: 0.3rem; }
+
+        .danger-box { padding: 0.8rem; }
+      }
+
+      @media (max-width: 400px) {
+        .page { padding: 0.75rem; }
+        .card { padding: 0.7rem; }
+        .avatar { width: 64px; height: 64px; font-size: 1rem; }
+        .iconify-on-mobile { width: 40px; height: 40px; }
+      }
+
+      /* Visually hidden utility for JS placeholders */
+      .sr-only {
+        position: absolute !important;
+        width: 1px; height: 1px; padding: 0; margin: -1px;
+        overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+      }
     </style>
   </head>
 
@@ -167,20 +235,31 @@
           <h1>Installer Settings</h1>
           <p class="lead">View and update your profile, employment, and payout details. Click the ✏️ to edit a field.</p>
 
-          <!-- ===== NEW: Profile Picture Uploader (works on private bucket) ===== -->
+          <!-- Profile Picture (with Created At on the right) -->
           <section class="card">
-            <h2>Profile Picture</h2>
+            <div class="card-head">
+              <h2>Profile Picture</h2>
+              <div class="meta">
+                <span class="badge" title="Account creation date">
+                  <span class="material-icons-sharp" aria-hidden="true">event</span>
+                  <strong>Created:</strong>
+                  <span id="createdAtTop">—</span>
+                </span>
+              </div>
+            </div>
+
             <div class="avatar-card">
               <div class="avatar" id="avatarBox" aria-label="Profile avatar"></div>
               <div>
                 <div class="avatar-actions">
-                  <button class="btn primary" id="btnPickPhoto">
-                    <span class="material-icons-sharp" style="vertical-align:-5px;font-size:18px;">upload</span>
-                    Replace Photo
+                  <!-- Iconify on mobile without extra padding -->
+                  <button class="btn primary iconify-on-mobile" id="btnPickPhoto" title="Replace Photo" aria-label="Replace Photo">
+                    <span class="material-icons-sharp">upload</span>
+                    <span class="btn-label">Replace Photo</span>
                   </button>
-                  <button class="btn outline" id="btnRemovePhoto">
-                    <span class="material-icons-sharp" style="vertical-align:-5px;font-size:18px;">delete</span>
-                    Remove Photo
+                  <button class="btn outline iconify-on-mobile" id="btnRemovePhoto" title="Remove Photo" aria-label="Remove Photo">
+                    <span class="material-icons-sharp">delete</span>
+                    <span class="btn-label">Remove Photo</span>
                   </button>
                 </div>
                 <div class="muted avatar-hint">JPG/PNG, up to ~5 MB. Stored in <code>installer_profile/&lt;userId&gt;/avatar.jpg</code>.</div>
@@ -369,31 +448,6 @@
             </div>
           </section>
 
-          <!-- Read-only summary -->
-          <section class="card">
-            <h2>Account Summary</h2>
-            <div class="row">
-              <div class="field">
-                <label>Level</label>
-                <div class="value-view"><span class="text" id="levelView">0</span></div>
-              </div>
-              <div class="field">
-                <label>Earning Balance</label>
-                <div class="value-view"><span class="text mono" id="balanceView">₱0.00</span></div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="field">
-                <label>Created At</label>
-                <div class="value-view"><span class="text" id="createdAtView">—</span></div>
-              </div>
-              <div class="field">
-                <label>User ID</label>
-                <div class="value-view"><span class="text mono" id="userIdView">—</span></div>
-              </div>
-            </div>
-          </section>
-
           <!-- Danger zone -->
           <section class="card danger-box" style="margin-bottom: 0.2rem">
             <h2 style="margin-bottom: 0.4rem">Danger Zone</h2>
@@ -402,7 +456,7 @@
               <code>auth.users</code> with <strong>ON DELETE CASCADE</strong>) related rows will be removed
               automatically. This action is permanent.
             </p>
-            <button class="btn danger" id="deleteAccountBtn">
+            <button class="btn danger" id="deleteAccountBtn" title="Delete Account" aria-label="Delete Account">
               <span class="material-icons-sharp" style="vertical-align: middle; font-size: 18px">delete_forever</span>
               Delete Account
             </button>
@@ -413,6 +467,13 @@
           </section>
         </div>
       </main>
+    </div>
+
+    <!-- Hidden placeholders so existing JS stays happy (no visual output) -->
+    <div aria-hidden="true" class="sr-only">
+      <span id="levelView">0</span>
+      <span id="balanceView">₱0.00</span>
+      <span id="userIdView">—</span>
     </div>
 
     <!-- Toast -->
@@ -483,37 +544,33 @@
         // public form: /storage/v1/object/public/<bucket>/<path>
         let m = ref.match(/\/storage\/v1\/object\/public\/([^/]+)\/(.+)$/);
         if (m) return { bucket: m[1], path: m[2] };
-        // signed form: /storage/v1/object/sign/<bucket>/<path>?token=...
+        // signed form: /storage\/v1\/object\/sign\/([^/]+)\/(.+)\?/
         m = ref.match(/\/storage\/v1\/object\/sign\/([^/]+)\/(.+)\?/);
         if (m) return { bucket: m[1], path: m[2] };
         return null;
       }
 
       async function getDisplayableAvatarURL(userId, storedUrl) {
-  // Always build from storage ref -> sign for private buckets
-  const parsed =
-    parseStorageRef(storedUrl) || { bucket: AVATAR_BUCKET, path: avatarPathFor(userId) };
+        const parsed =
+          parseStorageRef(storedUrl) || { bucket: AVATAR_BUCKET, path: avatarPathFor(userId) };
 
-  // PRIMARY: signed URL (24h)
-  try {
-    const { data: signed, error } = await sb.storage
-      .from(parsed.bucket)
-      .createSignedUrl(parsed.path, 60 * 60 * 24);
-    if (error) throw error;
-    if (signed?.signedUrl) return `${signed.signedUrl}&t=${Date.now()}`;
-  } catch (e) {
-    console.warn("createSignedUrl failed, will attempt publicUrl fallback:", e?.message);
-  }
+        try {
+          const { data: signed, error } = await sb.storage
+            .from(parsed.bucket)
+            .createSignedUrl(parsed.path, 60 * 60 * 24);
+          if (error) throw error;
+          if (signed?.signedUrl) return `${signed.signedUrl}&t=${Date.now()}`;
+        } catch (e) {
+          console.warn("createSignedUrl failed, will attempt publicUrl fallback:", e?.message);
+        }
 
-  // FALLBACK ONLY: public URL (works if bucket later becomes public)
-  try {
-    const { data: pub } = sb.storage.from(parsed.bucket).getPublicUrl(parsed.path);
-    if (pub?.publicUrl) return `${pub.publicUrl}?t=${Date.now()}`;
-  } catch {}
+        try {
+          const { data: pub } = sb.storage.from(parsed.bucket).getPublicUrl(parsed.path);
+          if (pub?.publicUrl) return `${pub.publicUrl}?t=${Date.now()}`;
+        } catch {}
 
-  return null;
-}
-
+        return null;
+      }
 
       const avatarBox = () => document.getElementById("avatarBox");
       const avatarInput = () => document.getElementById("avatarInput");
@@ -530,37 +587,35 @@
       }
 
       function renderAvatar(url, nameOrEmail) {
-  const box = document.getElementById("avatarBox");
-  box.innerHTML = "";
-  if (url) {
-    const img = new Image();
-    img.alt = "Profile photo";
-    img.src = url;
+        const box = document.getElementById("avatarBox");
+        box.innerHTML = "";
+        if (url) {
+          const img = new Image();
+          img.alt = "Profile photo";
+          img.src = url;
 
-    // If a signed URL expires, re-sign once automatically
-    let retried = false;
-    img.onerror = async () => {
-      if (retried) return;
-      retried = true;
-      const refreshed = await getDisplayableAvatarURL(USER?.id, CURRENT?.profile_pic_url);
-      if (refreshed) img.src = refreshed;
-    };
+          // If a signed URL expires, re-sign once automatically
+          let retried = false;
+          img.onerror = async () => {
+            if (retried) return;
+            retried = true;
+            const refreshed = await getDisplayableAvatarURL(USER?.id, CURRENT?.profile_pic_url);
+            if (refreshed) img.src = refreshed;
+          };
 
-    box.appendChild(img);
-  } else {
-    // initials fallback
-    const initialsFrom = (s) => {
-      const src = (s || "").trim();
-      if (!src) return "U";
-      const parts = src.split(/\s+/).filter(Boolean);
-      if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-      if (parts.length === 1) return parts[0][0].toUpperCase();
-      return src[0]?.toUpperCase() || "U";
-    };
-    box.textContent = initialsFrom(nameOrEmail);
-  }
-}
-
+          box.appendChild(img);
+        } else {
+          const initialsFrom = (s) => {
+            const src = (s || "").trim();
+            if (!src) return "U";
+            const parts = src.split(/\s+/).filter(Boolean);
+            if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+            if (parts.length === 1) return parts[0][0].toUpperCase();
+            return src[0]?.toUpperCase() || "U";
+          };
+          box.textContent = initialsFrom(nameOrEmail);
+        }
+      }
 
       async function uploadAvatar(file) {
         if (!USER?.id) return { ok: false, message: "Not signed in." };
@@ -580,7 +635,6 @@
           if (upErr) throw upErr;
           progressFill().style.width = "70%";
 
-          // persist stable storage ref
           const toPersist = `storage://${AVATAR_BUCKET}/${path}`;
           const { error: updErr } = await sb.from("installer").update({ profile_pic_url: toPersist }).eq("id", USER.id);
           if (updErr) throw updErr;
@@ -617,7 +671,6 @@
       let CURRENT = null;
       let USER = null;
 
-      // Inline edit widgets (kept)
       function wireField(el, key) {
         const view = el.querySelector("[data-view]");
         const wrap = el.querySelector("[data-editwrap]");
@@ -704,13 +757,17 @@
           view.textContent = val ?? "—";
         });
 
-        // start with initials, replace with signed image if available
         renderAvatar(null, row?.name || row?.email);
 
         document.getElementById("accountMasked").textContent = maskAccount(row?.accountNumber);
+
+        // moved createdAt to the top badge
+        document.getElementById("createdAtTop").textContent =
+          row?.createdAt ? new Date(row.createdAt).toLocaleString() : "—";
+
+        // keep these updates for compatibility (hidden placeholders exist)
         document.getElementById("levelView").textContent = row?.levelstatus ?? 0;
         document.getElementById("balanceView").textContent = peso(row?.earningBalance ?? 0);
-        document.getElementById("createdAtView").textContent = row?.createdAt ? new Date(row.createdAt).toLocaleString() : "—";
         document.getElementById("userIdView").textContent = row?.id ?? "—";
       }
 

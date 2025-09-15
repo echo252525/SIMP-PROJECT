@@ -277,10 +277,82 @@
         gap: 0.5rem;
       }
 
+      /* ====== Mobile compact layout ====== */
       @media (max-width: 900px) {
+        .container {
+          grid-template-columns: 1fr; /* main stretches full width; sidebar handled elsewhere */
+          gap: 1rem;
+          width: 100%;
+        }
+        main {
+          padding: 0.75rem;
+          margin-top: 0.75rem;
+        }
         .grid-2,
         .grid-3 {
           grid-template-columns: 1fr;
+          gap: 0.75rem;
+        }
+        .card {
+          padding: 0.75rem;
+          border-radius: 12px;
+        }
+        .card h2 {
+          font-size: 1rem;
+          margin-bottom: 0.75rem;
+        }
+        .header {
+          position: sticky;
+          top: 0;
+          z-index: 20;
+          background: var(--bg);
+          padding: 0.25rem 0;
+          margin-bottom: 0.5rem;
+        }
+        .header h1 {
+          font-size: 1.1rem;
+        }
+        /* Icon-only buttons on small screens */
+        .icon-btn {
+          padding: 0.5rem;
+          border-radius: 10px;
+          gap: 0;
+          font-size: 0; /* visually hide label text without altering DOM */
+        }
+        .icon-btn .material-icons-sharp {
+          font-size: 20px;
+          line-height: 1;
+        }
+        /* Shrink pills */
+        .pill {
+          padding: 0.2rem 0.45rem;
+          font-size: 0.75rem;
+        }
+        /* Inputs tighter */
+        input,
+        .readonly {
+          padding: 0.6rem 0.7rem;
+          border-radius: 10px;
+        }
+        .footer-actions {
+          justify-content: stretch;
+        }
+        .footer-actions .btn {
+          flex: 1;
+        }
+      }
+
+      /* Ultra-compact for very small devices */
+      @media (max-width: 420px) {
+        .header h1 {
+          font-size: 1rem;
+        }
+        .pill {
+          display: none; /* hide datasource pill to save space */
+        }
+        .loading {
+          padding: 1.25rem;
+          min-height: 96px;
         }
       }
     </style>
@@ -325,7 +397,7 @@
         <div class="header">
           <h1>Settings</h1>
           <div class="actions">
-            <button id="editBtn" class="icon-btn">
+            <button id="editBtn" class="icon-btn" aria-label="Edit">
               <span class="material-icons-sharp">edit</span> Edit
             </button>
             <span class="pill" title="Data source">
@@ -354,9 +426,6 @@
               <div class="field">
                 <label for="email">Email</label>
                 <input id="email" type="email" class="readonly" readonly />
-                <div class="hint">
-                  Email is managed in auth. (Mirrored to customer.email)
-                </div>
               </div>
               <div class="field">
                 <label for="phone">Phone</label>
@@ -396,14 +465,9 @@
               <div class="field">
                 <label for="age">Age (auto)</label>
                 <input id="age" type="number" class="readonly" readonly />
-                <div class="hint">
-                  Calculated from your birthdate and saved to <code>age</code>.
-                </div>
               </div>
-              <div class="field">
-                <label for="uid">User ID</label>
-                <input id="uid" class="readonly" readonly />
-              </div>
+              <!-- User ID field removed visually; hidden input kept to avoid JS errors -->
+              <input id="uid" type="hidden" />
             </div>
           </section>
 
@@ -475,6 +539,7 @@
     </div>
 
     <!-- App Script -->
+     <script src="../../general_files/index.js"></script>
     <script type="module">
       import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
       import { SUPABASE_URL, SUPABASE_ANON_KEY } from "../../../supabase.js";
@@ -567,7 +632,7 @@
         phoneEl.value = data.phone || "";
         birthEl.value = data.birthdate || "";
         ageEl.value = data.age ?? calcAge(data.birthdate) ?? "";
-        uidEl.value = user.id;
+        if (uidEl) uidEl.value = user.id;
         createdAtEl.value = data.createdAt
           ? new Date(data.createdAt).toLocaleString()
           : "";
