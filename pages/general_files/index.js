@@ -32,6 +32,11 @@
   const BTN_HOVER_SHIFT     = 0;   // normal position on hover/focus/touch
   const TOUCH_HOLD_MS       = 1600;
 
+  // ✨ New: keep-open-until-explicit-close behavior
+  // When true, the mobile drawer stays fully open until toggle is pressed again.
+  // No auto-close on outside click or Escape, and no auto-peek while open.
+  const EXPLICIT_CLOSE_ONLY = true;
+
   const sideMenu  = document.querySelector('aside');
   const closeBtn  = document.getElementById('close-btn');
   const darkMode  = document.querySelector('.dark-mode');
@@ -65,7 +70,14 @@
       position: 'fixed', inset: '0', background: 'rgba(17,24,39,.45)',
       zIndex: '10000', display: 'none', opacity: '0', transition: 'opacity .2s ease'
     });
+    // default close-on-click
     backdrop.addEventListener('click', closeSidebar);
+    // ✨ New: intercept backdrop clicks when explicit-close-only is on
+    if (EXPLICIT_CLOSE_ONLY) {
+      backdrop.addEventListener('click', (e) => {
+        if (isMobile && isOpen()) { e.stopPropagation(); e.preventDefault(); }
+      }, true); // capture to block before default
+    }
     document.body.appendChild(backdrop);
     return backdrop;
   }
@@ -92,7 +104,7 @@
     });
     toggleBtn.addEventListener('click', () => {
       if (!isMobile) return;
-      isOpen() ? closeSidebar() : openSidebar();
+      isOpen() ? closeSidebar(true /*explicit*/) : openSidebar();
     });
     document.body.appendChild(toggleBtn);
 
@@ -205,19 +217,19 @@
       transition: 'transform .2s ease, box-shadow .2s ease, opacity .2s ease'
     });
     handle.addEventListener('mouseenter', () => {
-      if (!isMobile || !isOpen()) return;
+      if (!isMobile || !isOpen() || EXPLICIT_CLOSE_ONLY) return;
       css(handle, { transform: 'translate(-40%, -50%)', boxShadow: '0 14px 32px rgba(17,24,39,.22)' });
       revealFull(); // reveal on hover
     });
     handle.addEventListener('mouseleave', () => {
-      if (!isMobile || !isOpen()) return;
+      if (!isMobile || !isOpen() || EXPLICIT_CLOSE_ONLY) return;
       css(handle, { transform: 'translate(-50%, -50%)', boxShadow: '0 10px 26px rgba(17,24,39,.15)' });
     });
-    handle.addEventListener('click', () => { if (isMobile && isOpen()) revealFull(); });
+    handle.addEventListener('click', () => { if (isMobile && isOpen() && !EXPLICIT_CLOSE_ONLY) revealFull(); });
     document.body.appendChild(handle);
     return handle;
   }
-  function showHandle() { ensureHandle().style.display = 'inline-flex'; }
+  function showHandle() { if (!EXPLICIT_CLOSE_ONLY) ensureHandle().style.display = 'inline-flex'; }
   function hideHandle() { if (handle) handle.style.display = 'none'; }
 
   /* ------------------------ Peek / reveal ------------------------ */
@@ -228,7 +240,7 @@
     hideHandle();
   }
   function peekSidebar() {
-    if (!isMobile || !isOpen()) return;
+    if (!isMobile || !isOpen() || EXPLICIT_CLOSE_ONLY) return;
     const rect = sideMenu.getBoundingClientRect();
     const width = Math.min(rect.width || DRAWER_WIDTH_PX, window.innerWidth * 0.86);
     const offset = Math.max(0, width - PEEK_OVERLAP_PX);
@@ -250,12 +262,15 @@
     if (closeBtn) closeBtn.style.display = 'none'; // prevent double X (mobile)
     toggleBtn?.__hoverLook?.();
 
-    // When the pointer leaves, gently go to peek state
+    // When EXPLICIT_CLOSE_ONLY is true, do NOT auto-peek
     clearTimers();
-    peekTimer = setTimeout(peekSidebar, PEEK_IDLE_DELAY + 250); // initial idle peek
+    if (!EXPLICIT_CLOSE_ONLY) {
+      peekTimer = setTimeout(peekSidebar, PEEK_IDLE_DELAY + 250); // initial idle peek
+    }
   }
 
-  function closeSidebar() {
+  // `explicit` param is only used to make intent clear; behavior is the same either way.
+  function closeSidebar(/*explicit*/ _explicit) {
     if (!isMobile) return;
     clearTimers();
     css(sideMenu, { transform: 'translateX(-110%)', visibility: 'hidden', boxShadow: 'none' });
@@ -267,9 +282,19 @@
     toggleBtn?.__unhoverLook?.();
   }
 
-  function onKeydown(e){ if (isMobile && e.key === 'Escape') closeSidebar(); }
+  function onKeydown(e){
+    // ✨ New: ignore Esc auto-close when explicit-close-only is on
+    if (EXPLICIT_CLOSE_ONLY && isMobile && isOpen() && e.key === 'Escape') {
+      e.preventDefault();
+      return;
+    }
+    if (isMobile && e.key === 'Escape') closeSidebar();
+  }
   function onOutsideClick(e){
     if (!isMobile || !isOpen()) return;
+    // ✨ New: ignore outside clicks when explicit-close-only is on
+    if (EXPLICIT_CLOSE_ONLY) return;
+
     const insideAside = e.target === sideMenu || sideMenu.contains(e.target);
     const onBtn = toggleBtn && (e.target === toggleBtn || toggleBtn.contains(e.target));
     const onBd  = backdrop && e.target === backdrop;
@@ -366,6 +391,8 @@
   sideMenu.addEventListener('click', (e) => {
     if (!isMobile) return;
     const a = e.target.closest('a');
+    // ✨ New: don't auto-close on link click when explicit-close-only is on
+    if (EXPLICIT_CLOSE_ONLY) return;
     if (a && a.getAttribute('href')) closeSidebar();
   });
 
@@ -373,12 +400,15 @@
   sideMenu.addEventListener('mouseenter', () => {
     if (!isMobile || !isOpen()) return;
     clearTimers();
+    // If explicit-close-only, keep it fully open already; still call revealFull to ensure full state
     revealFull();
   });
   sideMenu.addEventListener('mouseleave', () => {
     if (!isMobile || !isOpen()) return;
     clearTimers();
-    peekTimer = setTimeout(peekSidebar, PEEK_IDLE_DELAY);
+    if (!EXPLICIT_CLOSE_ONLY) {
+      peekTimer = setTimeout(peekSidebar, PEEK_IDLE_DELAY);
+    }
   });
   sideMenu.addEventListener('focusin', () => {
     if (!isMobile || !isOpen()) return;
@@ -389,15 +419,19 @@
     if (!isMobile || !isOpen()) return;
     if (!sideMenu.contains(e.relatedTarget)) {
       clearTimers();
-      peekTimer = setTimeout(peekSidebar, PEEK_IDLE_DELAY);
+      if (!EXPLICIT_CLOSE_ONLY) {
+        peekTimer = setTimeout(peekSidebar, PEEK_IDLE_DELAY);
+      }
     }
   });
   sideMenu.addEventListener('touchstart', () => {
     if (!isMobile || !isOpen()) return;
     clearTimers();
     revealFull();
-    // auto-peek again after some idle time
-    peekTimer = setTimeout(peekSidebar, PEEK_IDLE_DELAY + 400);
+    // auto-peek again after some idle time (disabled when explicit-close-only)
+    if (!EXPLICIT_CLOSE_ONLY) {
+      peekTimer = setTimeout(peekSidebar, PEEK_IDLE_DELAY + 400);
+    }
   }, { passive: true });
 
   // Boot
@@ -406,3 +440,4 @@
   // Ensure aside is not display:none from page CSS; drawer hides via transform
   sideMenu.style.display = 'block';
 })();
+

@@ -19,6 +19,11 @@
         --card: #fff;
         --pill: #eef6ff;
         --radius: 14px;
+
+        /* modal */
+        --modal-backdrop: rgba(14, 25, 42, 0.55);
+        --modal-head: #f7fbff;
+        --shadow-xl: 0 24px 64px rgba(16, 24, 40, 0.2);
       }
       main {
         margin-top: 1.4rem;
@@ -131,7 +136,8 @@
         overflow: clip;
       }
       .details .head {
-        display: flex;
+        display: grid;
+        grid-template-columns: 72px 1fr;
         gap: 16px;
         padding: 16px;
         border-bottom: 1px solid var(--line);
@@ -155,6 +161,17 @@
         color: var(--muted);
         font-size: 0.9rem;
       }
+
+      /* NEW: clean action bar for buttons */
+      .actions-row {
+        display: flex;
+        gap: 8px;
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--line);
+        justify-content: flex-end;
+        background: #fff;
+      }
+
       .grid-2 {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -249,6 +266,84 @@
       }
       .dot-super {
         background: #6366f1;
+      }
+
+      /* Mobile modal styles */
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: var(--modal-backdrop);
+        display: none;
+        align-items: flex-end; /* bottom sheet feel */
+        z-index: 9999;
+      }
+      .modal-overlay.open {
+        display: flex;
+      }
+      .modal-sheet {
+        width: 100%;
+        max-height: 85vh;
+        background: #fff;
+        border-top-left-radius: 18px;
+        border-top-right-radius: 18px;
+        box-shadow: var(--shadow-xl);
+        overflow: hidden;
+      }
+      .modal-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 14px;
+        background: var(--modal-head);
+        border-bottom: 1px solid var(--line);
+      }
+      .modal-title {
+        font-weight: 700;
+      }
+      .modal-close {
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        padding: 6px;
+        border-radius: 8px;
+      }
+      .modal-body {
+        max-height: calc(85vh - 52px);
+        overflow: auto;
+      }
+
+      /* Hide desktop details pane on mobile */
+      @media (max-width: 980px) {
+        #detailsPane {
+          display: none !important;
+        }
+      }
+
+      /* Icon-only actions on mobile */
+      @media (max-width: 980px) {
+        #approveBtn,
+        #rejectBtn,
+        #demoteBtn,
+        #promoteBtn {
+          width: 44px;
+          height: 44px;
+          padding: 0;
+          justify-content: center;
+          font-size: 0; /* hide text but keep button accessible */
+          position: relative;
+        }
+        #approveBtn::before,
+        #rejectBtn::before,
+        #demoteBtn::before,
+        #promoteBtn::before {
+          font-family: "Material Icons Sharp";
+          font-size: 22px;
+          line-height: 1;
+        }
+        #approveBtn::before { content: "check"; }
+        #rejectBtn::before { content: "close"; }
+        #demoteBtn::before { content: "south"; }
+        #promoteBtn::before { content: "grade"; }
       }
     </style>
   </head>
@@ -369,6 +464,21 @@
       </main>
     </div>
 
+    <!-- Mobile details modal (bottom sheet) -->
+    <div id="detailsModal" class="modal-overlay" aria-hidden="true">
+      <div class="modal-sheet" role="dialog" aria-modal="true" aria-labelledby="detailsModalTitle">
+        <div class="modal-head">
+          <div class="modal-title" id="detailsModalTitle">Admin Details</div>
+          <button class="modal-close" id="detailsModalClose" aria-label="Close">
+            <span class="material-icons-sharp">close</span>
+          </button>
+        </div>
+        <div class="modal-body" id="detailsModalBody">
+          <!-- details get injected here on mobile -->
+        </div>
+      </div>
+    </div>
+
     <script src="../../general_files/index.js"></script>
     <script type="module" src="../../general_files/session.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -391,12 +501,17 @@
       const searchInput = document.getElementById("searchInput");
       const statusFilter = document.getElementById("statusFilter");
 
+      // modal els
+      const detailsModal = document.getElementById("detailsModal");
+      const detailsModalBody = document.getElementById("detailsModalBody");
+      const detailsModalClose = document.getElementById("detailsModalClose");
+
       let currentUser = null; // supabase.auth user
       let currentRole = null; // 'pending' | 'admin' | 'superadmin' | null
       let admins = []; // loaded admin rows
       let activeAdminId = null;
 
-      // NEW: cache of signed avatar URLs keyed by admin id
+      // cache of signed avatar URLs keyed by admin id
       const avatarCache = {};
 
       // Helpers
@@ -415,6 +530,8 @@
           .join("")
           .toUpperCase()
           .slice(0, 2) || "?";
+
+      const isMobile = () => window.matchMedia("(max-width: 980px)").matches;
 
       function applyAvatarToEl(el, url) {
         if (!el) return;
@@ -487,6 +604,17 @@
         contentArea.style.display = "grid";
         await refreshAdmins();
         wireUI();
+
+        // close modal handler
+        detailsModalClose.addEventListener("click", closeDetailsModal);
+        detailsModal.addEventListener("click", (e) => {
+          if (e.target === detailsModal) closeDetailsModal();
+        });
+
+        // On resize, if switching to desktop, ensure modal closed
+        window.addEventListener("resize", () => {
+          if (!isMobile()) closeDetailsModal();
+        });
       });
 
       function wireUI() {
@@ -498,7 +626,6 @@
         const { data, error } = await supabase
           .from("admin")
           .select(
-            // ADDED: admin_profile_url to fetch image path
             "id, email, name, phone, role, created_at, admin_profile_url"
           )
           .order("created_at", { ascending: false });
@@ -513,14 +640,15 @@
         }
         admins = data || [];
 
-        // NEW: prefetch signed URLs for avatars
+        // prefetch signed URLs for avatars
         await hydrateAvatars(admins);
 
         renderAdminList();
         if (admins.length) {
           const first = admins[0];
           activeAdminId = first.id;
-          renderDetails(first);
+          renderDetails(first); // desktop pane
+          maybeOpenMobileModal(first); // open as modal on mobile
           setTimeout(() => {
             document.querySelectorAll("#adminList .item").forEach((n) => {
               if (n.dataset.id === activeAdminId) n.classList.add("active");
@@ -560,7 +688,6 @@
               ? ' <span class="pill you">You</span>'
               : "";
 
-          // Avatar element with data-id so we can apply image easily
           const avatar = `<div class="avatar" data-avatar-id="${a.id}">${initials(
             a.name || a.email
           )}</div>`;
@@ -568,20 +695,13 @@
           item.innerHTML = `
             ${avatar}
             <div>
-              <div style="font-weight:700">${
-                a.name || "(no name)"
-              }${youBadge}</div>
+              <div style="font-weight:700">${a.name || "(no name)"}${youBadge}</div>
               <div style="font-size:.85rem; color:var(--muted)">${a.email}</div>
             </div>
-            <span class="pill">${roleDot(a.role)} ${
-            a.role ? cap(a.role) : "Pending"
-          }</span>
+            <span class="pill">${roleDot(a.role)} ${a.role ? cap(a.role) : "Pending"}</span>
           `;
 
-          // Apply avatar image if available
-          const avatarEl = item.querySelector(
-            `[data-avatar-id="${a.id}"]`
-          );
+          const avatarEl = item.querySelector(`[data-avatar-id="${a.id}"]`);
           applyAvatarToEl(avatarEl, avatarCache[a.id]);
 
           item.addEventListener("click", () => {
@@ -591,6 +711,7 @@
               .forEach((i) => i.classList.remove("active"));
             item.classList.add("active");
             renderDetails(a);
+            maybeOpenMobileModal(a);
           });
 
           adminList.appendChild(item);
@@ -618,38 +739,29 @@
               </div>
               <div class="meta">Created: ${when}</div>
             </div>
-            <div style="margin-left:auto; display:flex; gap:8px;">
-              ${renderActionsFor(admin).join("") || ""}
-            </div>
+          </div>
+
+          <div class="actions-row">
+            ${renderActionsFor(admin).join("") || ""}
           </div>
 
           <div class="grid-2">
-            <div class="card">
+            <div class="card" style="grid-column: 1 / -1;">
               <h4>Basic Information</h4>
               <div class="info-list">
-                <div><span class="label">Full Name</span>${
-                  admin.name || "—"
-                }</div>
+                <div><span class="label">Full Name</span>${admin.name || "—"}</div>
                 <div><span class="label">Email</span>${admin.email || "—"}</div>
                 <div><span class="label">Phone</span>${admin.phone || "—"}</div>
                 <div><span class="label">Role</span>${roleLabel}</div>
               </div>
             </div>
-
-            <div class="card">
-              <h4>Notes</h4>
-              <p style="margin:0; color:var(--muted); font-size:.95rem;">
-                Approve pending applicants carefully. Only super administrators can promote admins or demote them back to pending.
-              </p>
-            </div>
           </div>
         `;
 
-        // Apply detail avatar image if exists
         const detailAvatarEl = detailsPane.querySelector("#detailAvatar");
         applyAvatarToEl(detailAvatarEl, avatarCache[admin.id]);
 
-        // Wire actions
+        // Wire actions in the details pane
         wireActionsFor(admin);
       }
 
@@ -658,28 +770,28 @@
         if (currentRole === "admin") {
           if ((admin.role || "pending") === "pending") {
             actions.push(
-              `<button class="btn primary" id="approveBtn">Approve</button>`
+              `<button class="btn primary" id="approveBtn" title="Approve">Approve</button>`
             );
             actions.push(
-              `<button class="btn reject" id="rejectBtn">Reject</button>`
+              `<button class="btn reject" id="rejectBtn" title="Reject">Reject</button>`
             );
           }
         } else if (currentRole === "superadmin") {
           const ar = admin.role || "pending";
           if (ar === "pending") {
             actions.push(
-              `<button class="btn primary" id="approveBtn">Approve (to Admin)</button>`
+              `<button class="btn primary" id="approveBtn" title="Approve to Admin">Approve (to Admin)</button>`
             );
             actions.push(
-              `<button class="btn reject" id="rejectBtn">Reject</button>`
+              `<button class="btn reject" id="rejectBtn" title="Reject">Reject</button>`
             );
           } else if (ar === "admin") {
             if (admin.id !== currentUser.id) {
               actions.push(
-                `<button class="btn warn" id="demoteBtn">Demote to Pending</button>`
+                `<button class="btn warn" id="demoteBtn" title="Demote to Pending">Demote to Pending</button>`
               );
               actions.push(
-                `<button class="btn primary" id="promoteBtn">Promote to Super Admin</button>`
+                `<button class="btn primary" id="promoteBtn" title="Promote to Super Admin">Promote to Super Admin</button>`
               );
             }
           } else if (ar === "superadmin") {
@@ -726,6 +838,51 @@
           });
       }
 
+      // Wire actions inside a given container (for modal)
+      function wireActionsForIn(container, admin) {
+        const approveBtn = container.querySelector("#approveBtn");
+        const rejectBtn = container.querySelector("#rejectBtn");
+        const demoteBtn = container.querySelector("#demoteBtn");
+        const promoteBtn = container.querySelector("#promoteBtn");
+
+        if (approveBtn)
+          approveBtn.addEventListener("click", async () => {
+            await setRole(admin.id, "admin");
+            const updated = admins.find((a) => a.id === admin.id) || admin;
+            injectDetailsIntoModal(updated);
+          });
+        if (rejectBtn)
+          rejectBtn.addEventListener("click", async () => {
+            if (
+              !confirm(
+                `Reject this profile (${admin.email})? This deletes the user from auth and removes their admin row.`
+              )
+            )
+              return;
+            await rejectProfileDeleteAuthUser(admin.id);
+            closeDetailsModal();
+          });
+        if (demoteBtn)
+          demoteBtn.addEventListener("click", async () => {
+            if (!confirm(`Demote ${admin.email} to Pending?`)) return;
+            await setRole(admin.id, "pending");
+            const updated = admins.find((a) => a.id === admin.id) || admin;
+            injectDetailsIntoModal(updated);
+          });
+        if (promoteBtn)
+          promoteBtn.addEventListener("click", async () => {
+            if (
+              !confirm(
+                "Transfer SUPERADMIN to this user and become ADMIN yourself?"
+              )
+            )
+              return;
+            await promoteToSuperadminSwapClientSide(admin.id);
+            const updated = admins.find((a) => a.id === admin.id) || admin;
+            injectDetailsIntoModal(updated);
+          });
+      }
+
       async function setRole(id, role) {
         try {
           const { error } = await supabase
@@ -742,6 +899,9 @@
           if (updated) {
             activeAdminId = updated.id;
             renderDetails(updated);
+            if (isMobile() && detailsModal.classList.contains("open")) {
+              injectDetailsIntoModal(updated);
+            }
           }
           alert(`Role updated to ${role.toUpperCase()}.`);
         } catch (e) {
@@ -758,9 +918,8 @@
         if (!error && data) currentRole = data.role || null;
       }
 
-      // --- Direct client-side swap ---
+      // Direct client-side swap
       async function promoteToSuperadminSwapClientSide(targetId) {
-        // 1) Demote me (current superadmin) to admin
         const { error: e1 } = await supabase
           .from("admin")
           .update({ role: "admin" })
@@ -770,13 +929,11 @@
           return;
         }
 
-        // 2) Promote target to superadmin
         const { error: e2 } = await supabase
           .from("admin")
           .update({ role: "superadmin" })
           .eq("id", targetId);
         if (e2) {
-          // 3) Restore me back to superadmin if step 2 failed
           const { error: restoreErr } = await supabase
             .from("admin")
             .update({ role: "superadmin" })
@@ -801,21 +958,20 @@
           return;
         }
 
-        // Success: I am now admin, target is superadmin
         await reloadMyRole();
         await refreshAdmins();
         const selected = admins.find((a) => a.id === targetId) || admins[0];
         if (selected) {
           activeAdminId = selected.id;
           renderDetails(selected);
+          if (isMobile() && detailsModal.classList.contains("open")) {
+            injectDetailsIntoModal(selected);
+          }
         }
         alert("Superadmin role transferred.");
       }
 
-      /**
-       * Reject path that deletes the user from auth via Edge Function (requires service role).
-       * Your DB FK (public.admin.id -> auth.users.id ON DELETE CASCADE) will remove the admin row.
-       */
+      // Reject via Edge Function
       async function rejectProfileDeleteAuthUser(userId) {
         const { data, error } = await supabase.functions.invoke(
           "admin-delete-user",
@@ -842,6 +998,37 @@
               JSON.stringify(payload)
           );
         }
+      }
+
+      // Modal helpers
+      function maybeOpenMobileModal(admin) {
+        if (isMobile()) {
+          injectDetailsIntoModal(admin);
+          openDetailsModal();
+        }
+      }
+
+      function injectDetailsIntoModal(admin) {
+        // clone the details pane markup to keep parity
+        detailsModalBody.innerHTML = detailsPane.innerHTML;
+
+        // apply avatar to the modal version too
+        const modalAvatar = detailsModalBody.querySelector("#detailAvatar");
+        applyAvatarToEl(modalAvatar, avatarCache[admin.id]);
+
+        // wire actions inside the modal DOM
+        wireActionsForIn(detailsModalBody, admin);
+      }
+
+      function openDetailsModal() {
+        detailsModal.classList.add("open");
+        detailsModal.setAttribute("aria-hidden", "false");
+        detailsModalClose?.focus?.();
+      }
+
+      function closeDetailsModal() {
+        detailsModal.classList.remove("open");
+        detailsModal.setAttribute("aria-hidden", "true");
       }
     </script>
 

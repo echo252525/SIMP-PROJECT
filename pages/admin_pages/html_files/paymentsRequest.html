@@ -100,6 +100,9 @@
         margin: 0.6rem 0 0.6rem;
         border-bottom: 1px solid #e7edf3;
         flex-wrap: wrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
       }
       .payout-tabs button {
         appearance: none;
@@ -113,10 +116,19 @@
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
+        white-space: nowrap;
       }
       .payout-tabs button.active {
         color: #1c2430;
         border-color: #20a44c;
+      }
+      /* icon & label for tabs */
+      .payout-tabs .tab-icon {
+        font-size: 1.15rem;
+        display: inline-flex;
+      }
+      .payout-tabs .tab-label {
+        display: inline;
       }
 
       /* NEW: tiny notification badge */
@@ -296,20 +308,6 @@
         font-weight: 700;
       }
 
-      @media (max-width: 980px) {
-        main .payments-table table {
-          display: block;
-          overflow-x: auto;
-        }
-        main .search-filter input {
-          width: 100%;
-          min-width: 220px;
-        }
-        main .batch-bar {
-          flex-wrap: wrap;
-        }
-      }
-
       .mono {
         font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
           "Liberation Mono", monospace;
@@ -428,6 +426,166 @@
         color: #c62828;
         font-size: 0.85rem;
       }
+
+      /* =========================
+         RESPONSIVE ENHANCEMENTS
+         ========================= */
+      @media (max-width: 980px) {
+        /* Search/filter stacks */
+        main .search-filter {
+          gap: 0.6rem;
+        }
+        main .search-filter input {
+          width: 100%;
+          min-width: 220px;
+          flex: 1 1 100%;
+        }
+        main .search-filter select,
+        main .search-filter button {
+          flex: 1 1 calc(50% - 0.6rem);
+        }
+
+        /* Summary cards 2 columns */
+        main .summary-cards {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 0.8rem;
+        }
+
+        /* Batch bar wraps neatly */
+        main .batch-bar {
+          flex-wrap: wrap;
+          gap: 0.5rem 0.6rem;
+        }
+        main .batch-bar .pill {
+          font-size: 0.85rem;
+        }
+
+        /* Tabs: shrink padding, allow scroll, show icons+labels (labels will hide below 680px) */
+        .payout-tabs button {
+          padding: 0.55rem 0.75rem;
+        }
+
+        /* Make tables horizontally scrollable fallback (kept) */
+        main .payments-table table {
+          display: block;
+          overflow-x: auto;
+        }
+      }
+
+      @media (max-width: 720px) {
+        /* Tabs: icons only — hide labels, keep badges */
+        .payout-tabs .tab-label {
+          display: none;
+        }
+        .payout-tabs .tab-icon {
+          display: inline-flex;
+        }
+
+        /* Summary cards single column */
+        main .summary-cards {
+          grid-template-columns: 1fr;
+        }
+
+        /* Action buttons full width inside rows/cards */
+        main .mark-paid,
+        .do-payout,
+        .do-payout-group,
+        .do-payout-batch {
+          width: 100%;
+        }
+
+        /* Turn main payments table into cards */
+        .payments-table thead {
+          display: none;
+        }
+        .payments-table tbody tr {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 6px 12px;
+          padding: 10px 12px;
+          border-bottom: 1px solid #eef2f7;
+        }
+        .payments-table tbody tr td {
+          white-space: normal;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 8px;
+          padding: 6px 0;
+          border-bottom: none;
+        }
+        .payments-table tbody tr td::before {
+          content: attr(data-col);
+          font-weight: 700;
+          color: #6c7a8a;
+          flex: 0 0 auto;
+        }
+        /* Make some cells span full row for clarity */
+        .payments-table tbody tr td[data-col="Job Title"],
+        .payments-table tbody tr td[data-col="Status"],
+        .payments-table tbody tr td[data-col="Action"] {
+          grid-column: 1 / -1;
+        }
+        /* Select column small */
+        .payments-table tbody tr td[data-col="Select"]::before {
+          content: "Select";
+        }
+        .payments-table tbody tr td[data-col="Select"] {
+          justify-content: flex-start;
+          gap: 10px;
+        }
+
+        /* Requests table -> cards */
+        .requests-table thead {
+          display: none;
+        }
+        .requests-table tbody tr {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 6px 12px;
+          padding: 10px 12px;
+          border-bottom: 1px solid #eef2f7;
+        }
+        .requests-table tbody tr td {
+          white-space: normal;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 8px;
+          padding: 6px 0;
+          border-bottom: none;
+        }
+        .requests-table tbody tr td::before {
+          content: attr(data-col);
+          font-weight: 700;
+          color: #6c7a8a;
+          flex: 0 0 auto;
+        }
+        .requests-table tbody tr td[data-col="Jobs"],
+        .requests-table tbody tr td[data-col="Action"] {
+          grid-column: 1 / -1;
+        }
+
+        /* Modal: taller on mobile */
+        .bank-modal .bm-body {
+          max-height: 70vh;
+        }
+      }
+
+      @media (max-width: 480px) {
+        /* Slightly smaller paddings/fonts for compactness */
+        main .payments-header h1 {
+          font-size: 1.25rem;
+        }
+        .payout-tabs button {
+          padding: 0.5rem 0.6rem;
+        }
+        .badge {
+          min-width: 20px;
+          height: 18px;
+          font-size: 0.68rem;
+        }
+      }
     </style>
   </head>
 
@@ -534,29 +692,29 @@
 
         <!-- Tabs -->
         <div class="payout-tabs">
-          <button id="tabAll" class="active" data-mode="all" type="button">
-            All Payments
-            <!-- NEW badge -->
+          <button id="tabAll" class="active" data-mode="all" type="button" aria-label="All Payments">
+            <span class="material-icons-sharp tab-icon" aria-hidden="true">list_alt</span>
+            <span class="tab-label">All Payments</span>
             <span id="badgeAll" class="badge" hidden>0</span>
           </button>
-          <button id="tabRequests" data-mode="requests" type="button">
-            Payout Requests
-            <!-- NEW badge -->
+          <button id="tabRequests" data-mode="requests" type="button" aria-label="Payout Requests">
+            <span class="material-icons-sharp tab-icon" aria-hidden="true">request_quote</span>
+            <span class="tab-label">Payout Requests</span>
             <span id="badgeRequests" class="badge" hidden>0</span>
           </button>
-          <button id="tabUnpaid" data-mode="unpaid" type="button">
-            Unpaid
-            <!-- NEW badge -->
+          <button id="tabUnpaid" data-mode="unpaid" type="button" aria-label="Unpaid">
+            <span class="material-icons-sharp tab-icon" aria-hidden="true">hourglass_empty</span>
+            <span class="tab-label">Unpaid</span>
             <span id="badgeUnpaid" class="badge" hidden>0</span>
           </button>
-          <button id="tabPaid" data-mode="paid" type="button">
-            Paid
-            <!-- NEW badge -->
+          <button id="tabPaid" data-mode="paid" type="button" aria-label="Paid">
+            <span class="material-icons-sharp tab-icon" aria-hidden="true">check_circle</span>
+            <span class="tab-label">Paid</span>
             <span id="badgePaid" class="badge" hidden>0</span>
           </button>
-          <button id="tabDisbursed" data-mode="disbursed" type="button">
-            Disbursed
-            <!-- NEW badge -->
+          <button id="tabDisbursed" data-mode="disbursed" type="button" aria-label="Disbursed">
+            <span class="material-icons-sharp tab-icon" aria-hidden="true">paid</span>
+            <span class="tab-label">Disbursed</span>
             <span id="badgeDisbursed" class="badge" hidden>0</span>
           </button>
         </div>
@@ -970,14 +1128,14 @@
             if (payErr) {
               console.error(payErr);
               tbodyPayments.innerHTML =
-                '<tr><td colspan="8">Error loading payments.</td></tr>';
+                '<tr><td colspan="8" data-col="Notice" class="sub">Error loading payments.</td></tr>';
               return;
             }
             if (!pays || pays.length === 0) {
               __PAYMENTS = [];
               window.__PAYMENTS = __PAYMENTS; /* expose (ADDED) */
               tbodyPayments.innerHTML =
-                '<tr><td colspan="8" class="sub">No payment requests yet.</td></tr>';
+                '<tr><td colspan="8" data-col="Notice" class="sub">No payment requests yet.</td></tr>';
               if (window.__buildRequests) window.__buildRequests();
               return;
             }
@@ -1146,14 +1304,14 @@
                      data-installer-id="${p.installer_id}"
                      data-amount="${amountNum}"
                      data-batch="${p.payout_batch_no || ""}">
-                  <td class="col-select" style="text-align:center;">${selectCell}</td>
-                  <td class="col-jobid">${jobDisplay}</td>
-                  <td class="col-worker">${workerDisplay}</td>
-                  <td class="col-title">${titleDisplay}</td>
-                  <td>${amount}</td>
-                  <td>${reqDate}</td>
-                  <td><span class="${ui.cls}">${ui.text}</span></td>
-                  <td>${
+                  <td class="col-select" style="text-align:center;" data-col="Select">${selectCell}</td>
+                  <td class="col-jobid" data-col="Job ID">${jobDisplay}</td>
+                  <td class="col-worker" data-col="Worker">${workerDisplay}</td>
+                  <td class="col-title" data-col="Job Title">${titleDisplay}</td>
+                  <td data-col="Amount">${amount}</td>
+                  <td data-col="Requested Date">${reqDate}</td>
+                  <td data-col="Status"><span class="${ui.cls}">${ui.text}</span></td>
+                  <td data-col="Action">${
                     ui.action === "mark"
                       ? '<button class="mark-paid" type="button">Mark as Paid</button>'
                       : ui.action === "payout"
@@ -1178,14 +1336,14 @@
                      data-installer-id=""
                      data-amount="${g.total}"
                      data-batch="${g.key}">
-                  <td class="col-select" style="text-align:center;">—</td>
-                  <td class="col-jobid mono">${jobsTitle}</td>
-                  <td class="col-worker">${g.installer_display}</td>
-                  <td class="col-title">Batch Payout (${g.count} payments)</td>
-                  <td class="mono">${pesoFmt(g.total)}</td>
-                  <td>${reqDate}</td>
-                  <td><span class="status pending">Pending Payout</span></td>
-                  <td>
+                  <td class="col-select" style="text-align:center;" data-col="Select">—</td>
+                  <td class="col-jobid mono" data-col="Job ID">${jobsTitle}</td>
+                  <td class="col-worker" data-col="Worker">${g.installer_display}</td>
+                  <td class="col-title" data-col="Job Title">Batch Payout (${g.count} payments)</td>
+                  <td class="mono" data-col="Amount">${pesoFmt(g.total)}</td>
+                  <td data-col="Requested Date">${reqDate}</td>
+                  <td data-col="Status"><span class="status pending">Pending Payout</span></td>
+                  <td data-col="Action">
                     <button class="do-payout-batch" type="button"
                             data-batch="${g.key}"
                             data-payment-ids='${JSON.stringify(
@@ -1212,23 +1370,21 @@
                      data-installer-id=""
                      data-amount="${g.total}"
                      data-batch="${g.key}">
-                  <td class="col-select" style="text-align:center;">—</td>
-                  <td class="col-jobid mono">${jobsTitle}</td>
-                  <td class="col-worker">${g.installer_display}</td>
-                  <td class="col-title">Batch Disbursed (${
-                    g.count
-                  } payments)</td>
-                  <td class="mono">${pesoFmt(g.total)}</td>
-                  <td>${reqDate}</td>
-                  <td><span class="status paid">Disbursed</span></td>
-                  <td><button type="button" disabled>Paid</button></td>
+                  <td class="col-select" style="text-align:center;" data-col="Select">—</td>
+                  <td class="col-jobid mono" data-col="Job ID">${jobsTitle}</td>
+                  <td class="col-worker" data-col="Worker">${g.installer_display}</td>
+                  <td class="col-title" data-col="Job Title">Batch Disbursed (${g.count} payments)</td>
+                  <td class="mono" data-col="Amount">${pesoFmt(g.total)}</td>
+                  <td data-col="Requested Date">${reqDate}</td>
+                  <td data-col="Status"><span class="status paid">Disbursed</span></td>
+                  <td data-col="Action"><button type="button" disabled>Paid</button></td>
                 </tr>`
               );
             }
 
             tbodyPayments.innerHTML =
               rowsHtml.join("") ||
-              '<tr><td colspan="8" class="sub">No payment requests yet.</td></tr>';
+              '<tr><td colspan="8" data-col="Notice" class="sub">No payment requests yet.</td></tr>';
 
             // apply current filters/search
             searchBtnEl.click();
@@ -1285,7 +1441,7 @@
 
             if (groups.size === 0) {
               requestsTbody.innerHTML =
-                '<tr><td colspan="6" class="sub" style="padding:1rem;">No payout requests yet.</td></tr>';
+                '<tr><td colspan="6" data-col="Notice" class="sub" style="padding:1rem;">No payout requests yet.</td></tr>';
               return;
             }
 
@@ -1310,12 +1466,12 @@
                        /'</g,
                        "&apos;"
                      )}'>
-                  <td class="mono">${jobsTitle}</td>
-                  <td>${g.installer_display}</td>
-                  <td>${g.count}</td>
-                  <td class="mono">${pesoFmt(g.total)}</td>
-                  <td>${fmt(g.requested_at)}</td>
-                  <td><button class="do-payout-group" type="button">Disburse Group</button></td>
+                  <td class="mono" data-col="Jobs">${jobsTitle}</td>
+                  <td data-col="Installer">${g.installer_display}</td>
+                  <td data-col="# Payments">${g.count}</td>
+                  <td class="mono" data-col="Total Amount">${pesoFmt(g.total)}</td>
+                  <td data-col="Requested Date">${fmt(g.requested_at)}</td>
+                  <td data-col="Action"><button class="do-payout-group" type="button">Disburse Group</button></td>
                 </tr>`;
               })
               .join("");

@@ -21,26 +21,18 @@
         --radius: 14px;
         --border: #e5e7eb;
       }
-      body {
-        background: var(--bg);
-      }
-      main {
-        margin-top: 1.4rem;
-      }
+      body { background: var(--bg); }
+      main { margin-top: 1.4rem; }
 
       .page-header {
         display: flex;
         align-items: center;
         justify-content: space-between;
         margin-bottom: 1rem;
+        gap: 12px;
       }
-      .page-header h1 {
-        color: var(--ink);
-      }
-      .page-header .actions {
-        display: flex;
-        gap: 10px;
-      }
+      .page-header h1 { color: var(--ink); margin: 0 0 4px 0; }
+      .page-header .actions { display: flex; gap: 10px; flex-wrap: wrap; }
 
       .btn {
         border: 1px solid var(--brand);
@@ -51,41 +43,63 @@
         cursor: pointer;
         text-decoration: none;
         text-align: center;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        line-height: 1;
+        white-space: nowrap;
       }
-      .btn.secondary {
-        background: #fff;
-        color: #0f172a;
-        border-color: #d1e7db;
-      }
-      .btn.small {
-        padding: 8px 12px;
-        font-size: 13px;
-      }
-      .btn.danger {
-        background: #fff;
-        color: var(--danger);
-        border-color: #ffc9c7;
-      }
-      .btn.disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-        pointer-events: none;
-      }
-      .btn[disabled] {
-        opacity: 0.7;
-        cursor: not-allowed;
-      }
+      .btn.secondary { background: #fff; color: #0f172a; border-color: #d1e7db; }
+      .btn.small { padding: 8px 12px; font-size: 13px; }
+      .btn.danger { background: #fff; color: var(--danger); border-color: #ffc9c7; }
+      .btn.disabled, .btn[disabled] { opacity: 0.6; cursor: not-allowed; }
 
+      /* Base grid: sensible 2-up on tablets/smaller desktops */
       .grid {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 16px;
       }
-      @media (max-width: 860px) {
-        .grid {
-          grid-template-columns: 1fr;
-        }
+
+      /* Large screens: 3-up if space allows (will be overridden by the
+         new desktop auto-fit rule below to maximize space) */
+      @media (min-width: 1280px) {
+        .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
       }
+
+      @media (max-width: 860px) {
+        .grid { grid-template-columns: 1fr; }
+      }
+
+      /* Remove the "card-style" mobile overrides */
+@media (max-width: 720px) {
+  .payments-table thead {
+    display: table-header-group; /* keep the headers */
+  }
+  .payments-table tbody tr {
+    display: table-row; /* keep rows as rows */
+    padding: 0; /* reset extra padding */
+  }
+  .payments-table tbody tr td {
+    display: table-cell; /* keep normal cells */
+    padding: 0.75rem;
+    border-bottom: 1px solid #eef2f7;
+  }
+  .payments-table tbody tr td::before {
+    content: none !important; /* remove those "data-col" labels */
+  }
+
+  /* Just make the table horizontally scrollable if it's too wide */
+  .payments-table {
+    overflow-x: auto;
+  }
+  .payments-table table {
+    width: 100%;
+    min-width: 640px; /* force scroll if screen narrower than this */
+    display: table;
+  }
+}
 
       .course-card {
         display: flex;
@@ -96,6 +110,7 @@
         border-radius: 16px;
         padding: 14px 18px;
         box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+        min-width: 0;
       }
       .course-image {
         flex: 0 0 220px;
@@ -105,151 +120,164 @@
         background: #f2f4f7;
       }
       .course-image img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: block;
+        width: 100%; height: 100%; object-fit: cover; display: block;
       }
       .course-content {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        min-width: 0;
-        flex: 1 1 auto;
+        display: flex; flex-direction: column; gap: 8px; min-width: 0; flex: 1 1 auto;
       }
       .course-content h3 {
-        margin: 0;
-        font-size: 18px;
-        color: #1f2937;
+        margin: 0; font-size: 18px; color: #1f2937;
+        overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
       }
-      .course-content p {
-        margin: 0;
-        color: #6b7280;
-        font-size: 13px;
-        line-height: 1.4;
-      }
-      .meta {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-        font-size: 12px;
-        color: #6b7280;
-      }
+      .course-content p { margin: 0; color: #6b7280; font-size: 13px; line-height: 1.4; }
+      .meta { display: flex; gap: 8px; flex-wrap: wrap; font-size: 12px; color: #6b7280; }
       .pill {
-        background: #eef6ff;
-        color: #0f172a;
-        padding: 4px 10px;
-        border-radius: 999px;
-        border: 1px solid #d7e7ff;
+        background: #eef6ff; color: #0f172a; padding: 4px 10px; border-radius: 999px;
+        border: 1px solid #d7e7ff; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
       }
       .right {
-        margin-left: auto;
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        align-items: flex-end;
+        margin-left: auto; display: flex; flex-direction: column; gap: 8px; align-items: flex-end; min-width: 140px;
       }
-      .actions-col {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-        flex-wrap: wrap;
-      }
-      .small {
-        font-size: 12px;
-        color: #7a7a7a;
-      }
-      .link {
-        color: var(--brand);
-        text-decoration: none;
-        font-weight: 600;
-      }
+      .actions-col { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+      .small { font-size: 12px; color: #7a7a7a; }
+      .link { color: var(--brand); text-decoration: none; font-weight: 600; }
       .empty {
-        border: 1px dashed #cbd5e1;
-        border-radius: 16px;
-        padding: 20px;
-        text-align: center;
-        color: #6b7280;
+        border: 1px dashed #cbd5e1; border-radius: 16px; padding: 20px; text-align: center; color: #6b7280;
       }
-      .course-users {
-        font-size: 12px;
-        color: #555;
-        margin-top: 4px;
-      }
+      .course-users { font-size: 12px; color: #555; margin-top: 4px; }
       .notice {
-        display: none;
-        margin: 10px 0 0;
-        font-size: 12px;
-        color: #b45309;
-        background: #fff7ed;
-        border: 1px solid #fed7aa;
-        padding: 8px 10px;
-        border-radius: 10px;
+        display: none; margin: 10px 0 0; font-size: 12px; color: #b45309; background: #fff7ed;
+        border: 1px solid #fed7aa; padding: 8px 10px; border-radius: 10px;
       }
-
-      .pill.published {
-        background: #ecfdf5;
-        border-color: #bbf7d0;
-        color: #065f46;
-      }
+      .pill.published { background: #ecfdf5; border-color: #bbf7d0; color: #065f46; }
 
       /* Toggle switch */
-      .toggle-wrap {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        font-size: 12px;
-        color: #374151;
-        user-select: none;
-      }
-      .switch {
-        position: relative;
-        display: inline-block;
-        width: 40px;
-        height: 22px;
-      }
-      .switch input {
-        opacity: 0;
-        width: 0;
-        height: 0;
-      }
+      .toggle-wrap { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: #374151; user-select: none; }
+      .switch { position: relative; display: inline-block; width: 40px; height: 22px; }
+      .switch input { opacity: 0; width: 0; height: 0; }
       .slider {
-        position: absolute;
-        cursor: pointer;
-        inset: 0;
-        background: #e5e7eb;
-        transition: 0.2s;
-        border-radius: 999px;
-        border: 1px solid #d1d5db;
+        position: absolute; cursor: pointer; inset: 0; background: #e5e7eb; transition: 0.2s;
+        border-radius: 999px; border: 1px solid #d1d5db;
       }
       .slider:before {
-        position: absolute;
-        content: "";
-        height: 18px;
-        width: 18px;
-        left: 2px;
-        top: 1.5px;
-        background: white;
-        transition: 0.2s;
-        border-radius: 999px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        position: absolute; content: ""; height: 18px; width: 18px; left: 2px; top: 1.5px; background: #fff;
+        transition: 0.2s; border-radius: 999px; box-shadow: 0 1px 3px rgba(0,0,0,.2);
       }
-      input:checked + .slider {
-        background: #20a44c;
-        border-color: #20a44c;
+      input:checked + .slider { background: #20a44c; border-color: #20a44c; }
+      input:checked + .slider:before { transform: translateX(18px); }
+      .toggle-hint { font-size: 11px; color: #6b7280; }
+
+      /* =========================
+         Mobile (UNCHANGED)
+         ========================= */
+      @media (max-width: 640px) {
+        .page-header { flex-direction: column; align-items: stretch; }
+        .page-header .actions { width: 100%; gap: 8px; }
+
+        #addCourseBtn, #refreshBtn {
+          width: 42px; height: 42px; padding: 0; border-radius: 12px; font-size: 0; position: relative;
+        }
+        #addCourseBtn::before, #refreshBtn::before {
+          font-family: "Material Icons Sharp"; font-weight: normal; font-style: normal; font-size: 22px; line-height: 1;
+          display: inline-block; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; position: relative; top: 1px;
+          color: currentColor;
+        }
+        #addCourseBtn::before { content: "add"; }
+        #refreshBtn::before { content: "refresh"; }
+
+        .course-card { flex-direction: column; align-items: stretch; padding: 12px; gap: 12px; }
+        .course-image { flex: none; width: 100%; height: auto; aspect-ratio: 16 / 9; border-radius: 12px; }
+        .course-content h3 { white-space: normal; line-height: 1.2; }
+        .course-content p { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .meta { gap: 6px; }
+        .pill { padding: 3px 8px; font-size: 11px; max-width: 100%; }
+        .right { align-items: stretch; margin-left: 0; min-width: 0; gap: 6px; }
+        .right .small { order: 2; }
+        .actions-col { width: 100%; order: 1; gap: 6px; }
+        .actions-col .btn.small { flex: 1 1 0; min-width: 44px; padding: 10px 12px; }
+        .actions-col a.btn.small.secondary[data-edit-link],
+        .actions-col button.btn.small.danger[data-delete-btn] { position: relative; font-size: 0; }
+        .actions-col a.btn.small.secondary[data-edit-link]::before {
+          content: "edit"; font-family: "Material Icons Sharp"; font-size: 20px; line-height: 1; display: inline-block; color: currentColor;
+        }
+        .actions-col button.btn.small.danger[data-delete-btn]::before {
+          content: "delete"; font-family: "Material Icons Sharp"; font-size: 20px; line-height: 1; display: inline-block; color: var(--danger);
+        }
       }
-      input:checked + .slider:before {
-        transform: translateX(18px);
+
+      /* =========================
+         Desktop/PC polish (MAX SPACE)
+         ========================= */
+      @media (min-width: 1025px) {
+        /* Make the grid auto-fill available width with tidy rectangles */
+        .grid {
+          grid-template-columns: repeat(auto-fit, minmax(520px, 1fr));
+          gap: 20px; /* slightly larger gap for clarity */
+        }
+
+        /* Clean rectangular tiles with subtle interaction */
+        .course-card {
+          align-items: stretch;
+          padding: 18px;
+          border-radius: 14px;
+          box-shadow: 0 8px 22px rgba(0, 0, 0, 0.05);
+          transition: box-shadow 0.18s ease, transform 0.18s ease;
+          min-height: 180px; /* consistent rectangle */
+        }
+        .course-card:hover {
+          box-shadow: 0 12px 28px rgba(0, 0, 0, 0.07);
+          transform: translateY(-1px);
+        }
+
+        /* Image/content proportions that stay balanced across widths */
+        .course-image {
+          /* Clamp keeps image width proportional without wasting space */
+          flex: 0 0 clamp(220px, 28%, 300px);
+          height: 160px;
+          border-radius: 12px;
+        }
+
+        .course-content h3 { font-size: 19px; }
+
+        /* Clamp description to 2 lines for equal height rows */
+        .course-content p {
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+          min-height: 2.8em;
+        }
+
+        .pill { padding: 4px 10px; font-size: 12px; max-width: 260px; }
+        .right {
+          min-width: 190px;
+          padding-left: 8px;
+          align-items: flex-end;
+          justify-content: space-between;
+        }
+        .right .small { color: #64748b; }
+
+        /* Full labels on action buttons */
+        #addCourseBtn, #refreshBtn {
+          font-size: 14px !important;
+          padding: 10px 14px !important;
+          border-radius: 999px !important;
+        }
+        #addCourseBtn::before, #refreshBtn::before { content: none !important; }
       }
-      .toggle-hint {
-        font-size: 11px;
-        color: #6b7280;
+
+      /* Medium screens: tidy, readable */
+      @media (min-width: 641px) and (max-width: 1024px) {
+        .course-card { gap: 14px; }
+        .course-image { flex-basis: 200px; height: 112px; }
+        .course-content h3 { font-size: 17px; }
+        .course-content p { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
       }
     </style>
   </head>
   <body>
     <div class="container">
-      <!-- Sidebar -->
+      <!-- Sidebar (untouched) -->
       <aside>
         <div class="toggle">
           <div class="logo">
@@ -262,46 +290,16 @@
         </div>
 
         <div class="sidebar">
-          <a href="dashboard.html"
-            ><span class="material-icons-sharp">dashboard</span>
-            <h3>Dashboard</h3></a
-          >
-          <a href="workerVerification.html"
-            ><span class="material-icons-sharp">engineering</span>
-            <h3>Workers<br />Verification</h3></a
-          >
-          <a href="jobVerification.html"
-            ><span class="material-icons-sharp">work</span>
-            <h3>Jobs<br />Verification</h3></a
-          >
-          <a href="jobApplicationVerification.html"
-            ><span class="material-icons-sharp">approval</span>
-            <h3>Application<br />Verification</h3></a
-          >
-          <a href="adminVerification.html"
-            ><span class="material-icons-sharp">shield</span>
-            <h3>Admin<br />Verification</h3></a
-          >
-          <a href="manageShop.html"
-            ><span class="material-icons-sharp">shop</span>
-            <h3>Manage<br />Shop</h3></a
-          >
-          <a href="paymentsRequest.html">
-            <span class="material-icons-sharp">payments</span>
-            <h3>Payments<br />Request</h3>
-          </a>
-          <a href="courses.html" class="active"
-            ><span class="material-icons-sharp">school</span>
-            <h3>Course<br />Publisher</h3></a
-          >
-          <a href="settings.html"
-            ><span class="material-icons-sharp">settings</span>
-            <h3>Settings</h3></a
-          >
-          <a href="#" id="logout-btn"
-            ><span class="material-icons-sharp">logout</span>
-            <h3>Logout</h3></a
-          >
+          <a href="dashboard.html"><span class="material-icons-sharp">dashboard</span><h3>Dashboard</h3></a>
+          <a href="workerVerification.html"><span class="material-icons-sharp">engineering</span><h3>Workers<br />Verification</h3></a>
+          <a href="jobVerification.html"><span class="material-icons-sharp">work</span><h3>Jobs<br />Verification</h3></a>
+          <a href="jobApplicationVerification.html"><span class="material-icons-sharp">approval</span><h3>Application<br />Verification</h3></a>
+          <a href="adminVerification.html"><span class="material-icons-sharp">shield</span><h3>Admin<br />Verification</h3></a>
+          <a href="manageShop.html"><span class="material-icons-sharp">shop</span><h3>Manage<br />Shop</h3></a>
+          <a href="paymentsRequest.html"><span class="material-icons-sharp">payments</span><h3>Payments<br />Request</h3></a>
+          <a href="courses.html" class="active"><span class="material-icons-sharp">school</span><h3>Course<br />Publisher</h3></a>
+          <a href="settings.html"><span class="material-icons-sharp">settings</span><h3>Settings</h3></a>
+          <a href="#" id="logout-btn"><span class="material-icons-sharp">logout</span><h3>Logout</h3></a>
         </div>
       </aside>
 
@@ -321,14 +319,12 @@
         <div id="coursesGrid" class="grid"><!-- populated by JS --></div>
 
         <div id="emptyState" class="empty" style="display: none">
-          No courses yet. Click <strong>+ Add Course</strong> to create your
-          first one.
+          No courses yet. Click <strong>+ Add Course</strong> to create your first one.
         </div>
 
         <div id="nameNotice" class="notice">
-          Some creator/editor names couldn’t be loaded. If you’re seeing
-          “Unknown,” update RLS to allow admins to SELECT name/email from
-          <code>public.admin</code>.
+          Some creator/editor names couldn’t be loaded. If you’re seeing “Unknown,”
+          update RLS to allow admins to SELECT name/email from <code>public.admin</code>.
         </div>
       </main>
     </div>
@@ -385,9 +381,7 @@
       }
 
       async function togglePublish(courseId, checked, checkboxEl) {
-        const label = checkboxEl
-          ?.closest(".toggle-wrap")
-          ?.querySelector(".toggle-hint");
+        const label = checkboxEl?.closest(".toggle-wrap")?.querySelector(".toggle-hint");
         const card = checkboxEl?.closest(".course-card");
         const pill = card?.querySelector("[data-published-pill]");
         const editBtn = card?.querySelector("[data-edit-link]");
@@ -414,9 +408,7 @@
             );
           }
         }
-        if (delBtn) {
-          delBtn.disabled = !!checked; // disable when published, enable when draft
-        }
+        if (delBtn) { delBtn.disabled = !!checked; } // disable when published
 
         const { error } = await supabase
           .from("course")
@@ -447,9 +439,7 @@
               );
             }
           }
-          if (delBtn) {
-            delBtn.disabled = !!nowChecked;
-          }
+          if (delBtn) { delBtn.disabled = !!nowChecked; }
         }
 
         checkboxEl.disabled = false;
@@ -488,9 +478,7 @@
           .order("created_at", { ascending: false });
 
         if (error) {
-          grid.appendChild(
-            el("div", { class: "empty", html: `Error: ${error.message}` })
-          );
+          grid.appendChild(el("div", { class: "empty", html: `Error: ${error.message}` }));
           return;
         }
         if (!data || data.length === 0) {
@@ -511,11 +499,8 @@
           const editLink = el(
             "a",
             {
-              class:
-                "btn small secondary" + (c.is_published ? " disabled" : ""),
-              href: c.is_published
-                ? "#"
-                : `courseBuilder.html?course=${encodeURIComponent(c.id)}`,
+              class: "btn small secondary" + (c.is_published ? " disabled" : ""),
+              href: c.is_published ? "#" : `courseBuilder.html?course=${encodeURIComponent(c.id)}`,
               "data-edit-link": "1",
               "data-id": c.id,
             },
@@ -524,18 +509,11 @@
 
           const delBtn = el(
             "button",
-            {
-              class: "btn small danger",
-              type: "button",
-              "data-delete-btn": "1",
-            },
+            { class: "btn small danger", type: "button", "data-delete-btn": "1" },
             [document.createTextNode("Delete")]
           );
-          // Disable delete when published
           if (c.is_published) delBtn.setAttribute("disabled", "true");
-          delBtn.addEventListener("click", () =>
-            deleteCourse(c.id, c.title, delBtn)
-          );
+          delBtn.addEventListener("click", () => deleteCourse(c.id, c.title, delBtn));
 
           const toggleId = `pub_${c.id}`;
           const checkbox = el("input", {
@@ -545,22 +523,14 @@
             "on:change": (e) => togglePublish(c.id, e.target.checked, e.target),
           });
           const slider = el("span", { class: "slider" });
-          const switchLabel = el("label", { class: "switch", for: toggleId }, [
-            checkbox,
-            slider,
-          ]);
+          const switchLabel = el("label", { class: "switch", for: toggleId }, [checkbox, slider]);
           const toggleWrap = el("div", { class: "toggle-wrap" }, [
             switchLabel,
-            el("span", {
-              class: "toggle-hint",
-              html: c.is_published ? "Published" : "Draft",
-            }),
+            el("span", { class: "toggle-hint", html: c.is_published ? "Published" : "Draft" }),
           ]);
 
           const createdName = nameMap[c.created_by] || "Unknown";
-          const editedName = c.last_edited_by
-            ? nameMap[c.last_edited_by] || "Unknown"
-            : "—";
+          const editedName = c.last_edited_by ? nameMap[c.last_edited_by] || "Unknown" : "—";
 
           const publishedPill = el("span", {
             class: "pill" + (c.is_published ? " published" : ""),
@@ -570,10 +540,7 @@
 
           const card = el("div", { class: "course-card" }, [
             el("div", { class: "course-image" }, [
-              el("img", {
-                src: c.thumbnail_url || "../images/profile-4.jpg",
-                alt: c.title,
-              }),
+              el("img", { src: c.thumbnail_url || "../images/profile-4.jpg", alt: c.title }),
             ]),
             el("div", { class: "course-content" }, [
               el("h3", { html: c.title }),
@@ -581,10 +548,7 @@
               el("div", { class: "meta" }, [
                 el("span", { class: "pill", html: `Slug: ${c.slug}` }),
                 el("span", { class: "pill", html: `Level: ${c.level ?? 0}` }),
-                el("span", {
-                  class: "pill",
-                  html: `Tags: ${(c.tags || []).join(", ") || "—"}`,
-                }),
+                el("span", { class: "pill", html: `Tags: ${(c.tags || []).join(", ") || "—"}` }),
                 publishedPill,
               ]),
               el("div", {
@@ -593,15 +557,8 @@
               }),
             ]),
             el("div", { class: "right" }, [
-              el("span", {
-                class: "small",
-                html: new Date(c.created_at).toLocaleString(),
-              }),
-              el("div", { class: "actions-col" }, [
-                editLink,
-                toggleWrap,
-                delBtn,
-              ]),
+              el("span", { class: "small", html: new Date(c.created_at).toLocaleString() }),
+              el("div", { class: "actions-col" }, [editLink, toggleWrap, delBtn]),
             ]),
           ]);
           grid.appendChild(card);

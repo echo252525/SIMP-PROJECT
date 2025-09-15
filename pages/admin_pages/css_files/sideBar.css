@@ -389,3 +389,14 @@ b {
       background-color: #20a44c;
       color: white;
     }
+
+    /* Hide or slim the sidebar scrollbar */
+aside {
+  scrollbar-width: none;       /* Firefox */
+  -ms-overflow-style: none;    /* IE/Edge */
+}
+
+aside::-webkit-scrollbar {
+  width: 0px;                  /* Chrome/Safari/Opera */
+  background: transparent;     /* Optional: no track */
+}

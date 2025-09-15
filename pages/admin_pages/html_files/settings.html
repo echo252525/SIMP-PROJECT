@@ -25,7 +25,7 @@
 
       .container {
         display: grid;
-        width: 96%;
+        width: min(96%, 1600px);
         margin: 0 auto;
         gap: 1.8rem;
         grid-template-columns: 12rem auto;
@@ -38,9 +38,14 @@
       }
 
       .settings-wrap {
-        max-width: 880px;
+        /* (original) centers content with a cap */
+        max-width: 1080px;
         margin: 0 auto;
       }
+      @media (min-width: 1440px) {
+        .settings-wrap { max-width: 1200px; }
+      }
+
       .card {
         background: #fff;
         border: 1px solid #e7edf3;
@@ -53,17 +58,16 @@
         justify-content: space-between;
         align-items: center;
         margin-bottom: 0.6rem;
+        gap: .6rem;
+        flex-wrap: wrap;
       }
-      .card-header h2 {
-        margin: 0;
-      }
-      .muted {
-        color: #6c7a8a;
-      }
+      .card-header h2 { margin: 0; }
+      .muted { color: #6c7a8a; }
 
+      /* AUTO-FIT to maximize/minimize space */
       .form-grid {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
         gap: 1rem 1.2rem;
         margin-top: 1rem;
       }
@@ -101,9 +105,7 @@
         border-radius: 9999px;
         padding: 0.25rem 0.6rem;
       }
-      .pill .material-icons-sharp {
-        font-size: 1rem;
-      }
+      .pill .material-icons-sharp { font-size: 1rem; }
 
       .btn {
         display: inline-flex;
@@ -113,40 +115,24 @@
         border-radius: 10px;
         cursor: pointer;
         border: 1px solid transparent;
+        line-height: 1;
       }
-      .btn-ghost {
-        background: #fff;
-        border: 1px solid #e7edf3;
-      }
-      .btn-primary {
-        background: #1c2430;
-        color: #fff;
-      }
-      .btn-danger {
-        background: #ef4444;
-        color: #fff;
-      }
-      .btn:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-      }
+      .btn-ghost { background: #fff; border: 1px solid #e7edf3; }
+      .btn-primary { background: #1c2430; color: #fff; }
+      .btn-danger { background: #ef4444; color: #fff; }
+      .btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
       .actions {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-top: 1rem;
+        gap: .6rem;
+        flex-wrap: wrap;
       }
-      .help {
-        font-size: 0.9rem;
-        color: #6c7a8a;
-      }
-      .success {
-        color: #20a44c;
-      }
-      .error {
-        color: #ef4444;
-      }
+      .help { font-size: 0.9rem; color: #6c7a8a; }
+      .success { color: #20a44c; }
+      .error { color: #ef4444; }
 
       @media (max-width: 1200px) {
         .container {
@@ -164,9 +150,6 @@
           margin-top: 8rem;
           padding: 0 1rem;
         }
-        .form-grid {
-          grid-template-columns: 1fr;
-        }
       }
       /*==END==*/
 
@@ -176,6 +159,7 @@
         align-items: center;
         gap: 1rem;
         margin-top: 0.6rem;
+        flex-wrap: wrap;
       }
       .avatar-wrap {
         position: relative;
@@ -205,13 +189,65 @@
         object-fit: cover;
         display: none;
       }
-      .avatar-wrap.has-image .avatar-img {
-        display: block;
-      }
+      .avatar-wrap.has-image .avatar-img { display: block; }
       .avatar-actions .hint {
         font-size: 0.85rem;
         color: #6c7a8a;
         margin-top: 0.2rem;
+      }
+
+      /* =========================================================
+         SPACE-AWARE COMPACT MODE (auto via JS)
+         ========================================================= */
+      body.is-compact .card { padding: 0.9rem 1rem; }
+      body.is-compact .muted { font-size: 0.95rem; }
+      body.is-compact input { padding: 0.6rem 0.75rem; }
+      body.is-compact .profile-row { gap: 0.8rem; }
+      body.is-compact .avatar-wrap { width: 72px; height: 72px; }
+      body.is-compact .avatar-fallback { font-size: 1.05rem; }
+
+      body.is-compact .card-header > div {
+        display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;
+      }
+      body.is-compact .btn {
+        padding: 0.55rem;
+        width: 40px;
+        height: 40px;
+        justify-content: center;
+        border-radius: 12px;
+        font-size: 0;            /* hide text, keep icon */
+      }
+      body.is-compact .btn .material-icons-sharp { font-size: 20px; }
+
+      body.is-compact .actions .btn-danger {
+        width: auto;
+        min-width: 44px;
+        height: 40px;
+        font-size: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0;
+      }
+      body.is-compact .actions .btn-danger .material-icons-sharp { font-size: 20px; }
+
+      @media (max-width: 768px) {
+        body:not(.is-compact) .row.help { font-size: .95rem; }
+        .row.help { gap: 0.5rem; }
+        .row.help span[style*="width: 1px"] { height: 14px !important; }
+      }
+
+      /* ========= NEW DESKTOP MAXIMIZATION OVERRIDES ========= */
+      @media (min-width: 1024px) {
+        /* Let settings content fill the available main column */
+        .settings-wrap {
+          max-width: 100%;
+          margin: 0; /* align to left under main content; remove center cap */
+        }
+        /* Use wider field columns to better utilize space */
+        .form-grid {
+          grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        }
       }
     </style>
   </head>
@@ -282,7 +318,7 @@
                 <button
                   id="edit-btn"
                   class="btn btn-ghost"
-                  title="Edit profile"
+                  title="Edit"
                 >
                   <span class="material-icons-sharp">edit</span> Edit
                 </button>
@@ -290,6 +326,7 @@
                   id="save-btn"
                   class="btn btn-primary"
                   style="display: none"
+                  title="Save"
                 >
                   <span class="material-icons-sharp">save</span> Save
                 </button>
@@ -297,6 +334,7 @@
                   id="cancel-btn"
                   class="btn btn-ghost"
                   style="display: none"
+                  title="Cancel"
                 >
                   <span class="material-icons-sharp">close</span> Cancel
                 </button>
@@ -317,7 +355,7 @@
                 <div id="avatar-fallback" class="avatar-fallback">—</div>
               </div>
               <div class="avatar-actions">
-                <button id="avatar-btn" class="btn btn-ghost">
+                <button id="avatar-btn" class="btn btn-ghost" title="Change photo">
                   <span class="material-icons-sharp">photo_camera</span>
                   Change photo
                 </button>
@@ -371,6 +409,7 @@
                 id="delete-btn"
                 class="btn btn-danger"
                 style="display: none"
+                title="Delete my account"
               >
                 <span class="material-icons-sharp">delete_forever</span> Delete
                 my account
@@ -501,7 +540,6 @@
             return;
           }
         }
-        // fallback (no image)
         avatarImg.removeAttribute("src");
         avatarWrap.classList.remove("has-image");
       }
@@ -561,6 +599,7 @@
         }
         if (newPhone.length === 0) newPhone = null;
 
+        const saveBtn = document.getElementById("save-btn");
         saveBtn.disabled = true;
         const { data, error } = await supa
           .from("admin")
@@ -592,32 +631,25 @@
       }
 
       async function deleteAccount() {
-        if (
-          !confirm(
-            "This will permanently delete your account and sign you out. Continue?"
-          )
-        )
+        if (!confirm("This will permanently delete your account and sign you out. Continue?"))
           return;
 
+        const deleteBtn = document.getElementById("delete-btn");
         deleteBtn.disabled = true;
         setStatus("Deleting…");
 
-        // Try Functions.invoke (includes JWT automatically)
         try {
           const invokeRes = await supa.functions.invoke("delete-admin", {
             body: { user_id: currentUser.id },
           });
           if (invokeRes.error) throw invokeRes.error;
         } catch (e1) {
-          // Fallback: direct POST with Bearer token (covers CORS/proxy edge cases)
           try {
             const sessRes = await supa.auth.getSession();
             const token = sessRes?.data?.session?.access_token || "";
-            if (!token)
-              throw new Error("Missing access token. Please re-login.");
+            if (!token) throw new Error("Missing access token. Please re-login.");
 
-            const fnUrl =
-              SUPABASE_URL.replace(/\/+$/, "") + "/functions/v1/delete-admin";
+            const fnUrl = SUPABASE_URL.replace(/\/+$/, "") + "/functions/v1/delete-admin";
             const r = await fetch(fnUrl, {
               method: "POST",
               headers: {
@@ -644,14 +676,9 @@
           }
         }
 
-        // Sign out and redirect
-        try {
-          await supa.auth.signOut();
-        } catch (_) {}
+        try { await supa.auth.signOut(); } catch (_) {}
         setStatus("Account deleted. Redirecting…", "success");
-        setTimeout(() => {
-          window.location.href = "../../../index.html";
-        }, 800);
+        setTimeout(() => { window.location.href = "../../../index.html"; }, 800);
       }
 
       // === Avatar upload/change ===
@@ -675,12 +702,8 @@
 
       async function uploadAvatar(file) {
         const err = validImage(file);
-        if (err) {
-          setStatus(err, "error");
-          return;
-        }
+        if (err) { setStatus(err, "error"); return; }
 
-        // Optimistic preview
         try {
           const blobUrl = URL.createObjectURL(file);
           avatarImg.src = blobUrl;
@@ -694,7 +717,6 @@
         const newPath = `${currentUser.id}/avatar.${ext}`;
         const oldPath = currentAvatarPath && currentAvatarPath !== newPath ? currentAvatarPath : null;
 
-        // Upload (upsert) to private bucket using RLS
         const { error: upErr } = await supa.storage
           .from("admin_profile")
           .upload(newPath, file, {
@@ -707,21 +729,14 @@
           console.error(upErr);
           setStatus(upErr.message || "Upload failed.", "error");
           avatarBtn.disabled = false;
-          // revert optimistic preview if needed
           await refreshAvatarDisplay(currentAvatarPath, nameEl.value, emailEl.value);
           return;
         }
 
-        // Optionally remove old file if path changed (keeps bucket tidy)
         if (oldPath) {
-          try {
-            await supa.storage.from("admin_profile").remove([oldPath]);
-          } catch (_) {
-            // best-effort cleanup; ignore failure
-          }
+          try { await supa.storage.from("admin_profile").remove([oldPath]); } catch (_) {}
         }
 
-        // Update DB with storage path (NOT the signed URL)
         const { data: updated, error: updErr } = await supa
           .from("admin")
           .update({ admin_profile_url: newPath })
@@ -733,12 +748,10 @@
           console.error(updErr);
           setStatus(updErr.message || "Saved, but failed to update profile path.", "error");
           avatarBtn.disabled = false;
-          // still try to show image
           await refreshAvatarDisplay(newPath, nameEl.value, emailEl.value);
           return;
         }
 
-        // Refresh with a fresh signed URL
         adminRowInitial = JSON.parse(JSON.stringify(updated));
         currentAvatarPath = updated.admin_profile_url || newPath;
         await refreshAvatarDisplay(currentAvatarPath, updated.name, updated.email || emailEl.value);
@@ -748,21 +761,47 @@
       }
 
       // Wire up
-      editBtn.addEventListener("click", () => setEdit(true));
-      saveBtn.addEventListener("click", () => save());
-      cancelBtn.addEventListener("click", () => cancelEdit());
-      deleteBtn.addEventListener("click", () => deleteAccount());
+      document.getElementById("edit-btn").addEventListener("click", () => setEdit(true));
+      document.getElementById("save-btn").addEventListener("click", () => save());
+      document.getElementById("cancel-btn").addEventListener("click", () => cancelEdit());
+      document.getElementById("delete-btn").addEventListener("click", () => deleteAccount());
 
       avatarBtn.addEventListener("click", () => avatarInput.click());
       avatarInput.addEventListener("change", (e) => {
         const file = e.target.files?.[0];
         if (file) uploadAvatar(file);
-        // reset for same-file reselect
         e.target.value = "";
       });
 
       // Init
       load();
+
+      /* =========================
+         Space-aware compact toggle
+         ========================= */
+      const CARD_MIN_FOR_TEXT = 560; // px
+      const header = document.querySelector(".card-header");
+      const bodyEl = document.body;
+
+      const ro = new ResizeObserver(entries => {
+        for (const entry of entries) {
+          const width = entry.contentRect.width;
+          if (width < CARD_MIN_FOR_TEXT || window.innerWidth < 500) {
+            bodyEl.classList.add("is-compact");
+          } else {
+            bodyEl.classList.remove("is-compact");
+          }
+        }
+      });
+      if (header) ro.observe(header);
+
+      // Accessibility: ensure titles are present for icon-only buttons
+      const ensureTitle = (btn, fallback) => {
+        if (btn && !btn.getAttribute("title")) btn.setAttribute("title", fallback);
+      };
+      ensureTitle(document.getElementById("save-btn"), "Save");
+      ensureTitle(document.getElementById("cancel-btn"), "Cancel");
+      ensureTitle(document.getElementById("delete-btn"), "Delete my account");
     </script>
   </body>
 </html>
