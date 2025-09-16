@@ -27,11 +27,76 @@
         --modal-head: #f7fbff;
         --shadow-lg: 0 12px 30px rgba(16, 24, 40, 0.14);
         --shadow-xl: 0 24px 60px rgba(16, 24, 40, 0.2);
+
+        /* skeleton palette */
+        --sk-base: #eef2f7;
+        --sk-highlight: #f7fafc;
       }
 
       body { background: var(--bg); }
       main { margin-top: 1.4rem; }
 
+      /* =========
+         SKELETON
+         ========= */
+      /* Only flip visibility inside MAIN (sidebar remains visible) */
+      main .skeleton-ui { display: none; padding: 12px; }
+      main .app-main { display: block; }
+      body.is-loading main .skeleton-ui { display: block; }
+      body.is-loading main .app-main { display: none; }
+
+      .sk-card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 12px;
+      }
+      .sk-line {
+        height: 12px; border-radius: 8px; background: var(--sk-base);
+        position: relative; overflow: hidden;
+      }
+      .sk-line.thin { height: 8px; }
+      .sk-line.tall { height: 16px; }
+      .sk-rect {
+        border-radius: 12px; background: var(--sk-base);
+        position: relative; overflow: hidden;
+      }
+      .sk-photo {
+        width: 100%; height: 140px; border-radius: 12px;
+        background: var(--sk-base); border: 1px solid var(--line);
+        position: relative; overflow: hidden;
+      }
+      .sk-table-head {
+        height: 34px; border-radius: 10px; background: var(--sk-base);
+        border: 1px solid var(--line); position: relative; overflow: hidden;
+      }
+      .sk-table-row {
+        height: 46px; border-bottom: 1px solid var(--line);
+      }
+      @keyframes sk-shimmer {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
+      }
+      .sk-line::after,
+      .sk-rect::after,
+      .sk-photo::after,
+      .sk-table-head::after {
+        content: "";
+        position: absolute; inset: 0;
+        background: linear-gradient(90deg, transparent, var(--sk-highlight), transparent);
+        transform: translateX(-100%);
+        animation: sk-shimmer 1.2s infinite;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .sk-line::after,
+        .sk-rect::after,
+        .sk-photo::after,
+        .sk-table-head::after { animation: none; display: none; }
+      }
+
+      /* =========
+         Your existing styles (unchanged)
+         ========= */
       .two-col-wrap {
         display: grid;
         grid-template-columns: 340px 1fr;
@@ -176,7 +241,7 @@
 
       @keyframes zoomIn { from { transform: scale(.98); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-      /* ===== TOP-LAYER Applicant Modal (on top of job modal) ===== */
+      /* ===== TOP-LAYER Applicant Modal ===== */
       .appl-modal {
         position: fixed; inset: 0; background: rgba(8,14,22,0.45);
         display: none; align-items: center; justify-content: center; padding: 16px;
@@ -288,7 +353,6 @@
       }
       .app-row .right { display: flex; align-items: center; gap: 6px; }
 
-      /* ADDED: selected indicator styles for mobile */
       .app-row.app-selected { outline: 2px solid #70a381; background: #f0faf4; }
       .app-row .sel-indicator { display: none; color: #147a35; font-size: 20px; }
       .app-row.app-selected .sel-indicator { display: inline-flex; }
@@ -299,7 +363,7 @@
         .profile-grid, .detail-grid { grid-template-columns: 1fr; }
       }
 
-      /* Existing desktop modal (kept) */
+      /* Existing desktop modal */
       .modal {
         position: fixed; inset: 0; background: rgba(0,0,0,.35);
         display: none; align-items: center; justify-content: center; z-index: 50; padding: 12px;
@@ -322,7 +386,7 @@
         overscroll-behavior: contain; -webkit-overflow-scrolling: touch;
       }
 
-      /* ===== TOP-LAYER Resume Modal (above applicant modal) ===== */
+      /* ===== TOP-LAYER Resume Modal ===== */
       .resume-modal {
         position: fixed; inset: 0; background: rgba(6,10,16,0.50);
         display: none; align-items: center; justify-content: center; padding: 16px;
@@ -349,9 +413,10 @@
     </style>
   </head>
 
-  <body>
+  <!-- Start in loading mode so only MAIN skeleton shows (sidebar stays visible) -->
+  <body class="is-loading">
     <div class="container">
-      <!-- ======= SIDEBAR (unchanged) ======= -->
+      <!-- ======= SIDEBAR (always visible; untouched) ======= -->
       <aside>
         <div class="toggle">
           <div class="logo">
@@ -377,41 +442,88 @@
         </div>
       </aside>
 
-      <!-- ======= MAIN ======= -->
+      <!-- ======= MAIN (skeleton vs real app) ======= -->
       <main>
-        <section id="tab-jobs">
+        <!-- SKELETON UI (shown while loading; desktop & mobile responsive) -->
+        <div class="skeleton-ui">
           <div class="two-col-wrap">
-            <!-- LEFT: jobs + search -->
-            <div class="panel">
-              <h3>Choose the best candidate.</h3>
-              <div class="search">
-                <span class="material-icons-sharp">search</span>
-                <input id="jobSearchInput" type="text" placeholder="Search jobs…" />
-              </div>
-              <div id="jobList" class="job-list">
-                <div class="empty">Loading job applications…</div>
+            <!-- LEFT skeleton: search + list -->
+            <div class="sk-card">
+              <div class="sk-line tall" style="width: 60%; margin-bottom: 10px;"></div>
+              <div class="sk-rect" style="height: 40px; border-radius: 10px; margin-bottom: 10px;"></div>
+              <div style="display:grid; gap:8px;">
+                <div class="sk-rect" style="height: 64px;"></div>
+                <div class="sk-rect" style="height: 64px;"></div>
+                <div class="sk-rect" style="height: 64px;"></div>
+                <div class="sk-rect" style="height: 64px;"></div>
               </div>
             </div>
 
-            <!-- RIGHT: details + applicants (desktop view; hidden on mobile by CSS) -->
-            <div class="panel">
-              <div id="jobDetails" class="detail">
-                <div class="empty">Select a job.</div>
+            <!-- RIGHT skeleton: job details + applicants table -->
+            <div class="sk-card">
+              <div class="sk-photo"></div>
+              <div class="sk-line tall" style="width: 40%; margin: 8px 0 12px;"></div>
+              <div style="display:grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap:8px;">
+                <div class="sk-rect" style="height: 52px;"></div>
+                <div class="sk-rect" style="height: 52px;"></div>
+                <div class="sk-rect" style="height: 52px;"></div>
+                <div class="sk-rect" style="height: 52px;"></div>
               </div>
-              <div class="divider"></div>
-              <h3>Applicants</h3>
-              <div id="applicantsWrap" class="table-wrap">
-                <div class="empty">No job selected.</div>
+
+              <div class="divider" style="margin:12px 0;"></div>
+              <div class="sk-line tall" style="width: 30%; margin-bottom: 8px;"></div>
+
+              <div class="sk-rect" style="border-radius:12px; border:1px solid var(--line); overflow:hidden;">
+                <div class="sk-table-head"></div>
+                <div class="sk-table-row"></div>
+                <div class="sk-table-row"></div>
+                <div class="sk-table-row"></div>
+                <div class="sk-table-row"></div>
               </div>
-              <div id="globalActions" class="actions-row" style="display: none">
-                <button id="hireBtn" class="btn brand" type="button" disabled>
-                  <span class="material-icons-sharp">badge</span>
-                  <span class="btn-text">Approve Selected</span>
-                </button>
+
+              <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:10px;">
+                <div class="sk-rect" style="width:140px; height:36px; border-radius:10px;"></div>
               </div>
             </div>
           </div>
-        </section>
+        </div>
+
+        <!-- REAL APP (hidden while loading) -->
+        <div class="app-main">
+          <section id="tab-jobs">
+            <div class="two-col-wrap">
+              <!-- LEFT: jobs + search -->
+              <div class="panel">
+                <h3>Choose the best candidate.</h3>
+                <div class="search">
+                  <span class="material-icons-sharp">search</span>
+                  <input id="jobSearchInput" type="text" placeholder="Search jobs…" />
+                </div>
+                <div id="jobList" class="job-list">
+                  <div class="empty">Loading job applications…</div>
+                </div>
+              </div>
+
+              <!-- RIGHT: details + applicants (desktop view; hidden on mobile by CSS) -->
+              <div class="panel">
+                <div id="jobDetails" class="detail">
+                  <div class="empty">Select a job.</div>
+                </div>
+                <div class="divider"></div>
+                <h3>Applicants</h3>
+                <div id="applicantsWrap" class="table-wrap">
+                  <div class="empty">No job selected.</div>
+                </div>
+                <div id="globalActions" class="actions-row" style="display: none">
+                  <button id="hireBtn" class="btn brand" type="button" disabled>
+                    <span class="material-icons-sharp">badge</span>
+                    <span class="btn-text">Approve Selected</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
       </main>
     </div>
 
@@ -538,6 +650,11 @@
         return parts.map(s => s[0]?.toUpperCase() || "").join("") || "U";
       };
 
+      /* ===== Loading state gate (skeleton vs app-main) ===== */
+      function setLoading(flag) {
+        document.body.classList.toggle("is-loading", !!flag);
+      }
+
       async function urlFor(path) {
         if (!path) return null;
         const clean = String(path).trim();
@@ -609,87 +726,94 @@
       }
 
       async function loadFromApplications() {
-        const { data: appRows, error: appErr } = await supabase
-          .schema("jobs")
-          .from("job_application")
-          .select("application_id, job_id, installer_id, status, applied_at, updated_at")
-          .order("applied_at", { ascending: true });
+        try {
+          setLoading(true);
 
-        if (appErr) {
-          console.error(appErr);
-          $("#jobList").innerHTML = `<div class="empty">Failed to load applications: ${appErr.message}</div>`;
-          return;
+          const { data: appRows, error: appErr } = await supabase
+            .schema("jobs")
+            .from("job_application")
+            .select("application_id, job_id, installer_id, status, applied_at, updated_at")
+            .order("applied_at", { ascending: true });
+
+          if (appErr) {
+            console.error(appErr);
+            $("#jobList").innerHTML = `<div class="empty">Failed to load applications: ${appErr.message}</div>`;
+            return;
+          }
+
+          applications = (appRows || []).filter(a => String(a.status).toLowerCase() !== "overdue");
+          if (!applications.length) {
+            $("#jobList").innerHTML = `<div class="empty">No job applications.</div>`;
+            $("#jobDetails").innerHTML = `<div class="empty">No jobs.</div>`;
+            $("#applicantsWrap").innerHTML = `<div class="empty">No job selected.</div>`;
+            $("#globalActions").style.display = "none";
+            return;
+          }
+
+          const jobIds = [...new Set(applications.map(a => a.job_id))];
+          const installerIds = [...new Set(applications.map(a => a.installer_id))];
+
+          const { data: jobRows, error: jobErr } = await supabase
+            .schema("jobs")
+            .from("job")
+            .select("job_id, job_title, job_category, job_difficulty, job_location, job_date, job_time, job_picture_url, job_status")
+            .in("job_id", jobIds);
+          if (jobErr) {
+            console.error(jobErr);
+            $("#jobList").innerHTML = `<div class="empty">Failed to load jobs: ${jobErr.message}</div>`;
+            return;
+          }
+          jobs = jobRows || [];
+
+          let instRows = [];
+          if (installerIds.length) {
+            const { data: _inst, error: instErr } = await supabase
+              .from("installer")
+              .select("id, name, profession, highestQualification, employmentStatus, profile_pic_url")
+              .in("id", installerIds);
+            if (instErr) console.error(instErr);
+            instRows = _inst || [];
+          }
+          installers = instRows;
+          installerMap = new Map(installers.map(i => [i.id, i]));
+
+          installerAvatarMap = new Map();
+          await Promise.all(
+            installers.map(async (ins) => {
+              try {
+                const url = await resolveInstallerAvatar(ins.profile_pic_url, ins.id);
+                installerAvatarMap.set(ins.id, url || null);
+              } catch {
+                installerAvatarMap.set(ins.id, null);
+              }
+            })
+          );
+
+          let docRows = [];
+          if (installerIds.length) {
+            const { data: _docs, error: docsErr } = await supabase
+              .from("installer_documents")
+              .select("installer_id, resume, resume_status")
+              .in("installer_id", installerIds);
+            if (docsErr) console.error(docsErr);
+            docRows = _docs || [];
+          }
+          installerDocs = docRows;
+          docsMap = new Map(installerDocs.map(d => [d.installer_id, d]));
+
+          jobMap = new Map(jobs.map(j => [j.job_id, j]));
+          appsByJob = applications.reduce((m, a) => { if (!m.has(a.job_id)) m.set(a.job_id, []); m.get(a.job_id).push(a); return m; }, new Map());
+
+          filteredJobs = jobs
+            .filter(j => appsByJob.has(j.job_id) && String(j.job_status || "").toLowerCase() !== "done")
+            .sort((a, b) => new Date(`${a.job_date}T${a.job_time}`) - new Date(`${b.job_date}T${b.job_time}`));
+
+          renderJobList();
+          if (filteredJobs.length) selectJob(filteredJobs[0].job_id);
+        } finally {
+          // Flip off the skeleton after first load pass
+          setLoading(false);
         }
-
-        applications = (appRows || []).filter(a => String(a.status).toLowerCase() !== "overdue");
-        if (!applications.length) {
-          $("#jobList").innerHTML = `<div class="empty">No job applications.</div>`;
-          $("#jobDetails").innerHTML = `<div class="empty">No jobs.</div>`;
-          $("#applicantsWrap").innerHTML = `<div class="empty">No job selected.</div>`;
-          $("#globalActions").style.display = "none";
-          return;
-        }
-
-        const jobIds = [...new Set(applications.map(a => a.job_id))];
-        const installerIds = [...new Set(applications.map(a => a.installer_id))];
-
-        const { data: jobRows, error: jobErr } = await supabase
-          .schema("jobs")
-          .from("job")
-          .select("job_id, job_title, job_category, job_difficulty, job_location, job_date, job_time, job_picture_url, job_status")
-          .in("job_id", jobIds);
-        if (jobErr) {
-          console.error(jobErr);
-          $("#jobList").innerHTML = `<div class="empty">Failed to load jobs: ${jobErr.message}</div>`;
-          return;
-        }
-        jobs = jobRows || [];
-
-        let instRows = [];
-        if (installerIds.length) {
-          const { data: _inst, error: instErr } = await supabase
-            .from("installer")
-            .select("id, name, profession, highestQualification, employmentStatus, profile_pic_url")
-            .in("id", installerIds);
-          if (instErr) console.error(instErr);
-          instRows = _inst || [];
-        }
-        installers = instRows;
-        installerMap = new Map(installers.map(i => [i.id, i]));
-
-        installerAvatarMap = new Map();
-        await Promise.all(
-          installers.map(async (ins) => {
-            try {
-              const url = await resolveInstallerAvatar(ins.profile_pic_url, ins.id);
-              installerAvatarMap.set(ins.id, url || null);
-            } catch {
-              installerAvatarMap.set(ins.id, null);
-            }
-          })
-        );
-
-        let docRows = [];
-        if (installerIds.length) {
-          const { data: _docs, error: docsErr } = await supabase
-            .from("installer_documents")
-            .select("installer_id, resume, resume_status")
-            .in("installer_id", installerIds);
-          if (docsErr) console.error(docsErr);
-          docRows = _docs || [];
-        }
-        installerDocs = docRows;
-        docsMap = new Map(installerDocs.map(d => [d.installer_id, d]));
-
-        jobMap = new Map(jobs.map(j => [j.job_id, j]));
-        appsByJob = applications.reduce((m, a) => { if (!m.has(a.job_id)) m.set(a.job_id, []); m.get(a.job_id).push(a); return m; }, new Map());
-
-        filteredJobs = jobs
-          .filter(j => appsByJob.has(j.job_id) && String(j.job_status || "").toLowerCase() !== "done")
-          .sort((a, b) => new Date(`${a.job_date}T${a.job_time}`) - new Date(`${b.job_date}T${b.job_time}`));
-
-        renderJobList();
-        if (filteredJobs.length) selectJob(filteredJobs[0].job_id);
       }
 
       function renderJobList() {
@@ -827,7 +951,6 @@
           const avatarUrl = installerAvatarMap.get(a.installer_id) || null;
 
           const tr = document.createElement("tr");
-          // ADDED: only mark as clickable on MOBILE to disable row-click on desktop
           if (isMobile()) tr.classList.add("clickable");
 
           const radioId = `sel-${a.application_id}`;
@@ -872,13 +995,11 @@
             tr.classList.add("row-selected");
           });
 
-          // Keep the "View" button working on all screens
           tr.querySelector(`[data-more="${a.application_id}"]`)?.addEventListener("click", async (e) => {
             e.stopPropagation();
             await showApplicantProfile(a);
           });
 
-          // ADDED: Only attach row click handler on MOBILE (desktop rows are not clickable anymore)
           if (isMobile()) {
             tr.addEventListener("click", async (evt) => {
               if (evt.target.closest("input,button,a")) return;
@@ -1000,7 +1121,6 @@
         `;
       }
 
-      /* MOBILE: rectangle table-like list */
       function buildApplicantsListMobile(jobId) {
         const apps = appsByJob.get(jobId) || [];
         if (!apps.length) return `<div class="empty">No applicants.</div>`;
@@ -1019,7 +1139,6 @@
                 <div class="name">${ins.name || "—"} ${approved ? '<span class="badge-approved">(Approved)</span>' : ''}</div>
               </div>
               <div class="right">
-                <!-- ADDED: selected indicator (appears when .app-selected is set) -->
                 <span class="sel-indicator material-icons-sharp" aria-hidden="true">check_circle</span>
                 <button class="btn" type="button" data-resume="${id}" title="Preview resume">
                   <span class="material-icons-sharp">description</span>
@@ -1063,7 +1182,6 @@
         const alreadyApproved = apps.some(a => String(a.status).toLowerCase() === "approved");
         jobModalHireBtn.disabled = alreadyApproved || !selectedApplicationId;
 
-        // Click handlers: Resume button vs Row
         rowsWrap?.addEventListener("click", async (evt) => {
           const resumeBtn = evt.target.closest("[data-resume]");
           if (resumeBtn) {
@@ -1085,7 +1203,6 @@
           selectedApplicationId = appId;
           jobModalHireBtn.disabled = alreadyApproved || !selectedApplicationId;
 
-          // Sync desktop radio
           const desktopRadio = document.querySelector(`input[name="hireSelect"][value="${selectedApplicationId}"]`);
           if (desktopRadio) {
             desktopRadio.checked = true;
@@ -1095,7 +1212,6 @@
           await openApplicantTopModal(appRow);
         });
 
-        // Keyboard accessibility
         rowsWrap?.addEventListener("keydown", async (evt) => {
           if (evt.key !== "Enter" && evt.key !== " ") return;
           const row = evt.target.closest(".app-row");
@@ -1169,7 +1285,6 @@
         const docs = docsMap.get(appRow.installer_id);
         const resumePath = (docs?.resume || "").trim();
 
-        // Title now includes applicant name for context
         resumeTopTitle.textContent = `Resume — ${ins.name || "—"}`;
 
         let resumeSection = `

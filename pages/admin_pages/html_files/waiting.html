@@ -13,6 +13,11 @@
         --ok: #10b981;
         --err: #ef4444;
         --warn: #f59e0b;
+
+        /* Skeleton palette */
+        --skel-base: #eef2f7;
+        --skel-spot: #f6f7fb;
+        --skel-edge: #e5e9f0;
       }
       html, body { height: 100%; }
       body {
@@ -24,9 +29,20 @@
         place-items: center;
         padding: 24px;
       }
-      .card {
+
+      /* ====== Layout wrappers so skeleton & card share same footprint ====== */
+      .frame {
         width: 100%;
         max-width: 560px;
+      }
+
+      /* Show/hide based on data-loading on <html> */
+      html[data-loading="true"] .card { display: none; }
+      html[data-loading="false"] .skeleton { display: none; }
+
+      /* ====== Your existing card ====== */
+      .card {
+        width: 100%;
         background: var(--card);
         border: 1px solid #e5e7eb;
         border-radius: 16px;
@@ -122,49 +138,165 @@
       .small { color: var(--muted); font-size: 12px; margin-top: 8px; }
       a { text-decoration: none; }
       .hidden { display: none !important; }
+
+      /* ====== Skeleton UI ====== */
+      .skeleton {
+        width: 100%;
+        background: var(--card);
+        border: 1px solid #e5e7eb;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+        padding: 28px;
+      }
+      .skel-hero {
+        display: grid;
+        place-items: center;
+        margin-bottom: 20px;
+      }
+      .skel-badge,
+      .skel-line,
+      .skel-pill,
+      .skel-btn {
+        position: relative;
+        border-radius: 10px;
+        overflow: hidden;
+        background: var(--skel-base);
+      }
+      .skel-line { height: 14px; }
+      .skel-line.lg { height: 20px; }
+      .skel-line.sm { height: 10px; }
+      .skel-pill { height: 24px; border-radius: 999px; }
+      .skel-btn { height: 40px; border-radius: 12px; }
+
+      /* Shield placeholder */
+      .skel-shield {
+        width: 120px;
+        height: 120px;
+        position: relative;
+        background: var(--skel-base);
+        border: 1px solid var(--skel-edge);
+        clip-path: polygon(50% 0%, 95% 18%, 95% 62%, 50% 100%, 5% 62%, 5% 18%);
+        border-bottom-left-radius: 16px;
+        border-bottom-right-radius: 16px;
+      }
+
+      /* Shimmer sweep */
+      .skel-shimmer::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        transform: translateX(-100%);
+        background: linear-gradient(90deg,
+          rgba(255,255,255,0) 0%,
+          rgba(255,255,255,0.6) 45%,
+          rgba(255,255,255,0) 90%);
+        animation: shimmer 1.4s infinite;
+      }
+      .skel-hero .skel-shield.skel-shimmer::after { border-radius: 16px; }
+
+      @keyframes shimmer {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
+      }
+
+      /* Skeleton layout */
+      .skel-title { margin: 8px 0 12px; }
+      .skel-title .skel-line { width: 70%; margin: 0 auto; }
+      .skel-text { display: grid; gap: 8px; margin-bottom: 12px; }
+      .skel-text .skel-line { width: 86%; margin: 0 auto; }
+      .skel-text .skel-line:nth-child(2) { width: 90%; }
+      .skel-text .skel-line:nth-child(3) { width: 76%; }
+      .skel-badge-row { display:flex; justify-content:center; margin: 10px 0; }
+      .skel-badge { width: 150px; height: 28px; border-radius: 999px; }
+      .skel-tips { margin-top: 12px; padding: 14px; border-radius:12px; background: #f3f4f6; }
+      .skel-tips .skel-line { width: 60%; margin-bottom: 8px; }
+      .skel-tips ul { list-style: none; padding: 0; margin: 10px 0 0; display: grid; gap: 8px; }
+      .skel-tips li .skel-line { width: 96%; height: 10px; }
+      .skel-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 10px; margin-top: 18px;
+      }
+      @media (max-width: 480px) {
+        .skel-actions { grid-template-columns: 1fr; }
+      }
     </style>
   </head>
   <body>
-    <div class="card" role="status" aria-live="polite">
-      <div class="hero">
-        <div class="icon-wrap" aria-hidden="true">
-          <span class="pulse"></span>
-          <span class="pulse"></span>
-          <span class="pulse"></span>
-          <div class="shield"></div>
+    <div class="frame">
+      <!-- ===== Skeleton (visible only while loading) ===== -->
+      <div class="skeleton" aria-hidden="true">
+        <div class="skel-hero">
+          <div class="skel-shield skel-shimmer"></div>
+        </div>
+        <div class="skel-title">
+          <div class="skel-line lg skel-shimmer" style="margin-bottom:8px;"></div>
+        </div>
+        <div class="skel-text">
+          <div class="skel-line skel-shimmer"></div>
+          <div class="skel-line skel-shimmer"></div>
+          <div class="skel-line sm skel-shimmer" style="width:55%;"></div>
+        </div>
+        <div class="skel-badge-row">
+          <div class="skel-badge skel-shimmer"></div>
+        </div>
+        <div class="skel-tips">
+          <div class="skel-line skel-shimmer" style="width:40%; height:14px; margin:0 0 6px 0;"></div>
+          <ul>
+            <li><div class="skel-line skel-shimmer"></div></li>
+            <li><div class="skel-line skel-shimmer" style="width:88%;"></div></li>
+            <li><div class="skel-line skel-shimmer" style="width:80%;"></div></li>
+          </ul>
+        </div>
+        <div class="skel-actions">
+          <div class="skel-btn skel-shimmer"></div>
+          <div class="skel-btn skel-shimmer"></div>
+          <div class="skel-btn skel-shimmer"></div>
         </div>
       </div>
 
-      <h1>Admin access is pending approval</h1>
-      <p id="intro">
-        Thanks for signing up. A <strong>superadmin</strong> needs to approve your account
-        before you can access the admin dashboard.
-      </p>
+      <!-- ===== Your original card (hidden until first check completes) ===== -->
+      <div class="card" role="status" aria-live="polite">
+        <div class="hero">
+          <div class="icon-wrap" aria-hidden="true">
+            <span class="pulse"></span>
+            <span class="pulse"></span>
+            <span class="pulse"></span>
+            <div class="shield"></div>
+          </div>
+        </div>
 
-      <div style="margin:10px 0 6px;">
-        <span id="statusBadge" class="status pending">Status: Pending</span>
-      </div>
+        <h1>Admin access is pending approval</h1>
+        <p id="intro">
+          Thanks for signing up. A <strong>superadmin</strong> needs to approve your account
+          before you can access the admin dashboard.
+        </p>
 
-      <div id="msg" class="small" style="min-height:18px; margin-top:6px;"></div>
+        <div style="margin:10px 0 6px;">
+          <span id="statusBadge" class="status pending">Status: Pending</span>
+        </div>
 
-      <div class="tips">
-        <strong>What’s next?</strong>
-        <ul style="margin: 8px 0 0 18px; padding: 0">
-          <li>Click <em>Refresh status</em> to re-check your approval.</li>
-          <li>We’ll email you once you’re approved.</li>
-          <li>If you believe this is taking too long, contact your superadmin.</li>
-        </ul>
-      </div>
+        <div id="msg" class="small" style="min-height:18px; margin-top:6px;"></div>
 
-      <div class="actions" style="margin-top: 16px;">
-        <button id="refreshBtn" class="btn btn-primary">Refresh status</button>
-        <a id="homeLink" class="btn btn-ghost" href="../../../index.html">Return to Home</a>
-        <button id="logoutBtn" class="btn btn-outline">Log out</button>
-      </div>
+        <div class="tips">
+          <strong>What’s next?</strong>
+          <ul style="margin: 8px 0 0 18px; padding: 0">
+            <li>Click <em>Refresh status</em> to re-check your approval.</li>
+            <li>We’ll email you once you’re approved.</li>
+            <li>If you believe this is taking too long, contact your superadmin.</li>
+          </ul>
+        </div>
 
-      <div class="small">
-        Need help? Contact support at
-        <a href="mailto:simpProject@email.com">simpProject@email.com</a>
+        <div class="actions" style="margin-top: 16px;">
+          <button id="refreshBtn" class="btn btn-primary">Refresh status</button>
+          <a id="homeLink" class="btn btn-ghost" href="../../../index.html">Return to Home</a>
+          <button id="logoutBtn" class="btn btn-outline">Log out</button>
+        </div>
+
+        <div class="small">
+          Need help? Contact support at
+          <a href="mailto:simpProject@email.com">simpProject@email.com</a>
+        </div>
       </div>
     </div>
 
@@ -173,6 +305,18 @@
       import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
       import { SUPABASE_URL, SUPABASE_ANON_KEY } from "/supabase.js";
       const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+      // ===== NEW: control skeleton vs. content =====
+      // Start in loading mode (skeleton visible)
+      document.documentElement.setAttribute("data-loading", "true");
+      let __firstRevealDone = false;
+      function revealContentOnce() {
+        if (__firstRevealDone) return;
+        __firstRevealDone = true;
+        // Flip to show real content after first check finishes
+        document.documentElement.setAttribute("data-loading", "false");
+      }
+      // ===== END NEW =====
 
       const statusBadge = document.getElementById("statusBadge");
       const msg = document.getElementById("msg");
@@ -213,16 +357,12 @@
 
           if (!user) {
             setStatus("err", "You are not logged in. Please log in with your admin account.");
-            refreshBtn.disabled = false;
-            refreshBtn.textContent = "Refresh status";
             return;
           }
 
           const row = await getAdminRow(user.id);
           if (!row) {
             setStatus("err", "No admin profile found for this account. Please contact a superadmin.");
-            refreshBtn.disabled = false;
-            refreshBtn.textContent = "Refresh status";
             return;
           }
 
@@ -242,8 +382,12 @@
           console.error(e);
           setStatus("err", e?.message || "Failed to check status.");
         } finally {
+          // Restore button label/state
           refreshBtn.disabled = false;
           refreshBtn.textContent = "Refresh status";
+
+          // ===== NEW: after the very first check completes, reveal real content =====
+          revealContentOnce();
         }
       }
 

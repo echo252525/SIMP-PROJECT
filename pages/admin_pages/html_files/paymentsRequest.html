@@ -17,6 +17,7 @@
 
       main {
         margin-top: 1.4rem;
+        position: relative; /* enable overlay positioning */
       }
 
       /* Header */
@@ -585,6 +586,58 @@
         cursor: pointer;
       }
       .rv-close { background: #e7edf3; color: #1c2430; }
+
+      /* =========================
+         SKELETON (PC + Mobile)
+         ========================= */
+      .skeleton-overlay {
+        position: absolute;
+        inset: 0;
+        z-index: 20;
+        padding: var(--page-padding);
+        background: #f8fbfd;
+        overflow: hidden;
+        display: flex;            /* visible by default */
+        flex-direction: column;
+        gap: 12px;
+      }
+      .sk-card,
+      .sk-bar,
+      .sk-chip {
+        border-radius: 10px;
+        background: linear-gradient(
+          90deg,
+          #eef2f6 25%,
+          #f5f7fa 37%,
+          #eef2f6 63%
+        );
+        background-size: 400% 100%;
+        animation: sk-shimmer 1.2s ease-in-out infinite;
+      }
+      .sk-bar { height: 16px; }
+      .sk-chip { height: 34px; border-radius: 8px; }
+      .sk-row { display: grid; gap: 10px; }
+      .sk-row.cols-3 { grid-template-columns: repeat(3, minmax(0,1fr)); }
+      .sk-row.cols-2 { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .sk-row.cols-6 { grid-template-columns: 60px 120px 1fr 120px 140px 100px; }
+      .sk-table {
+        background:#fff; border-radius:10px; padding:12px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      }
+      .sk-head { display:grid; grid-template-columns: 60px 120px 1fr 120px 140px 100px; gap:10px; margin-bottom:10px; }
+      .sk-body { display:grid; gap:8px; }
+      .sk-row-line { display:grid; grid-template-columns: 60px 120px 1fr 120px 140px 100px; gap:10px; }
+      @keyframes sk-shimmer {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+      }
+
+      @media (max-width: 720px) {
+        .skeleton-overlay { padding: 0 var(--page-padding); }
+        .sk-row.cols-3 { grid-template-columns: 1fr; }
+        .sk-head,
+        .sk-row-line { grid-template-columns: 60px 1fr 90px 90px; }
+      }
     </style>
   </head>
 
@@ -649,6 +702,63 @@
 
       <!-- Main Content -->
       <main>
+        <!-- =========================
+             SKELETON OVERLAY (ADDED)
+             ========================= -->
+        <div id="paymentsSkeleton" class="skeleton-overlay" aria-hidden="false">
+          <!-- Header -->
+          <div class="sk-bar" style="width: 220px; height: 28px; border-radius:8px;"></div>
+          <div class="sk-bar" style="width: 60%; height: 14px;"></div>
+
+          <!-- Search/Filter -->
+          <div class="sk-row cols-2">
+            <div class="sk-chip"></div>
+            <div class="sk-chip"></div>
+          </div>
+
+          <!-- Summary cards -->
+          <div class="sk-row cols-3">
+            <div class="sk-card" style="height: 92px;"></div>
+            <div class="sk-card" style="height: 92px;"></div>
+            <div class="sk-card" style="height: 92px;"></div>
+          </div>
+
+          <!-- Tabs -->
+          <div class="sk-row" style="grid-template-columns: repeat(5, minmax(90px, 140px)); gap:8px;">
+            <div class="sk-chip"></div>
+            <div class="sk-chip"></div>
+            <div class="sk-chip"></div>
+            <div class="sk-chip"></div>
+            <div class="sk-chip"></div>
+          </div>
+
+          <!-- Batch bar -->
+          <div class="sk-card" style="height: 56px;"></div>
+
+          <!-- Table skeleton -->
+          <div class="sk-table">
+            <div class="sk-head">
+              <div class="sk-bar"></div><div class="sk-bar"></div><div class="sk-bar"></div>
+              <div class="sk-bar"></div><div class="sk-bar"></div><div class="sk-bar"></div>
+            </div>
+            <div class="sk-body">
+              <div class="sk-row-line">
+                <div class="sk-bar"></div><div class="sk-bar"></div><div class="sk-bar"></div>
+                <div class="sk-bar"></div><div class="sk-bar"></div><div class="sk-bar"></div>
+              </div>
+              <div class="sk-row-line">
+                <div class="sk-bar"></div><div class="sk-bar"></div><div class="sk-bar"></div>
+                <div class="sk-bar"></div><div class="sk-bar"></div><div class="sk-bar"></div>
+              </div>
+              <div class="sk-row-line">
+                <div class="sk-bar"></div><div class="sk-bar"></div><div class="sk-bar"></div>
+                <div class="sk-bar"></div><div class="sk-bar"></div><div class="sk-bar"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- ====== END SKELETON ====== -->
+
         <div class="payments-header">
           <h1>Payments Request</h1>
           <p>
@@ -1160,280 +1270,289 @@
               console.error(payErr);
               tbodyPayments.innerHTML =
                 '<tr><td colspan="8" data-col="Notice" class="sub">Error loading payments.</td></tr>';
-              return;
-            }
-            if (!pays || pays.length === 0) {
+            } else if (!pays || pays.length === 0) {
               __PAYMENTS = [];
               window.__PAYMENTS = __PAYMENTS;
               tbodyPayments.innerHTML =
                 '<tr><td colspan="8" data-col="Notice" class="sub">No payment requests yet.</td></tr>';
               if (window.__buildRequests) window.__buildRequests();
-              return;
-            }
-            __PAYMENTS = pays;
-            window.__PAYMENTS = __PAYMENTS;
+            } else {
+              __PAYMENTS = pays;
+              window.__PAYMENTS = __PAYMENTS;
 
-            // jobs
-            const jobIds = [
-              ...new Set(pays.map((p) => p.job_id).filter(Boolean)),
-            ];
-            __JOBS_BY_ID = {};
-            if (jobIds.length) {
-              const { data: jobs } = await sbClient
-                .schema("jobs")
-                .from("job")
-                .select("job_id, job_code, job_title, job_pay")
-                .in("job_id", jobIds);
-              if (jobs)
-                __JOBS_BY_ID = Object.fromEntries(
-                  jobs.map((j) => [j.job_id, j])
-                );
-            }
+              // jobs
+              const jobIds = [
+                ...new Set(pays.map((p) => p.job_id).filter(Boolean)),
+              ];
+              __JOBS_BY_ID = {};
+              if (jobIds.length) {
+                const { data: jobs } = await sbClient
+                  .schema("jobs")
+                  .from("job")
+                  .select("job_id, job_code, job_title, job_pay")
+                  .in("job_id", jobIds);
+                if (jobs)
+                  __JOBS_BY_ID = Object.fromEntries(
+                    jobs.map((j) => [j.job_id, j])
+                  );
+              }
 
-            // installers
-            const installerIds = [
-              ...new Set(pays.map((p) => p.installer_id).filter(Boolean)),
-            ];
-            __INSTALLERS_BY_ID = {};
-            if (installerIds.length) {
-              const { data: installers } = await sbClient
-                .from("installer")
-                .select("id, name, email")
-                .in("id", installerIds);
-              if (installers)
-                __INSTALLERS_BY_ID = Object.fromEntries(
-                  installers.map((i) => [i.id, i])
-                );
-            }
+              // installers
+              const installerIds = [
+                ...new Set(pays.map((p) => p.installer_id).filter(Boolean)),
+              ];
+              __INSTALLERS_BY_ID = {};
+              if (installerIds.length) {
+                const { data: installers } = await sbClient
+                  .from("installer")
+                  .select("id, name, email")
+                  .in("id", installerIds);
+                if (installers)
+                  __INSTALLERS_BY_ID = Object.fromEntries(
+                    installers.map((i) => [i.id, i])
+                  );
+              }
 
-            // Group pending & disbursed by batch
-            const pendingGroups = new Map();
-            const disbursedGroups = new Map();
+              // Group pending & disbursed by batch
+              const pendingGroups = new Map();
+              const disbursedGroups = new Map();
 
-            for (const p of pays) {
-              const job = __JOBS_BY_ID[p.job_id] || {};
-              const amount = Number(job.job_pay) || 0;
+              for (const p of pays) {
+                const job = __JOBS_BY_ID[p.job_id] || {};
+                const amount = Number(job.job_pay) || 0;
 
-              if (p.payment_status === "pending_payout" && p.payout_batch_no) {
-                const k = p.payout_batch_no;
-                if (!pendingGroups.has(k)) {
-                  pendingGroups.set(k, {
-                    key: k,
-                    payment_ids: [],
-                    job_labels: new Set(),
-                    installers: new Set(),
-                    installer_display: null,
-                    count: 0,
-                    total: 0,
-                    requested_at: p.updated_at || p.first_created_at || null,
-                  });
+                if (p.payment_status === "pending_payout" && p.payout_batch_no) {
+                  const k = p.payout_batch_no;
+                  if (!pendingGroups.has(k)) {
+                    pendingGroups.set(k, {
+                      key: k,
+                      payment_ids: [],
+                      job_labels: new Set(),
+                      installers: new Set(),
+                      installer_display: null,
+                      count: 0,
+                      total: 0,
+                      requested_at: p.updated_at || p.first_created_at || null,
+                    });
+                  }
+                  const g = pendingGroups.get(k);
+                  g.payment_ids.push(p.id);
+                  g.installers.add(p.installer_id);
+                  g.count += 1;
+                  g.total += amount;
+                  const jobDisplay = job.job_code
+                    ? job.job_code
+                    : `#${shortId(p.job_id)}`;
+                  g.job_labels.add(jobDisplay);
+                  const ts = (d) => (d ? new Date(d).getTime() : Infinity);
+                  if (
+                    ts(p.updated_at || p.first_created_at) < ts(g.requested_at)
+                  ) {
+                    g.requested_at = p.updated_at || p.first_created_at;
+                  }
                 }
-                const g = pendingGroups.get(k);
-                g.payment_ids.push(p.id);
-                g.installers.add(p.installer_id);
-                g.count += 1;
-                g.total += amount;
+
+                if (p.payment_status === "disbursed" && p.payout_batch_no) {
+                  const k = p.payout_batch_no;
+                  if (!disbursedGroups.has(k)) {
+                    disbursedGroups.set(k, {
+                      key: k,
+                      payment_ids: [],
+                      job_labels: new Set(),
+                      installers: new Set(),
+                      installer_display: null,
+                      count: 0,
+                      total: 0,
+                      requested_at: p.updated_at || p.first_created_at || null,
+                    });
+                  }
+                  const g = disbursedGroups.get(k);
+                  g.payment_ids.push(p.id);
+                  g.installers.add(p.installer_id);
+                  g.count += 1;
+                  g.total += amount;
+                  const jobDisplay = job.job_code
+                    ? job.job_code
+                    : `#${shortId(p.job_id)}`;
+                  g.job_labels.add(jobDisplay);
+                  const ts = (d) => (d ? new Date(d).getTime() : Infinity);
+                  if (
+                    ts(p.updated_at || p.first_created_at) < ts(g.requested_at)
+                  ) {
+                    g.requested_at = p.updated_at || p.first_created_at;
+                  }
+                }
+              }
+
+              const resolveInstallerDisplay = (set) => {
+                if (set.size === 1) {
+                  const only = [...set][0];
+                  const inst = __INSTALLERS_BY_ID[only] || {};
+                  return inst.name || inst.email || shortId(only);
+                }
+                return "Multiple";
+              };
+              for (const g of pendingGroups.values())
+                g.installer_display = resolveInstallerDisplay(g.installers);
+              for (const g of disbursedGroups.values())
+                g.installer_display = resolveInstallerDisplay(g.installers);
+
+              const rowsHtml = [];
+              const pesoFmt = (n) =>
+                "₱" +
+                (Number(n) || 0).toLocaleString("en-PH", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                });
+
+              // Ungrouped rows
+              for (const p of pays) {
+                if (
+                  (p.payment_status === "pending_payout" && p.payout_batch_no) ||
+                  (p.payment_status === "disbursed" && p.payout_batch_no)
+                ) {
+                  continue;
+                }
+
+                const job = __JOBS_BY_ID[p.job_id] || {};
+                const inst = __INSTALLERS_BY_ID[p.installer_id] || {};
+                const ui = statusToUi(p.payment_status);
+
                 const jobDisplay = job.job_code
                   ? job.job_code
                   : `#${shortId(p.job_id)}`;
-                g.job_labels.add(jobDisplay);
-                const ts = (d) => (d ? new Date(d).getTime() : Infinity);
-                if (
-                  ts(p.updated_at || p.first_created_at) < ts(g.requested_at)
-                ) {
-                  g.requested_at = p.updated_at || p.first_created_at;
-                }
+                const workerDisplay =
+                  inst.name || inst.email || shortId(p.installer_id);
+                const titleDisplay = job.job_title || "—";
+                const amountNum = job.job_pay != null ? Number(job.job_pay) : 0;
+                const amount = peso(amountNum);
+                const reqDate = fmtDate(p.first_created_at);
+
+                const selectable = ui.ds === "not-paid";
+                const selectCell = `<input type="checkbox" class="row-select" ${
+                  selectable ? "" : "disabled"
+                } />`;
+
+                rowsHtml.push(
+                  `<tr data-status="${ui.ds}"
+                       data-payment-id="${p.id}"
+                       data-installer-id="${p.installer_id}"
+                       data-amount="${amountNum}"
+                       data-batch="${p.payout_batch_no || ""}">
+                    <td class="col-select" style="text-align:center;" data-col="Select">${selectCell}</td>
+                    <td class="col-jobid" data-col="Job ID">${jobDisplay}</td>
+                    <td class="col-worker" data-col="Worker">${workerDisplay}</td>
+                    <td class="col-title" data-col="Job Title">${titleDisplay}</td>
+                    <td data-col="Amount">${amount}</td>
+                    <td data-col="Requested Date">${reqDate}</td>
+                    <td data-col="Status"><span class="${ui.cls}">${ui.text}</span></td>
+                    <td data-col="Action">
+                      <button type="button" class="view-row-btn" title="View details">
+                        <span class="material-icons-sharp" aria-hidden="true">visibility</span>
+                      </button>
+                      ${
+                        ui.action === "mark"
+                          ? '<button class="mark-paid" type="button">Mark as Paid</button>'
+                          : ui.action === "payout"
+                          ? '<button class="do-payout" type="button">Payout</button>'
+                          : '<button type="button" disabled>Paid</button>'
+                      }
+                    </td>
+                  </tr>`
+                );
               }
 
-              if (p.payment_status === "disbursed" && p.payout_batch_no) {
-                const k = p.payout_batch_no;
-                if (!disbursedGroups.has(k)) {
-                  disbursedGroups.set(k, {
-                    key: k,
-                    payment_ids: [],
-                    job_labels: new Set(),
-                    installers: new Set(),
-                    installer_display: null,
-                    count: 0,
-                    total: 0,
-                    requested_at: p.updated_at || p.first_created_at || null,
-                  });
-                }
-                const g = disbursedGroups.get(k);
-                g.payment_ids.push(p.id);
-                g.installers.add(p.installer_id);
-                g.count += 1;
-                g.total += amount;
-                const jobDisplay = job.job_code
-                  ? job.job_code
-                  : `#${shortId(p.job_id)}`;
-                g.job_labels.add(jobDisplay);
-                const ts = (d) => (d ? new Date(d).getTime() : Infinity);
-                if (
-                  ts(p.updated_at || p.first_created_at) < ts(g.requested_at)
-                ) {
-                  g.requested_at = p.updated_at || p.first_created_at;
-                }
+              // Grouped pending
+              for (const g of pendingGroups.values()) {
+                const reqDate = fmtDate(g.requested_at);
+                const jobLabels = Array.from(g.job_labels);
+                const jobsTitle =
+                  jobLabels.length > 1
+                    ? `JOBS: ${jobLabels.join(", ")}`
+                    : `JOB: ${jobLabels[0] || "—"}`;
+                rowsHtml.push(
+                  `<tr data-status="pending_payout"
+                       data-payment-id=""
+                       data-installer-id=""
+                       data-amount="${g.total}"
+                       data-batch="${g.key}">
+                    <td class="col-select" style="text-align:center;" data-col="Select">—</td>
+                    <td class="col-jobid mono" data-col="Job ID">${jobsTitle}</td>
+                    <td class="col-worker" data-col="Worker">${g.installer_display}</td>
+                    <td class="col-title" data-col="Job Title">Batch Payout (${g.count} payments)</td>
+                    <td class="mono" data-col="Amount">${pesoFmt(g.total)}</td>
+                    <td data-col="Requested Date">${reqDate}</td>
+                    <td data-col="Status"><span class="status pending">Pending Payout</span></td>
+                    <td data-col="Action">
+                      <button type="button" class="view-row-btn" title="View details">
+                        <span class="material-icons-sharp" aria-hidden="true">visibility</span>
+                      </button>
+                      <button class="do-payout-batch" type="button"
+                              data-batch="${g.key}"
+                              data-payment-ids='${JSON.stringify(
+                                g.payment_ids
+                              ).replace(/'</g, "&apos;")}'>
+                        Payout Batch
+                      </button>
+                    </td>
+                  </tr>`
+                );
               }
+
+              // Grouped disbursed
+              for (const g of disbursedGroups.values()) {
+                const reqDate = fmtDate(g.requested_at);
+                const jobLabels = Array.from(g.job_labels);
+                const jobsTitle =
+                  jobLabels.length > 1
+                    ? `JOBS: ${jobLabels.join(", ")}`
+                    : `JOB: ${jobLabels[0] || "—"}`;
+                rowsHtml.push(
+                  `<tr data-status="disbursed"
+                       data-payment-id=""
+                       data-installer-id=""
+                       data-amount="${g.total}"
+                       data-batch="${g.key}">
+                    <td class="col-select" style="text-align:center;" data-col="Select">—</td>
+                    <td class="col-jobid mono" data-col="Job ID">${jobsTitle}</td>
+                    <td class="col-worker" data-col="Worker">${g.installer_display}</td>
+                    <td class="col-title" data-col="Job Title">Batch Disbursed (${g.count} payments)</td>
+                    <td class="mono" data-col="Amount">${pesoFmt(g.total)}</td>
+                    <td data-col="Requested Date">${reqDate}</td>
+                    <td data-col="Status"><span class="status paid">Disbursed</span></td>
+                    <td data-col="Action">
+                      <button type="button" class="view-row-btn" title="View details">
+                        <span class="material-icons-sharp" aria-hidden="true">visibility</span>
+                      </button>
+                      <button type="button" disabled>Paid</button>
+                    </td>
+                  </tr>`
+                );
+              }
+
+              tbodyPayments.innerHTML =
+                rowsHtml.join("") ||
+                '<tr><td colspan="8" data-col="Notice" class="sub">No payment requests yet.</td></tr>';
+
+              // apply current filters/search
+              searchBtnEl.click();
+
+              // refresh grouped view in Requests tab
+              if (window.__buildRequests) window.__buildRequests();
+              if (window.__paymentsUI)
+                window.__paymentsUI.updateSelectionSummary();
             }
 
-            const resolveInstallerDisplay = (set) => {
-              if (set.size === 1) {
-                const only = [...set][0];
-                const inst = __INSTALLERS_BY_ID[only] || {};
-                return inst.name || inst.email || shortId(only);
-              }
-              return "Multiple";
-            };
-            for (const g of pendingGroups.values())
-              g.installer_display = resolveInstallerDisplay(g.installers);
-            for (const g of disbursedGroups.values())
-              g.installer_display = resolveInstallerDisplay(g.installers);
-
-            const rowsHtml = [];
-            const pesoFmt = (n) =>
-              "₱" +
-              (Number(n) || 0).toLocaleString("en-PH", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
+            // === HIDE SKELETON after content is ready ===
+            if (window.requestAnimationFrame) {
+              requestAnimationFrame(() => {
+                const sk = document.getElementById("paymentsSkeleton");
+                if (sk) sk.style.display = "none";
               });
-
-            // Ungrouped rows
-            for (const p of pays) {
-              if (
-                (p.payment_status === "pending_payout" && p.payout_batch_no) ||
-                (p.payment_status === "disbursed" && p.payout_batch_no)
-              ) {
-                continue;
-              }
-
-              const job = __JOBS_BY_ID[p.job_id] || {};
-              const inst = __INSTALLERS_BY_ID[p.installer_id] || {};
-              const ui = statusToUi(p.payment_status);
-
-              const jobDisplay = job.job_code
-                ? job.job_code
-                : `#${shortId(p.job_id)}`;
-              const workerDisplay =
-                inst.name || inst.email || shortId(p.installer_id);
-              const titleDisplay = job.job_title || "—";
-              const amountNum = job.job_pay != null ? Number(job.job_pay) : 0;
-              const amount = peso(amountNum);
-              const reqDate = fmtDate(p.first_created_at);
-
-              const selectable = ui.ds === "not-paid";
-              const selectCell = `<input type="checkbox" class="row-select" ${
-                selectable ? "" : "disabled"
-              } />`;
-
-              rowsHtml.push(
-                `<tr data-status="${ui.ds}"
-                     data-payment-id="${p.id}"
-                     data-installer-id="${p.installer_id}"
-                     data-amount="${amountNum}"
-                     data-batch="${p.payout_batch_no || ""}">
-                  <td class="col-select" style="text-align:center;" data-col="Select">${selectCell}</td>
-                  <td class="col-jobid" data-col="Job ID">${jobDisplay}</td>
-                  <td class="col-worker" data-col="Worker">${workerDisplay}</td>
-                  <td class="col-title" data-col="Job Title">${titleDisplay}</td>
-                  <td data-col="Amount">${amount}</td>
-                  <td data-col="Requested Date">${reqDate}</td>
-                  <td data-col="Status"><span class="${ui.cls}">${ui.text}</span></td>
-                  <td data-col="Action">
-                    <button type="button" class="view-row-btn" title="View details">
-                      <span class="material-icons-sharp" aria-hidden="true">visibility</span>
-                    </button>
-                    ${
-                      ui.action === "mark"
-                        ? '<button class="mark-paid" type="button">Mark as Paid</button>'
-                        : ui.action === "payout"
-                        ? '<button class="do-payout" type="button">Payout</button>'
-                        : '<button type="button" disabled>Paid</button>'
-                    }
-                  </td>
-                </tr>`
-              );
+            } else {
+              const sk = document.getElementById("paymentsSkeleton");
+              if (sk) sk.style.display = "none";
             }
-
-            // Grouped pending
-            for (const g of pendingGroups.values()) {
-              const reqDate = fmtDate(g.requested_at);
-              const jobLabels = Array.from(g.job_labels);
-              const jobsTitle =
-                jobLabels.length > 1
-                  ? `JOBS: ${jobLabels.join(", ")}`
-                  : `JOB: ${jobLabels[0] || "—"}`;
-              rowsHtml.push(
-                `<tr data-status="pending_payout"
-                     data-payment-id=""
-                     data-installer-id=""
-                     data-amount="${g.total}"
-                     data-batch="${g.key}">
-                  <td class="col-select" style="text-align:center;" data-col="Select">—</td>
-                  <td class="col-jobid mono" data-col="Job ID">${jobsTitle}</td>
-                  <td class="col-worker" data-col="Worker">${g.installer_display}</td>
-                  <td class="col-title" data-col="Job Title">Batch Payout (${g.count} payments)</td>
-                  <td class="mono" data-col="Amount">${pesoFmt(g.total)}</td>
-                  <td data-col="Requested Date">${reqDate}</td>
-                  <td data-col="Status"><span class="status pending">Pending Payout</span></td>
-                  <td data-col="Action">
-                    <button type="button" class="view-row-btn" title="View details">
-                      <span class="material-icons-sharp" aria-hidden="true">visibility</span>
-                    </button>
-                    <button class="do-payout-batch" type="button"
-                            data-batch="${g.key}"
-                            data-payment-ids='${JSON.stringify(
-                              g.payment_ids
-                            ).replace(/'</g, "&apos;")}'>
-                      Payout Batch
-                    </button>
-                  </td>
-                </tr>`
-              );
-            }
-
-            // Grouped disbursed
-            for (const g of disbursedGroups.values()) {
-              const reqDate = fmtDate(g.requested_at);
-              const jobLabels = Array.from(g.job_labels);
-              const jobsTitle =
-                jobLabels.length > 1
-                  ? `JOBS: ${jobLabels.join(", ")}`
-                  : `JOB: ${jobLabels[0] || "—"}`;
-              rowsHtml.push(
-                `<tr data-status="disbursed"
-                     data-payment-id=""
-                     data-installer-id=""
-                     data-amount="${g.total}"
-                     data-batch="${g.key}">
-                  <td class="col-select" style="text-align:center;" data-col="Select">—</td>
-                  <td class="col-jobid mono" data-col="Job ID">${jobsTitle}</td>
-                  <td class="col-worker" data-col="Worker">${g.installer_display}</td>
-                  <td class="col-title" data-col="Job Title">Batch Disbursed (${g.count} payments)</td>
-                  <td class="mono" data-col="Amount">${pesoFmt(g.total)}</td>
-                  <td data-col="Requested Date">${reqDate}</td>
-                  <td data-col="Status"><span class="status paid">Disbursed</span></td>
-                  <td data-col="Action">
-                    <button type="button" class="view-row-btn" title="View details">
-                      <span class="material-icons-sharp" aria-hidden="true">visibility</span>
-                    </button>
-                    <button type="button" disabled>Paid</button>
-                  </td>
-                </tr>`
-              );
-            }
-
-            tbodyPayments.innerHTML =
-              rowsHtml.join("") ||
-              '<tr><td colspan="8" data-col="Notice" class="sub">No payment requests yet.</td></tr>';
-
-            // apply current filters/search
-            searchBtnEl.click();
-
-            // refresh grouped view in Requests tab
-            if (window.__buildRequests) window.__buildRequests();
-            if (window.__paymentsUI)
-              window.__paymentsUI.updateSelectionSummary();
           }
 
           // Build Requests tab groups (pending only)

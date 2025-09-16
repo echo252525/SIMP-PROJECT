@@ -440,14 +440,49 @@
       }
 
       .head {
-  display: flex;
-  align-items: flex-start;   /* align to top */
-  justify-content: center;   /* center horizontally */
-  text-align: center;        /* center text inside */
-  padding: 0;                /* remove the left padding */
-  margin: 0 auto;            /* center the whole block itself */
-}
-  
+        display: flex;
+        align-items: flex-start;   /* align to top */
+        justify-content: center;   /* center horizontally */
+        text-align: center;        /* center text inside */
+        padding: 0;                /* remove the left padding */
+        margin: 0 auto;            /* center the whole block itself */
+      }
+
+      /* ====== Skeleton Loader (PC + Mobile) ====== */
+      .hidden{ display:none !important; }
+      .skel{ position:relative; overflow:hidden; background:#eef2f7; border-radius:12px; }
+      .skel-line{ height:14px; border-radius:8px; background:#eef2f7; }
+      .skel.w-30{ width:30%; } .skel.w-40{ width:40%; } .skel.w-50{ width:50%; }
+      .skel.w-60{ width:60%; } .skel.w-70{ width:70%; } .skel.w-80{ width:80%; } .skel.w-90{ width:90%; }
+      .skel.shimmer::after{
+        content:""; position:absolute; inset:0; transform:translateX(-100%);
+        background:linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.55) 50%, rgba(255,255,255,0) 100%);
+        animation:shmm 1.1s infinite;
+      }
+      @keyframes shmm{ 0%{ transform:translateX(-100%);} 100%{ transform:translateX(100%);} }
+
+      /* Skeleton layout mirrors two-col */
+      #skeletonArea.two-col { display:grid; grid-template-columns:340px 1fr; gap:1rem; }
+      @media (max-width:980px){ #skeletonArea.two-col { grid-template-columns:1fr; } }
+
+      /* Left skeleton (list) */
+      .sk-panel{ background:#fff; border:1px solid var(--line); border-radius:var(--radius); padding:12px; }
+      .sk-list{ display:flex; flex-direction:column; gap:8px; max-height:70vh; overflow:auto; }
+      .sk-item{ display:grid; grid-template-columns:40px 1fr auto; align-items:center; gap:10px; padding:12px; border:1px solid var(--line); border-radius:12px; background:#fff; }
+      .sk-avatar{ width:40px; height:40px; border-radius:50%; }
+      .sk-pill{ width:80px; height:20px; border-radius:999px; }
+
+      /* Right skeleton (details) */
+      .sk-details{ background:#fff; border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; }
+      .sk-head{ display:grid; grid-template-columns:72px 1fr; gap:16px; padding:16px; border-bottom:1px solid var(--line); background:linear-gradient(180deg,#f9fbff,#ffffff); }
+      .sk-bigavatar{ width:72px; height:72px; border-radius:50%; }
+      .sk-actions{ display:flex; gap:8px; padding:12px 16px; border-bottom:1px solid var(--line); background:#fff; }
+      .sk-btn{ width:88px; height:36px; border-radius:10px; }
+      .sk-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:16px; }
+      @media (max-width:980px){ .sk-grid{ grid-template-columns:1fr; } }
+      .sk-card{ border:1px solid var(--line); border-radius:12px; padding:12px; background:#fff; }
+      .sk-title{ height:16px; width:140px; margin-bottom:10px; }
+
     </style>
   </head>
 
@@ -512,6 +547,83 @@
       <!-- MAIN -->
       <main>
         <section>
+
+          <!-- ===== SKELETON AREA (shown first) ===== -->
+          <div id="skeletonArea" class="two-col">
+            <!-- Left skeleton (list) -->
+            <div class="sk-panel">
+              <div class="skel skel-line w-60 shimmer" style="height:18px; margin-bottom:10px;"></div>
+
+              <div class="skel skel-line shimmer" style="height:36px; border-radius:10px; margin-bottom:10px;"></div>
+              <div class="skel skel-line shimmer" style="height:36px; border-radius:10px; margin-bottom:10px;"></div>
+
+              <div class="sk-list">
+                <div class="sk-item">
+                  <div class="skel sk-avatar skel shimmer sk-avatar"></div>
+                  <div>
+                    <div class="skel skel-line w-80 shimmer" style="height:14px; margin-bottom:6px;"></div>
+                    <div class="skel skel-line w-60 shimmer" style="height:12px;"></div>
+                  </div>
+                  <div class="skel sk-pill shimmer"></div>
+                </div>
+                <div class="sk-item">
+                  <div class="skel sk-avatar skel shimmer sk-avatar"></div>
+                  <div>
+                    <div class="skel skel-line w-70 shimmer" style="height:14px; margin-bottom:6px;"></div>
+                    <div class="skel skel-line w-50 shimmer" style="height:12px;"></div>
+                  </div>
+                  <div class="skel sk-pill shimmer"></div>
+                </div>
+                <div class="sk-item">
+                  <div class="skel sk-avatar skel shimmer sk-avatar"></div>
+                  <div>
+                    <div class="skel skel-line w-65 shimmer" style="height:14px; margin-bottom:6px;"></div>
+                    <div class="skel skel-line w-45 shimmer" style="height:12px;"></div>
+                  </div>
+                  <div class="skel sk-pill shimmer"></div>
+                </div>
+                <div class="sk-item">
+                  <div class="skel sk-avatar skel shimmer sk-avatar"></div>
+                  <div>
+                    <div class="skel skel-line w-75 shimmer" style="height:14px; margin-bottom:6px;"></div>
+                    <div class="skel skel-line w-55 shimmer" style="height:12px;"></div>
+                  </div>
+                  <div class="skel sk-pill shimmer"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right skeleton (details) -->
+            <div class="sk-details">
+              <div class="sk-head">
+                <div class="skel sk-bigavatar shimmer"></div>
+                <div>
+                  <div class="skel skel-line w-60 shimmer" style="height:18px; margin-bottom:8px;"></div>
+                  <div class="skel skel-line w-40 shimmer" style="height:14px;"></div>
+                </div>
+              </div>
+              <div class="sk-actions">
+                <div class="skel sk-btn shimmer"></div>
+                <div class="skel sk-btn shimmer"></div>
+              </div>
+              <div class="sk-grid">
+                <div class="sk-card">
+                  <div class="skel sk-title shimmer"></div>
+                  <div class="skel skel-line w-90 shimmer" style="height:14px; margin-bottom:8px;"></div>
+                  <div class="skel skel-line w-80 shimmer" style="height:14px; margin-bottom:8px;"></div>
+                  <div class="skel skel-line w-70 shimmer" style="height:14px;"></div>
+                </div>
+                <div class="sk-card">
+                  <div class="skel sk-title shimmer"></div>
+                  <div class="skel skel-line w-85 shimmer" style="height:14px; margin-bottom:8px;"></div>
+                  <div class="skel skel-line w-60 shimmer" style="height:14px; margin-bottom:8px;"></div>
+                  <div class="skel skel-line w-75 shimmer" style="height:14px;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- ===== /SKELETON AREA ===== -->
+
           <div class="two-col" id="contentArea" style="display: none">
             <!-- Left: list -->
             <div class="panel">
@@ -612,6 +724,11 @@
       const detailsModalBody = document.getElementById("detailsModalBody");
       const detailsModalClose = document.getElementById("detailsModalClose");
 
+      /* === ADDED: skeleton handle === */
+      const skeletonArea = document.getElementById("skeletonArea");
+      const hideSkeleton = () => { if (skeletonArea) skeletonArea.style.display = "none"; };
+      const showSkeleton = () => { if (skeletonArea) skeletonArea.style.display = ""; };
+
       let currentUser = null;
       let currentRole = null; // 'pending' | 'admin' | 'superadmin' | null
       let admins = [];
@@ -680,10 +797,14 @@
       }
 
       document.addEventListener("DOMContentLoaded", async function () {
+        // Show skeleton immediately; real content & notAuth are hidden by default
+        showSkeleton();
+
         const res = await supabase.auth.getUser();
         const user = res && res.data ? res.data.user : null;
 
         if (!user) {
+          hideSkeleton();
           notAuth.style.display = "block";
           return;
         }
@@ -698,6 +819,7 @@
 
         if (meRes.error) {
           console.error(meRes.error);
+          hideSkeleton();
           notAuth.style.display = "block";
           return;
         }
@@ -705,12 +827,16 @@
         currentRole = meRes.data ? meRes.data.role : null;
 
         if (!(currentRole === "admin" || currentRole === "superadmin")) {
+          hideSkeleton();
           notAuth.style.display = "block";
           return;
         }
 
         contentArea.style.display = "grid";
-        await refreshAdmins();
+        await refreshAdmins(); // while this runs, skeleton stays visible
+        // Once list + details rendered, hide the skeleton
+        hideSkeleton();
+
         wireUI();
 
         detailsModalClose.addEventListener("click", closeDetailsModal);

@@ -249,9 +249,105 @@
           grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
         }
       }
+
+      /* ============================= */
+      /*      SKELETON (ADDED)         */
+      /* ============================= */
+
+      /* Visibility toggles */
+      /* Show real content by default, skeleton hidden */
+      #settingsSkeleton { display: none; }
+      /* When loading: show skeleton, hide real content */
+      body.is-loading #settingsSkeleton { display: block !important; }
+      body.is-loading .settings-wrap { display: none !important; }
+      /* When loaded: hide skeleton, show real content */
+      body.is-loaded #settingsSkeleton { display: none !important; }
+      body.is-loaded .settings-wrap { display: block !important; }
+
+      /* Skeleton look & feel */
+      :root {
+        --skel-base: #eef3f7;
+        --skel-sheen: #f7fafc;
+      }
+      .skel-card {
+        background: #fff;
+        border: 1px solid #e7edf3;
+        border-radius: 14px;
+        box-shadow: var(--box-shadow);
+        padding: 1.2rem 1.3rem;
+      }
+      .skel-flex { display: flex; align-items: center; }
+      .skel-row { display: flex; gap: .6rem; align-items: center; flex-wrap: wrap; }
+      .skel-block {
+        position: relative;
+        background: var(--skel-base);
+        border-radius: 10px;
+        overflow: hidden;
+      }
+      .skel-circle { border-radius: 9999px; }
+      .skel-animate::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        transform: translateX(-100%);
+        background: linear-gradient(90deg, rgba(255,255,255,0) 0%, var(--skel-sheen) 50%, rgba(255,255,255,0) 100%);
+        animation: skel-sheen 1.1s infinite;
+      }
+      @keyframes skel-sheen { 100% { transform: translateX(100%); } }
+
+      /* Layout mirrors real UI */
+      #settingsSkeleton .skel-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: .6rem;
+        flex-wrap: wrap;
+        margin-bottom: .6rem;
+      }
+      .skel-title { width: 180px; height: 22px; }
+      .skel-btn { width: 92px; height: 38px; border-radius: 10px; }
+
+      .skel-avatar-row { display: flex; align-items: center; gap: 1rem; margin-top: .6rem; flex-wrap: wrap; }
+      .skel-avatar { width: 96px; height: 96px; }
+      .skel-mini-btn { width: 140px; height: 36px; border-radius: 10px; }
+      .skel-hint { width: 200px; height: 14px; border-radius: 6px; }
+
+      .skel-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 1rem 1.2rem;
+        margin-top: 1rem;
+      }
+      .skel-label { width: 100px; height: 14px; border-radius: 6px; margin-bottom: .35rem; }
+      .skel-input { width: 100%; height: 42px; border-radius: 10px; }
+      .skel-pill { width: 120px; height: 32px; border-radius: 9999px; }
+
+      .skel-row-help { display: flex; gap: .6rem; align-items: center; flex-wrap: wrap; }
+      .skel-time { width: 160px; height: 14px; border-radius: 6px; }
+      .skel-divider { width: 1px; height: 18px; background: #e7edf3; }
+
+      .skel-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 1rem;
+        gap: .6rem;
+        flex-wrap: wrap;
+      }
+      .skel-status { width: 220px; height: 14px; border-radius: 6px; }
+      .skel-delete { width: 180px; height: 40px; border-radius: 10px; }
+
+      /* Mobile tweaks */
+      @media (max-width: 768px) {
+        .skel-mini-btn { width: 120px; height: 36px; }
+        .skel-title { width: 150px; }
+        .skel-status { width: 180px; }
+        .skel-delete { width: 52px; } /* icon-only feel on small screens */
+      }
     </style>
   </head>
-  <body>
+  <!-- Start in loading state so the skeleton shows first -->
+  <body class="is-loading">
     <div class="container">
       <!-- Sidebar Section (unchanged) -->
       <aside>
@@ -310,6 +406,69 @@
 
       <!-- Main Content -->
       <main>
+        <!-- ========================= SKELETON (ADDED) ========================= -->
+        <div id="settingsSkeleton" class="settings-wrap" aria-hidden="true">
+          <div class="skel-card">
+            <!-- Header -->
+            <div class="skel-header">
+              <div class="skel-block skel-animate skel-title"></div>
+              <div class="skel-row">
+                <div class="skel-block skel-animate skel-btn"></div>
+                <div class="skel-block skel-animate skel-btn"></div>
+                <div class="skel-block skel-animate skel-btn"></div>
+              </div>
+            </div>
+
+            <!-- Subtitle -->
+            <div class="skel-block skel-animate" style="height:14px; width:70%; border-radius:6px; margin-bottom:.35rem;"></div>
+            <div class="skel-block skel-animate" style="height:14px; width:55%; border-radius:6px;"></div>
+
+            <!-- Avatar Row -->
+            <div class="skel-avatar-row">
+              <div class="skel-block skel-animate skel-circle skel-avatar"></div>
+              <div class="skel-row" style="gap:.5rem;">
+                <div class="skel-block skel-animate skel-mini-btn"></div>
+                <div class="skel-block skel-animate skel-hint"></div>
+              </div>
+            </div>
+
+            <!-- Form grid -->
+            <div class="skel-grid">
+              <div>
+                <div class="skel-block skel-animate skel-label"></div>
+                <div class="skel-block skel-animate skel-input"></div>
+              </div>
+              <div>
+                <div class="skel-block skel-animate skel-label"></div>
+                <div class="skel-block skel-animate skel-pill"></div>
+              </div>
+              <div>
+                <div class="skel-block skel-animate skel-label"></div>
+                <div class="skel-block skel-animate skel-input"></div>
+              </div>
+              <div>
+                <div class="skel-block skel-animate skel-label"></div>
+                <div class="skel-block skel-animate skel-input"></div>
+              </div>
+              <div class="full">
+                <div class="skel-block skel-animate skel-label" style="width:120px;"></div>
+                <div class="skel-row-help" style="margin-top:.3rem;">
+                  <div class="skel-block skel-animate skel-time"></div>
+                  <div class="skel-divider"></div>
+                  <div class="skel-block skel-animate skel-time" style="width:180px;"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="skel-actions">
+              <div class="skel-block skel-animate skel-status"></div>
+              <div class="skel-block skel-animate skel-delete"></div>
+            </div>
+          </div>
+        </div>
+        <!-- ======================= /SKELETON (ADDED) ======================= -->
+
         <div class="settings-wrap">
           <div class="card">
             <div class="card-header">
@@ -457,6 +616,18 @@
       let adminRowInitial = null;
       let currentAvatarPath = null; // storage path like "<uid>/avatar.jpg"
 
+      /* ========================= */
+      /*  Loading state (ADDED)    */
+      /* ========================= */
+      function startLoading() {
+        document.body.classList.add("is-loading");
+        document.body.classList.remove("is-loaded");
+      }
+      function stopLoading() {
+        document.body.classList.remove("is-loading");
+        document.body.classList.add("is-loaded");
+      }
+
       function setEdit(on) {
         nameEl.disabled = !on;
         phoneEl.disabled = !on;
@@ -560,34 +731,41 @@
       }
 
       async function load() {
+        // ADDED: show skeleton while loading
+        startLoading();
         setStatus("Loading...");
-        const authRes = await supa.auth.getUser();
-        if (authRes.error || !authRes.data.user) {
-          setStatus("Not authenticated. Please log in.", "error");
-          return;
-        }
-        currentUser = authRes.data.user;
+        try {
+          const authRes = await supa.auth.getUser();
+          if (authRes.error || !authRes.data.user) {
+            setStatus("Not authenticated. Please log in.", "error");
+            return;
+          }
+          currentUser = authRes.data.user;
 
-        const { data: row, error } = await supa
-          .from("admin")
-          .select("id,email,name,phone,role,created_at,updated_at,admin_profile_url")
-          .eq("id", currentUser.id)
-          .maybeSingle();
+          const { data: row, error } = await supa
+            .from("admin")
+            .select("id,email,name,phone,role,created_at,updated_at,admin_profile_url")
+            .eq("id", currentUser.id)
+            .maybeSingle();
 
-        if (error) {
-          console.error(error);
-          setStatus("Failed to load admin profile.", "error");
-          return;
-        }
-        if (!row) {
-          setStatus("Admin record not found.", "error");
-          return;
-        }
+          if (error) {
+            console.error(error);
+            setStatus("Failed to load admin profile.", "error");
+            return;
+          }
+          if (!row) {
+            setStatus("Admin record not found.", "error");
+            return;
+          }
 
-        adminRowInitial = JSON.parse(JSON.stringify(row));
-        fillForm(row, currentUser.email || row.email);
-        setEdit(false);
-        setStatus("");
+          adminRowInitial = JSON.parse(JSON.stringify(row));
+          fillForm(row, currentUser.email || row.email);
+          setEdit(false);
+          setStatus("");
+        } finally {
+          // ADDED: hide skeleton and reveal real content
+          stopLoading();
+        }
       }
 
       async function save() {

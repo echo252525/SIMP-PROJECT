@@ -192,11 +192,61 @@
       @media (max-width: 420px) {
         .job-modal-card { width: 94vw; height: 80vh; }
       }
+
+      /* ========= SKELETON LOADING (ADDED) ========= */
+      @keyframes shimmer {
+        0% { background-position: -200% 0; }
+        100% { background-position: 200% 0; }
+      }
+      .skeleton {
+        position: relative;
+        overflow: hidden;
+        background: #eef2f6;
+        background-image: linear-gradient(90deg, #eef2f6 0px, #f7f9fc 40px, #eef2f6 80px);
+        background-size: 200% 100%;
+        animation: shimmer 1.2s infinite linear;
+        border-radius: 10px;
+      }
+      .skeleton-pill { height: 22px; width: 74px; border-radius: 999px; }
+      .skeleton-thumb { width: 48px; height: 48px; border-radius: 8px; }
+      .skeleton-line { height: 12px; width: 100%; margin: 6px 0; border-radius: 6px; }
+      .skeleton-title { height: 16px; width: 60%; margin: 6px 0; border-radius: 8px; }
+
+      /* layout visibility toggles */
+      #jobsRoot.loading .real-list,
+      #jobsRoot.loading .real-details,
+      #jobsRoot.loading #emptyJobs { display: none !important; }
+
+      #jobsRoot.loading .skeleton-list,
+      #jobsRoot.loading .skeleton-details { display: block !important; }
+
+      .skeleton-list,
+      .skeleton-details { display: none; }
+
+      /* skeleton containers styling */
+      .sk-item {
+        display: grid;
+        grid-template-columns: 48px 1fr auto;
+        align-items: center; gap: 10px; padding: 10px;
+        border: 1px solid var(--line); border-radius: 12px; background: #fff;
+      }
+      .sk-meta { display: grid; gap: 8px; }
+      .sk-meta .skeleton-line:first-child { width: 70%; height: 14px; }
+      .sk-meta .skeleton-line:last-child { width: 40%; }
+
+      .skeleton-hero { height: 240px; border-radius: 12px 12px 0 0; }
+      .skeleton-section { padding: 16px; display: grid; gap: 10px; }
+      .skeleton-kv { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+      @media (max-width: 980px) {
+        .skeleton-kv { grid-template-columns: 1fr; }
+      }
+      .skeleton-actions { display: flex; justify-content: flex-end; gap: 10px; padding: 12px 16px 16px; }
+      .skeleton-btn { width: 100px; height: 38px; border-radius: 10px; }
     </style>
   </head>
 
   <body>
-    <div class="container">
+    <div class="container" id="jobsRoot"><!-- ADDED id for load toggling -->
       <aside>
         <div class="toggle">
           <div class="logo">
@@ -245,12 +295,94 @@
                   <option value="overdue">Overdue</option>
                 </select>
               </div>
-              <div id="jobList" class="list"></div>
-              <div id="emptyJobs" class="empty-state" style="display: none">No jobs pending review.</div>
+
+              <!-- REAL list (unchanged) -->
+              <div class="real-list">
+                <div id="jobList" class="list"></div>
+                <div id="emptyJobs" class="empty-state" style="display: none">No jobs pending review.</div>
+              </div>
+
+              <!-- SKELETON list (ADDED) -->
+              <div class="skeleton-list">
+                <div class="list">
+                  <!-- Repeat a few skeleton rows -->
+                  <div class="sk-item">
+                    <div class="skeleton skeleton-thumb"></div>
+                    <div class="sk-meta">
+                      <div class="skeleton skeleton-title"></div>
+                      <div class="skeleton skeleton-line" style="width:50%"></div>
+                    </div>
+                    <div class="skeleton skeleton-pill"></div>
+                  </div>
+                  <div class="sk-item">
+                    <div class="skeleton skeleton-thumb"></div>
+                    <div class="sk-meta">
+                      <div class="skeleton skeleton-title"></div>
+                      <div class="skeleton skeleton-line" style="width:45%"></div>
+                    </div>
+                    <div class="skeleton skeleton-pill"></div>
+                  </div>
+                  <div class="sk-item">
+                    <div class="skeleton skeleton-thumb"></div>
+                    <div class="sk-meta">
+                      <div class="skeleton skeleton-title"></div>
+                      <div class="skeleton skeleton-line" style="width:35%"></div>
+                    </div>
+                    <div class="skeleton skeleton-pill"></div>
+                  </div>
+                  <div class="sk-item">
+                    <div class="skeleton skeleton-thumb"></div>
+                    <div class="sk-meta">
+                      <div class="skeleton skeleton-title"></div>
+                      <div class="skeleton skeleton-line" style="width:60%"></div>
+                    </div>
+                    <div class="skeleton skeleton-pill"></div>
+                  </div>
+                  <div class="sk-item">
+                    <div class="skeleton skeleton-thumb"></div>
+                    <div class="sk-meta">
+                      <div class="skeleton skeleton-title"></div>
+                      <div class="skeleton skeleton-line" style="width:50%"></div>
+                    </div>
+                    <div class="skeleton skeleton-pill"></div>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <div class="details" id="jobDetailsPane">
+            <!-- REAL details (unchanged container) -->
+            <div class="details real-details" id="jobDetailsPane">
               <div class="empty-state">Select a job on the left to review its details.</div>
+            </div>
+
+            <!-- SKELETON details (ADDED) -->
+            <div class="details skeleton-details">
+              <div class="skeleton skeleton-hero"></div>
+              <div class="skeleton-section">
+                <div class="skeleton skeleton-title" style="width:40%"></div>
+                <div class="meta" style="margin-top:8px;">
+                  <div class="skeleton skeleton-line" style="width:30%"></div>
+                  <div class="skeleton skeleton-line" style="width:20%"></div>
+                  <div class="skeleton skeleton-line" style="width:25%"></div>
+                </div>
+              </div>
+              <div class="grid-2" style="padding:16px">
+                <div class="card">
+                  <div class="skeleton skeleton-title" style="width:30%"></div>
+                  <div class="skeleton-kv">
+                    <div class="skeleton skeleton-line" style="height:16px"></div>
+                    <div class="skeleton skeleton-line" style="height:16px"></div>
+                  </div>
+                </div>
+                <div class="card">
+                  <div class="skeleton skeleton-title" style="width:28%"></div>
+                  <div class="skeleton skeleton-line" style="height:16px; margin-top:8px;"></div>
+                </div>
+              </div>
+              <div class="skeleton-actions">
+                <div class="skeleton skeleton-btn"></div>
+                <div class="skeleton skeleton-btn"></div>
+              </div>
             </div>
           </div>
         </section>
@@ -298,6 +430,9 @@
       var jobModalBody = document.getElementById("jobModalBody");
       var jobModalTitle = document.getElementById("jobModalTitle");
       var closeJobModalBtn = document.getElementById("closeJobModal");
+
+      // Skeleton root (ADDED)
+      var jobsRoot = document.getElementById("jobsRoot");
 
       // ========= State =========
       var ALL_JOBS = [];
@@ -423,6 +558,9 @@
 
       // ========= Load + Render =========
       async function loadJobs() {
+        // SHOW skeletons, HIDE real content
+        if (jobsRoot) jobsRoot.classList.add("loading");
+
         jobList.innerHTML = "";
         emptyJobs.style.display = "none";
         jobDetailsPane.innerHTML = '<div class="empty-state">Loading…</div>';
@@ -434,6 +572,8 @@
           .order("created_at", { ascending: false });
 
         if (res.error) {
+          // HIDE skeletons even on error so the message shows
+          if (jobsRoot) jobsRoot.classList.remove("loading");
           jobDetailsPane.innerHTML = '<div class="empty-state">Failed to load jobs.</div>';
           emptyJobs.style.display = "block";
           showToast(res.error.message || "Load error");
@@ -474,6 +614,9 @@
         } else {
           jobDetailsPane.innerHTML = '<div class="empty-state">No jobs found.</div>';
         }
+
+        // HIDE skeletons, SHOW real content
+        if (jobsRoot) jobsRoot.classList.remove("loading");
       }
 
       function renderJobList(filter) {
@@ -734,7 +877,11 @@
         }
       });
 
-      document.addEventListener("DOMContentLoaded", function () { loadJobs(); });
+      document.addEventListener("DOMContentLoaded", function () {
+        // start with skeleton visible
+        if (jobsRoot) jobsRoot.classList.add("loading");
+        loadJobs();
+      });
     </script>
   </body>
 </html>
