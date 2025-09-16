@@ -10,6 +10,11 @@
     <link rel="stylesheet" href="../css_files/sideBar.css" />
     <title>PaymentsRequest</title>
     <style>
+      :root {
+        /* adjust if your mobile page padding differs */
+        --page-padding: 12px;
+      }
+
       main {
         margin-top: 1.4rem;
       }
@@ -122,7 +127,6 @@
         color: #1c2430;
         border-color: #20a44c;
       }
-      /* icon & label for tabs */
       .payout-tabs .tab-icon {
         font-size: 1.15rem;
         display: inline-flex;
@@ -131,7 +135,7 @@
         display: inline;
       }
 
-      /* NEW: tiny notification badge */
+      /* Badge */
       .badge {
         display: inline-grid;
         place-items: center;
@@ -150,8 +154,9 @@
         display: none !important;
       }
 
-      /* Table */
-      main .payments-table table {
+      /* Table base */
+      main .payments-table table,
+      .requests-table table {
         width: 100%;
         border-collapse: collapse;
         background: #fff;
@@ -159,13 +164,16 @@
         overflow: hidden;
       }
       main .payments-table th,
-      main .payments-table td {
+      main .payments-table td,
+      .requests-table th,
+      .requests-table td {
         padding: 0.9rem;
         text-align: left;
         border-bottom: 1px solid #f0f0f0;
-        white-space: nowrap;
+        white-space: nowrap; /* enable ellipsis later */
       }
-      main .payments-table th {
+      main .payments-table th,
+      .requests-table th {
         background: #f8fbfd;
         color: #1c2430;
         font-weight: 700;
@@ -264,7 +272,7 @@
         margin-right: 0.4rem;
       }
 
-      /* Keep old button hidden (per your note) */
+      /* Keep old button hidden */
       #createPayoutBtn {
         display: none !important;
       }
@@ -288,25 +296,6 @@
         display: none;
         margin-top: 0.6rem;
       }
-      .requests-table table {
-        width: 100%;
-        border-collapse: collapse;
-        background: #fff;
-        border-radius: 10px;
-        overflow: hidden;
-      }
-      .requests-table th,
-      .requests-table td {
-        padding: 0.9rem;
-        text-align: left;
-        border-bottom: 1px solid #f0f0f0;
-        white-space: nowrap;
-      }
-      .requests-table th {
-        background: #f8fbfd;
-        color: #1c2430;
-        font-weight: 700;
-      }
 
       .mono {
         font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
@@ -316,7 +305,7 @@
         color: #6c7a8a;
       }
 
-      /* ====== Bank Confirmation Modal (UPDATED) ====== */
+      /* ====== Bank Confirmation Modal ====== */
       .bank-modal-overlay {
         position: fixed;
         inset: 0;
@@ -431,161 +420,171 @@
          RESPONSIVE ENHANCEMENTS
          ========================= */
       @media (max-width: 980px) {
-        /* Search/filter stacks */
-        main .search-filter {
-          gap: 0.6rem;
-        }
+        main .search-filter { gap: 0.6rem; }
         main .search-filter input {
           width: 100%;
           min-width: 220px;
           flex: 1 1 100%;
         }
         main .search-filter select,
-        main .search-filter button {
-          flex: 1 1 calc(50% - 0.6rem);
-        }
+        main .search-filter button { flex: 1 1 calc(50% - 0.6rem); }
 
-        /* Summary cards 2 columns */
         main .summary-cards {
           grid-template-columns: repeat(2, minmax(0, 1fr));
           gap: 0.8rem;
         }
 
-        /* Batch bar wraps neatly */
-        main .batch-bar {
-          flex-wrap: wrap;
-          gap: 0.5rem 0.6rem;
-        }
-        main .batch-bar .pill {
-          font-size: 0.85rem;
-        }
+        main .batch-bar { flex-wrap: wrap; gap: 0.5rem 0.6rem; }
+        main .batch-bar .pill { font-size: 0.85rem; }
 
-        /* Tabs: shrink padding, allow scroll, show icons+labels (labels will hide below 680px) */
-        .payout-tabs button {
-          padding: 0.55rem 0.75rem;
-        }
+        .payout-tabs button { padding: 0.55rem 0.75rem; }
 
-        /* Make tables horizontally scrollable fallback (kept) */
-        main .payments-table table {
-          display: block;
-          overflow-x: auto;
-        }
+        /* keep desktop overflow behavior if wide */
+        main .payments-table table { display: block; overflow-x: auto; }
       }
 
+      /* ==== Mobile: responsive table with no horizontal overflow ==== */
+      .view-row-btn { display: none; } /* hidden on desktop */
+
       @media (max-width: 720px) {
-        /* Tabs: icons only — hide labels, keep badges */
-        .payout-tabs .tab-label {
-          display: none;
-        }
-        .payout-tabs .tab-icon {
-          display: inline-flex;
+        .payout-tabs .tab-label { display: none; }
+        .payout-tabs .tab-icon { display: inline-flex; }
+
+        main .summary-cards { grid-template-columns: 1fr; }
+
+        /* Make wrappers fill viewport width but prevent any overflow */
+        .payments-table,
+        .requests-table {
+          margin-left: calc(-1 * var(--page-padding));
+          margin-right: calc(-1 * var(--page-padding));
+          padding-left: var(--page-padding);
+          padding-right: var(--page-padding);
+          box-sizing: border-box;
+          overflow-x: clip;  /* critical: no horizontal scroll/overflow */
+          max-width: 100vw;  /* hard stop at viewport */
         }
 
-        /* Summary cards single column */
-        main .summary-cards {
-          grid-template-columns: 1fr;
-        }
-
-        /* Action buttons full width inside rows/cards */
-        main .mark-paid,
-        .do-payout,
-        .do-payout-group,
-        .do-payout-batch {
+        .payments-table table,
+        .requests-table table {
           width: 100%;
+          table-layout: fixed;   /* evenly distribute columns; avoids overflow */
+          border-radius: 12px;
         }
 
-        /* Turn main payments table into cards */
-        .payments-table thead {
-          display: none;
+        /* Hide wide columns to keep single line */
+        .payments-table thead { display: none; }
+        .payments-table td[data-col="Job Title"],
+        .payments-table td[data-col="Requested Date"] { display: none; }
+
+        /* Keep rows compact */
+        .payments-table tbody tr { border-bottom: 1px solid #eef2f7; }
+        .payments-table td { padding: 10px 8px; }
+
+        /* Ellipsis on possibly long cells */
+        .payments-table td,
+        .requests-table td {
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
-        .payments-table tbody tr {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 6px 12px;
-          padding: 10px 12px;
-          border-bottom: 1px solid #eef2f7;
-        }
-        .payments-table tbody tr td {
-          white-space: normal;
-          display: flex;
-          justify-content: space-between;
+
+        /* Safe widths for remaining columns so they fit on one row */
+        .payments-table td[data-col="Select"] { width: 36px; }
+        .payments-table td[data-col="Job ID"] { max-width: 18vw; }
+        .payments-table td[data-col="Worker"] { max-width: 32vw; }
+        .payments-table td[data-col="Amount"] { max-width: 18vw; font-weight: 600; }
+        .payments-table td[data-col="Status"] { max-width: 20vw; }
+
+        /* Only show the eye button in Action on mobile */
+        .payments-table td[data-col="Action"] button:not(.view-row-btn) { display: none; }
+        .view-row-btn {
+          display: inline-flex;
           align-items: center;
-          gap: 8px;
-          padding: 6px 0;
-          border-bottom: none;
+          justify-content: center;
+          width: 36px;
+          height: 36px;
+          border-radius: 8px;
+          border: 1px solid #e6edf5;
+          background: #fff;
+          cursor: pointer;
         }
-        .payments-table tbody tr td::before {
-          content: attr(data-col);
-          font-weight: 700;
-          color: #6c7a8a;
-          flex: 0 0 auto;
-        }
-        /* Make some cells span full row for clarity */
-        .payments-table tbody tr td[data-col="Job Title"],
-        .payments-table tbody tr td[data-col="Status"],
-        .payments-table tbody tr td[data-col="Action"] {
-          grid-column: 1 / -1;
-        }
-        /* Select column small */
-        .payments-table tbody tr td[data-col="Select"]::before {
-          content: "Select";
-        }
-        .payments-table tbody tr td[data-col="Select"] {
-          justify-content: flex-start;
-          gap: 10px;
-        }
+        .view-row-btn .material-icons-sharp { font-size: 20px; line-height: 1; color: #1c2430; }
 
-        /* Requests table -> cards */
-        .requests-table thead {
-          display: none;
-        }
-        .requests-table tbody tr {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 6px 12px;
-          padding: 10px 12px;
-          border-bottom: 1px solid #eef2f7;
-        }
-        .requests-table tbody tr td {
-          white-space: normal;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          gap: 8px;
-          padding: 6px 0;
-          border-bottom: none;
-        }
-        .requests-table tbody tr td::before {
-          content: attr(data-col);
-          font-weight: 700;
-          color: #6c7a8a;
-          flex: 0 0 auto;
-        }
-        .requests-table tbody tr td[data-col="Jobs"],
-        .requests-table tbody tr td[data-col="Action"] {
-          grid-column: 1 / -1;
-        }
+        .payments-table td[data-col="Status"] .status { margin: 0; }
 
-        /* Modal: taller on mobile */
-        .bank-modal .bm-body {
-          max-height: 70vh;
-        }
+        /* Requests table: compact + no overflow */
+        .requests-table thead { display: none; }
+        .requests-table td[data-col="Installer"],
+        .requests-table td[data-col="# Payments"],
+        .requests-table td[data-col="Total Amount"],
+        .requests-table td[data-col="Requested Date"] { display: none; }
+        .requests-table td { padding: 10px 8px; }
+        .requests-table td[data-col="Jobs"] { max-width: 60vw; }
+
+        /* Modal taller on mobile */
+        .bank-modal .bm-body { max-height: 70vh; }
       }
 
       @media (max-width: 480px) {
-        /* Slightly smaller paddings/fonts for compactness */
-        main .payments-header h1 {
-          font-size: 1.25rem;
-        }
-        .payout-tabs button {
-          padding: 0.5rem 0.6rem;
-        }
-        .badge {
-          min-width: 20px;
-          height: 18px;
-          font-size: 0.68rem;
-        }
+        main .payments-header h1 { font-size: 1.25rem; }
+        .payout-tabs button { padding: 0.5rem 0.6rem; }
+        .badge { min-width: 20px; height: 18px; font-size: 0.68rem; }
       }
+
+      /* ===== Row View Modal (mobile eye button) ===== */
+      .rv-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(17, 24, 39, 0.55);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 10060;
+        padding: 12px;
+      }
+      .rv-overlay.show { display: flex; }
+      .rv-modal {
+        width: min(560px, 96vw);
+        background: #fff;
+        border-radius: 14px;
+        box-shadow: 0 24px 64px rgba(0,0,0,.35);
+        overflow: hidden;
+      }
+      .rv-header {
+        padding: 12px 14px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: linear-gradient(180deg, #f8fbfd, #eef4f9);
+        border-bottom: 1px solid #e7edf3;
+      }
+      .rv-header h3 { margin: 0; font-size: 1.02rem; color: #1c2430; }
+      .rv-body { padding: 12px 14px; max-height: 70vh; overflow: auto; }
+      .rv-body .row {
+        display: grid;
+        grid-template-columns: 140px 1fr;
+        gap: 6px 10px;
+        padding: 8px 0;
+        border-bottom: 1px dashed #e9eef5;
+      }
+      .rv-body .row:last-child { border-bottom: none; }
+      .rv-label { font-weight: 800; color: #6c7a8a; }
+      .rv-value { color: #1c2430; }
+      .rv-footer {
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end;
+        padding: 12px 14px;
+        border-top: 1px solid #e7edf3;
+        background: #fff;
+      }
+      .rv-btn {
+        border: none;
+        border-radius: 10px;
+        padding: 0.6rem 0.85rem;
+        font-weight: 800;
+        cursor: pointer;
+      }
+      .rv-close { background: #e7edf3; color: #1c2430; }
     </style>
   </head>
 
@@ -975,6 +974,38 @@
               updateSelectionSummary();
             });
 
+            /* Row details (eye) */
+            tbody.addEventListener("click", (e) => {
+              const eye = e.target.closest(".view-row-btn");
+              if (!eye) return;
+              const tr = eye.closest("tr");
+              if (!tr) return;
+
+              const get = (sel) =>
+                (tr.querySelector(sel)?.textContent || "").trim();
+
+              const data = {
+                jobId: get(".col-jobid"),
+                worker: get(".col-worker"),
+                title: get(".col-title") || "—",
+                amount: get('td[data-col="Amount"]'),
+                requested: get('td[data-col="Requested Date"]') || "—",
+                statusText: tr.querySelector(".status")?.textContent || "",
+                statusClass:
+                  tr.querySelector(".status")?.className || "status",
+                actionHtml: (() => {
+                  const cell = tr.querySelector('td[data-col="Action"]');
+                  if (!cell) return "";
+                  const clone = cell.cloneNode(true);
+                  const vb = clone.querySelector(".view-row-btn");
+                  if (vb) vb.remove();
+                  return clone.innerHTML.trim();
+                })(),
+              };
+
+              window.__openRowViewModal(data);
+            });
+
             tbody.addEventListener("click", onMarkPaidClick);
             searchInput.addEventListener("input", applyFilters);
             statusFilter.addEventListener("change", applyFilters);
@@ -1133,14 +1164,14 @@
             }
             if (!pays || pays.length === 0) {
               __PAYMENTS = [];
-              window.__PAYMENTS = __PAYMENTS; /* expose (ADDED) */
+              window.__PAYMENTS = __PAYMENTS;
               tbodyPayments.innerHTML =
                 '<tr><td colspan="8" data-col="Notice" class="sub">No payment requests yet.</td></tr>';
               if (window.__buildRequests) window.__buildRequests();
               return;
             }
             __PAYMENTS = pays;
-            window.__PAYMENTS = __PAYMENTS; /* expose (ADDED) */
+            window.__PAYMENTS = __PAYMENTS;
 
             // jobs
             const jobIds = [
@@ -1175,10 +1206,9 @@
                 );
             }
 
-            // Group pending_payout by batch
-            const pendingGroups = new Map(); // key = payout_batch_no
-            // Group disbursed by batch (NEW)
-            const disbursedGroups = new Map(); // key = payout_batch_no
+            // Group pending & disbursed by batch
+            const pendingGroups = new Map();
+            const disbursedGroups = new Map();
 
             for (const p of pays) {
               const job = __JOBS_BY_ID[p.job_id] || {};
@@ -1247,7 +1277,6 @@
               }
             }
 
-            // Determine installer display for groups
             const resolveInstallerDisplay = (set) => {
               if (set.size === 1) {
                 const only = [...set][0];
@@ -1261,7 +1290,6 @@
             for (const g of disbursedGroups.values())
               g.installer_display = resolveInstallerDisplay(g.installers);
 
-            // Build table rows
             const rowsHtml = [];
             const pesoFmt = (n) =>
               "₱" +
@@ -1270,7 +1298,7 @@
                 maximumFractionDigits: 2,
               });
 
-            // Individual rows (skip pending_payout with batch; skip disbursed with batch because we'll group them)
+            // Ungrouped rows
             for (const p of pays) {
               if (
                 (p.payment_status === "pending_payout" && p.payout_batch_no) ||
@@ -1311,18 +1339,23 @@
                   <td data-col="Amount">${amount}</td>
                   <td data-col="Requested Date">${reqDate}</td>
                   <td data-col="Status"><span class="${ui.cls}">${ui.text}</span></td>
-                  <td data-col="Action">${
-                    ui.action === "mark"
-                      ? '<button class="mark-paid" type="button">Mark as Paid</button>'
-                      : ui.action === "payout"
-                      ? '<button class="do-payout" type="button">Payout</button>'
-                      : '<button type="button" disabled>Paid</button>'
-                  }</td>
+                  <td data-col="Action">
+                    <button type="button" class="view-row-btn" title="View details">
+                      <span class="material-icons-sharp" aria-hidden="true">visibility</span>
+                    </button>
+                    ${
+                      ui.action === "mark"
+                        ? '<button class="mark-paid" type="button">Mark as Paid</button>'
+                        : ui.action === "payout"
+                        ? '<button class="do-payout" type="button">Payout</button>'
+                        : '<button type="button" disabled>Paid</button>'
+                    }
+                  </td>
                 </tr>`
               );
             }
 
-            // Grouped pending rows
+            // Grouped pending
             for (const g of pendingGroups.values()) {
               const reqDate = fmtDate(g.requested_at);
               const jobLabels = Array.from(g.job_labels);
@@ -1344,6 +1377,9 @@
                   <td data-col="Requested Date">${reqDate}</td>
                   <td data-col="Status"><span class="status pending">Pending Payout</span></td>
                   <td data-col="Action">
+                    <button type="button" class="view-row-btn" title="View details">
+                      <span class="material-icons-sharp" aria-hidden="true">visibility</span>
+                    </button>
                     <button class="do-payout-batch" type="button"
                             data-batch="${g.key}"
                             data-payment-ids='${JSON.stringify(
@@ -1356,7 +1392,7 @@
               );
             }
 
-            // Grouped disbursed rows (NEW)
+            // Grouped disbursed
             for (const g of disbursedGroups.values()) {
               const reqDate = fmtDate(g.requested_at);
               const jobLabels = Array.from(g.job_labels);
@@ -1377,7 +1413,12 @@
                   <td class="mono" data-col="Amount">${pesoFmt(g.total)}</td>
                   <td data-col="Requested Date">${reqDate}</td>
                   <td data-col="Status"><span class="status paid">Disbursed</span></td>
-                  <td data-col="Action"><button type="button" disabled>Paid</button></td>
+                  <td data-col="Action">
+                    <button type="button" class="view-row-btn" title="View details">
+                      <span class="material-icons-sharp" aria-hidden="true">visibility</span>
+                    </button>
+                    <button type="button" disabled>Paid</button>
+                  </td>
                 </tr>`
               );
             }
@@ -1471,7 +1512,12 @@
                   <td data-col="# Payments">${g.count}</td>
                   <td class="mono" data-col="Total Amount">${pesoFmt(g.total)}</td>
                   <td data-col="Requested Date">${fmt(g.requested_at)}</td>
-                  <td data-col="Action"><button class="do-payout-group" type="button">Disburse Group</button></td>
+                  <td data-col="Action">
+                    <button type="button" class="view-row-btn" title="View details">
+                      <span class="material-icons-sharp" aria-hidden="true">visibility</span>
+                    </button>
+                    <button class="do-payout-group" type="button">Disburse Group</button>
+                  </td>
                 </tr>`;
               })
               .join("");
@@ -1479,7 +1525,6 @@
             requestsTbody.innerHTML = rows;
           };
 
-          // start
           await loadPayments();
           window.__reloadPayments = loadPayments;
         </script>
@@ -1507,7 +1552,6 @@
                 .eq("id", paymentId);
 
               if (error) throw error;
-              // UI already flipped in earlier handler
             } catch (err) {
               console.error("Failed to mark as paid:", err);
               tr.dataset.status = "not-paid";
@@ -1525,7 +1569,7 @@
             }
           });
 
-          /* ====== UPDATED: SINGLE disburse asks for reference number via modal too ====== */
+          // Single disburse
           tableBodyEl.addEventListener("click", async (e) => {
             const payBtn = e.target.closest(".do-payout");
             if (!payBtn) return;
@@ -1534,7 +1578,6 @@
             const paymentId = tr?.dataset?.paymentId;
             if (!paymentId) return;
 
-            // Show bank details + reference input for a single payment
             const okRef = await window.__confirmWithBankDetails(
               [paymentId],
               "single payment"
@@ -1576,9 +1619,8 @@
             }
           });
 
-          /* ====== BATCH/GROUP CONFIRMATION WITH BANK DETAILS + REFERENCE INPUT (ADDED/UPDATED) ====== */
+          /* ====== Batch/Group confirmation (kept) ====== */
 
-          // Helper: open confirmation modal listing installers' bank details + reference input for the given payment IDs.
           async function confirmWithBankDetails(
             paymentIds,
             contextLabel = "batch"
@@ -1604,7 +1646,6 @@
                 return { proceed: true, reference: ref.trim() };
               }
 
-              // Fetch bank fields for installers
               const { data: installers, error } = await sbRef
                 .from("installer")
                 .select(
@@ -1616,7 +1657,6 @@
                 console.warn("Bank details fetch error:", error);
               }
 
-              // Fill UI
               const overlay = document.getElementById("bankConfirmModal");
               const tbody = document.getElementById("bankModalBody");
               const title = document.getElementById("bankModalTitle");
@@ -1660,12 +1700,9 @@
                   if (e.target === overlay)
                     cleanup({ proceed: false, reference: "" });
                 }
-                function onInput() {
-                  refError.textContent = "";
-                }
+                function onInput() { refError.textContent = ""; }
                 function onOk() {
                   const ref = refInput.value.trim();
-                  // Basic validation: 6–64 chars, letters/numbers/-/_
                   const ok = /^[A-Za-z0-9\-_]{6,64}$/.test(ref);
                   if (!ok) {
                     refError.textContent =
@@ -1694,7 +1731,7 @@
           }
           window.__confirmWithBankDetails = confirmWithBankDetails;
 
-          // Disburse batch from main table (pending grouped row)
+          // Disburse batch from main table
           tableBodyEl.addEventListener("click", async (e) => {
             const btn = e.target.closest(".do-payout-batch");
             if (!btn) return;
@@ -1708,7 +1745,6 @@
             const batchKey = btn.dataset.batch || "";
             if (!ids.length || !batchKey) return;
 
-            // Show bank details + reference input
             const ok = await confirmWithBankDetails(
               ids,
               `batch ${String(batchKey).toUpperCase().slice(0, 64)}`
@@ -1761,7 +1797,6 @@
             }
             if (!Array.isArray(ids) || ids.length === 0) return;
 
-            // Show bank details + reference input
             const ok = await confirmWithBankDetails(
               ids,
               `group ${String(key).toUpperCase().slice(0, 64)}`
@@ -2001,148 +2036,69 @@
           });
         </script>
 
-        <!-- ===== NEW: Realtime updates → bump tab badges ===== -->
+        <!-- Realtime badges -->
         <script type="module">
           const supa = window.__sb;
 
-          // Badge elements
           const bAll = document.getElementById("badgeAll");
           const bReq = document.getElementById("badgeRequests");
           const bUnp = document.getElementById("badgeUnpaid");
           const bPaid = document.getElementById("badgePaid");
           const bDis = document.getElementById("badgeDisbursed");
 
-          // Counters
-          const counts = {
-            all: 0,
-            requests: 0,
-            unpaid: 0,
-            paid: 0,
-            disbursed: 0,
-          };
+          const counts = { all: 0, requests: 0, unpaid: 0, paid: 0, disbursed: 0 };
 
-          function cap(n) {
-            return n > 99 ? "99+" : String(n);
-          }
+          function cap(n) { return n > 99 ? "99+" : String(n); }
           function renderBadges() {
-            // All
-            if (counts.all > 0) {
-              bAll.hidden = false;
-              bAll.textContent = cap(counts.all);
-            } else {
-              bAll.hidden = true;
-            }
-            // Requests
-            if (counts.requests > 0) {
-              bReq.hidden = false;
-              bReq.textContent = cap(counts.requests);
-            } else {
-              bReq.hidden = true;
-            }
-            // Unpaid
-            if (counts.unpaid > 0) {
-              bUnp.hidden = false;
-              bUnp.textContent = cap(counts.unpaid);
-            } else {
-              bUnp.hidden = true;
-            }
-            // Paid
-            if (counts.paid > 0) {
-              bPaid.hidden = false;
-              bPaid.textContent = cap(counts.paid);
-            } else {
-              bPaid.hidden = true;
-            }
-            // Disbursed
-            if (counts.disbursed > 0) {
-              bDis.hidden = false;
-              bDis.textContent = cap(counts.disbursed);
-            } else {
-              bDis.hidden = true;
-            }
+            bAll.hidden = counts.all <= 0; if (!bAll.hidden) bAll.textContent = cap(counts.all);
+            bReq.hidden = counts.requests <= 0; if (!bReq.hidden) bReq.textContent = cap(counts.requests);
+            bUnp.hidden = counts.unpaid <= 0; if (!bUnp.hidden) bUnp.textContent = cap(counts.unpaid);
+            bPaid.hidden = counts.paid <= 0; if (!bPaid.hidden) bPaid.textContent = cap(counts.paid);
+            bDis.hidden = counts.disbursed <= 0; if (!bDis.hidden) bDis.textContent = cap(counts.disbursed);
           }
 
-          // Reset helper on tab click (doesn't interfere with your existing listeners)
-          document.getElementById("tabAll").addEventListener("click", () => {
-            counts.all = 0;
-            renderBadges();
-          });
-          document
-            .getElementById("tabRequests")
-            .addEventListener("click", () => {
-              counts.requests = 0;
-              renderBadges();
-            });
-          document.getElementById("tabUnpaid").addEventListener("click", () => {
-            counts.unpaid = 0;
-            renderBadges();
-          });
-          document.getElementById("tabPaid").addEventListener("click", () => {
-            counts.paid = 0;
-            renderBadges();
-          });
-          document
-            .getElementById("tabDisbursed")
-            .addEventListener("click", () => {
-              counts.disbursed = 0;
-              renderBadges();
-            });
+          document.getElementById("tabAll").addEventListener("click", () => { counts.all = 0; renderBadges(); });
+          document.getElementById("tabRequests").addEventListener("click", () => { counts.requests = 0; renderBadges(); });
+          document.getElementById("tabUnpaid").addEventListener("click", () => { counts.unpaid = 0; renderBadges(); });
+          document.getElementById("tabPaid").addEventListener("click", () => { counts.paid = 0; renderBadges(); });
+          document.getElementById("tabDisbursed").addEventListener("click", () => { counts.disbursed = 0; renderBadges(); });
 
-          // Map DB status to tab bucket
           function bucketForStatus(status) {
             switch (status) {
-              case "pending_payout":
-                return "requests";
-              case "unpaid":
-                return "unpaid";
-              case "paid":
-                return "paid";
-              case "disbursed":
-                return "disbursed";
-              default:
-                return null;
+              case "pending_payout": return "requests";
+              case "unpaid": return "unpaid";
+              case "paid": return "paid";
+              case "disbursed": return "disbursed";
+              default: return null;
             }
           }
 
-          // Debounced reload to avoid thrashing on bursts
           let reloadTimer = null;
           function scheduleReload() {
             if (reloadTimer) return;
             reloadTimer = setTimeout(async () => {
               reloadTimer = null;
-              try {
-                if (window.__reloadPayments) await window.__reloadPayments();
-              } catch (e) {
-                console.error("reload failed", e);
-              }
+              try { if (window.__reloadPayments) await window.__reloadPayments(); }
+              catch (e) { console.error("reload failed", e); }
             }, 400);
           }
 
-          // Subscribe to all changes on earnings.payments
           const channel = supa
             .channel("payments_request_live")
-            .on(
-              "postgres_changes",
+            .on("postgres_changes",
               { event: "*", schema: "earnings", table: "payments" },
               (payload) => {
-                // count for "All"
                 counts.all += 1;
-
-                // try to use NEW status; if not available, fallback to OLD
                 const st =
                   (payload.new && payload.new.payment_status) ||
-                  (payload.old && payload.old.payment_status) ||
-                  "";
+                  (payload.old && payload.old.payment_status) || "";
                 const bucket = bucketForStatus(st);
                 if (bucket && counts[bucket] != null) counts[bucket] += 1;
-
                 renderBadges();
                 scheduleReload();
               }
-            )
-            .subscribe();
+            ).subscribe();
 
-          // Clean up (optional)
           window.addEventListener("beforeunload", () => {
             if (channel) supa.removeChannel(channel);
           });
@@ -2150,24 +2106,12 @@
       </main>
     </div>
 
-    <!-- ===== Bank Confirmation Modal (HTML updated: reference input added, GCash removed) ===== -->
+    <!-- Bank Confirmation Modal -->
     <div id="bankConfirmModal" class="bank-modal-overlay" aria-hidden="true">
-      <div
-        class="bank-modal"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="bankModalTitle"
-      >
+      <div class="bank-modal" role="dialog" aria-modal="true" aria-labelledby="bankModalTitle">
         <div class="bm-header">
           <h3 id="bankModalTitle">Confirm Disbursement</h3>
-          <button
-            id="bankCancelBtn"
-            class="bm-btn bm-cancel"
-            type="button"
-            title="Close"
-          >
-            Close
-          </button>
+          <button id="bankCancelBtn" class="bm-btn bm-cancel" type="button" title="Close">Close</button>
         </div>
         <div class="bm-body">
           <table>
@@ -2180,28 +2124,86 @@
               </tr>
             </thead>
             <tbody id="bankModalBody">
-              <tr>
-                <td colspan="4" class="sub">Loading…</td>
-              </tr>
+              <tr><td colspan="4" class="sub">Loading…</td></tr>
             </tbody>
           </table>
 
           <div class="bm-ref">
             <label for="bankRefInput">GCash Reference Number</label>
             <input id="bankRefInput" type="text" placeholder="e.g. 9AB12C34" />
-            <small
-              >Enter the GCash transaction reference you received. Allowed:
-              letters, numbers, dash and underscore (6–64 chars).</small
-            >
+            <small>Enter the GCash transaction reference you received. Allowed:
+              letters, numbers, dash and underscore (6–64 chars).</small>
             <div id="bankRefError" class="bm-error"></div>
           </div>
         </div>
         <div class="bm-footer">
-          <button id="bankConfirmBtn" class="bm-btn bm-confirm" type="button">
-            Confirm Disbursement
-          </button>
+          <button id="bankConfirmBtn" class="bm-btn bm-confirm" type="button">Confirm Disbursement</button>
         </div>
       </div>
     </div>
+
+    <!-- Row View Modal -->
+    <div id="rowViewOverlay" class="rv-overlay" aria-hidden="true">
+      <div class="rv-modal" role="dialog" aria-modal="true" aria-labelledby="rvTitle">
+        <div class="rv-header">
+          <h3 id="rvTitle">Payment Details</h3>
+          <button type="button" class="rv-btn rv-close" id="rvCloseTop">Close</button>
+        </div>
+        <div class="rv-body" id="rvBody"></div>
+        <div class="rv-footer">
+          <button type="button" class="rv-btn rv-close" id="rvCloseBottom">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal wiring -->
+    <script>
+      (function(){
+        const overlay = document.getElementById('rowViewOverlay');
+        const bodyEl = document.getElementById('rvBody');
+        const closeTop = document.getElementById('rvCloseTop');
+        const closeBottom = document.getElementById('rvCloseBottom');
+
+        function close() {
+          overlay.classList.remove('show');
+          overlay.setAttribute('aria-hidden', 'true');
+          bodyEl.innerHTML = '';
+        }
+        function openWith(data){
+          const rows = [
+            ['Job ID', data.jobId],
+            ['Worker', data.worker],
+            ['Job Title', data.title],
+            ['Amount', data.amount],
+            ['Requested Date', data.requested],
+            ['Status', `<span class="${data.statusClass}">${data.statusText}</span>`],
+          ].map(([label, value]) => {
+            return `<div class="row">
+                      <div class="rv-label">${label}</div>
+                      <div class="rv-value">${value || '—'}</div>
+                    </div>`;
+          }).join('');
+
+          const actions = data.actionHtml
+            ? `<div class="row">
+                 <div class="rv-label">Actions</div>
+                 <div class="rv-value">${data.actionHtml}</div>
+               </div>` : '';
+
+          bodyEl.innerHTML = rows + actions;
+
+          overlay.classList.add('show');
+          overlay.setAttribute('aria-hidden', 'false');
+        }
+
+        overlay.addEventListener('click', (e)=>{
+          if (e.target === overlay) close();
+        });
+        closeTop.addEventListener('click', close);
+        closeBottom.addEventListener('click', close);
+
+        window.__openRowViewModal = openWith;
+      })();
+    </script>
   </body>
 </html>

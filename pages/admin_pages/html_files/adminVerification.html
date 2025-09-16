@@ -4,11 +4,14 @@
     <meta charset="UTF-8" />
     <title>Admin Verification</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Keep your existing sidebar styles and icons -->
     <link rel="stylesheet" href="../css_files/sideBar.css" />
     <link
       href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp"
       rel="stylesheet"
     />
+
     <style>
       :root {
         --ink: #1c2430;
@@ -24,34 +27,44 @@
         --modal-backdrop: rgba(14, 25, 42, 0.55);
         --modal-head: #f7fbff;
         --shadow-xl: 0 24px 64px rgba(16, 24, 40, 0.2);
+        --shadow-md: 0 8px 24px rgba(16, 24, 40, 0.08);
+        --shadow-sm: 0 2px 10px rgba(16, 24, 40, 0.06);
       }
+
       main {
         margin-top: 1.4rem;
       }
+
       .two-col {
         display: grid;
         grid-template-columns: 340px 1fr;
         gap: 1rem;
       }
+
       @media (max-width: 980px) {
         .two-col {
           grid-template-columns: 1fr;
         }
       }
+
       .panel {
         background: var(--card);
         border: 1px solid var(--line);
         border-radius: var(--radius);
         padding: 12px;
       }
+
       .panel h3 {
         margin: 0 0 0.5rem 0;
         font-size: 1rem;
+        color: var(--ink);
       }
+
       .search {
         position: relative;
         margin-bottom: 0.6rem;
       }
+
       .search input {
         width: 100%;
         border: 1px solid var(--line);
@@ -59,39 +72,64 @@
         padding: 10px 12px 10px 36px;
         outline: none;
         background: #fcfeff;
+        transition: box-shadow 150ms ease, border-color 150ms ease;
       }
+
+      .search input:focus {
+        border-color: #cfe7ff;
+        box-shadow: 0 0 0 4px #e9f4ff;
+      }
+
       .search .material-icons-sharp {
         position: absolute;
         left: 10px;
         top: 50%;
         transform: translateY(-50%);
         color: var(--muted);
+        font-size: 20px;
       }
+
       .list {
         display: flex;
         flex-direction: column;
         gap: 8px;
         max-height: 70vh;
         overflow: auto;
+        padding-right: 4px;
       }
+
       .item {
         display: grid;
         grid-template-columns: 40px 1fr auto;
         align-items: center;
         gap: 10px;
-        padding: 10px;
+        padding: 12px;
         border: 1px solid var(--line);
         border-radius: 12px;
         cursor: pointer;
         background: #fff;
+        transition: background 150ms ease, border-color 150ms ease,
+          box-shadow 150ms ease, transform 120ms ease;
       }
+
       .item:hover {
-        background: #f6fafc;
+        background: #f8fbff;
+        border-color: #d9ebff;
+        box-shadow: var(--shadow-sm);
       }
+
+      .item:focus-visible {
+        outline: 2px solid #9fd3ff;
+        outline-offset: 2px;
+      }
+
       .item.active {
-        outline: 2px solid var(--brand);
         background: #f3fdf7;
+        border-color: #b7f0cf;
+        box-shadow: var(--shadow-md);
+        transform: translateY(-1px);
       }
+
       .avatar {
         width: 40px;
         height: 40px;
@@ -105,14 +143,17 @@
         font-weight: 700;
         color: #1f2a3a;
         overflow: hidden;
+        user-select: none;
       }
+
       .avatar.cover {
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
-        color: transparent; /* hide initials when image present */
+        color: transparent;
         text-indent: -9999px;
       }
+
       .pill {
         font-size: 0.75rem;
         background: var(--pill);
@@ -122,19 +163,21 @@
         border: 1px solid #d6e9ff;
         white-space: nowrap;
       }
-      /* "You" tags */
+
       .pill.you {
         background: #e8fff4;
         color: #0f5132;
         border-color: #b7e4c7;
         margin-left: 8px;
       }
+
       .details {
         background: var(--card);
         border: 1px solid var(--line);
         border-radius: var(--radius);
         overflow: clip;
       }
+
       .details .head {
         display: grid;
         grid-template-columns: 72px 1fr;
@@ -144,6 +187,7 @@
         align-items: center;
         background: linear-gradient(180deg, #f9fbff, #ffffff);
       }
+
       .details .name {
         font-size: 1.1rem;
         font-weight: 700;
@@ -152,7 +196,9 @@
         align-items: center;
         gap: 8px;
         flex-wrap: wrap;
+        color: var(--ink);
       }
+
       .meta {
         display: flex;
         gap: 8px;
@@ -162,7 +208,6 @@
         font-size: 0.9rem;
       }
 
-      /* NEW: clean action bar for buttons */
       .actions-row {
         display: flex;
         gap: 8px;
@@ -178,36 +223,45 @@
         gap: 12px;
         padding: 16px;
       }
+
       @media (max-width: 980px) {
         .grid-2 {
           grid-template-columns: 1fr;
         }
       }
+
       .card {
         border: 1px solid var(--line);
         border-radius: 12px;
         padding: 12px;
         background: #fff;
       }
+
       .card h4 {
         margin: 0 0 0.6rem 0;
         font-size: 0.95rem;
+        color: var(--ink);
       }
+
       .info-list {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 8px 12px;
       }
+
       @media (max-width: 640px) {
         .info-list {
           grid-template-columns: 1fr;
         }
       }
+
       .label {
         color: var(--muted);
         font-size: 0.85rem;
         display: block;
+        margin-bottom: 2px;
       }
+
       .btn {
         appearance: none;
         border: 1px solid var(--line);
@@ -219,38 +273,55 @@
         align-items: center;
         gap: 0.5rem;
         font-weight: 600;
+        transition: transform 120ms ease, box-shadow 150ms ease,
+          border-color 150ms ease, background 150ms ease, color 150ms ease;
       }
+
+      .btn:hover {
+        box-shadow: var(--shadow-sm);
+        transform: translateY(-1px);
+      }
+
+      .btn:active {
+        transform: translateY(0);
+      }
+
       .btn.primary {
         background: var(--brand);
         color: #fff;
         border-color: var(--brand);
       }
+
       .btn.warn {
         background: #fff8e1;
         color: #8a6d0a;
         border-color: #fde68a;
       }
+
       .btn.reject {
         background: #fff5f5;
         color: var(--danger);
         border-color: #ffd7d7;
       }
-      .empty-state {
+
+      .empty-state,
+      .not-auth {
         padding: 24px;
-        border: 1px dashed var(--line);
         border-radius: 12px;
         background: #fbfeff;
         text-align: center;
         color: var(--muted);
       }
-      .not-auth {
-        padding: 24px;
-        border: 1px solid var(--line);
-        border-radius: 12px;
-        background: #fff;
-        text-align: center;
-        color: var(--muted);
+
+      .empty-state {
+        border: 1px dashed var(--line);
       }
+
+      .not-auth {
+        border: 1px solid var(--line);
+        background: #fff;
+      }
+
       .role-dot {
         width: 10px;
         height: 10px;
@@ -258,28 +329,32 @@
         display: inline-block;
         margin-right: 6px;
       }
+
       .dot-pending {
         background: #f59e0b;
       }
+
       .dot-admin {
         background: #10b981;
       }
+
       .dot-super {
         background: #6366f1;
       }
 
-      /* Mobile modal styles */
       .modal-overlay {
         position: fixed;
         inset: 0;
         background: var(--modal-backdrop);
         display: none;
-        align-items: flex-end; /* bottom sheet feel */
+        align-items: flex-end;
         z-index: 9999;
       }
+
       .modal-overlay.open {
         display: flex;
       }
+
       .modal-sheet {
         width: 100%;
         max-height: 85vh;
@@ -289,6 +364,7 @@
         box-shadow: var(--shadow-xl);
         overflow: hidden;
       }
+
       .modal-head {
         display: flex;
         align-items: center;
@@ -297,9 +373,12 @@
         background: var(--modal-head);
         border-bottom: 1px solid var(--line);
       }
+
       .modal-title {
         font-weight: 700;
+        color: var(--ink);
       }
+
       .modal-close {
         background: transparent;
         border: none;
@@ -307,20 +386,21 @@
         padding: 6px;
         border-radius: 8px;
       }
+
+      .modal-close:hover {
+        background: #eef5ff;
+      }
+
       .modal-body {
         max-height: calc(85vh - 52px);
         overflow: auto;
       }
 
-      /* Hide desktop details pane on mobile */
       @media (max-width: 980px) {
         #detailsPane {
           display: none !important;
         }
-      }
 
-      /* Icon-only actions on mobile */
-      @media (max-width: 980px) {
         #approveBtn,
         #rejectBtn,
         #demoteBtn,
@@ -329,9 +409,10 @@
           height: 44px;
           padding: 0;
           justify-content: center;
-          font-size: 0; /* hide text but keep button accessible */
+          font-size: 0;
           position: relative;
         }
+
         #approveBtn::before,
         #rejectBtn::before,
         #demoteBtn::before,
@@ -340,11 +421,33 @@
           font-size: 22px;
           line-height: 1;
         }
-        #approveBtn::before { content: "check"; }
-        #rejectBtn::before { content: "close"; }
-        #demoteBtn::before { content: "south"; }
-        #promoteBtn::before { content: "grade"; }
+
+        #approveBtn::before {
+          content: "check";
+        }
+
+        #rejectBtn::before {
+          content: "close";
+        }
+
+        #demoteBtn::before {
+          content: "south";
+        }
+
+        #promoteBtn::before {
+          content: "grade";
+        }
       }
+
+      .head {
+  display: flex;
+  align-items: flex-start;   /* align to top */
+  justify-content: center;   /* center horizontally */
+  text-align: center;        /* center text inside */
+  padding: 0;                /* remove the left padding */
+  margin: 0 auto;            /* center the whole block itself */
+}
+  
     </style>
   </head>
 
@@ -354,7 +457,7 @@
       <aside>
         <div class="toggle">
           <div class="logo">
-            <img src="../../../img/simpLogo.png" />
+            <img src="../../../img/simpLogo.png" alt="SIMP Logo" />
             <h2>SIMP<span class="danger">Project</span></h2>
           </div>
           <div class="close" id="close-btn">
@@ -363,46 +466,46 @@
         </div>
 
         <div class="sidebar">
-          <a href="dashboard.html"
-            ><span class="material-icons-sharp">dashboard</span>
-            <h3>Dashboard</h3></a
-          >
-          <a href="workerVerification.html"
-            ><span class="material-icons-sharp">engineering</span>
-            <h3>Workers<br />Verification</h3></a
-          >
-          <a href="jobVerification.html"
-            ><span class="material-icons-sharp">work</span>
-            <h3>Jobs<br />Verification</h3></a
-          >
+          <a href="dashboard.html">
+            <span class="material-icons-sharp">dashboard</span>
+            <h3>Dashboard</h3>
+          </a>
+          <a href="workerVerification.html">
+            <span class="material-icons-sharp">engineering</span>
+            <h3>Workers<br />Verification</h3>
+          </a>
+          <a href="jobVerification.html">
+            <span class="material-icons-sharp">work</span>
+            <h3>Jobs<br />Verification</h3>
+          </a>
           <a href="jobApplicationVerification.html">
             <span class="material-icons-sharp">approval</span>
             <h3>Application<br />Verification</h3>
           </a>
-          <a href="adminVerification.html" class="active"
-            ><span class="material-icons-sharp">shield</span>
-            <h3>Admin<br />Verification</h3></a
-          >
-          <a href="manageShop.html"
-            ><span class="material-icons-sharp">shop</span>
-            <h3>Manage<br />Shop</h3></a
-          >
+          <a href="adminVerification.html" class="active">
+            <span class="material-icons-sharp">shield</span>
+            <h3>Admin<br />Verification</h3>
+          </a>
+          <a href="manageShop.html">
+            <span class="material-icons-sharp">shop</span>
+            <h3>Manage<br />Shop</h3>
+          </a>
           <a href="paymentsRequest.html">
             <span class="material-icons-sharp">payments</span>
             <h3>Payments<br />Request</h3>
           </a>
-          <a href="courses.html"
-            ><span class="material-icons-sharp">school</span>
-            <h3>Course<br />Publisher</h3></a
-          >
-          <a href="settings.html"
-            ><span class="material-icons-sharp">settings</span>
-            <h3>Settings</h3></a
-          >
-          <a href="#" id="logout-btn"
-            ><span class="material-icons-sharp">logout</span>
-            <h3>Logout</h3></a
-          >
+          <a href="courses.html">
+            <span class="material-icons-sharp">school</span>
+            <h3>Course<br />Publisher</h3>
+          </a>
+          <a href="settings.html">
+            <span class="material-icons-sharp">settings</span>
+            <h3>Settings</h3>
+          </a>
+          <a href="#" id="logout-btn">
+            <span class="material-icons-sharp">logout</span>
+            <h3>Logout</h3>
+          </a>
         </div>
       </aside>
 
@@ -443,6 +546,7 @@
               </div>
 
               <div id="adminList" class="list"></div>
+
               <div id="emptyAdmins" class="empty-state" style="display: none">
                 No admin profiles found.
               </div>
@@ -466,33 +570,36 @@
 
     <!-- Mobile details modal (bottom sheet) -->
     <div id="detailsModal" class="modal-overlay" aria-hidden="true">
-      <div class="modal-sheet" role="dialog" aria-modal="true" aria-labelledby="detailsModalTitle">
+      <div
+        class="modal-sheet"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="detailsModalTitle"
+      >
         <div class="modal-head">
           <div class="modal-title" id="detailsModalTitle">Admin Details</div>
           <button class="modal-close" id="detailsModalClose" aria-label="Close">
             <span class="material-icons-sharp">close</span>
           </button>
         </div>
-        <div class="modal-body" id="detailsModalBody">
-          <!-- details get injected here on mobile -->
-        </div>
+        <div class="modal-body" id="detailsModalBody"></div>
       </div>
     </div>
 
+    <!-- Scripts -->
     <script src="../../general_files/index.js"></script>
     <script type="module" src="../../general_files/session.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <script type="module">
       import { SUPABASE_URL, SUPABASE_ANON_KEY } from "../../../supabase.js";
 
-      // Public schema for admin directory
       const supabase = window.supabase.createClient(
         SUPABASE_URL,
         SUPABASE_ANON_KEY,
         { db: { schema: "public" } }
       );
 
-      // Elements
       const contentArea = document.getElementById("contentArea");
       const notAuth = document.getElementById("notAuth");
       const adminList = document.getElementById("adminList");
@@ -501,35 +608,36 @@
       const searchInput = document.getElementById("searchInput");
       const statusFilter = document.getElementById("statusFilter");
 
-      // modal els
       const detailsModal = document.getElementById("detailsModal");
       const detailsModalBody = document.getElementById("detailsModalBody");
       const detailsModalClose = document.getElementById("detailsModalClose");
 
-      let currentUser = null; // supabase.auth user
+      let currentUser = null;
       let currentRole = null; // 'pending' | 'admin' | 'superadmin' | null
-      let admins = []; // loaded admin rows
+      let admins = [];
       let activeAdminId = null;
 
-      // cache of signed avatar URLs keyed by admin id
       const avatarCache = {};
 
-      // Helpers
       const cap = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
+
       const roleDot = (role) => {
         if (role === "admin") return '<span class="role-dot dot-admin"></span>';
         if (role === "superadmin")
           return '<span class="role-dot dot-super"></span>';
         return '<span class="role-dot dot-pending"></span>';
       };
-      const initials = (name = "") =>
-        name
+
+      const initials = (name = "") => {
+        const i = name
           .trim()
           .split(/\s+/)
           .map((p) => p[0] || "")
           .join("")
           .toUpperCase()
-          .slice(0, 2) || "?";
+          .slice(0, 2);
+        return i || "?";
+      };
 
       const isMobile = () => window.matchMedia("(max-width: 980px)").matches;
 
@@ -537,8 +645,8 @@
         if (!el) return;
         if (url) {
           el.classList.add("cover");
-          el.style.backgroundImage = `url("${url}")`;
-          el.textContent = ""; // hide initials text
+          el.style.backgroundImage = 'url("' + url + '")';
+          el.textContent = "";
         } else {
           el.classList.remove("cover");
           el.style.backgroundImage = "";
@@ -552,15 +660,15 @@
             .from("admin_profile")
             .createSignedUrl(path, 3600);
           if (error) return null;
-          return data?.signedUrl || null;
-        } catch {
+          return data && data.signedUrl ? data.signedUrl : null;
+        } catch (e) {
           return null;
         }
       }
 
       async function hydrateAvatars(rows) {
         const jobs = rows.map(async (a) => {
-          const path = a?.admin_profile_url || null;
+          const path = a && a.admin_profile_url ? a.admin_profile_url : null;
           if (!path) {
             avatarCache[a.id] = null;
             return;
@@ -571,30 +679,30 @@
         await Promise.allSettled(jobs);
       }
 
-      // Auth & load
-      document.addEventListener("DOMContentLoaded", async () => {
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
+      document.addEventListener("DOMContentLoaded", async function () {
+        const res = await supabase.auth.getUser();
+        const user = res && res.data ? res.data.user : null;
+
         if (!user) {
           notAuth.style.display = "block";
           return;
         }
+
         currentUser = user;
 
-        // Load current user's admin role
-        const { data: me, error: meErr } = await supabase
+        const meRes = await supabase
           .from("admin")
           .select("id, role")
           .eq("id", user.id)
           .maybeSingle();
 
-        if (meErr) {
-          console.error(meErr);
+        if (meRes.error) {
+          console.error(meRes.error);
           notAuth.style.display = "block";
           return;
         }
-        currentRole = me?.role || null;
+
+        currentRole = meRes.data ? meRes.data.role : null;
 
         if (!(currentRole === "admin" || currentRole === "superadmin")) {
           notAuth.style.display = "block";
@@ -605,29 +713,25 @@
         await refreshAdmins();
         wireUI();
 
-        // close modal handler
         detailsModalClose.addEventListener("click", closeDetailsModal);
-        detailsModal.addEventListener("click", (e) => {
+        detailsModal.addEventListener("click", function (e) {
           if (e.target === detailsModal) closeDetailsModal();
         });
 
-        // On resize, if switching to desktop, ensure modal closed
-        window.addEventListener("resize", () => {
+        window.addEventListener("resize", function () {
           if (!isMobile()) closeDetailsModal();
         });
       });
 
       function wireUI() {
-        searchInput.addEventListener("input", () => renderAdminList());
-        statusFilter.addEventListener("change", () => renderAdminList());
+        searchInput.addEventListener("input", renderAdminList);
+        statusFilter.addEventListener("change", renderAdminList);
       }
 
       async function refreshAdmins() {
         const { data, error } = await supabase
           .from("admin")
-          .select(
-            "id, email, name, phone, role, created_at, admin_profile_url"
-          )
+          .select("id, email, name, phone, role, created_at, admin_profile_url")
           .order("created_at", { ascending: false });
 
         if (error) {
@@ -638,22 +742,26 @@
             "Error loading admin profiles: " + error.message;
           return;
         }
+
         admins = data || [];
 
-        // prefetch signed URLs for avatars
         await hydrateAvatars(admins);
 
         renderAdminList();
-        if (admins.length) {
+
+        if (admins.length > 0) {
           const first = admins[0];
           activeAdminId = first.id;
-          renderDetails(first); // desktop pane
-          maybeOpenMobileModal(first); // open as modal on mobile
-          setTimeout(() => {
-            document.querySelectorAll("#adminList .item").forEach((n) => {
-              if (n.dataset.id === activeAdminId) n.classList.add("active");
-            });
-          });
+          renderDetails(first);
+          maybeOpenMobileModal(first);
+          setTimeout(function () {
+            var items = document.querySelectorAll("#adminList .item");
+            for (var i = 0; i < items.length; i++) {
+              if (items[i].dataset.id === activeAdminId) {
+                items[i].classList.add("active");
+              }
+            }
+          }, 0);
         } else {
           detailsPane.innerHTML =
             '<div class="empty-state">No admin profiles found.</div>';
@@ -662,53 +770,66 @@
 
       function renderAdminList() {
         adminList.innerHTML = "";
-        const q = (searchInput.value || "").trim().toLowerCase();
-        const roleSel = (statusFilter.value || "").toLowerCase();
 
-        const filtered = (admins || []).filter((a) => {
-          const matchesQuery =
+        var q = (searchInput.value || "").trim().toLowerCase();
+        var roleSel = (statusFilter.value || "").toLowerCase();
+
+        var filtered = (admins || []).filter(function (a) {
+          var matchesQuery =
             !q ||
-            a.name?.toLowerCase().includes(q) ||
-            a.email?.toLowerCase().includes(q);
-          const matchesRole =
+            (a.name && a.name.toLowerCase().includes(q)) ||
+            (a.email && a.email.toLowerCase().includes(q));
+          var matchesRole =
             !roleSel || (a.role || "").toLowerCase() === roleSel;
           return matchesQuery && matchesRole;
         });
 
         emptyAdmins.style.display = filtered.length ? "none" : "block";
 
-        filtered.forEach((a) => {
-          const item = document.createElement("div");
+        filtered.forEach(function (a) {
+          var item = document.createElement("div");
           item.className = "item";
           item.dataset.id = a.id;
           if (a.id === activeAdminId) item.classList.add("active");
 
-          const youBadge =
-            a.id === (currentUser?.id || "")
+          var youBadge =
+            a.id === (currentUser ? currentUser.id : "")
               ? ' <span class="pill you">You</span>'
               : "";
 
-          const avatar = `<div class="avatar" data-avatar-id="${a.id}">${initials(
-            a.name || a.email
-          )}</div>`;
+          var avatar =
+            '<div class="avatar" data-avatar-id="' +
+            a.id +
+            '">' +
+            initials(a.name || a.email) +
+            "</div>";
 
-          item.innerHTML = `
-            ${avatar}
-            <div>
-              <div style="font-weight:700">${a.name || "(no name)"}${youBadge}</div>
-              <div style="font-size:.85rem; color:var(--muted)">${a.email}</div>
-            </div>
-            <span class="pill">${roleDot(a.role)} ${a.role ? cap(a.role) : "Pending"}</span>
-          `;
+          item.innerHTML =
+            avatar +
+            "<div>" +
+            '<div style="font-weight:700; color: var(--ink);">' +
+            (a.name || "(no name)") +
+            youBadge +
+            "</div>" +
+            '<div style="font-size:.85rem; color:var(--muted);">' +
+            a.email +
+            "</div>" +
+            "</div>" +
+            '<span class="pill">' +
+            roleDot(a.role) +
+            " " +
+            (a.role ? cap(a.role) : "Pending") +
+            "</span>";
 
-          const avatarEl = item.querySelector(`[data-avatar-id="${a.id}"]`);
+          var avatarEl = item.querySelector('[data-avatar-id="' + a.id + '"]');
           applyAvatarToEl(avatarEl, avatarCache[a.id]);
 
-          item.addEventListener("click", () => {
+          item.addEventListener("click", function () {
             activeAdminId = a.id;
-            document
-              .querySelectorAll("#adminList .item")
-              .forEach((i) => i.classList.remove("active"));
+            var rows = document.querySelectorAll("#adminList .item");
+            for (var i = 0; i < rows.length; i++) {
+              rows[i].classList.remove("active");
+            }
             item.classList.add("active");
             renderDetails(a);
             maybeOpenMobileModal(a);
@@ -719,183 +840,217 @@
       }
 
       function renderDetails(admin) {
-        const when = new Date(admin.created_at).toLocaleString();
-        const roleLabel = admin.role ? cap(admin.role) : "Pending";
-        const roleBadge = `${roleDot(admin.role)} ${roleLabel}`;
-        const youHeaderBadge =
-          admin.id === (currentUser?.id || "")
+        var when = new Date(admin.created_at).toLocaleString();
+        var roleLabel = admin.role ? cap(admin.role) : "Pending";
+        var roleBadge = roleDot(admin.role) + " " + roleLabel;
+        var youHeaderBadge =
+          admin.id === (currentUser ? currentUser.id : "")
             ? ' <span class="pill you">This is you</span>'
             : "";
 
-        detailsPane.innerHTML = `
-          <div class="head">
-            <div class="avatar" id="detailAvatar" style="width:72px; height:72px; font-size:1.2rem;">${initials(
-              admin.name || admin.email
-            )}</div>
-            <div>
-              <div class="name">
-                ${admin.name || "(no name)"}
-                <span class="pill" id="statusPill">${roleBadge}</span>${youHeaderBadge}
-              </div>
-              <div class="meta">Created: ${when}</div>
-            </div>
-          </div>
+        detailsPane.innerHTML =
+          '<div class="head">' +
+          '<div class="avatar" id="detailAvatar" style="width:72px; height:72px; font-size:1.2rem;">' +
+          initials(admin.name || admin.email) +
+          "</div>" +
+          "<div>" +
+          '<div class="name">' +
+          (admin.name || "(no name)") +
+          ' <span class="pill" id="statusPill">' +
+          roleBadge +
+          "</span>" +
+          youHeaderBadge +
+          "</div>" +
+          '<div class="meta">Created: ' +
+          when +
+          "</div>" +
+          "</div>" +
+          "</div>" +
+          '<div class="actions-row">' +
+          (renderActionsFor(admin).join("") || "") +
+          "</div>" +
+          '<div class="grid-2">' +
+          '<div class="card" style="grid-column: 1 / -1;">' +
+          "<h4>Basic Information</h4>" +
+          '<div class="info-list">' +
+          '<div><span class="label">Full Name</span>' +
+          (admin.name || "—") +
+          "</div>" +
+          '<div><span class="label">Email</span>' +
+          (admin.email || "—") +
+          "</div>" +
+          '<div><span class="label">Phone</span>' +
+          (admin.phone || "—") +
+          "</div>" +
+          '<div><span class="label">Role</span>' +
+          roleLabel +
+          "</div>" +
+          "</div>" +
+          "</div>" +
+          "</div>";
 
-          <div class="actions-row">
-            ${renderActionsFor(admin).join("") || ""}
-          </div>
-
-          <div class="grid-2">
-            <div class="card" style="grid-column: 1 / -1;">
-              <h4>Basic Information</h4>
-              <div class="info-list">
-                <div><span class="label">Full Name</span>${admin.name || "—"}</div>
-                <div><span class="label">Email</span>${admin.email || "—"}</div>
-                <div><span class="label">Phone</span>${admin.phone || "—"}</div>
-                <div><span class="label">Role</span>${roleLabel}</div>
-              </div>
-            </div>
-          </div>
-        `;
-
-        const detailAvatarEl = detailsPane.querySelector("#detailAvatar");
+        var detailAvatarEl = detailsPane.querySelector("#detailAvatar");
         applyAvatarToEl(detailAvatarEl, avatarCache[admin.id]);
 
-        // Wire actions in the details pane
         wireActionsFor(admin);
       }
 
       function renderActionsFor(admin) {
-        const actions = [];
+        var actions = [];
         if (currentRole === "admin") {
           if ((admin.role || "pending") === "pending") {
             actions.push(
-              `<button class="btn primary" id="approveBtn" title="Approve">Approve</button>`
+              '<button class="btn primary" id="approveBtn" title="Approve">Approve</button>'
             );
             actions.push(
-              `<button class="btn reject" id="rejectBtn" title="Reject">Reject</button>`
+              '<button class="btn reject" id="rejectBtn" title="Reject">Reject</button>'
             );
           }
         } else if (currentRole === "superadmin") {
-          const ar = admin.role || "pending";
+          var ar = admin.role || "pending";
           if (ar === "pending") {
             actions.push(
-              `<button class="btn primary" id="approveBtn" title="Approve to Admin">Approve (to Admin)</button>`
+              '<button class="btn primary" id="approveBtn" title="Approve to Admin">Approve (to Admin)</button>'
             );
             actions.push(
-              `<button class="btn reject" id="rejectBtn" title="Reject">Reject</button>`
+              '<button class="btn reject" id="rejectBtn" title="Reject">Reject</button>'
             );
           } else if (ar === "admin") {
             if (admin.id !== currentUser.id) {
               actions.push(
-                `<button class="btn warn" id="demoteBtn" title="Demote to Pending">Demote to Pending</button>`
+                '<button class="btn warn" id="demoteBtn" title="Demote to Pending">Demote to Pending</button>'
               );
               actions.push(
-                `<button class="btn primary" id="promoteBtn" title="Promote to Super Admin">Promote to Super Admin</button>`
+                '<button class="btn primary" id="promoteBtn" title="Promote to Super Admin">Promote to Super Admin</button>'
               );
             }
           } else if (ar === "superadmin") {
-            // Viewing superadmin -> no actions
+            // no actions
           }
         }
         return actions;
       }
 
       function wireActionsFor(admin) {
-        const approveBtn = detailsPane.querySelector("#approveBtn");
-        const rejectBtn = detailsPane.querySelector("#rejectBtn");
-        const demoteBtn = detailsPane.querySelector("#demoteBtn");
-        const promoteBtn = detailsPane.querySelector("#promoteBtn");
+        var approveBtn = detailsPane.querySelector("#approveBtn");
+        var rejectBtn = detailsPane.querySelector("#rejectBtn");
+        var demoteBtn = detailsPane.querySelector("#demoteBtn");
+        var promoteBtn = detailsPane.querySelector("#promoteBtn");
 
-        if (approveBtn)
-          approveBtn.addEventListener("click", async () => {
+        if (approveBtn) {
+          approveBtn.addEventListener("click", async function () {
             await setRole(admin.id, "admin");
           });
-        if (rejectBtn)
-          rejectBtn.addEventListener("click", async () => {
-            if (
-              !confirm(
-                `Reject this profile (${admin.email})? This deletes the user from auth and removes their admin row.`
-              )
-            )
-              return;
+        }
+
+        if (rejectBtn) {
+          rejectBtn.addEventListener("click", async function () {
+            var ok = confirm(
+              "Reject this profile (" +
+                admin.email +
+                ")? This deletes the user from auth and removes their admin row."
+            );
+            if (!ok) return;
             await rejectProfileDeleteAuthUser(admin.id);
           });
-        if (demoteBtn)
-          demoteBtn.addEventListener("click", async () => {
-            if (!confirm(`Demote ${admin.email} to Pending?`)) return;
+        }
+
+        if (demoteBtn) {
+          demoteBtn.addEventListener("click", async function () {
+            var ok = confirm("Demote " + admin.email + " to Pending?");
+            if (!ok) return;
             await setRole(admin.id, "pending");
           });
-        if (promoteBtn)
-          promoteBtn.addEventListener("click", async () => {
-            if (
-              !confirm(
-                "Transfer SUPERADMIN to this user and become ADMIN yourself?"
-              )
-            )
-              return;
+        }
+
+        if (promoteBtn) {
+          promoteBtn.addEventListener("click", async function () {
+            var ok = confirm(
+              "Transfer SUPERADMIN to this user and become ADMIN yourself?"
+            );
+            if (!ok) return;
             await promoteToSuperadminSwapClientSide(admin.id);
           });
+        }
       }
 
-      // Wire actions inside a given container (for modal)
       function wireActionsForIn(container, admin) {
-        const approveBtn = container.querySelector("#approveBtn");
-        const rejectBtn = container.querySelector("#rejectBtn");
-        const demoteBtn = container.querySelector("#demoteBtn");
-        const promoteBtn = container.querySelector("#promoteBtn");
+        var approveBtn = container.querySelector("#approveBtn");
+        var rejectBtn = container.querySelector("#rejectBtn");
+        var demoteBtn = container.querySelector("#demoteBtn");
+        var promoteBtn = container.querySelector("#promoteBtn");
 
-        if (approveBtn)
-          approveBtn.addEventListener("click", async () => {
+        if (approveBtn) {
+          approveBtn.addEventListener("click", async function () {
             await setRole(admin.id, "admin");
-            const updated = admins.find((a) => a.id === admin.id) || admin;
+            var updated =
+              admins.find(function (x) {
+                return x.id === admin.id;
+              }) || admin;
             injectDetailsIntoModal(updated);
           });
-        if (rejectBtn)
-          rejectBtn.addEventListener("click", async () => {
-            if (
-              !confirm(
-                `Reject this profile (${admin.email})? This deletes the user from auth and removes their admin row.`
-              )
-            )
-              return;
+        }
+
+        if (rejectBtn) {
+          rejectBtn.addEventListener("click", async function () {
+            var ok = confirm(
+              "Reject this profile (" +
+                admin.email +
+                ")? This deletes the user from auth and removes their admin row."
+            );
+            if (!ok) return;
             await rejectProfileDeleteAuthUser(admin.id);
             closeDetailsModal();
           });
-        if (demoteBtn)
-          demoteBtn.addEventListener("click", async () => {
-            if (!confirm(`Demote ${admin.email} to Pending?`)) return;
+        }
+
+        if (demoteBtn) {
+          demoteBtn.addEventListener("click", async function () {
+            var ok = confirm("Demote " + admin.email + " to Pending?");
+            if (!ok) return;
             await setRole(admin.id, "pending");
-            const updated = admins.find((a) => a.id === admin.id) || admin;
+            var updated =
+              admins.find(function (x) {
+                return x.id === admin.id;
+              }) || admin;
             injectDetailsIntoModal(updated);
           });
-        if (promoteBtn)
-          promoteBtn.addEventListener("click", async () => {
-            if (
-              !confirm(
-                "Transfer SUPERADMIN to this user and become ADMIN yourself?"
-              )
-            )
-              return;
+        }
+
+        if (promoteBtn) {
+          promoteBtn.addEventListener("click", async function () {
+            var ok = confirm(
+              "Transfer SUPERADMIN to this user and become ADMIN yourself?"
+            );
+            if (!ok) return;
             await promoteToSuperadminSwapClientSide(admin.id);
-            const updated = admins.find((a) => a.id === admin.id) || admin;
+            var updated =
+              admins.find(function (x) {
+                return x.id === admin.id;
+              }) || admin;
             injectDetailsIntoModal(updated);
           });
+        }
       }
 
       async function setRole(id, role) {
         try {
           const { error } = await supabase
             .from("admin")
-            .update({ role })
+            .update({ role: role })
             .eq("id", id);
           if (error) {
             alert("Failed to set role: " + (error.message || "Unknown error"));
             return;
           }
-          const keepId = activeAdminId;
+
+          var keepId = activeAdminId;
           await refreshAdmins();
-          const updated = admins.find((a) => a.id === keepId) || admins[0];
+          var updated =
+            admins.find(function (a) {
+              return a.id === keepId;
+            }) || admins[0];
+
           if (updated) {
             activeAdminId = updated.id;
             renderDetails(updated);
@@ -903,56 +1058,62 @@
               injectDetailsIntoModal(updated);
             }
           }
-          alert(`Role updated to ${role.toUpperCase()}.`);
+
+          alert("Role updated to " + role.toUpperCase() + ".");
         } catch (e) {
-          alert("Unexpected error: " + (e?.message || e));
+          alert("Unexpected error: " + (e && e.message ? e.message : e));
         }
       }
 
       async function reloadMyRole() {
-        const { data, error } = await supabase
+        const res = await supabase
           .from("admin")
           .select("role")
           .eq("id", currentUser.id)
           .maybeSingle();
-        if (!error && data) currentRole = data.role || null;
+        if (!res.error && res.data) {
+          currentRole = res.data.role || null;
+        }
       }
 
-      // Direct client-side swap
       async function promoteToSuperadminSwapClientSide(targetId) {
-        const { error: e1 } = await supabase
+        const r1 = await supabase
           .from("admin")
           .update({ role: "admin" })
           .eq("id", currentUser.id);
-        if (e1) {
-          alert("Could not demote yourself: " + e1.message);
+
+        if (r1.error) {
+          alert("Could not demote yourself: " + r1.error.message);
           return;
         }
 
-        const { error: e2 } = await supabase
+        const r2 = await supabase
           .from("admin")
           .update({ role: "superadmin" })
           .eq("id", targetId);
-        if (e2) {
-          const { error: restoreErr } = await supabase
+
+        if (r2.error) {
+          const restore = await supabase
             .from("admin")
             .update({ role: "superadmin" })
             .eq("id", currentUser.id);
-          if (restoreErr) {
+
+          if (restore.error) {
             alert(
               "Promotion failed (" +
-                e2.message +
+                r2.error.message +
                 ") and restoring your superadmin role also failed (" +
-                restoreErr.message +
+                restore.error.message +
                 "). Please check roles manually."
             );
           } else {
             alert(
               "Promotion failed: " +
-                e2.message +
+                r2.error.message +
                 ". Your superadmin role was restored."
             );
           }
+
           await reloadMyRole();
           await refreshAdmins();
           return;
@@ -960,7 +1121,12 @@
 
         await reloadMyRole();
         await refreshAdmins();
-        const selected = admins.find((a) => a.id === targetId) || admins[0];
+
+        var selected =
+          admins.find(function (a) {
+            return a.id === targetId;
+          }) || admins[0];
+
         if (selected) {
           activeAdminId = selected.id;
           renderDetails(selected);
@@ -968,10 +1134,10 @@
             injectDetailsIntoModal(selected);
           }
         }
+
         alert("Superadmin role transferred.");
       }
 
-      // Reject via Edge Function
       async function rejectProfileDeleteAuthUser(userId) {
         const { data, error } = await supabase.functions.invoke(
           "admin-delete-user",
@@ -987,7 +1153,8 @@
         }
 
         const payload = typeof data === "string" ? JSON.parse(data) : data;
-        if (payload?.ok === true) {
+
+        if (payload && payload.ok === true) {
           await refreshAdmins();
           detailsPane.innerHTML =
             '<div class="empty-state">Select a profile on the left to review full details.</div>';
@@ -1000,7 +1167,6 @@
         }
       }
 
-      // Modal helpers
       function maybeOpenMobileModal(admin) {
         if (isMobile()) {
           injectDetailsIntoModal(admin);
@@ -1009,21 +1175,23 @@
       }
 
       function injectDetailsIntoModal(admin) {
-        // clone the details pane markup to keep parity
         detailsModalBody.innerHTML = detailsPane.innerHTML;
 
-        // apply avatar to the modal version too
-        const modalAvatar = detailsModalBody.querySelector("#detailAvatar");
+        var modalAvatar = detailsModalBody.querySelector("#detailAvatar");
         applyAvatarToEl(modalAvatar, avatarCache[admin.id]);
 
-        // wire actions inside the modal DOM
         wireActionsForIn(detailsModalBody, admin);
       }
 
       function openDetailsModal() {
         detailsModal.classList.add("open");
         detailsModal.setAttribute("aria-hidden", "false");
-        detailsModalClose?.focus?.();
+        if (
+          detailsModalClose &&
+          typeof detailsModalClose.focus === "function"
+        ) {
+          detailsModalClose.focus();
+        }
       }
 
       function closeDetailsModal() {
@@ -1031,7 +1199,5 @@
         detailsModal.setAttribute("aria-hidden", "true");
       }
     </script>
-
-    <!-- Edge Function reference remains the same (admin-delete-user). -->
   </body>
 </html>
