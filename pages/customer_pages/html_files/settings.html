@@ -20,6 +20,8 @@
         --warn: #f59e0b;
         --danger: #ef4444;
         --chip: #eef2f7;
+        --sk-base: #eef2f7;
+        --sk-highlight: #f7fafc;
       }
       * {
         box-sizing: border-box;
@@ -207,19 +209,148 @@
         pointer-events: none;
       }
 
+      /* ===== Skeleton Loader ===== */
       .loading {
-        border: 2px dashed var(--line);
+        border: 1px dashed var(--line);
         border-radius: 14px;
         background: var(--card);
-        padding: 2rem;
+        padding: 1rem;
+      }
+      .sk-shimmer {
+        position: relative;
+        overflow: hidden;
+        background: var(--sk-base);
+      }
+      .sk-shimmer::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        transform: translateX(-100%);
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--sk-highlight),
+          transparent
+        );
+        animation: sk 1.2s infinite;
+      }
+      @keyframes sk {
+        100% {
+          transform: translateX(100%);
+        }
+      }
+      .sk-header {
         display: flex;
         align-items: center;
-        justify-content: center;
-        gap: 0.6rem;
-        color: var(--muted);
-        min-height: 120px;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+      }
+      .sk-title {
+        width: 180px;
+        height: 24px;
+        border-radius: 8px;
+      }
+      .sk-actions {
+        display: flex;
+        gap: 8px;
+      }
+      .sk-chip,
+      .sk-btn {
+        height: 36px;
+        border-radius: 10px;
+      }
+      .sk-btn {
+        width: 90px;
+      }
+      .sk-chip {
+        width: 120px;
+      }
+      .sk-cards {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+      .sk-card {
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 1rem;
+        background: var(--card);
+      }
+      .sk-card-head {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 1rem;
+      }
+      .sk-icon {
+        width: 20px;
+        height: 20px;
+        border-radius: 6px;
+      }
+      .sk-h2 {
+        width: 160px;
+        height: 18px;
+        border-radius: 6px;
+      }
+      .sk-grid-2,
+      .sk-grid-3 {
+        display: grid;
+        gap: 1rem;
+      }
+      .sk-grid-2 {
+        grid-template-columns: 1fr 1fr;
+      }
+      .sk-grid-3 {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      .sk-field {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .sk-label {
+        width: 90px;
+        height: 12px;
+        border-radius: 6px;
+      }
+      .sk-input {
+        height: 42px;
+        border-radius: 10px;
+        border: 1px solid var(--line);
+        background: #fff;
+      }
+      .sk-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        margin-top: 0.6rem;
+      }
+      .sk-danger {
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 1rem;
+        background: #fff;
+      }
+      .sk-danger-h3 {
+        width: 200px;
+        height: 16px;
+        border-radius: 6px;
+        margin-bottom: 8px;
+      }
+      .sk-danger-p {
+        width: 100%;
+        max-width: 560px;
+        height: 12px;
+        border-radius: 6px;
+        margin-bottom: 10px;
+      }
+      .sk-danger-btn {
+        width: 160px;
+        height: 40px;
+        border-radius: 10px;
       }
 
+      /* ===== Toast & Modal (unchanged) ===== */
       .toast {
         position: fixed;
         right: 24px;
@@ -340,6 +471,27 @@
         .footer-actions .btn {
           flex: 1;
         }
+
+        /* Skeleton mobile stack */
+        .sk-grid-2,
+        .sk-grid-3 {
+          grid-template-columns: 1fr;
+          gap: 0.75rem;
+        }
+        .sk-card {
+          padding: 0.75rem;
+        }
+        .sk-btn {
+          width: 44px; /* small square hint for icon button */
+        }
+        .sk-chip {
+          width: 72px;
+          height: 28px;
+        }
+        .sk-title {
+          width: 120px;
+          height: 20px;
+        }
       }
 
       /* Ultra-compact for very small devices */
@@ -349,10 +501,6 @@
         }
         .pill {
           display: none; /* hide datasource pill to save space */
-        }
-        .loading {
-          padding: 1.25rem;
-          min-height: 96px;
         }
       }
     </style>
@@ -409,11 +557,80 @@
           </div>
         </div>
 
-        <div id="loading" class="loading">
-          <span class="material-icons-sharp">cached</span>
-          <span>Loading your settings…</span>
+        <!-- SKELETON: visible while loading -->
+        <div id="loading" class="loading" aria-hidden="true">
+          <!-- header skeleton mirroring real header -->
+          <div class="sk-header">
+            <div class="sk-title sk-shimmer"></div>
+            <div class="sk-actions">
+              <div class="sk-btn sk-shimmer"></div>
+              <div class="sk-chip sk-shimmer"></div>
+            </div>
+          </div>
+
+          <div class="sk-cards">
+            <!-- Profile card skeleton -->
+            <section class="sk-card">
+              <div class="sk-card-head">
+                <div class="sk-icon sk-shimmer"></div>
+                <div class="sk-h2 sk-shimmer"></div>
+              </div>
+              <div class="sk-grid-2">
+                <div class="sk-field">
+                  <div class="sk-label sk-shimmer"></div>
+                  <div class="sk-input sk-shimmer"></div>
+                </div>
+                <div class="sk-field">
+                  <div class="sk-label sk-shimmer"></div>
+                  <div class="sk-input sk-shimmer"></div>
+                </div>
+                <div class="sk-field">
+                  <div class="sk-label sk-shimmer"></div>
+                  <div class="sk-input sk-shimmer"></div>
+                </div>
+                <div class="sk-field">
+                  <div class="sk-label sk-shimmer"></div>
+                  <div class="sk-input sk-shimmer"></div>
+                </div>
+              </div>
+              <div class="sk-footer">
+                <div class="sk-btn sk-shimmer" style="width:90px;"></div>
+                <div class="sk-btn sk-shimmer" style="width:140px;"></div>
+              </div>
+            </section>
+
+            <!-- Personal card skeleton -->
+            <section class="sk-card">
+              <div class="sk-card-head">
+                <div class="sk-icon sk-shimmer"></div>
+                <div class="sk-h2 sk-shimmer"></div>
+              </div>
+              <div class="sk-grid-3">
+                <div class="sk-field">
+                  <div class="sk-label sk-shimmer"></div>
+                  <div class="sk-input sk-shimmer"></div>
+                </div>
+                <div class="sk-field">
+                  <div class="sk-label sk-shimmer"></div>
+                  <div class="sk-input sk-shimmer"></div>
+                </div>
+                <div class="sk-field">
+                  <div class="sk-label sk-shimmer"></div>
+                  <div class="sk-input sk-shimmer"></div>
+                </div>
+              </div>
+            </section>
+
+            <!-- Danger zone skeleton -->
+            <section class="sk-danger">
+              <div class="sk-danger-h3 sk-shimmer"></div>
+              <div class="sk-danger-p sk-shimmer"></div>
+              <div class="sk-danger-btn sk-shimmer"></div>
+            </section>
+          </div>
         </div>
 
+        <!-- REAL CONTENT: hidden until data is loaded -->
         <div id="content" class="cards" style="display: none">
           <!-- Profile -->
           <section class="card">
@@ -539,7 +756,7 @@
     </div>
 
     <!-- App Script -->
-     <script src="../../general_files/index.js"></script>
+    <script src="../../general_files/index.js"></script>
     <script type="module">
       import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
       import { SUPABASE_URL, SUPABASE_ANON_KEY } from "../../../supabase.js";

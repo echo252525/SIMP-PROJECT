@@ -178,10 +178,80 @@
       body.filters-open .controls{ transform: translateY(0); }
       body.filters-open .filters-backdrop{ opacity: 1; pointer-events: auto; }
     }
+
+    /* ===========================
+       SKELETON LOADER (ADDED)
+       =========================== */
+
+    /* Show skeleton while loading; hide app */
+    body.is-loading main { display: none; }
+    body:not(.is-loading) #earnings-skeleton { display: none; }
+
+    #earnings-skeleton{
+      margin: 1.4rem 0 0 0;
+      display: grid;
+      gap: 1rem;
+      animation: fadeIn .25s ease;
+    }
+    @keyframes fadeIn { from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:none} }
+
+    .sk-card, .sk-bar, .sk-chip, .sk-td, .sk-input, .sk-btn{
+      position: relative; overflow: hidden; background: #eef3f7; border-radius: 10px;
+    }
+    .sk-card{ border-radius: var(--radius); border:1px solid var(--line); background:#fff; }
+    .sk-shine::after{
+      content:""; position:absolute; inset:0;
+      background: linear-gradient(110deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.6) 18%, rgba(255,255,255,0) 33%);
+      transform: translateX(-100%); animation: shine 1.2s infinite;
+    }
+    @keyframes shine { to{ transform: translateX(100%); } }
+
+    /* Title skeleton */
+    .sk-title{ height: 28px; width: clamp(180px, 40%, 360px); }
+    .sk-sub{ height: 16px; width: clamp(140px, 30%, 280px); margin-top: 6px; }
+
+    /* Summary skeleton grid */
+    .sk-summary{
+      display:grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap:.9rem;
+    }
+    @media (max-width:1100px){ .sk-summary{ grid-template-columns: repeat(2, minmax(0,1fr)); } }
+    @media (max-width:580px){ .sk-summary{ grid-template-columns: 1fr; } }
+    .sk-summary .sk-card{ padding: 1rem; display:grid; gap:.6rem; }
+    .sk-sm-line{ height:14px; width:60%; }
+    .sk-lg-line{ height:24px; width:50%; }
+    .sk-bar{ height:8px; width:100%; }
+
+    /* Controls skeleton */
+    .sk-controls{
+      display:grid; gap:.6rem; grid-template-columns: 1.2fr repeat(2, .9fr) auto auto; align-items:end;
+    }
+    @media (max-width:980px){ .sk-controls{ grid-template-columns: 1fr 1fr; } }
+    .sk-field{ display:grid; gap:.3rem; }
+    .sk-label{ height: 12px; width: 40%; }
+    .sk-input{ height: 40px; border:1px solid var(--line); background:#fff; }
+    .sk-btn{ height: 42px; width: 140px; border:1px solid var(--line); background:#fff; }
+
+    /* Tabs skeleton */
+    .sk-tabbar{ display:grid; grid-auto-flow:column; justify-content:start; gap:.4rem; border-bottom:1px solid var(--line); padding-bottom:.5rem; }
+    .sk-chip{ height: 36px; width: 130px; background:#fff; border:1px solid var(--line); border-bottom:3px solid transparent; }
+
+    /* Table skeleton */
+    .sk-table{ background:#fff; border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; }
+    .sk-thead{ display:grid; grid-template-columns: 1.4fr 2fr 1.4fr 1fr 1fr 1fr; gap:0; padding:.8rem .9rem; border-bottom:1px solid var(--line); }
+    .sk-th{ height:14px; width:80%; }
+    .sk-rows{ display:grid; }
+    .sk-row{ display:grid; grid-template-columns: 1.4fr 2fr 1.4fr 1fr 1fr 1fr; gap:0; padding:.75rem .9rem; border-bottom:1px solid #f0f4f7; align-items:center; }
+    .sk-td{ height:16px; }
+
+    @media (max-width:720px){
+      .sk-thead, .sk-row{
+        grid-template-columns: 1.4fr 2fr 1fr 1fr; /* hide Updated At & Actions for narrow mimic */
+      }
+    }
   </style>
 </head>
 
-<body>
+<body class="is-loading">
   <div class="container">
     <!-- Sidebar Section (unchanged) -->
     <aside>
@@ -235,6 +305,107 @@
       </div>
     </aside>
     <!-- End of Sidebar Section -->
+
+    <!-- ======= SKELETON (ADDED) ======= -->
+    <main id="earnings-skeleton" aria-hidden="true">
+      <div class="titlePageDiv">
+        <div class="sk-title sk-shine"></div>
+        <div class="sk-sub sk-shine"></div>
+      </div>
+
+      <!-- Summary cards -->
+      <section class="sk-summary">
+        <div class="sk-card">
+          <div class="sk-sm-line sk-shine"></div>
+          <div class="sk-lg-line sk-shine"></div>
+          <div class="sk-sm-line sk-shine" style="width:70%"></div>
+          <div class="sk-bar sk-shine"></div>
+        </div>
+        <div class="sk-card">
+          <div class="sk-sm-line sk-shine"></div>
+          <div class="sk-lg-line sk-shine"></div>
+          <div class="sk-sm-line sk-shine" style="width:70%"></div>
+          <div class="sk-bar sk-shine"></div>
+        </div>
+        <div class="sk-card">
+          <div class="sk-sm-line sk-shine"></div>
+          <div class="sk-lg-line sk-shine"></div>
+          <div class="sk-sm-line sk-shine" style="width:70%"></div>
+          <div class="sk-bar sk-shine"></div>
+        </div>
+        <div class="sk-card">
+          <div class="sk-sm-line sk-shine"></div>
+          <div class="sk-sm-line sk-shine" style="width:60%"></div>
+          <div class="sk-sm-line sk-shine" style="width:50%"></div>
+        </div>
+      </section>
+
+      <!-- Controls -->
+      <section class="sk-controls">
+        <div class="sk-field">
+          <div class="sk-label sk-shine"></div>
+          <div class="sk-input sk-shine"></div>
+        </div>
+        <div class="sk-field">
+          <div class="sk-label sk-shine"></div>
+          <div class="sk-input sk-shine"></div>
+        </div>
+        <div class="sk-field">
+          <div class="sk-label sk-shine"></div>
+          <div class="sk-input sk-shine"></div>
+        </div>
+        <div class="sk-btn sk-shine"></div>
+        <div class="sk-btn sk-shine"></div>
+      </section>
+
+      <!-- Tabs -->
+      <section class="tabs">
+        <div class="sk-tabbar">
+          <div class="sk-chip sk-shine"></div>
+          <div class="sk-chip sk-shine"></div>
+        </div>
+
+        <!-- Table mimic -->
+        <div class="sk-table">
+          <div class="sk-thead">
+            <div class="sk-th sk-shine"></div>
+            <div class="sk-th sk-shine"></div>
+            <div class="sk-th sk-shine"></div>
+            <div class="sk-th sk-shine"></div>
+            <div class="sk-th sk-shine"></div>
+            <div class="sk-th sk-shine"></div>
+          </div>
+          <div class="sk-rows">
+            <!-- 6 rows -->
+            <div class="sk-row">
+              <div class="sk-td sk-shine"></div><div class="sk-td sk-shine"></div><div class="sk-td sk-shine"></div>
+              <div class="sk-td sk-shine"></div><div class="sk-td sk-shine"></div><div class="sk-td sk-shine"></div>
+            </div>
+            <div class="sk-row">
+              <div class="sk-td sk-shine"></div><div class="sk-td sk-shine"></div><div class="sk-td sk-shine"></div>
+              <div class="sk-td sk-shine"></div><div class="sk-td sk-shine"></div><div class="sk-td sk-shine"></div>
+            </div>
+            <div class="sk-row">
+              <div class="sk-td sk-shine"></div><div class="sk-td sk-shine"></div><div class="sk-td sk-shine"></div>
+              <div class="sk-td sk-shine"></div><div class="sk-td sk-shine"></div><div class="sk-td sk-shine"></div>
+            </div>
+            <div class="sk-row">
+              <div class="sk-td sk-shine"></div><div class="sk-td sk-shine"></div><div class="sk-td sk-shine"></div>
+              <div class="sk-td sk-shine"></div><div class="sk-td sk-shine"></div><div class="sk-td sk-shine"></div>
+            </div>
+            <div class="sk-row">
+              <div class="sk-td sk-shine"></div><div class="sk-td sk-shine"></div><div class="sk-td sk-shine"></div>
+              <div class="sk-td sk-shine"></div><div class="sk-td sk-shine"></div><div class="sk-td sk-shine"></div>
+            </div>
+            <div class="sk-row">
+              <div class="sk-td sk-shine"></div><div class="sk-td sk-shine"></div><div class="sk-td sk-shine"></div>
+              <div class="sk-td sk-shine"></div><div class="sk-td sk-shine"></div><div class="sk-td sk-shine"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <!-- ======= END SKELETON ======= -->
 
     <!-- MAIN CONTENT -->
     <main>
@@ -886,51 +1057,12 @@
       }
     }
 
-    // ========= EVENTS =========
-    document.getElementById('btnExport').addEventListener('click', exportCSV);
-
-    searchEl.addEventListener('input', applyFilters);
-    dateFromEl.addEventListener('change', applyFilters);
-    dateToEl.addEventListener('change', applyFilters);
-
-    tabs.forEach(b=>{
-      b.addEventListener('click', ()=>{
-        tabs.forEach(x=>x.classList.remove('active'));
-        b.classList.add('active');
-        const tab = b.dataset.tab;
-        if(tab==='unpaid'){
-          tabUnpaidWrap.style.display='block';
-          tabPaidWrap.style.display='none';
-          selectToolbar.style.display = SELECT_MODE ? 'flex' : 'none';
-          // NEW: reset badge for this tab
-          updateCounts.unpaid = 0; renderBadges();
-        } else {
-          tabUnpaidWrap.style.display='none';
-          tabPaidWrap.style.display='block';
-          selectToolbar.style.display = 'none';
-          // NEW: reset badge for this tab
-          updateCounts.paid = 0; renderBadges();
-        }
-      });
-    });
-
-    document.getElementById('btnRequestPayout').addEventListener('click', openPayout);
-    document.getElementById('closeModal').addEventListener('click', closePayout);
-    document.getElementById('cancelPayout').addEventListener('click', closePayout);
-    document.getElementById('confirmPayout').addEventListener('click', confirmPayoutRequest);
-
-    // Invoice button (hook)
-    document.addEventListener('click', (e)=>{
-      const btn = e.target.closest('button[data-invoice]');
-      if(!btn) return;
-      const code = btn.getAttribute('data-invoice');
-      alert('Generate/Download invoice for ' + code);
-    });
-
     // ========= INIT + REALTIME =========
     let realtimeChannel = null;
 
     (async function init(){
+      // --- SHOW SKELETON (ADDED) ---
+      document.body.classList.add('is-loading');
       try{
         const installerId = await getInstallerId();
         CURRENT_INSTALLER_ID = installerId;
@@ -976,6 +1108,8 @@
       } finally {
         computePaymentsSummary();
         applyFilters();
+        // --- HIDE SKELETON (ADDED) ---
+        requestAnimationFrame(()=>document.body.classList.remove('is-loading'));
       }
     })();
 
@@ -984,6 +1118,45 @@
       if (realtimeChannel) {
         supabase.removeChannel(realtimeChannel);
       }
+    });
+
+    // Invoice button (hook)
+    document.addEventListener('click', (e)=>{
+      const btn = e.target.closest('button[data-invoice]');
+      if(!btn) return;
+      const code = btn.getAttribute('data-invoice');
+      alert('Generate/Download invoice for ' + code);
+    });
+
+    document.getElementById('btnExport').addEventListener('click', exportCSV);
+    document.getElementById('btnRequestPayout').addEventListener('click', openPayout);
+    document.getElementById('closeModal').addEventListener('click', closePayout);
+    document.getElementById('cancelPayout').addEventListener('click', closePayout);
+    document.getElementById('confirmPayout').addEventListener('click', confirmPayoutRequest);
+
+    searchEl.addEventListener('input', applyFilters);
+    dateFromEl.addEventListener('change', applyFilters);
+    dateToEl.addEventListener('change', applyFilters);
+
+    tabs.forEach(b=>{
+      b.addEventListener('click', ()=>{
+        tabs.forEach(x=>x.classList.remove('active'));
+        b.classList.add('active');
+        const tab = b.dataset.tab;
+        if(tab==='unpaid'){
+          tabUnpaidWrap.style.display='block';
+          tabPaidWrap.style.display='none';
+          selectToolbar.style.display = SELECT_MODE ? 'flex' : 'none';
+          // NEW: reset badge for this tab
+          updateCounts.unpaid = 0; renderBadges();
+        } else {
+          tabUnpaidWrap.style.display='none';
+          tabPaidWrap.style.display='block';
+          selectToolbar.style.display = 'none';
+          // NEW: reset badge for this tab
+          updateCounts.paid = 0; renderBadges();
+        }
+      });
     });
   </script>
 </body>

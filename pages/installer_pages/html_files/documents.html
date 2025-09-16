@@ -383,12 +383,6 @@
         justify-content: flex-end;
         gap: 8px;
       }
-      .preview-toolbar .group {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        flex-wrap: wrap;
-      }
       .btn.small {
         padding: 6px 10px;
         font-size: 0.85rem;
@@ -485,10 +479,194 @@
           transform: translateY(0);
         }
       }
+
+      /* =======================
+         SKELETON (added)
+         ======================= */
+      :root {
+        --sk-bg: #eef2f7;
+        --sk-shimmer: linear-gradient(
+          90deg,
+          rgba(255, 255, 255, 0) 0%,
+          rgba(255, 255, 255, 0.6) 50%,
+          rgba(255, 255, 255, 0) 100%
+        );
+      }
+
+      .skeleton-wrap {
+        display: none;
+      }
+      body.loading .skeleton-wrap {
+        display: block;
+      }
+      body.loading main {
+        display: none;
+      }
+
+      .sk-container {
+        margin-top: 1.4rem;
+      }
+      .sk-title {
+        height: 24px;
+        width: 260px;
+        border-radius: 8px;
+        background: var(--sk-bg);
+        position: relative;
+        overflow: hidden;
+      }
+      .sk-subtitle {
+        height: 16px;
+        width: 380px;
+        margin-top: 10px;
+        border-radius: 8px;
+        background: var(--sk-bg);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .sk-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        margin-top: 18px;
+      }
+
+      .sk-card {
+        border-radius: 14px;
+        border: 1.5px solid #e5e7eb;
+        background: #fff;
+        padding: 16px;
+      }
+
+      .sk-doc-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-radius: 14px;
+        border: 1.5px solid #e5e7eb;
+        background: #fff;
+        padding: 20px;
+        margin-bottom: 12px;
+      }
+      .sk-doc-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .sk-circle {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--sk-bg);
+        position: relative;
+        overflow: hidden;
+      }
+      .sk-line {
+        height: 12px;
+        width: 180px;
+        border-radius: 8px;
+        background: var(--sk-bg);
+        position: relative;
+        overflow: hidden;
+      }
+      .sk-line.sm {
+        width: 120px;
+        height: 10px;
+        margin-top: 6px;
+      }
+      .sk-drop {
+        height: 40px;
+        width: 180px;
+        border-radius: 10px;
+        border: 1.5px dashed #cbd5e1;
+        background: #f8fafc;
+      }
+
+      .sk-preview {
+        border-radius: 14px;
+        border: 1.5px solid #e5e7eb;
+        background: #fff;
+        overflow: hidden;
+        min-height: 600px;
+        display: grid;
+        grid-template-rows: auto 1fr;
+      }
+      .sk-preview-head {
+        height: 48px;
+        background: #f8fafc;
+        border-bottom: 1px solid #e5e7eb;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 12px;
+      }
+      .sk-preview-head .sk-line {
+        height: 18px;
+        width: 140px;
+      }
+      .sk-actions {
+        display: flex;
+        gap: 8px;
+      }
+      .sk-square {
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        border: 1px solid #e5e7eb;
+        background: #fff;
+      }
+      .sk-preview-body {
+        padding: 10px;
+      }
+      .sk-embed {
+        width: 100%;
+        height: 100%;
+        min-height: 520px;
+        border-radius: 8px;
+        background: var(--sk-bg);
+        position: relative;
+        overflow: hidden;
+      }
+
+      /* Shimmer animation */
+      .sk-shimmer::after,
+      .sk-title::after,
+      .sk-subtitle::after,
+      .sk-circle::after,
+      .sk-line::after,
+      .sk-embed::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        transform: translateX(-100%);
+        background-image: var(--sk-shimmer);
+        animation: shimmer 1.25s infinite;
+      }
+      @keyframes shimmer {
+        100% {
+          transform: translateX(100%);
+        }
+      }
+
+      /* Mobile: stack grid */
+      @media (max-width: 980px) {
+        .sk-grid {
+          grid-template-columns: 1fr;
+        }
+        .sk-doc-item {
+          flex-direction: column;
+          align-items: stretch;
+          gap: 10px;
+        }
+        .sk-drop {
+          width: 100%;
+        }
+      }
     </style>
   </head>
 
-  <body>
+  <!-- ADD: start in loading state so only skeleton shows -->
+  <body class="loading">
     <div class="container">
       <!-- Sidebar Section -->
       <aside>
@@ -542,6 +720,85 @@
         </div>
       </aside>
       <!-- End of Sidebar Section -->
+
+      <!-- ====== SKELETON (added, visible only while body.loading) ====== -->
+      <div class="skeleton-wrap" aria-hidden="true">
+        <div class="sk-container">
+          <div class="sk-title sk-shimmer"></div>
+          <div class="sk-subtitle sk-shimmer"></div>
+
+          <div class="sk-grid">
+            <!-- Left: list -->
+            <div>
+              <div class="sk-doc-item">
+                <div class="sk-doc-left">
+                  <div class="sk-circle sk-shimmer"></div>
+                  <div>
+                    <div class="sk-line sk-shimmer"></div>
+                    <div class="sk-line sm sk-shimmer"></div>
+                  </div>
+                </div>
+                <div class="sk-drop"></div>
+              </div>
+              <div class="sk-doc-item">
+                <div class="sk-doc-left">
+                  <div class="sk-circle sk-shimmer"></div>
+                  <div>
+                    <div class="sk-line sk-shimmer"></div>
+                    <div class="sk-line sm sk-shimmer"></div>
+                  </div>
+                </div>
+                <div class="sk-drop"></div>
+              </div>
+              <div class="sk-doc-item">
+                <div class="sk-doc-left">
+                  <div class="sk-circle sk-shimmer"></div>
+                  <div>
+                    <div class="sk-line sk-shimmer"></div>
+                    <div class="sk-line sm sk-shimmer"></div>
+                  </div>
+                </div>
+                <div class="sk-drop"></div>
+              </div>
+              <div class="sk-doc-item">
+                <div class="sk-doc-left">
+                  <div class="sk-circle sk-shimmer"></div>
+                  <div>
+                    <div class="sk-line sk-shimmer"></div>
+                    <div class="sk-line sm sk-shimmer"></div>
+                  </div>
+                </div>
+                <div class="sk-drop"></div>
+              </div>
+              <div class="sk-doc-item">
+                <div class="sk-doc-left">
+                  <div class="sk-circle sk-shimmer"></div>
+                  <div>
+                    <div class="sk-line sk-shimmer"></div>
+                    <div class="sk-line sm sk-shimmer"></div>
+                  </div>
+                </div>
+                <div class="sk-drop"></div>
+              </div>
+            </div>
+
+            <!-- Right: preview -->
+            <div class="sk-preview">
+              <div class="sk-preview-head">
+                <div class="sk-line sk-shimmer"></div>
+                <div class="sk-actions">
+                  <div class="sk-square"></div>
+                  <div class="sk-square"></div>
+                </div>
+              </div>
+              <div class="sk-preview-body">
+                <div class="sk-embed sk-shimmer"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- ====== END SKELETON ====== -->
 
       <!-- MAIN CONTENT -->
       <main>
@@ -1068,8 +1325,8 @@
           li.innerHTML = `
             <span class="cert-name">${friendlyName(c)}</span>
             <span class="cert-status ${status}">${
-            status[0].toUpperCase() + status.slice(1)
-          }</span>
+              status[0].toUpperCase() + status.slice(1)
+            }</span>
           `;
           li.addEventListener("click", () =>
             showCertificatePreview(installerId, certs, certStatuses, i)
@@ -1435,8 +1692,9 @@
       }
 
       async function bootstrap() {
+        // (Keep your existing temporary "Loading…" card logic; it stays hidden while skeleton is visible)
         docListEl.innerHTML = `
-        <div class="doc-item pending">
+        <div class="doc-item pending" aria-hidden="true" style="display:none">
           <div class="doc-meta">
             <span class="doc-icon"><span class="material-icons-sharp">pending</span></span>
             <div class="doc-text"><h4>Loading…</h4><p>Please wait</p></div>
@@ -1447,16 +1705,20 @@
           </div>
         </div>`;
 
-        const installerId = await getUserId();
-        if (!installerId) {
-          renderDocuments(null, "");
-          clearPreview();
-          return;
-        }
+        try {
+          const installerId = await getUserId();
 
-        const row = await fetchInstallerDocuments(installerId);
-        renderDocuments(row, installerId);
-        clearPreview();
+          // Render even if no installer (shows empty state)
+          const row = await fetchInstallerDocuments(installerId);
+          renderDocuments(row, installerId || "");
+
+          clearPreview();
+        } catch (err) {
+          console.warn("bootstrap error:", err);
+        } finally {
+          // HIDE skeleton, SHOW real content
+          document.body.classList.remove("loading");
+        }
       }
 
       document.addEventListener("DOMContentLoaded", bootstrap);

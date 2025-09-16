@@ -218,6 +218,81 @@
 
     /* Hide the card-level Edit button (kept in DOM) */
     .actions .btn-edit { display:none !important; }
+
+    /* =============================== */
+    /* SKELETON LOADER (PC & MOBILE)  */
+    /* =============================== */
+    /* Hide the old text loader-card but keep it in DOM */
+    #loader-card { display: none !important; }
+
+    .skeleton-grid {
+      /* match the same grid as .cards-grid for perfect responsiveness */
+      display:grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    @media (max-width: 1200px){
+      .skeleton-grid{ grid-template-columns: repeat(8, 1fr); }
+    }
+    @media (max-width: 768px){
+      .skeleton-grid{ grid-template-columns: repeat(4, 1fr); }
+    }
+
+    .sk-card{
+      grid-column: span 4 / span 4;
+      background:#fff;
+      border:1px solid var(--card-border);
+      border-radius:14px;
+      padding:14px;
+      overflow:hidden;
+    }
+    @media (max-width: 1200px){ .sk-card{ grid-column: span 8 / span 8; } }
+    @media (max-width: 768px){ .sk-card{ grid-column: span 4 / span 4; } }
+
+    .sk-line, .sk-chip, .sk-meta, .sk-avatar, .sk-btn {
+      position: relative;
+      overflow: hidden;
+      background: #eef1f5;
+      border-radius: 8px;
+    }
+    .sk-line { height: 14px; }
+    .sk-line.sm { height: 10px; border-radius: 6px; }
+    .sk-line.lg { height: 18px; }
+
+    .sk-row { display:flex; align-items:center; gap:.6rem; }
+    .sk-space { height: 10px; }
+    .sk-chip { height: 22px; width: 80px; border-radius:9999px; }
+    .sk-chip.wide { width: 120px; }
+    .sk-chips { display:flex; flex-wrap:wrap; gap:.4rem; margin:.6rem 0 .2rem; }
+
+    .sk-meta-wrap { display:grid; grid-template-columns: repeat(2, 1fr); gap:.6rem; margin:.6rem 0 .2rem; }
+    .sk-meta { height: 36px; border:1px dashed var(--card-border); background:#f8fafc; }
+
+    .sk-installer { display:flex; align-items:center; gap:.6rem; margin-top:.6rem; }
+    .sk-avatar { width:30px; height:30px; border-radius:50%; }
+
+    .sk-actions { display:flex; justify-content:flex-end; gap:.5rem; margin-top:.75rem; }
+    .sk-btn { height: 36px; width: 88px; }
+
+    /* shimmer */
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+    .sk-shimmer::after{
+      content:"";
+      position:absolute; inset:0;
+      transform: translateX(-100%);
+      animation: shimmer 1.4s infinite;
+      background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.7) 50%, rgba(255,255,255,0) 100%);
+    }
+
+    /* During loading: hide real content area (we toggle via JS) */
+    .is-loading #cardsContainer,
+    .is-loading #emptyState {
+      display: none !important;
+    }
   </style>
 </head>
 
@@ -283,9 +358,155 @@
         </div>
       </div>
 
+      <!-- ====== SKELETONS (shown only while loading) ====== -->
+      <div id="skeletonContainer" class="skeleton-grid" aria-hidden="true">
+        <!-- 6 skeleton cards (responsive: same spans as real cards) -->
+        <div class="sk-card">
+          <div class="sk-row" style="justify-content:space-between;">
+            <div class="sk-line lg sk-shimmer" style="width:60%;"></div>
+            <div class="sk-line sm sk-shimmer" style="width:28%; border-radius:9999px;"></div>
+          </div>
+          <div class="sk-chips">
+            <div class="sk-chip sk-shimmer"></div>
+            <div class="sk-chip wide sk-shimmer"></div>
+            <div class="sk-chip sk-shimmer"></div>
+          </div>
+          <div class="sk-meta-wrap">
+            <div class="sk-meta sk-shimmer"></div>
+            <div class="sk-meta sk-shimmer"></div>
+          </div>
+          <div class="sk-installer">
+            <div class="sk-avatar sk-shimmer"></div>
+            <div class="sk-line sk-shimmer" style="flex:1;"></div>
+          </div>
+          <div class="sk-actions">
+            <div class="sk-btn sk-shimmer"></div>
+            <div class="sk-btn sk-shimmer" style="width:100px;"></div>
+          </div>
+        </div>
+
+        <div class="sk-card">
+          <div class="sk-row" style="justify-content:space-between;">
+            <div class="sk-line lg sk-shimmer" style="width:55%;"></div>
+            <div class="sk-line sm sk-shimmer" style="width:32%; border-radius:9999px;"></div>
+          </div>
+          <div class="sk-chips">
+            <div class="sk-chip wide sk-shimmer"></div>
+            <div class="sk-chip sk-shimmer"></div>
+            <div class="sk-chip sk-shimmer"></div>
+          </div>
+          <div class="sk-meta-wrap">
+            <div class="sk-meta sk-shimmer"></div>
+            <div class="sk-meta sk-shimmer"></div>
+          </div>
+          <div class="sk-installer">
+            <div class="sk-avatar sk-shimmer"></div>
+            <div class="sk-line sk-shimmer" style="flex:1;"></div>
+          </div>
+          <div class="sk-actions">
+            <div class="sk-btn sk-shimmer"></div>
+            <div class="sk-btn sk-shimmer" style="width:100px;"></div>
+          </div>
+        </div>
+
+        <div class="sk-card">
+          <div class="sk-row" style="justify-content:space-between;">
+            <div class="sk-line lg sk-shimmer" style="width:70%;"></div>
+            <div class="sk-line sm sk-shimmer" style="width:24%; border-radius:9999px;"></div>
+          </div>
+          <div class="sk-chips">
+            <div class="sk-chip sk-shimmer"></div>
+            <div class="sk-chip sk-shimmer"></div>
+          </div>
+          <div class="sk-meta-wrap">
+            <div class="sk-meta sk-shimmer"></div>
+            <div class="sk-meta sk-shimmer"></div>
+          </div>
+          <div class="sk-installer">
+            <div class="sk-avatar sk-shimmer"></div>
+            <div class="sk-line sk-shimmer" style="flex:1;"></div>
+          </div>
+          <div class="sk-actions">
+            <div class="sk-btn sk-shimmer"></div>
+            <div class="sk-btn sk-shimmer" style="width:100px;"></div>
+          </div>
+        </div>
+
+        <div class="sk-card">
+          <div class="sk-row" style="justify-content:space-between;">
+            <div class="sk-line lg sk-shimmer" style="width:58%;"></div>
+            <div class="sk-line sm sk-shimmer" style="width:30%; border-radius:9999px;"></div>
+          </div>
+          <div class="sk-chips">
+            <div class="sk-chip wide sk-shimmer"></div>
+            <div class="sk-chip sk-shimmer"></div>
+          </div>
+          <div class="sk-meta-wrap">
+            <div class="sk-meta sk-shimmer"></div>
+            <div class="sk-meta sk-shimmer"></div>
+          </div>
+          <div class="sk-installer">
+            <div class="sk-avatar sk-shimmer"></div>
+            <div class="sk-line sk-shimmer" style="flex:1;"></div>
+          </div>
+          <div class="sk-actions">
+            <div class="sk-btn sk-shimmer"></div>
+            <div class="sk-btn sk-shimmer" style="width:100px;"></div>
+          </div>
+        </div>
+
+        <div class="sk-card">
+          <div class="sk-row" style="justify-content:space-between;">
+            <div class="sk-line lg sk-shimmer" style="width:66%;"></div>
+            <div class="sk-line sm sk-shimmer" style="width:22%; border-radius:9999px;"></div>
+          </div>
+          <div class="sk-chips">
+            <div class="sk-chip sk-shimmer"></div>
+            <div class="sk-chip wide sk-shimmer"></div>
+            <div class="sk-chip sk-shimmer"></div>
+          </div>
+          <div class="sk-meta-wrap">
+            <div class="sk-meta sk-shimmer"></div>
+            <div class="sk-meta sk-shimmer"></div>
+          </div>
+          <div class="sk-installer">
+            <div class="sk-avatar sk-shimmer"></div>
+            <div class="sk-line sk-shimmer" style="flex:1;"></div>
+          </div>
+          <div class="sk-actions">
+            <div class="sk-btn sk-shimmer"></div>
+            <div class="sk-btn sk-shimmer" style="width:100px;"></div>
+          </div>
+        </div>
+
+        <div class="sk-card">
+          <div class="sk-row" style="justify-content:space-between;">
+            <div class="sk-line lg sk-shimmer" style="width:62%;"></div>
+            <div class="sk-line sm sk-shimmer" style="width:26%; border-radius:9999px;"></div>
+          </div>
+          <div class="sk-chips">
+            <div class="sk-chip sk-shimmer"></div>
+            <div class="sk-chip sk-shimmer"></div>
+          </div>
+          <div class="sk-meta-wrap">
+            <div class="sk-meta sk-shimmer"></div>
+            <div class="sk-meta sk-shimmer"></div>
+          </div>
+          <div class="sk-installer">
+            <div class="sk-avatar sk-shimmer"></div>
+            <div class="sk-line sk-shimmer" style="flex:1;"></div>
+          </div>
+          <div class="sk-actions">
+            <div class="sk-btn sk-shimmer"></div>
+            <div class="sk-btn sk-shimmer" style="width:100px;"></div>
+          </div>
+        </div>
+      </div>
+      <!-- ====== /SKELETONS ====== -->
+
       <!-- Cards container -->
       <div id="cardsContainer" class="cards-grid">
-        <!-- Loading placeholder -->
+        <!-- Loading placeholder (kept, but hidden by CSS) -->
         <div class="job-card" id="loader-card">
           <div class="job-head">
             <h3 class="job-title muted">Loading your jobs…</h3>
@@ -416,6 +637,21 @@
     // ---------- CONFIG: defaults ----------
     const DEFAULT_JOB_PICS_BUCKET = 'jobs';
     const DEFAULT_INSTALLER_PICS_BUCKET = 'installer_profile';
+
+    // ---------- NEW: simple loading toggler ----------
+    const rootEl = document.documentElement; // for a global class
+    const skeletonContainer = document.getElementById('skeletonContainer');
+    const cardsContainer = document.getElementById('cardsContainer');
+    const emptyState = document.getElementById('emptyState');
+    function showSkeleton(isLoading) {
+      if (isLoading) {
+        rootEl.classList.add('is-loading');
+        skeletonContainer.style.display = 'grid';
+      } else {
+        rootEl.classList.remove('is-loading');
+        skeletonContainer.style.display = 'none';
+      }
+    }
 
     // ---------- Supabase helpers ----------
     async function ensureSupabaseClient() {
@@ -603,8 +839,6 @@
     }
 
     // ---------- DOM refs ----------
-    const cardsContainer = document.getElementById('cardsContainer');
-    const emptyState = document.getElementById('emptyState');
     const searchInput = document.getElementById('searchInput');
     const statusFilter = document.getElementById('statusFilter');
     const sortSelect = document.getElementById('sortSelect');
@@ -753,11 +987,15 @@
       if (!JOBS.length){
         cardsContainer.innerHTML = "";
         emptyState.style.display = "flex";
+        // no jobs -> still hide skeleton because we're done loading
+        showSkeleton(false);
         return;
       }
       emptyState.style.display = "none";
       cardsContainer.innerHTML = JOBS.map(cardHtml).join("");
       applyClientFilters();
+      // Avatars may require signing (async) — we can already show real content now
+      showSkeleton(false);
       // After rendering, hydrate installer avatars with signed URLs
       hydrateInstallerAvatars().catch(console.warn);
     }
@@ -767,7 +1005,6 @@
       const cards = Array.from(cardsContainer.querySelectorAll('.job-card[data-installer-id]'));
       if (!cards.length) return;
 
-      // For each card, if we have a profile_pic_url for that installer, sign and set <img>
       await Promise.all(cards.map(async (card) => {
         const instId = card.getAttribute('data-installer-id');
         const inst = INSTALLER_BY_ID.get(instId);
@@ -795,13 +1032,15 @@
 
     // ---------- Data loader (original) ----------
     async function loadMyJobs() {
+      showSkeleton(true);
       const client = await ensureSupabaseClient();
-      if (!client) return;
+      if (!client) { showSkeleton(false); return; }
 
       const { data: u, error: uErr } = await client.auth.getUser();
       if (uErr || !u?.user?.id) {
         console.error("auth.getUser error:", uErr);
         cardsContainer.innerHTML = `<div class="empty"><span class="material-icons-sharp">person_off</span><span>Please log in to see your jobs.</span></div>`;
+        showSkeleton(false);
         return;
       }
       const userId = u.user.id;
@@ -815,6 +1054,7 @@
       if (error) {
         console.error("jobs fetch error:", error);
         cardsContainer.innerHTML = `<div class="empty"><span class="material-icons-sharp">error_outline</span><span>Unable to load your jobs.</span></div>`;
+        showSkeleton(false);
         return;
       }
 
@@ -859,13 +1099,15 @@
     }
 
     async function loadMyJobsWithFilters(){
+      showSkeleton(true);
       const client = await ensureSupabaseClient();
-      if (!client) return;
+      if (!client) { showSkeleton(false); return; }
 
       const { data: u, error: uErr } = await client.auth.getUser();
       if (uErr || !u?.user?.id) {
         console.error("auth.getUser error:", uErr);
         cardsContainer.innerHTML = `<div class="empty"><span class="material-icons-sharp">person_off</span><span>Please log in to see your jobs.</span></div>`;
+        showSkeleton(false);
         return;
       }
       const userId = u.user.id;
@@ -907,7 +1149,7 @@
       const { data: jobs, error } = await q;
       if (error){
         console.error("jobs fetch error (filtered):", error);
-        await loadMyJobs(); // fallback
+        await loadMyJobs(); // fallback handles its own skeleton toggle
         return;
       }
 
@@ -1245,6 +1487,9 @@
     window.addEventListener('keydown', (e)=> { if (e.key === 'Escape'){ hideJobModal(); hideInstModal(); } });
 
     // ---------- Init ----------
+    // Show skeleton immediately
+    showSkeleton(true);
+    // Load, then filtered load (kept as you had it)
     loadMyJobs().then(() => {
       loadMyJobsWithFilters();
     });
