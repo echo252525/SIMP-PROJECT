@@ -4,14 +4,11 @@
     <meta charset="UTF-8" />
     <title>Admin Verification</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <!-- Keep your existing sidebar styles and icons -->
     <link rel="stylesheet" href="../css_files/sideBar.css" />
     <link
       href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp"
       rel="stylesheet"
     />
-
     <style>
       :root {
         --ink: #1c2430;
@@ -22,49 +19,34 @@
         --card: #fff;
         --pill: #eef6ff;
         --radius: 14px;
-
-        /* modal */
-        --modal-backdrop: rgba(14, 25, 42, 0.55);
-        --modal-head: #f7fbff;
-        --shadow-xl: 0 24px 64px rgba(16, 24, 40, 0.2);
-        --shadow-md: 0 8px 24px rgba(16, 24, 40, 0.08);
-        --shadow-sm: 0 2px 10px rgba(16, 24, 40, 0.06);
       }
-
       main {
         margin-top: 1.4rem;
       }
-
       .two-col {
         display: grid;
         grid-template-columns: 340px 1fr;
         gap: 1rem;
       }
-
       @media (max-width: 980px) {
         .two-col {
           grid-template-columns: 1fr;
         }
       }
-
       .panel {
         background: var(--card);
         border: 1px solid var(--line);
         border-radius: var(--radius);
         padding: 12px;
       }
-
       .panel h3 {
         margin: 0 0 0.5rem 0;
         font-size: 1rem;
-        color: var(--ink);
       }
-
       .search {
         position: relative;
         margin-bottom: 0.6rem;
       }
-
       .search input {
         width: 100%;
         border: 1px solid var(--line);
@@ -72,64 +54,39 @@
         padding: 10px 12px 10px 36px;
         outline: none;
         background: #fcfeff;
-        transition: box-shadow 150ms ease, border-color 150ms ease;
       }
-
-      .search input:focus {
-        border-color: #cfe7ff;
-        box-shadow: 0 0 0 4px #e9f4ff;
-      }
-
       .search .material-icons-sharp {
         position: absolute;
         left: 10px;
         top: 50%;
         transform: translateY(-50%);
         color: var(--muted);
-        font-size: 20px;
       }
-
       .list {
         display: flex;
         flex-direction: column;
         gap: 8px;
         max-height: 70vh;
         overflow: auto;
-        padding-right: 4px;
       }
-
       .item {
         display: grid;
         grid-template-columns: 40px 1fr auto;
         align-items: center;
         gap: 10px;
-        padding: 12px;
+        padding: 10px;
         border: 1px solid var(--line);
         border-radius: 12px;
         cursor: pointer;
         background: #fff;
-        transition: background 150ms ease, border-color 150ms ease,
-          box-shadow 150ms ease, transform 120ms ease;
       }
-
       .item:hover {
-        background: #f8fbff;
-        border-color: #d9ebff;
-        box-shadow: var(--shadow-sm);
+        background: #f6fafc;
       }
-
-      .item:focus-visible {
-        outline: 2px solid #9fd3ff;
-        outline-offset: 2px;
-      }
-
       .item.active {
+        outline: 2px solid var(--brand);
         background: #f3fdf7;
-        border-color: #b7f0cf;
-        box-shadow: var(--shadow-md);
-        transform: translateY(-1px);
       }
-
       .avatar {
         width: 40px;
         height: 40px;
@@ -143,17 +100,14 @@
         font-weight: 700;
         color: #1f2a3a;
         overflow: hidden;
-        user-select: none;
       }
-
       .avatar.cover {
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
-        color: transparent;
+        color: transparent; /* hide initials when image present */
         text-indent: -9999px;
       }
-
       .pill {
         font-size: 0.75rem;
         background: var(--pill);
@@ -163,31 +117,27 @@
         border: 1px solid #d6e9ff;
         white-space: nowrap;
       }
-
+      /* "You" tags */
       .pill.you {
         background: #e8fff4;
         color: #0f5132;
         border-color: #b7e4c7;
         margin-left: 8px;
       }
-
       .details {
         background: var(--card);
         border: 1px solid var(--line);
         border-radius: var(--radius);
         overflow: clip;
       }
-
       .details .head {
-        display: grid;
-        grid-template-columns: 72px 1fr;
+        display: flex;
         gap: 16px;
         padding: 16px;
         border-bottom: 1px solid var(--line);
         align-items: center;
         background: linear-gradient(180deg, #f9fbff, #ffffff);
       }
-
       .details .name {
         font-size: 1.1rem;
         font-weight: 700;
@@ -196,9 +146,7 @@
         align-items: center;
         gap: 8px;
         flex-wrap: wrap;
-        color: var(--ink);
       }
-
       .meta {
         display: flex;
         gap: 8px;
@@ -207,61 +155,42 @@
         color: var(--muted);
         font-size: 0.9rem;
       }
-
-      .actions-row {
-        display: flex;
-        gap: 8px;
-        padding: 12px 16px;
-        border-bottom: 1px solid var(--line);
-        justify-content: flex-end;
-        background: #fff;
-      }
-
       .grid-2 {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 12px;
         padding: 16px;
       }
-
       @media (max-width: 980px) {
         .grid-2 {
           grid-template-columns: 1fr;
         }
       }
-
       .card {
         border: 1px solid var(--line);
         border-radius: 12px;
         padding: 12px;
         background: #fff;
       }
-
       .card h4 {
         margin: 0 0 0.6rem 0;
         font-size: 0.95rem;
-        color: var(--ink);
       }
-
       .info-list {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 8px 12px;
       }
-
       @media (max-width: 640px) {
         .info-list {
           grid-template-columns: 1fr;
         }
       }
-
       .label {
         color: var(--muted);
         font-size: 0.85rem;
         display: block;
-        margin-bottom: 2px;
       }
-
       .btn {
         appearance: none;
         border: 1px solid var(--line);
@@ -273,55 +202,38 @@
         align-items: center;
         gap: 0.5rem;
         font-weight: 600;
-        transition: transform 120ms ease, box-shadow 150ms ease,
-          border-color 150ms ease, background 150ms ease, color 150ms ease;
       }
-
-      .btn:hover {
-        box-shadow: var(--shadow-sm);
-        transform: translateY(-1px);
-      }
-
-      .btn:active {
-        transform: translateY(0);
-      }
-
       .btn.primary {
         background: var(--brand);
         color: #fff;
         border-color: var(--brand);
       }
-
       .btn.warn {
         background: #fff8e1;
         color: #8a6d0a;
         border-color: #fde68a;
       }
-
       .btn.reject {
         background: #fff5f5;
         color: var(--danger);
         border-color: #ffd7d7;
       }
-
-      .empty-state,
-      .not-auth {
+      .empty-state {
         padding: 24px;
+        border: 1px dashed var(--line);
         border-radius: 12px;
         background: #fbfeff;
         text-align: center;
         color: var(--muted);
       }
-
-      .empty-state {
-        border: 1px dashed var(--line);
-      }
-
       .not-auth {
+        padding: 24px;
         border: 1px solid var(--line);
+        border-radius: 12px;
         background: #fff;
+        text-align: center;
+        color: var(--muted);
       }
-
       .role-dot {
         width: 10px;
         height: 10px;
@@ -329,160 +241,15 @@
         display: inline-block;
         margin-right: 6px;
       }
-
       .dot-pending {
         background: #f59e0b;
       }
-
       .dot-admin {
         background: #10b981;
       }
-
       .dot-super {
         background: #6366f1;
       }
-
-      .modal-overlay {
-        position: fixed;
-        inset: 0;
-        background: var(--modal-backdrop);
-        display: none;
-        align-items: flex-end;
-        z-index: 9999;
-      }
-
-      .modal-overlay.open {
-        display: flex;
-      }
-
-      .modal-sheet {
-        width: 100%;
-        max-height: 85vh;
-        background: #fff;
-        border-top-left-radius: 18px;
-        border-top-right-radius: 18px;
-        box-shadow: var(--shadow-xl);
-        overflow: hidden;
-      }
-
-      .modal-head {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 12px 14px;
-        background: var(--modal-head);
-        border-bottom: 1px solid var(--line);
-      }
-
-      .modal-title {
-        font-weight: 700;
-        color: var(--ink);
-      }
-
-      .modal-close {
-        background: transparent;
-        border: none;
-        cursor: pointer;
-        padding: 6px;
-        border-radius: 8px;
-      }
-
-      .modal-close:hover {
-        background: #eef5ff;
-      }
-
-      .modal-body {
-        max-height: calc(85vh - 52px);
-        overflow: auto;
-      }
-
-      @media (max-width: 980px) {
-        #detailsPane {
-          display: none !important;
-        }
-
-        #approveBtn,
-        #rejectBtn,
-        #demoteBtn,
-        #promoteBtn {
-          width: 44px;
-          height: 44px;
-          padding: 0;
-          justify-content: center;
-          font-size: 0;
-          position: relative;
-        }
-
-        #approveBtn::before,
-        #rejectBtn::before,
-        #demoteBtn::before,
-        #promoteBtn::before {
-          font-family: "Material Icons Sharp";
-          font-size: 22px;
-          line-height: 1;
-        }
-
-        #approveBtn::before {
-          content: "check";
-        }
-
-        #rejectBtn::before {
-          content: "close";
-        }
-
-        #demoteBtn::before {
-          content: "south";
-        }
-
-        #promoteBtn::before {
-          content: "grade";
-        }
-      }
-
-      .head {
-        display: flex;
-        align-items: flex-start;   /* align to top */
-        justify-content: center;   /* center horizontally */
-        text-align: center;        /* center text inside */
-        padding: 0;                /* remove the left padding */
-        margin: 0 auto;            /* center the whole block itself */
-      }
-
-      /* ====== Skeleton Loader (PC + Mobile) ====== */
-      .hidden{ display:none !important; }
-      .skel{ position:relative; overflow:hidden; background:#eef2f7; border-radius:12px; }
-      .skel-line{ height:14px; border-radius:8px; background:#eef2f7; }
-      .skel.w-30{ width:30%; } .skel.w-40{ width:40%; } .skel.w-50{ width:50%; }
-      .skel.w-60{ width:60%; } .skel.w-70{ width:70%; } .skel.w-80{ width:80%; } .skel.w-90{ width:90%; }
-      .skel.shimmer::after{
-        content:""; position:absolute; inset:0; transform:translateX(-100%);
-        background:linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.55) 50%, rgba(255,255,255,0) 100%);
-        animation:shmm 1.1s infinite;
-      }
-      @keyframes shmm{ 0%{ transform:translateX(-100%);} 100%{ transform:translateX(100%);} }
-
-      /* Skeleton layout mirrors two-col */
-      #skeletonArea.two-col { display:grid; grid-template-columns:340px 1fr; gap:1rem; }
-      @media (max-width:980px){ #skeletonArea.two-col { grid-template-columns:1fr; } }
-
-      /* Left skeleton (list) */
-      .sk-panel{ background:#fff; border:1px solid var(--line); border-radius:var(--radius); padding:12px; }
-      .sk-list{ display:flex; flex-direction:column; gap:8px; max-height:70vh; overflow:auto; }
-      .sk-item{ display:grid; grid-template-columns:40px 1fr auto; align-items:center; gap:10px; padding:12px; border:1px solid var(--line); border-radius:12px; background:#fff; }
-      .sk-avatar{ width:40px; height:40px; border-radius:50%; }
-      .sk-pill{ width:80px; height:20px; border-radius:999px; }
-
-      /* Right skeleton (details) */
-      .sk-details{ background:#fff; border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; }
-      .sk-head{ display:grid; grid-template-columns:72px 1fr; gap:16px; padding:16px; border-bottom:1px solid var(--line); background:linear-gradient(180deg,#f9fbff,#ffffff); }
-      .sk-bigavatar{ width:72px; height:72px; border-radius:50%; }
-      .sk-actions{ display:flex; gap:8px; padding:12px 16px; border-bottom:1px solid var(--line); background:#fff; }
-      .sk-btn{ width:88px; height:36px; border-radius:10px; }
-      .sk-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:16px; }
-      @media (max-width:980px){ .sk-grid{ grid-template-columns:1fr; } }
-      .sk-card{ border:1px solid var(--line); border-radius:12px; padding:12px; background:#fff; }
-      .sk-title{ height:16px; width:140px; margin-bottom:10px; }
-
     </style>
   </head>
 
@@ -492,7 +259,7 @@
       <aside>
         <div class="toggle">
           <div class="logo">
-            <img src="../../../img/simpLogo.png" alt="SIMP Logo" />
+            <img src="../../../img/simpLogo.png" />
             <h2>SIMP<span class="danger">Project</span></h2>
           </div>
           <div class="close" id="close-btn">
@@ -501,129 +268,52 @@
         </div>
 
         <div class="sidebar">
-          <a href="dashboard.html">
-            <span class="material-icons-sharp">dashboard</span>
-            <h3>Dashboard</h3>
-          </a>
-          <a href="workerVerification.html">
-            <span class="material-icons-sharp">engineering</span>
-            <h3>Workers<br />Verification</h3>
-          </a>
-          <a href="jobVerification.html">
-            <span class="material-icons-sharp">work</span>
-            <h3>Jobs<br />Verification</h3>
-          </a>
+          <a href="dashboard.html"
+            ><span class="material-icons-sharp">dashboard</span>
+            <h3>Dashboard</h3></a
+          >
+          <a href="workerVerification.html"
+            ><span class="material-icons-sharp">engineering</span>
+            <h3>Workers<br />Verification</h3></a
+          >
+          <a href="jobVerification.html"
+            ><span class="material-icons-sharp">work</span>
+            <h3>Jobs<br />Verification</h3></a
+          >
           <a href="jobApplicationVerification.html">
             <span class="material-icons-sharp">approval</span>
             <h3>Application<br />Verification</h3>
           </a>
-          <a href="adminVerification.html" class="active">
-            <span class="material-icons-sharp">shield</span>
-            <h3>Admin<br />Verification</h3>
-          </a>
-          <a href="manageShop.html">
-            <span class="material-icons-sharp">shop</span>
-            <h3>Manage<br />Shop</h3>
-          </a>
+          <a href="adminVerification.html" class="active"
+            ><span class="material-icons-sharp">shield</span>
+            <h3>Admin<br />Verification</h3></a
+          >
+          <a href="manageShop.html"
+            ><span class="material-icons-sharp">shop</span>
+            <h3>Manage<br />Shop</h3></a
+          >
           <a href="paymentsRequest.html">
             <span class="material-icons-sharp">payments</span>
             <h3>Payments<br />Request</h3>
           </a>
-          <a href="courses.html">
-            <span class="material-icons-sharp">school</span>
-            <h3>Course<br />Publisher</h3>
-          </a>
-          <a href="settings.html">
-            <span class="material-icons-sharp">settings</span>
-            <h3>Settings</h3>
-          </a>
-          <a href="#" id="logout-btn">
-            <span class="material-icons-sharp">logout</span>
-            <h3>Logout</h3>
-          </a>
+          <a href="courses.html"
+            ><span class="material-icons-sharp">school</span>
+            <h3>Course<br />Publisher</h3></a
+          >
+          <a href="settings.html"
+            ><span class="material-icons-sharp">settings</span>
+            <h3>Settings</h3></a
+          >
+          <a href="#" id="logout-btn"
+            ><span class="material-icons-sharp">logout</span>
+            <h3>Logout</h3></a
+          >
         </div>
       </aside>
 
       <!-- MAIN -->
       <main>
         <section>
-
-          <!-- ===== SKELETON AREA (shown first) ===== -->
-          <div id="skeletonArea" class="two-col">
-            <!-- Left skeleton (list) -->
-            <div class="sk-panel">
-              <div class="skel skel-line w-60 shimmer" style="height:18px; margin-bottom:10px;"></div>
-
-              <div class="skel skel-line shimmer" style="height:36px; border-radius:10px; margin-bottom:10px;"></div>
-              <div class="skel skel-line shimmer" style="height:36px; border-radius:10px; margin-bottom:10px;"></div>
-
-              <div class="sk-list">
-                <div class="sk-item">
-                  <div class="skel sk-avatar skel shimmer sk-avatar"></div>
-                  <div>
-                    <div class="skel skel-line w-80 shimmer" style="height:14px; margin-bottom:6px;"></div>
-                    <div class="skel skel-line w-60 shimmer" style="height:12px;"></div>
-                  </div>
-                  <div class="skel sk-pill shimmer"></div>
-                </div>
-                <div class="sk-item">
-                  <div class="skel sk-avatar skel shimmer sk-avatar"></div>
-                  <div>
-                    <div class="skel skel-line w-70 shimmer" style="height:14px; margin-bottom:6px;"></div>
-                    <div class="skel skel-line w-50 shimmer" style="height:12px;"></div>
-                  </div>
-                  <div class="skel sk-pill shimmer"></div>
-                </div>
-                <div class="sk-item">
-                  <div class="skel sk-avatar skel shimmer sk-avatar"></div>
-                  <div>
-                    <div class="skel skel-line w-65 shimmer" style="height:14px; margin-bottom:6px;"></div>
-                    <div class="skel skel-line w-45 shimmer" style="height:12px;"></div>
-                  </div>
-                  <div class="skel sk-pill shimmer"></div>
-                </div>
-                <div class="sk-item">
-                  <div class="skel sk-avatar skel shimmer sk-avatar"></div>
-                  <div>
-                    <div class="skel skel-line w-75 shimmer" style="height:14px; margin-bottom:6px;"></div>
-                    <div class="skel skel-line w-55 shimmer" style="height:12px;"></div>
-                  </div>
-                  <div class="skel sk-pill shimmer"></div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Right skeleton (details) -->
-            <div class="sk-details">
-              <div class="sk-head">
-                <div class="skel sk-bigavatar shimmer"></div>
-                <div>
-                  <div class="skel skel-line w-60 shimmer" style="height:18px; margin-bottom:8px;"></div>
-                  <div class="skel skel-line w-40 shimmer" style="height:14px;"></div>
-                </div>
-              </div>
-              <div class="sk-actions">
-                <div class="skel sk-btn shimmer"></div>
-                <div class="skel sk-btn shimmer"></div>
-              </div>
-              <div class="sk-grid">
-                <div class="sk-card">
-                  <div class="skel sk-title shimmer"></div>
-                  <div class="skel skel-line w-90 shimmer" style="height:14px; margin-bottom:8px;"></div>
-                  <div class="skel skel-line w-80 shimmer" style="height:14px; margin-bottom:8px;"></div>
-                  <div class="skel skel-line w-70 shimmer" style="height:14px;"></div>
-                </div>
-                <div class="sk-card">
-                  <div class="skel sk-title shimmer"></div>
-                  <div class="skel skel-line w-85 shimmer" style="height:14px; margin-bottom:8px;"></div>
-                  <div class="skel skel-line w-60 shimmer" style="height:14px; margin-bottom:8px;"></div>
-                  <div class="skel skel-line w-75 shimmer" style="height:14px;"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <!-- ===== /SKELETON AREA ===== -->
-
           <div class="two-col" id="contentArea" style="display: none">
             <!-- Left: list -->
             <div class="panel">
@@ -658,7 +348,6 @@
               </div>
 
               <div id="adminList" class="list"></div>
-
               <div id="emptyAdmins" class="empty-state" style="display: none">
                 No admin profiles found.
               </div>
@@ -680,38 +369,20 @@
       </main>
     </div>
 
-    <!-- Mobile details modal (bottom sheet) -->
-    <div id="detailsModal" class="modal-overlay" aria-hidden="true">
-      <div
-        class="modal-sheet"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="detailsModalTitle"
-      >
-        <div class="modal-head">
-          <div class="modal-title" id="detailsModalTitle">Admin Details</div>
-          <button class="modal-close" id="detailsModalClose" aria-label="Close">
-            <span class="material-icons-sharp">close</span>
-          </button>
-        </div>
-        <div class="modal-body" id="detailsModalBody"></div>
-      </div>
-    </div>
-
-    <!-- Scripts -->
     <script src="../../general_files/index.js"></script>
     <script type="module" src="../../general_files/session.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
     <script type="module">
       import { SUPABASE_URL, SUPABASE_ANON_KEY } from "../../../supabase.js";
 
+      // Public schema for admin directory
       const supabase = window.supabase.createClient(
         SUPABASE_URL,
         SUPABASE_ANON_KEY,
         { db: { schema: "public" } }
       );
 
+      // Elements
       const contentArea = document.getElementById("contentArea");
       const notAuth = document.getElementById("notAuth");
       const adminList = document.getElementById("adminList");
@@ -720,50 +391,37 @@
       const searchInput = document.getElementById("searchInput");
       const statusFilter = document.getElementById("statusFilter");
 
-      const detailsModal = document.getElementById("detailsModal");
-      const detailsModalBody = document.getElementById("detailsModalBody");
-      const detailsModalClose = document.getElementById("detailsModalClose");
-
-      /* === ADDED: skeleton handle === */
-      const skeletonArea = document.getElementById("skeletonArea");
-      const hideSkeleton = () => { if (skeletonArea) skeletonArea.style.display = "none"; };
-      const showSkeleton = () => { if (skeletonArea) skeletonArea.style.display = ""; };
-
-      let currentUser = null;
+      let currentUser = null; // supabase.auth user
       let currentRole = null; // 'pending' | 'admin' | 'superadmin' | null
-      let admins = [];
+      let admins = []; // loaded admin rows
       let activeAdminId = null;
 
+      // NEW: cache of signed avatar URLs keyed by admin id
       const avatarCache = {};
 
+      // Helpers
       const cap = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
-
       const roleDot = (role) => {
         if (role === "admin") return '<span class="role-dot dot-admin"></span>';
         if (role === "superadmin")
           return '<span class="role-dot dot-super"></span>';
         return '<span class="role-dot dot-pending"></span>';
       };
-
-      const initials = (name = "") => {
-        const i = name
+      const initials = (name = "") =>
+        name
           .trim()
           .split(/\s+/)
           .map((p) => p[0] || "")
           .join("")
           .toUpperCase()
-          .slice(0, 2);
-        return i || "?";
-      };
-
-      const isMobile = () => window.matchMedia("(max-width: 980px)").matches;
+          .slice(0, 2) || "?";
 
       function applyAvatarToEl(el, url) {
         if (!el) return;
         if (url) {
           el.classList.add("cover");
-          el.style.backgroundImage = 'url("' + url + '")';
-          el.textContent = "";
+          el.style.backgroundImage = `url("${url}")`;
+          el.textContent = ""; // hide initials text
         } else {
           el.classList.remove("cover");
           el.style.backgroundImage = "";
@@ -777,15 +435,15 @@
             .from("admin_profile")
             .createSignedUrl(path, 3600);
           if (error) return null;
-          return data && data.signedUrl ? data.signedUrl : null;
-        } catch (e) {
+          return data?.signedUrl || null;
+        } catch {
           return null;
         }
       }
 
       async function hydrateAvatars(rows) {
         const jobs = rows.map(async (a) => {
-          const path = a && a.admin_profile_url ? a.admin_profile_url : null;
+          const path = a?.admin_profile_url || null;
           if (!path) {
             avatarCache[a.id] = null;
             return;
@@ -796,68 +454,53 @@
         await Promise.allSettled(jobs);
       }
 
-      document.addEventListener("DOMContentLoaded", async function () {
-        // Show skeleton immediately; real content & notAuth are hidden by default
-        showSkeleton();
-
-        const res = await supabase.auth.getUser();
-        const user = res && res.data ? res.data.user : null;
-
+      // Auth & load
+      document.addEventListener("DOMContentLoaded", async () => {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
         if (!user) {
-          hideSkeleton();
           notAuth.style.display = "block";
           return;
         }
-
         currentUser = user;
 
-        const meRes = await supabase
+        // Load current user's admin role
+        const { data: me, error: meErr } = await supabase
           .from("admin")
           .select("id, role")
           .eq("id", user.id)
           .maybeSingle();
 
-        if (meRes.error) {
-          console.error(meRes.error);
-          hideSkeleton();
+        if (meErr) {
+          console.error(meErr);
           notAuth.style.display = "block";
           return;
         }
-
-        currentRole = meRes.data ? meRes.data.role : null;
+        currentRole = me?.role || null;
 
         if (!(currentRole === "admin" || currentRole === "superadmin")) {
-          hideSkeleton();
           notAuth.style.display = "block";
           return;
         }
 
         contentArea.style.display = "grid";
-        await refreshAdmins(); // while this runs, skeleton stays visible
-        // Once list + details rendered, hide the skeleton
-        hideSkeleton();
-
+        await refreshAdmins();
         wireUI();
-
-        detailsModalClose.addEventListener("click", closeDetailsModal);
-        detailsModal.addEventListener("click", function (e) {
-          if (e.target === detailsModal) closeDetailsModal();
-        });
-
-        window.addEventListener("resize", function () {
-          if (!isMobile()) closeDetailsModal();
-        });
       });
 
       function wireUI() {
-        searchInput.addEventListener("input", renderAdminList);
-        statusFilter.addEventListener("change", renderAdminList);
+        searchInput.addEventListener("input", () => renderAdminList());
+        statusFilter.addEventListener("change", () => renderAdminList());
       }
 
       async function refreshAdmins() {
         const { data, error } = await supabase
           .from("admin")
-          .select("id, email, name, phone, role, created_at, admin_profile_url")
+          .select(
+            // ADDED: admin_profile_url to fetch image path
+            "id, email, name, phone, role, created_at, admin_profile_url"
+          )
           .order("created_at", { ascending: false });
 
         if (error) {
@@ -868,26 +511,21 @@
             "Error loading admin profiles: " + error.message;
           return;
         }
-
         admins = data || [];
 
+        // NEW: prefetch signed URLs for avatars
         await hydrateAvatars(admins);
 
         renderAdminList();
-
-        if (admins.length > 0) {
+        if (admins.length) {
           const first = admins[0];
           activeAdminId = first.id;
           renderDetails(first);
-          maybeOpenMobileModal(first);
-          setTimeout(function () {
-            var items = document.querySelectorAll("#adminList .item");
-            for (var i = 0; i < items.length; i++) {
-              if (items[i].dataset.id === activeAdminId) {
-                items[i].classList.add("active");
-              }
-            }
-          }, 0);
+          setTimeout(() => {
+            document.querySelectorAll("#adminList .item").forEach((n) => {
+              if (n.dataset.id === activeAdminId) n.classList.add("active");
+            });
+          });
         } else {
           detailsPane.innerHTML =
             '<div class="empty-state">No admin profiles found.</div>';
@@ -896,69 +534,63 @@
 
       function renderAdminList() {
         adminList.innerHTML = "";
+        const q = (searchInput.value || "").trim().toLowerCase();
+        const roleSel = (statusFilter.value || "").toLowerCase();
 
-        var q = (searchInput.value || "").trim().toLowerCase();
-        var roleSel = (statusFilter.value || "").toLowerCase();
-
-        var filtered = (admins || []).filter(function (a) {
-          var matchesQuery =
+        const filtered = (admins || []).filter((a) => {
+          const matchesQuery =
             !q ||
-            (a.name && a.name.toLowerCase().includes(q)) ||
-            (a.email && a.email.toLowerCase().includes(q));
-          var matchesRole =
+            a.name?.toLowerCase().includes(q) ||
+            a.email?.toLowerCase().includes(q);
+          const matchesRole =
             !roleSel || (a.role || "").toLowerCase() === roleSel;
           return matchesQuery && matchesRole;
         });
 
         emptyAdmins.style.display = filtered.length ? "none" : "block";
 
-        filtered.forEach(function (a) {
-          var item = document.createElement("div");
+        filtered.forEach((a) => {
+          const item = document.createElement("div");
           item.className = "item";
           item.dataset.id = a.id;
           if (a.id === activeAdminId) item.classList.add("active");
 
-          var youBadge =
-            a.id === (currentUser ? currentUser.id : "")
+          const youBadge =
+            a.id === (currentUser?.id || "")
               ? ' <span class="pill you">You</span>'
               : "";
 
-          var avatar =
-            '<div class="avatar" data-avatar-id="' +
-            a.id +
-            '">' +
-            initials(a.name || a.email) +
-            "</div>";
+          // Avatar element with data-id so we can apply image easily
+          const avatar = `<div class="avatar" data-avatar-id="${a.id}">${initials(
+            a.name || a.email
+          )}</div>`;
 
-          item.innerHTML =
-            avatar +
-            "<div>" +
-            '<div style="font-weight:700; color: var(--ink);">' +
-            (a.name || "(no name)") +
-            youBadge +
-            "</div>" +
-            '<div style="font-size:.85rem; color:var(--muted);">' +
-            a.email +
-            "</div>" +
-            "</div>" +
-            '<span class="pill">' +
-            roleDot(a.role) +
-            " " +
-            (a.role ? cap(a.role) : "Pending") +
-            "</span>";
+          item.innerHTML = `
+            ${avatar}
+            <div>
+              <div style="font-weight:700">${
+                a.name || "(no name)"
+              }${youBadge}</div>
+              <div style="font-size:.85rem; color:var(--muted)">${a.email}</div>
+            </div>
+            <span class="pill">${roleDot(a.role)} ${
+            a.role ? cap(a.role) : "Pending"
+          }</span>
+          `;
 
-          var avatarEl = item.querySelector('[data-avatar-id="' + a.id + '"]');
+          // Apply avatar image if available
+          const avatarEl = item.querySelector(
+            `[data-avatar-id="${a.id}"]`
+          );
           applyAvatarToEl(avatarEl, avatarCache[a.id]);
 
-          item.addEventListener("click", function () {
+          item.addEventListener("click", () => {
             activeAdminId = a.id;
-            var rows = document.querySelectorAll("#adminList .item");
-            for (var i = 0; i < rows.length; i++) {
-              rows[i].classList.remove("active");
-            }
+            document
+              .querySelectorAll("#adminList .item")
+              .forEach((i) => i.classList.remove("active"));
             item.classList.add("active");
             renderDetails(a);
-            maybeOpenMobileModal(a);
           });
 
           adminList.appendChild(item);
@@ -966,304 +598,224 @@
       }
 
       function renderDetails(admin) {
-        var when = new Date(admin.created_at).toLocaleString();
-        var roleLabel = admin.role ? cap(admin.role) : "Pending";
-        var roleBadge = roleDot(admin.role) + " " + roleLabel;
-        var youHeaderBadge =
-          admin.id === (currentUser ? currentUser.id : "")
+        const when = new Date(admin.created_at).toLocaleString();
+        const roleLabel = admin.role ? cap(admin.role) : "Pending";
+        const roleBadge = `${roleDot(admin.role)} ${roleLabel}`;
+        const youHeaderBadge =
+          admin.id === (currentUser?.id || "")
             ? ' <span class="pill you">This is you</span>'
             : "";
 
-        detailsPane.innerHTML =
-          '<div class="head">' +
-          '<div class="avatar" id="detailAvatar" style="width:72px; height:72px; font-size:1.2rem;">' +
-          initials(admin.name || admin.email) +
-          "</div>" +
-          "<div>" +
-          '<div class="name">' +
-          (admin.name || "(no name)") +
-          ' <span class="pill" id="statusPill">' +
-          roleBadge +
-          "</span>" +
-          youHeaderBadge +
-          "</div>" +
-          '<div class="meta">Created: ' +
-          when +
-          "</div>" +
-          "</div>" +
-          "</div>" +
-          '<div class="actions-row">' +
-          (renderActionsFor(admin).join("") || "") +
-          "</div>" +
-          '<div class="grid-2">' +
-          '<div class="card" style="grid-column: 1 / -1;">' +
-          "<h4>Basic Information</h4>" +
-          '<div class="info-list">' +
-          '<div><span class="label">Full Name</span>' +
-          (admin.name || "—") +
-          "</div>" +
-          '<div><span class="label">Email</span>' +
-          (admin.email || "—") +
-          "</div>" +
-          '<div><span class="label">Phone</span>' +
-          (admin.phone || "—") +
-          "</div>" +
-          '<div><span class="label">Role</span>' +
-          roleLabel +
-          "</div>" +
-          "</div>" +
-          "</div>" +
-          "</div>";
+        detailsPane.innerHTML = `
+          <div class="head">
+            <div class="avatar" id="detailAvatar" style="width:72px; height:72px; font-size:1.2rem;">${initials(
+              admin.name || admin.email
+            )}</div>
+            <div>
+              <div class="name">
+                ${admin.name || "(no name)"}
+                <span class="pill" id="statusPill">${roleBadge}</span>${youHeaderBadge}
+              </div>
+              <div class="meta">Created: ${when}</div>
+            </div>
+            <div style="margin-left:auto; display:flex; gap:8px;">
+              ${renderActionsFor(admin).join("") || ""}
+            </div>
+          </div>
 
-        var detailAvatarEl = detailsPane.querySelector("#detailAvatar");
+          <div class="grid-2">
+            <div class="card">
+              <h4>Basic Information</h4>
+              <div class="info-list">
+                <div><span class="label">Full Name</span>${
+                  admin.name || "—"
+                }</div>
+                <div><span class="label">Email</span>${admin.email || "—"}</div>
+                <div><span class="label">Phone</span>${admin.phone || "—"}</div>
+                <div><span class="label">Role</span>${roleLabel}</div>
+              </div>
+            </div>
+
+            <div class="card">
+              <h4>Notes</h4>
+              <p style="margin:0; color:var(--muted); font-size:.95rem;">
+                Approve pending applicants carefully. Only super administrators can promote admins or demote them back to pending.
+              </p>
+            </div>
+          </div>
+        `;
+
+        // Apply detail avatar image if exists
+        const detailAvatarEl = detailsPane.querySelector("#detailAvatar");
         applyAvatarToEl(detailAvatarEl, avatarCache[admin.id]);
 
+        // Wire actions
         wireActionsFor(admin);
       }
 
       function renderActionsFor(admin) {
-        var actions = [];
+        const actions = [];
         if (currentRole === "admin") {
           if ((admin.role || "pending") === "pending") {
             actions.push(
-              '<button class="btn primary" id="approveBtn" title="Approve">Approve</button>'
+              `<button class="btn primary" id="approveBtn">Approve</button>`
             );
             actions.push(
-              '<button class="btn reject" id="rejectBtn" title="Reject">Reject</button>'
+              `<button class="btn reject" id="rejectBtn">Reject</button>`
             );
           }
         } else if (currentRole === "superadmin") {
-          var ar = admin.role || "pending";
+          const ar = admin.role || "pending";
           if (ar === "pending") {
             actions.push(
-              '<button class="btn primary" id="approveBtn" title="Approve to Admin">Approve (to Admin)</button>'
+              `<button class="btn primary" id="approveBtn">Approve (to Admin)</button>`
             );
             actions.push(
-              '<button class="btn reject" id="rejectBtn" title="Reject">Reject</button>'
+              `<button class="btn reject" id="rejectBtn">Reject</button>`
             );
           } else if (ar === "admin") {
             if (admin.id !== currentUser.id) {
               actions.push(
-                '<button class="btn warn" id="demoteBtn" title="Demote to Pending">Demote to Pending</button>'
+                `<button class="btn warn" id="demoteBtn">Demote to Pending</button>`
               );
               actions.push(
-                '<button class="btn primary" id="promoteBtn" title="Promote to Super Admin">Promote to Super Admin</button>'
+                `<button class="btn primary" id="promoteBtn">Promote to Super Admin</button>`
               );
             }
           } else if (ar === "superadmin") {
-            // no actions
+            // Viewing superadmin -> no actions
           }
         }
         return actions;
       }
 
       function wireActionsFor(admin) {
-        var approveBtn = detailsPane.querySelector("#approveBtn");
-        var rejectBtn = detailsPane.querySelector("#rejectBtn");
-        var demoteBtn = detailsPane.querySelector("#demoteBtn");
-        var promoteBtn = detailsPane.querySelector("#promoteBtn");
+        const approveBtn = detailsPane.querySelector("#approveBtn");
+        const rejectBtn = detailsPane.querySelector("#rejectBtn");
+        const demoteBtn = detailsPane.querySelector("#demoteBtn");
+        const promoteBtn = detailsPane.querySelector("#promoteBtn");
 
-        if (approveBtn) {
-          approveBtn.addEventListener("click", async function () {
+        if (approveBtn)
+          approveBtn.addEventListener("click", async () => {
             await setRole(admin.id, "admin");
           });
-        }
-
-        if (rejectBtn) {
-          rejectBtn.addEventListener("click", async function () {
-            var ok = confirm(
-              "Reject this profile (" +
-                admin.email +
-                ")? This deletes the user from auth and removes their admin row."
-            );
-            if (!ok) return;
+        if (rejectBtn)
+          rejectBtn.addEventListener("click", async () => {
+            if (
+              !confirm(
+                `Reject this profile (${admin.email})? This deletes the user from auth and removes their admin row.`
+              )
+            )
+              return;
             await rejectProfileDeleteAuthUser(admin.id);
           });
-        }
-
-        if (demoteBtn) {
-          demoteBtn.addEventListener("click", async function () {
-            var ok = confirm("Demote " + admin.email + " to Pending?");
-            if (!ok) return;
+        if (demoteBtn)
+          demoteBtn.addEventListener("click", async () => {
+            if (!confirm(`Demote ${admin.email} to Pending?`)) return;
             await setRole(admin.id, "pending");
           });
-        }
-
-        if (promoteBtn) {
-          promoteBtn.addEventListener("click", async function () {
-            var ok = confirm(
-              "Transfer SUPERADMIN to this user and become ADMIN yourself?"
-            );
-            if (!ok) return;
+        if (promoteBtn)
+          promoteBtn.addEventListener("click", async () => {
+            if (
+              !confirm(
+                "Transfer SUPERADMIN to this user and become ADMIN yourself?"
+              )
+            )
+              return;
             await promoteToSuperadminSwapClientSide(admin.id);
           });
-        }
-      }
-
-      function wireActionsForIn(container, admin) {
-        var approveBtn = container.querySelector("#approveBtn");
-        var rejectBtn = container.querySelector("#rejectBtn");
-        var demoteBtn = container.querySelector("#demoteBtn");
-        var promoteBtn = container.querySelector("#promoteBtn");
-
-        if (approveBtn) {
-          approveBtn.addEventListener("click", async function () {
-            await setRole(admin.id, "admin");
-            var updated =
-              admins.find(function (x) {
-                return x.id === admin.id;
-              }) || admin;
-            injectDetailsIntoModal(updated);
-          });
-        }
-
-        if (rejectBtn) {
-          rejectBtn.addEventListener("click", async function () {
-            var ok = confirm(
-              "Reject this profile (" +
-                admin.email +
-                ")? This deletes the user from auth and removes their admin row."
-            );
-            if (!ok) return;
-            await rejectProfileDeleteAuthUser(admin.id);
-            closeDetailsModal();
-          });
-        }
-
-        if (demoteBtn) {
-          demoteBtn.addEventListener("click", async function () {
-            var ok = confirm("Demote " + admin.email + " to Pending?");
-            if (!ok) return;
-            await setRole(admin.id, "pending");
-            var updated =
-              admins.find(function (x) {
-                return x.id === admin.id;
-              }) || admin;
-            injectDetailsIntoModal(updated);
-          });
-        }
-
-        if (promoteBtn) {
-          promoteBtn.addEventListener("click", async function () {
-            var ok = confirm(
-              "Transfer SUPERADMIN to this user and become ADMIN yourself?"
-            );
-            if (!ok) return;
-            await promoteToSuperadminSwapClientSide(admin.id);
-            var updated =
-              admins.find(function (x) {
-                return x.id === admin.id;
-              }) || admin;
-            injectDetailsIntoModal(updated);
-          });
-        }
       }
 
       async function setRole(id, role) {
         try {
           const { error } = await supabase
             .from("admin")
-            .update({ role: role })
+            .update({ role })
             .eq("id", id);
           if (error) {
             alert("Failed to set role: " + (error.message || "Unknown error"));
             return;
           }
-
-          var keepId = activeAdminId;
+          const keepId = activeAdminId;
           await refreshAdmins();
-          var updated =
-            admins.find(function (a) {
-              return a.id === keepId;
-            }) || admins[0];
-
+          const updated = admins.find((a) => a.id === keepId) || admins[0];
           if (updated) {
             activeAdminId = updated.id;
             renderDetails(updated);
-            if (isMobile() && detailsModal.classList.contains("open")) {
-              injectDetailsIntoModal(updated);
-            }
           }
-
-          alert("Role updated to " + role.toUpperCase() + ".");
+          alert(`Role updated to ${role.toUpperCase()}.`);
         } catch (e) {
-          alert("Unexpected error: " + (e && e.message ? e.message : e));
+          alert("Unexpected error: " + (e?.message || e));
         }
       }
 
       async function reloadMyRole() {
-        const res = await supabase
+        const { data, error } = await supabase
           .from("admin")
           .select("role")
           .eq("id", currentUser.id)
           .maybeSingle();
-        if (!res.error && res.data) {
-          currentRole = res.data.role || null;
-        }
+        if (!error && data) currentRole = data.role || null;
       }
 
+      // --- Direct client-side swap ---
       async function promoteToSuperadminSwapClientSide(targetId) {
-        const r1 = await supabase
+        // 1) Demote me (current superadmin) to admin
+        const { error: e1 } = await supabase
           .from("admin")
           .update({ role: "admin" })
           .eq("id", currentUser.id);
-
-        if (r1.error) {
-          alert("Could not demote yourself: " + r1.error.message);
+        if (e1) {
+          alert("Could not demote yourself: " + e1.message);
           return;
         }
 
-        const r2 = await supabase
+        // 2) Promote target to superadmin
+        const { error: e2 } = await supabase
           .from("admin")
           .update({ role: "superadmin" })
           .eq("id", targetId);
-
-        if (r2.error) {
-          const restore = await supabase
+        if (e2) {
+          // 3) Restore me back to superadmin if step 2 failed
+          const { error: restoreErr } = await supabase
             .from("admin")
             .update({ role: "superadmin" })
             .eq("id", currentUser.id);
-
-          if (restore.error) {
+          if (restoreErr) {
             alert(
               "Promotion failed (" +
-                r2.error.message +
+                e2.message +
                 ") and restoring your superadmin role also failed (" +
-                restore.error.message +
+                restoreErr.message +
                 "). Please check roles manually."
             );
           } else {
             alert(
               "Promotion failed: " +
-                r2.error.message +
+                e2.message +
                 ". Your superadmin role was restored."
             );
           }
-
           await reloadMyRole();
           await refreshAdmins();
           return;
         }
 
+        // Success: I am now admin, target is superadmin
         await reloadMyRole();
         await refreshAdmins();
-
-        var selected =
-          admins.find(function (a) {
-            return a.id === targetId;
-          }) || admins[0];
-
+        const selected = admins.find((a) => a.id === targetId) || admins[0];
         if (selected) {
           activeAdminId = selected.id;
           renderDetails(selected);
-          if (isMobile() && detailsModal.classList.contains("open")) {
-            injectDetailsIntoModal(selected);
-          }
         }
-
         alert("Superadmin role transferred.");
       }
 
+      /**
+       * Reject path that deletes the user from auth via Edge Function (requires service role).
+       * Your DB FK (public.admin.id -> auth.users.id ON DELETE CASCADE) will remove the admin row.
+       */
       async function rejectProfileDeleteAuthUser(userId) {
         const { data, error } = await supabase.functions.invoke(
           "admin-delete-user",
@@ -1279,8 +831,7 @@
         }
 
         const payload = typeof data === "string" ? JSON.parse(data) : data;
-
-        if (payload && payload.ok === true) {
+        if (payload?.ok === true) {
           await refreshAdmins();
           detailsPane.innerHTML =
             '<div class="empty-state">Select a profile on the left to review full details.</div>';
@@ -1292,38 +843,8 @@
           );
         }
       }
-
-      function maybeOpenMobileModal(admin) {
-        if (isMobile()) {
-          injectDetailsIntoModal(admin);
-          openDetailsModal();
-        }
-      }
-
-      function injectDetailsIntoModal(admin) {
-        detailsModalBody.innerHTML = detailsPane.innerHTML;
-
-        var modalAvatar = detailsModalBody.querySelector("#detailAvatar");
-        applyAvatarToEl(modalAvatar, avatarCache[admin.id]);
-
-        wireActionsForIn(detailsModalBody, admin);
-      }
-
-      function openDetailsModal() {
-        detailsModal.classList.add("open");
-        detailsModal.setAttribute("aria-hidden", "false");
-        if (
-          detailsModalClose &&
-          typeof detailsModalClose.focus === "function"
-        ) {
-          detailsModalClose.focus();
-        }
-      }
-
-      function closeDetailsModal() {
-        detailsModal.classList.remove("open");
-        detailsModal.setAttribute("aria-hidden", "true");
-      }
     </script>
+
+    <!-- Edge Function reference remains the same (admin-delete-user). -->
   </body>
 </html>
