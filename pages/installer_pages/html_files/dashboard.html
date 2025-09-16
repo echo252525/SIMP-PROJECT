@@ -69,12 +69,6 @@
         background-color: var(--color-background);
       }
 
-      /* ===== Skeleton visibility toggles ===== */
-      #app { display: block; }
-      #skeleton { display: none; }
-      .is-loading #app { display: none; }
-      .is-loading #skeleton { display: block; }
-
       a { color: var(--color-dark); }
       img { display: block; width: 100%; object-fit: cover; }
       h1 { font-weight: 800; font-size: 1.8rem; }
@@ -132,9 +126,7 @@
         transition: all 0.3s ease;
       }
       aside .sidebar a span { font-size: 1.6rem; transition: all 0.3s ease; }
-      aside .sidebar a:last-child {
-        position: absolute; bottom: 2rem; width: 100%;
-      }
+      aside .sidebar a:last-child { position: absolute; bottom: 2rem; width: 100%; }
       aside .sidebar a.active {
         width: 100%;
         color: var(--color-primary);
@@ -143,11 +135,11 @@
       }
       aside .sidebar a.active::before {
         content: "";
-        width: 6px; height: 18px; background-color: var(--color-primary);
+        width: 6px;
+        height: 18px;
+        background-color: var(--color-primary);
       }
-      aside .sidebar a.active span {
-        color: var(--color-primary); margin-left: calc(1rem - 3px);
-      }
+      aside .sidebar a.active span { color: var(--color-primary); margin-left: calc(1rem - 3px); }
       aside .sidebar a:hover { color: var(--color-primary); }
       aside .sidebar a:hover span { margin-left: 0.6rem; }
       aside .sidebar .message-count {
@@ -158,7 +150,7 @@
         border-radius: var(--border-radius-1);
       }
 
-      main { margin-top: 1.4rem; }
+      main { margin-top: 1.4rem; position: relative; }
 
       /* ====== Analytics cards ====== */
       main .analyse {
@@ -177,19 +169,23 @@
       }
       main .analyse > div:hover { box-shadow: none; }
       main .analyse > div .status {
-        display: flex; align-items: center; justify-content: space-between;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
       }
       main .analyse h3 { margin-left: 0.6rem; font-size: 1rem; }
 
       main .analyse .progresss { position: relative; width: 92px; height: 92px; border-radius: 50%; }
       main .analyse svg { width: 7rem; height: 7rem; }
       main .analyse svg circle {
-        fill: none; stroke-width: 10; stroke-linecap: round; transform: translate(5px, 5px); stroke: var(--color-success);
+        fill: none; stroke-width: 10; stroke-linecap: round; transform: translate(5px, 5px);
+        stroke: var(--color-success);
       }
       .visits svg circle { stroke: var(--color-danger); }
       .searches svg circle { stroke: var(--color-primary); }
       main .analyse .progresss .percentage {
-        position: absolute; top: -3px; left: -1px; display: flex; align-items: center; justify-content: center; height: 100%; width: 100%;
+        position: absolute; top: -3px; left: -1px;
+        display: flex; align-items: center; justify-content: center; height: 100%; width: 100%;
       }
 
       /* ====== New Jobs Posted ====== */
@@ -201,12 +197,8 @@
       }
       .section-header .see-all {
         display: flex; align-items: center; gap: 0.6rem;
-        padding: 0.45rem 0.7rem;
-        border-radius: 12px;
-        background: var(--color-white);
-        box-shadow: var(--box-shadow);
-        color: var(--color-dark);
-        min-width: 124px;
+        padding: 0.45rem 0.7rem; border-radius: 12px; background: var(--color-white);
+        box-shadow: var(--box-shadow); color: var(--color-dark); min-width: 124px;
         transition: transform 0.12s ease, box-shadow 0.22s ease;
       }
       .section-header .see-all .label { font-weight: 500; }
@@ -220,32 +212,19 @@
         border-radius: var(--card-border-radius);
         margin-top: 0.8rem;
         box-shadow: var(--box-shadow);
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: flex-start;
-        gap: 1.1rem;
+        display: flex; flex-wrap: wrap; justify-content: flex-start; gap: 1.1rem;
         transition: all 0.3s ease;
       }
       .new-users .user-list:hover { box-shadow: none; }
 
       .new-users .user-list a.user {
-        position: relative;
-        display: flex; flex-direction: column; align-items: center;
-        width: 180px;
-        padding: 0.6rem 0.6rem 0.8rem;
-        border-radius: 12px;
-        text-align: center;
-        background: var(--color-white);
-        box-shadow: 0 0.5rem 1rem var(--color-light);
+        position: relative; display: flex; flex-direction: column; align-items: center;
+        width: 180px; padding: 0.6rem 0.6rem 0.8rem; border-radius: 12px; text-align: center;
+        background: var(--color-white); box-shadow: 0 0.5rem 1rem var(--color-light);
         transition: transform 0.15s ease, box-shadow 0.22s ease;
       }
-      .new-users .user-list a.user:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 0.6rem 1.1rem var(--color-light);
-      }
-      .new-users .user-list a.user img {
-        width: 100%; height: 100px; margin-bottom: 0.5rem; border-radius: 10px; object-fit: cover;
-      }
+      .new-users .user-list a.user:hover { transform: translateY(-2px); box-shadow: 0 0.6rem 1.1rem var(--color-light); }
+      .new-users .user-list a.user img { width: 100%; height: 100px; margin-bottom: 0.5rem; border-radius: 10px; object-fit: cover; }
       .new-users .user-list a.user h2 {
         font-size: 0.95rem; line-height: 1.25rem; max-height: 2.5rem; overflow: hidden;
       }
@@ -256,126 +235,72 @@
       .recent-orders h2 { margin-bottom: 0.8rem; }
       .recent-orders table {
         background-color: var(--color-white);
-        width: 100%;
-        padding: var(--card-padding);
-        text-align: center;
-        box-shadow: var(--box-shadow);
-        border-radius: var(--card-border-radius);
+        width: 100%; padding: var(--card-padding); text-align: center;
+        box-shadow: var(--box-shadow); border-radius: var(--card-border-radius);
         transition: all 0.3s ease;
       }
       .recent-orders table:hover { box-shadow: none; }
       main table tbody td {
-        height: 2.8rem;
-        border-bottom: 1px solid var(--color-light);
-        color: var(--color-dark-variant);
+        height: 2.8rem; border-bottom: 1px solid var(--color-light); color: var(--color-dark-variant);
       }
       main table tbody tr:last-child td { border: none; }
       .recent-orders a { text-align: center; display: block; margin: 1rem auto; color: var(--color-primary); }
 
-      /* ====== Right Section ====== */
-      .right-section { /* kept as in your layout via HTML below */ }
+      /* ===================== SKELETON (MAIN ONLY) ===================== */
+      /* show skeleton when main[data-ready="no"]; hide real content */
+      main[data-ready="no"] > :not(#main-skeleton) { display: none !important; }
+      main[data-ready="yes"] > #main-skeleton { display: none !important; }
 
-      /* ====== Skeleton styles ====== */
-      .skel-card,
-      .skel-block,
-      .skel-badge {
-        position: relative;
-        background: var(--color-white);
-        border-radius: 12px;
-        overflow: hidden;
+      #main-skeleton { display: block; }
+      .skel-card, .skel-bar, .skel-chip, .skel-thumb, .skel-line, .skel-cell {
+        position: relative; overflow: hidden; background: rgba(120,130,155,.18); border-radius: 12px;
       }
-      .skel-line,
-      .skel-rect,
-      .skel-circle {
-        background: linear-gradient(
-          90deg,
-          rgba(200, 210, 230, 0.25) 25%,
-          rgba(200, 210, 230, 0.45) 37%,
-          rgba(200, 210, 230, 0.25) 63%
-        );
-        animation: shimmer 1.25s infinite;
-        border-radius: 10px;
+      .skel-card { height: 140px; border-radius: var(--card-border-radius); box-shadow: var(--box-shadow); }
+      .skel-bar  { height: 20px; }
+      .skel-chip { height: 32px; width: 120px; border-radius: 10px; }
+      .skel-thumb{ height: 100px; border-radius: 10px; }
+      .skel-line { height: 14px; border-radius: 8px; }
+      .skel-cell { height: 40px; border-radius: 8px; }
+
+      .shimmer::after {
+        content: ""; position: absolute; inset: 0;
+        background: linear-gradient(90deg,
+          rgba(255,255,255,0) 0%,
+          rgba(255,255,255,.35) 50%,
+          rgba(255,255,255,0) 100%);
+        transform: translateX(-100%); animation: shimmer 1.4s infinite;
       }
-      .dark-mode-variables .skel-line,
-      .dark-mode-variables .skel-rect,
-      .dark-mode-variables .skel-circle {
-        background: linear-gradient(
-          90deg,
-          rgba(40, 44, 55, 0.35) 25%,
-          rgba(60, 66, 80, 0.5) 37%,
-          rgba(40, 44, 55, 0.35) 63%
-        );
-      }
-      @keyframes shimmer {
-        0% { background-position: -200px 0; }
-        100% { background-position: 200px 0; }
-      }
+      @keyframes shimmer { 100% { transform: translateX(100%); } }
 
-      /* Skeleton layout matches your real layout */
-      #skeleton .container { display: grid; width: 96%; margin: 0 auto; gap: 1.8rem; grid-template-columns: 12rem auto 23rem; }
-
-      /* Sidebar skeleton */
-      #skeleton aside .toggle { display: flex; align-items: center; justify-content: space-between; margin-top: 1.4rem; }
-      #skeleton aside .toggle .logo { display: flex; gap: .5rem; align-items: center; }
-      #skeleton aside .toggle .skel-circle { width: 2rem; height: 2rem; border-radius: 50%; }
-      #skeleton aside .toggle .skel-line { width: 6rem; height: 1.4rem; border-radius: 6px; }
-
-      #skeleton aside .sidebar {
-        display: flex; flex-direction: column; background: var(--color-white);
-        box-shadow: var(--box-shadow); border-radius: 15px; height: 88vh; position: relative; top: 1.5rem; padding: .6rem 0;
-      }
-      #skeleton aside .sidebar .skel-item { display: flex; align-items: center; gap: 1rem; padding: .9rem 2rem; }
-      #skeleton aside .sidebar .skel-item .skel-circle { width: 1.6rem; height: 1.6rem; }
-      #skeleton aside .sidebar .skel-item .skel-line { height: 1rem; width: 7rem; border-radius: 6px; }
-
-      /* Main skeleton */
-      #skeleton main { margin-top: 1.4rem; }
-      #skeleton .skel-title { width: 10rem; height: 2rem; border-radius: 8px; }
-
-      #skeleton .skel-analyse {
+      #main-skeleton .skel-wrap { display: grid; gap: 1.6rem; }
+      #main-skeleton .skel-cards {
         display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.6rem; margin-top: 1rem;
       }
-      #skeleton .skel-analyse .skel-card { padding: var(--card-padding); box-shadow: var(--box-shadow); }
-      #skeleton .skel-status { display: flex; align-items: center; justify-content: space-between; }
-      #skeleton .skel-left .skel-line { margin: .4rem 0; height: 1.1rem; }
-      #skeleton .skel-progress { width: 92px; height: 92px; border-radius: 50%; }
-      #skeleton .skel-circle { width: 92px; height: 92px; border-radius: 50%; }
 
-      /* New Jobs header skeleton */
-      #skeleton .skel-row { display: flex; align-items: center; justify-content: space-between; margin-top: 1.3rem; }
-      #skeleton .skel-badge { width: 124px; height: 36px; }
-
-      #skeleton .skel-user-list {
-        background: var(--color-white); padding: var(--card-padding); border-radius: var(--card-border-radius);
-        margin-top: .8rem; box-shadow: var(--box-shadow); display: flex; flex-wrap: wrap; gap: 1.1rem;
+      #main-skeleton .skel-header {
+        display: flex; align-items: center; justify-content: space-between; margin-top: 1.3rem;
       }
-      #skeleton .skel-user-card {
-        width: 180px; border-radius: 12px; background: var(--color-white); box-shadow: 0 .5rem 1rem var(--color-light);
-        padding: .6rem; display: flex; flex-direction: column; align-items: stretch;
+      #main-skeleton .skel-users {
+        background: var(--color-white); padding: var(--card-padding);
+        border-radius: var(--card-border-radius); margin-top: 0.8rem; box-shadow: var(--box-shadow);
+        display: flex; flex-wrap: wrap; gap: 1.1rem;
       }
-      #skeleton .skel-user-card .skel-rect { width: 100%; height: 100px; border-radius: 10px; }
-      #skeleton .skel-user-card .skel-line { height: 1rem; margin-top: .5rem; }
-
-      /* Upcoming Work table skeleton */
-      #skeleton .skel-table-wrap { margin-top: 1.3rem; }
-      #skeleton .skel-table { background: var(--color-white); width: 100%; border-radius: var(--card-border-radius); box-shadow: var(--box-shadow); padding: var(--card-padding); }
-      #skeleton .skel-table .skel-line { height: 1.2rem; width: 100%; margin: .6rem 0; }
-      #skeleton .skel-link { width: 6rem; height: 1rem; margin: 1rem auto 0; }
-
-      /* Right section skeleton */
-      #skeleton .right-section .skel-nav {
-        position: relative; background: var(--color-white); height: 4.6rem; border-radius: 12px;
-        display: flex; align-items: center; justify-content: space-between; padding: 0 var(--padding-1); box-shadow: var(--box-shadow);
+      #main-skeleton .skel-user {
+        width: 180px; display: flex; flex-direction: column; gap: .5rem;
+        padding: .6rem; border-radius: 12px; background: var(--color-white); box-shadow: 0 0.5rem 1rem var(--color-light);
       }
-      #skeleton .right-section .skel-circle.small { width: 36px; height: 36px; border-radius: 50%; }
-      #skeleton .right-section .skel-name { width: 7rem; height: 1.1rem; }
-      #skeleton .right-section .skel-card { margin-top: 1rem; padding: 1.2rem; height: 120px; box-shadow: var(--box-shadow); }
-      #skeleton .right-section .skel-card .skel-line { height: 1.2rem; width: 60%; margin-bottom: .6rem; }
 
-      /* ====== Responsive (match your breakpoints) ====== */
+      #main-skeleton .skel-table {
+        margin-top: 1.3rem; background: var(--color-white); border-radius: var(--card-border-radius);
+        box-shadow: var(--box-shadow); padding: var(--card-padding);
+      }
+      #main-skeleton .skel-table .row { display: grid; grid-template-columns: repeat(5, 1fr); gap: .8rem; margin-bottom: .6rem; }
+
+      /* ====== Responsive (unchanged) ====== */
       @media screen and (max-width: 1200px) {
         .container { width: 95%; grid-template-columns: 7rem auto 23rem; }
-        aside .logo h2, aside .sidebar h3 { display: none; }
+        aside .logo h2 { display: none; }
+        aside .sidebar h3 { display: none; }
         aside .sidebar a { width: 5.6rem; }
         aside .sidebar a:last-child { position: relative; margin-top: 1.8rem; }
         main .analyse { grid-template-columns: 1fr; gap: 0; }
@@ -384,26 +309,25 @@
           width: 94%; position: absolute; left: 50%; transform: translateX(-50%); margin: 2rem 0 0 0.8rem;
         }
         .recent-orders table { width: 83vw; }
-        main table thead tr th:last-child,
-        main table thead tr th:first-child { display: none; }
-        main table tbody tr td:last-child,
-        main table tbody tr td:first-child { display: none; }
+        main table thead tr th:last-child, main table thead tr th:first-child { display: none; }
+        main table tbody tr td:last-child, main table tbody tr td:first-child { display: none; }
 
-        /* Skeleton mirror */
-        #skeleton .container { width: 95%; grid-template-columns: 7rem auto 23rem; }
-        #skeleton .skel-analyse { grid-template-columns: 1fr; gap: 0; }
-        #skeleton .skel-table { width: 83vw; margin: 0 auto; }
+        /* skeleton responsiveness */
+        #main-skeleton .skel-cards { grid-template-columns: 1fr; gap: 0; }
+        #main-skeleton .skel-table .row { grid-template-columns: repeat(3, 1fr); }
       }
 
       @media screen and (max-width: 768px) {
         .container { width: 100%; grid-template-columns: 1fr; padding: 0 var(--padding-1); }
         aside {
           position: fixed; background-color: var(--color-white); width: 15rem; z-index: 3;
-          box-shadow: 1rem 3rem 4rem var(--color-light); height: 100vh; left: -100%; display: none; animation: showMenu 0.4s ease forwards;
+          box-shadow: 1rem 3rem 4rem var(--color-light); height: 100vh; left: -100%;
+          display: none; animation: showMenu 0.4s ease forwards;
         }
         @keyframes showMenu { to { left: 0; } }
         aside .logo { margin-left: 1rem; }
-        aside .logo h2, aside .sidebar h3 { display: inline; }
+        aside .logo h2 { display: inline; }
+        aside .sidebar h3 { display: inline; }
         aside .sidebar a { width: 100%; height: 3.4rem; }
         aside .sidebar a:last-child { position: absolute; bottom: 5rem; }
         aside .toggle .close { display: inline-block; cursor: pointer; }
@@ -416,339 +340,281 @@
         .right-section { width: 94%; margin: 0 auto 4rem; }
         .right-section .nav {
           position: fixed; top: 0; left: 0; align-items: center; background-color: var(--color-white);
-          padding: 0 var(--padding-1); height: 4.6rem; width: 100%; z-index: 2; box-shadow: 0 1rem 1rem var(--color-light); margin: 0;
+          padding: 0 var(--padding-1); height: 4.6rem; width: 100%; z-index: 2;
+          box-shadow: 0 1rem 1rem var(--color-light); margin: 0;
         }
         .right-section .nav .dark-mode { width: 4.4rem; position: absolute; left: 66%; }
         .right-section .profile .info { display: none; }
         .right-section .nav button {
-          display: inline-block; background-color: transparent; cursor: pointer; color: var(--color-dark); position: absolute; left: 1rem;
+          display: inline-block; background-color: transparent; cursor: pointer; color: var(--color-dark);
+          position: absolute; left: 1rem;
         }
         .right-section .nav button span { font-size: 2rem; }
 
-        /* Skeleton mirror */
-        #skeleton .container { width: 100%; grid-template-columns: 1fr; padding: 0 var(--padding-1); }
-        #skeleton .right-section .skel-nav { position: fixed; top: 0; left: 0; width: 100%; }
+        /* skeleton mobile tweaks */
+        #main-skeleton .skel-users { padding: 1.2rem; }
+        #main-skeleton .skel-user { width: calc(50% - .6rem); }
+        #main-skeleton .skel-table .row { grid-template-columns: repeat(2, 1fr); }
       }
     </style>
   </head>
 
-  <!-- Start with loading state -->
-  <body class="is-loading">
-    <!-- ========================= SKELETON ========================= -->
-    <div id="skeleton">
-      <div class="container">
-        <!-- Sidebar skeleton -->
-        <aside>
-          <div class="toggle">
-            <div class="logo">
-              <div class="skel-circle"></div>
-              <div class="skel-line" style="width: 80px; height: 18px;"></div>
+  <body>
+    <div class="container">
+      <!-- Sidebar Section -->
+      <aside>
+        <div class="toggle">
+          <div class="logo">
+            <img src="images/logo.png" alt="logo" />
+            <h2>Asmr<span class="danger">Prog</span></h2>
+          </div>
+          <div class="close" id="close-btn">
+            <span class="material-icons-sharp"> close </span>
+          </div>
+        </div>
+
+        <div class="sidebar">
+          <a href="dashboard.html" class="active"
+            ><span class="material-icons-sharp">dashboard</span>
+            <h3>Dashboard</h3></a>
+          <a href="job.html"
+            ><span class="material-icons-sharp">work</span>
+            <h3>Jobs</h3></a>
+          <a href="myApplication.html"
+            ><span class="material-icons-sharp">receipt</span>
+            <h3>My Application</h3></a>
+          <a href="courses.html"
+            ><span class="material-icons-sharp">school</span>
+            <h3>Courses</h3></a>
+          <a href="shop.html"
+            ><span class="material-icons-sharp">shopping_cart</span>
+            <h3>Shop</h3></a>
+          <a href="earnings.html"
+            ><span class="material-icons-sharp">account_balance</span>
+            <h3>Earnings</h3></a>
+          <a href="documents.html"
+            ><span class="material-icons-sharp">file_copy</span>
+            <h3>Documents</h3></a>
+          <a href="settings.html"
+            ><span class="material-icons-sharp">settings</span>
+            <h3>Settings</h3></a>
+          <a href="#" id="logout-btn"
+            ><span class="material-icons-sharp">logout</span>
+            <h3>Logout</h3></a>
+        </div>
+      </aside>
+      <!-- End of Sidebar Section -->
+
+      <!-- Main Content -->
+      <!-- ADDED: data-ready="no" so skeleton shows initially -->
+      <main id="mainContent" data-ready="no">
+        <!-- ===== MAIN SKELETON (shows while loading) ===== -->
+        <div id="main-skeleton" aria-hidden="true">
+          <div class="skel-wrap">
+            <div class="skel-bar shimmer" style="width: 180px; height: 28px; border-radius: 10px;"></div>
+
+            <div class="skel-cards">
+              <div class="skel-card shimmer"></div>
+              <div class="skel-card shimmer"></div>
+              <div class="skel-card shimmer"></div>
             </div>
-            <div class="skel-circle small"></div>
-          </div>
-          <div class="sidebar">
-            <div class="skel-item"><div class="skel-circle"></div><div class="skel-line"></div></div>
-            <div class="skel-item"><div class="skel-circle"></div><div class="skel-line"></div></div>
-            <div class="skel-item"><div class="skel-circle"></div><div class="skel-line"></div></div>
-            <div class="skel-item"><div class="skel-circle"></div><div class="skel-line"></div></div>
-            <div class="skel-item"><div class="skel-circle"></div><div class="skel-line"></div></div>
-            <div class="skel-item"><div class="skel-circle"></div><div class="skel-line"></div></div>
-            <div class="skel-item"><div class="skel-circle"></div><div class="skel-line"></div></div>
-            <div class="skel-item"><div class="skel-circle"></div><div class="skel-line"></div></div>
-            <div class="skel-item" style="margin-top:auto;"><div class="skel-circle"></div><div class="skel-line"></div></div>
-          </div>
-        </aside>
 
-        <!-- Main skeleton -->
-        <main>
-          <div class="skel-title"></div>
+            <div class="skel-header">
+              <div class="skel-bar shimmer" style="width: 200px; height: 24px; border-radius: 10px;"></div>
+              <div class="skel-chip shimmer"></div>
+            </div>
 
-          <div class="skel-analyse">
-            <div class="skel-card">
-              <div class="skel-status">
-                <div class="skel-left" style="flex:1; margin-right:12px;">
-                  <div class="skel-line" style="width: 120px;"></div>
-                  <div class="skel-line" style="width: 80px;"></div>
-                  <div class="skel-line" style="width: 160px;"></div>
-                </div>
-                <div class="skel-progress skel-circle"></div>
+            <div class="skel-users">
+              <!-- four user cards -->
+              <div class="skel-user">
+                <div class="skel-thumb shimmer"></div>
+                <div class="skel-line shimmer" style="width: 80%;"></div>
+                <div class="skel-line shimmer" style="width: 50%;"></div>
+              </div>
+              <div class="skel-user">
+                <div class="skel-thumb shimmer"></div>
+                <div class="skel-line shimmer" style="width: 80%;"></div>
+                <div class="skel-line shimmer" style="width: 50%;"></div>
+              </div>
+              <div class="skel-user">
+                <div class="skel-thumb shimmer"></div>
+                <div class="skel-line shimmer" style="width: 80%;"></div>
+                <div class="skel-line shimmer" style="width: 50%;"></div>
+              </div>
+              <div class="skel-user">
+                <div class="skel-thumb shimmer"></div>
+                <div class="skel-line shimmer" style="width: 80%;"></div>
+                <div class="skel-line shimmer" style="width: 50%;"></div>
               </div>
             </div>
-            <div class="skel-card">
-              <div class="skel-status">
-                <div class="skel-left" style="flex:1; margin-right:12px;">
-                  <div class="skel-line" style="width: 120px;"></div>
-                  <div class="skel-line" style="width: 80px;"></div>
-                  <div class="skel-line" style="width: 160px;"></div>
-                </div>
-                <div class="skel-progress skel-circle"></div>
-              </div>
-            </div>
-            <div class="skel-card">
-              <div class="skel-status">
-                <div class="skel-left" style="flex:1; margin-right:12px;">
-                  <div class="skel-line" style="width: 120px;"></div>
-                  <div class="skel-line" style="width: 80px;"></div>
-                  <div class="skel-line" style="width: 160px;"></div>
-                </div>
-                <div class="skel-progress skel-circle"></div>
-              </div>
-            </div>
-          </div>
 
-          <div class="skel-row">
-            <div class="skel-line" style="width: 200px; height: 28px; border-radius: 8px;"></div>
-            <div class="skel-badge"></div>
-          </div>
-
-          <div class="skel-user-list">
-            <div class="skel-user-card">
-              <div class="skel-rect"></div>
-              <div class="skel-line" style="width: 100%;"></div>
-              <div class="skel-line" style="width: 60%;"></div>
-            </div>
-            <div class="skel-user-card">
-              <div class="skel-rect"></div>
-              <div class="skel-line" style="width: 100%;"></div>
-              <div class="skel-line" style="width: 60%;"></div>
-            </div>
-            <div class="skel-user-card">
-              <div class="skel-rect"></div>
-              <div class="skel-line" style="width: 100%;"></div>
-              <div class="skel-line" style="width: 60%;"></div>
-            </div>
-            <div class="skel-user-card">
-              <div class="skel-rect"></div>
-              <div class="skel-line" style="width: 100%;"></div>
-              <div class="skel-line" style="width: 60%;"></div>
-            </div>
-          </div>
-
-          <div class="skel-table-wrap">
-            <div class="skel-line" style="width: 180px; height: 24px; border-radius: 8px; margin-bottom: .6rem;"></div>
             <div class="skel-table">
-              <div class="skel-line"></div>
-              <div class="skel-line"></div>
-              <div class="skel-line"></div>
-              <div class="skel-line"></div>
-              <div class="skel-line" style="width: 60%;"></div>
+              <div class="skel-bar shimmer" style="width: 220px; height: 24px; border-radius: 10px; margin-bottom: 14px;"></div>
+              <!-- header-ish row -->
+              <div class="row">
+                <div class="skel-cell shimmer"></div>
+                <div class="skel-cell shimmer"></div>
+                <div class="skel-cell shimmer"></div>
+                <div class="skel-cell shimmer"></div>
+                <div class="skel-cell shimmer"></div>
+              </div>
+              <!-- a few rows -->
+              <div class="row">
+                <div class="skel-cell shimmer"></div>
+                <div class="skel-cell shimmer"></div>
+                <div class="skel-cell shimmer"></div>
+                <div class="skel-cell shimmer"></div>
+                <div class="skel-cell shimmer"></div>
+              </div>
+              <div class="row">
+                <div class="skel-cell shimmer"></div>
+                <div class="skel-cell shimmer"></div>
+                <div class="skel-cell shimmer"></div>
+                <div class="skel-cell shimmer"></div>
+                <div class="skel-cell shimmer"></div>
+              </div>
+              <div class="row">
+                <div class="skel-cell shimmer"></div>
+                <div class="skel-cell shimmer"></div>
+                <div class="skel-cell shimmer"></div>
+                <div class="skel-cell shimmer"></div>
+                <div class="skel-cell shimmer"></div>
+              </div>
             </div>
-            <div class="skel-link"></div>
-          </div>
-        </main>
-
-        <!-- Right section skeleton -->
-        <div class="right-section">
-          <div class="skel-nav">
-            <div class="skel-circle small"></div>
-            <div style="display:flex; align-items:center; gap:10px;">
-              <div class="skel-name"></div>
-              <div class="skel-circle small"></div>
-            </div>
-          </div>
-          <div class="skel-card">
-            <div class="skel-line" style="width: 30%;"></div>
-            <div class="skel-line" style="width: 50%;"></div>
-          </div>
-          <div class="skel-card">
-            <div class="skel-line" style="width: 40%;"></div>
-            <div class="skel-line" style="width: 70%;"></div>
           </div>
         </div>
-      </div>
-    </div>
-    <!-- ====================== END SKELETON ====================== -->
+        <!-- ===== END SKELETON ===== -->
 
-    <!-- ========================= REAL APP ========================= -->
-    <div id="app">
-      <div class="container">
-        <!-- Sidebar Section -->
-        <aside>
-          <div class="toggle">
-            <div class="logo">
-              <img src="images/logo.png" alt="logo" />
-              <h2>Asmr<span class="danger">Prog</span></h2>
-            </div>
-            <div class="close" id="close-btn">
-              <span class="material-icons-sharp"> close </span>
-            </div>
-          </div>
+        <h1>Analytics</h1>
 
-          <div class="sidebar">
-            <a href="dashboard.html" class="active"
-              ><span class="material-icons-sharp">dashboard</span>
-              <h3>Dashboard</h3></a
-            >
-            <a href="job.html"
-              ><span class="material-icons-sharp">work</span>
-              <h3>Jobs</h3></a
-            >
-            <a href="myApplication.html"
-              ><span class="material-icons-sharp">receipt</span>
-              <h3>My Application</h3></a
-            >
-            <a href="courses.html"
-              ><span class="material-icons-sharp">school</span>
-              <h3>Courses</h3></a
-            >
-            <a href="shop.html"
-              ><span class="material-icons-sharp">shopping_cart</span>
-              <h3>Shop</h3></a
-            >
-            <a href="earnings.html"
-              ><span class="material-icons-sharp">account_balance</span>
-              <h3>Earnings</h3></a
-            >
-            <a href="documents.html"
-              ><span class="material-icons-sharp">file_copy</span>
-              <h3>Documents</h3></a
-            >
-            <a href="settings.html"
-              ><span class="material-icons-sharp">settings</span>
-              <h3>Settings</h3></a
-            >
-            <a href="#" id="logout-btn"
-              ><span class="material-icons-sharp">logout</span>
-              <h3>Logout</h3></a
-            >
-          </div>
-        </aside>
-        <!-- End of Sidebar Section -->
-
-        <!-- Main Content -->
-        <main>
-          <h1>Analytics</h1>
-
-          <!-- Analyses -->
-          <div class="analyse">
-            <!-- 1) Applied vs Total Jobs Posted -->
-            <div class="sales" id="cardApplied">
-              <div class="status">
-                <div class="info">
-                  <h3>Jobs Applied</h3>
-                  <h1 id="appliedCount">0</h1>
-                  <small class="text-muted" id="appliedCaption"
-                    >Applied vs Total Jobs</small
-                  >
-                </div>
-                <div class="progresss">
-                  <svg><circle cx="38" cy="38" r="36"></circle></svg>
-                  <div class="percentage"><p id="appliedPct">0%</p></div>
-                </div>
-              </div>
-            </div>
-
-            <!-- 2) Approved vs Pending -->
-            <div class="visits" id="cardApproved">
-              <div class="status">
-                <div class="info">
-                  <h3>Jobs Assigned</h3>
-                  <h1 id="approvedCount">0</h1>
-                  <small class="text-muted" id="approvedCaption"
-                    >Approved vs Pending</small
-                  >
-                </div>
-                <div class="progresss">
-                  <svg><circle cx="38" cy="38" r="36"></circle></svg>
-                  <div class="percentage"><p id="approvedPct">0%</p></div>
-                </div>
-              </div>
-            </div>
-
-            <!-- 3) Earning Balance -->
-            <div class="searches" id="cardBalance">
-              <div class="status">
-                <div class="info">
-                  <h3>Earning Balance</h3>
-                  <h1 id="balanceAmount">₱0.00</h1>
-                  <small class="text-muted">Current balance</small>
-                </div>
-                <div class="progresss">
-                  <svg><circle cx="38" cy="38" r="36"></circle></svg>
-                  <div class="percentage"><p id="balancePct">₱0.00</p></div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <!-- End of Analyses -->
-
-          <!-- New Jobs Posted (last 4 APPROVED only) -->
-          <div class="section-header">
-            <h2>New Jobs Posted</h2>
-            <a class="see-all" href="job.html" title="View all jobs">
-              <span class="label">See all</span>
-              <span class="material-icons-sharp" aria-hidden="true"
-                >arrow_forward</span
-              >
-            </a>
-          </div>
-          <div class="new-users">
-            <div class="user-list" id="latestJobsWrap">
-              <!-- Filled by JS -->
-            </div>
-          </div>
-
-          <!-- Recent Orders Table -->
-          <div class="recent-orders">
-            <h2>Upcoming Work</h2>
-            <table>
-              <thead>
-                <tr>
-                  <th>Job Code</th>
-                  <th>Job Title</th>
-                  <th>Date/Time</th>
-                  <th>Location</th>
-                  <th>Pay</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
-            <a href="#">Show All</a>
-          </div>
-          <!-- End of Recent Orders -->
-        </main>
-        <!-- End of Main Content -->
-
-        <!-- Right Section -->
-        <div class="right-section">
-          <div class="nav">
-            <!-- Dark mode toggle -->
-            <div class="dark-mode" id="themeToggle" title="Toggle theme">
-              <span class="material-icons-sharp" id="lightIcon">light_mode</span>
-              <span class="material-icons-sharp" id="darkIcon">dark_mode</span>
-            </div>
-
-            <div class="profile">
+        <!-- Analyses -->
+        <div class="analyse">
+          <!-- 1) Applied vs Total Jobs Posted -->
+          <div class="sales" id="cardApplied">
+            <div class="status">
               <div class="info">
-                <p>Hey, <b id="profileName">Installer</b></p>
-                <small class="text-muted">User</small>
+                <h3>Jobs Applied</h3>
+                <h1 id="appliedCount">0</h1>
+                <small class="text-muted" id="appliedCaption"
+                  >Applied vs Total Jobs</small
+                >
               </div>
-              <div class="profile-photo">
-                <img
-                  id="topRightAvatar"
-                  src="images/profile-1.jpg"
-                  alt="profile"
-                />
+              <div class="progresss">
+                <svg><circle cx="38" cy="38" r="36"></circle></svg>
+                <div class="percentage"><p id="appliedPct">0%</p></div>
               </div>
             </div>
           </div>
-          <!-- End of Nav -->
 
-          <div class="user-profile">
-            <div class="logo">
-              <h2 id="levelHeading">Level 0</h2>
-              <p id="levelNote">Take courses to level up!</p>
+          <!-- 2) Approved vs Pending -->
+          <div class="visits" id="cardApproved">
+            <div class="status">
+              <div class="info">
+                <h3>Jobs Assigned</h3>
+                <h1 id="approvedCount">0</h1>
+                <small class="text-muted" id="approvedCaption"
+                  >Approved vs Pending</small
+                >
+              </div>
+              <div class="progresss">
+                <svg><circle cx="38" cy="38" r="36"></circle></svg>
+                <div class="percentage"><p id="approvedPct">0%</p></div>
+              </div>
             </div>
           </div>
 
-          <div class="reminders">
-            <div class="header"><h2>Take Courses</h2></div>
-            <a href="#">Show All</a>
+          <!-- 3) Earning Balance -->
+          <div class="searches" id="cardBalance">
+            <div class="status">
+              <div class="info">
+                <h3>Earning Balance</h3>
+                <h1 id="balanceAmount">₱0.00</h1>
+                <small class="text-muted">Current balance</small>
+              </div>
+              <div class="progresss">
+                <svg><circle cx="38" cy="38" r="36"></circle></svg>
+                <div class="percentage"><p id="balancePct">₱0.00</p></div>
+              </div>
+            </div>
           </div>
+        </div>
+        <!-- End of Analyses -->
+
+        <!-- New Jobs Posted (last 4 APPROVED only) -->
+        <div class="section-header">
+          <h2>New Jobs Posted</h2>
+          <a class="see-all" href="job.html" title="View all jobs">
+            <span class="label">See all</span>
+            <span class="material-icons-sharp" aria-hidden="true"
+              >arrow_forward</span
+            >
+          </a>
+        </div>
+        <div class="new-users">
+          <div class="user-list" id="latestJobsWrap">
+            <!-- Filled by JS -->
+          </div>
+        </div>
+
+        <!-- Recent Orders Table -->
+        <div class="recent-orders">
+          <h2>Upcoming Work</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Job Code</th>
+                <th>Job Title</th>
+                <th>Date/Time</th>
+                <th>Location</th>
+                <th>Pay</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+          <a href="#">Show All</a>
+        </div>
+        <!-- End of Recent Orders -->
+      </main>
+      <!-- End of Main Content -->
+
+      <!-- Right Section -->
+      <div class="right-section">
+        <div class="nav">
+          <!-- Dark mode toggle -->
+          <div class="dark-mode" id="themeToggle" title="Toggle theme">
+            <span class="material-icons-sharp" id="lightIcon">light_mode</span>
+            <span class="material-icons-sharp" id="darkIcon">dark_mode</span>
+          </div>
+
+          <div class="profile">
+            <div class="info">
+              <p>Hey, <b id="profileName">Installer</b></p>
+              <small class="text-muted">User</small>
+            </div>
+            <div class="profile-photo">
+              <img
+                id="topRightAvatar"
+                src="images/profile-1.jpg"
+                alt="profile"
+              />
+            </div>
+          </div>
+        </div>
+        <!-- End of Nav -->
+
+        <div class="user-profile">
+          <div class="logo">
+            <h2 id="levelHeading">Level 0</h2>
+            <p id="levelNote">Take courses to level up!</p>
+          </div>
+        </div>
+
+        <div class="reminders">
+          <div class="header"><h2>Take Courses</h2></div>
+          <a href="#">Show All</a>
         </div>
       </div>
     </div>
-    <!-- ====================== END REAL APP ====================== -->
 
     <!-- Shared base scripts -->
     <script src="../../general_files/index.js"></script>
@@ -1146,7 +1012,9 @@
           a.className = "user";
           a.innerHTML = `
             <img src="${imgUrl}" alt="Job image" onerror="this.onerror=null;this.src='images/profile-4.jpg';" />
-            <h2 title="${(j.job_title || "").replace(/"/g, "&quot;")}">${j.job_title || "Untitled Job"}</h2>
+            <h2 title="${(j.job_title || "").replace(/"/g, "&quot;")}">${
+            j.job_title || "Untitled Job"
+          }</h2>
             <p>${timeAgo(j.created_at)}</p>
           `;
           wrap.appendChild(a);
@@ -1416,7 +1284,7 @@
             .eq("installer_id", installerId)
             .eq("payment_status", "paid");
 
-        if (payErr) {
+          if (payErr) {
             console.warn("payments fetch error:", payErr);
             return 0;
           }
@@ -1507,11 +1375,27 @@
         await ensureRealtimeAuth();
         initLatestJobsRealtime();
 
-        /* === Reveal real UI, hide skeleton === */
-        document.body.classList.remove("is-loading");
+        /* ADDED: flip skeleton -> real content */
+        const mainEl = document.getElementById("mainContent");
+        if (mainEl) mainEl.setAttribute("data-ready", "yes");
       }
 
-      document.addEventListener("DOMContentLoaded", loadDashboard);
+      /* ADDED: ensure skeleton is shown immediately and hidden after load */
+      document.addEventListener("DOMContentLoaded", () => {
+        const mainEl = document.getElementById("mainContent");
+        if (mainEl) mainEl.setAttribute("data-ready", "no"); // show skeleton
+        // run your existing loader
+        (async () => {
+          try {
+            await loadDashboard();
+          } catch (e) {
+            console.warn("loadDashboard error:", e);
+          } finally {
+            const m = document.getElementById("mainContent");
+            if (m) m.setAttribute("data-ready", "yes");
+          }
+        })();
+      });
     </script>
   </body>
 </html>
