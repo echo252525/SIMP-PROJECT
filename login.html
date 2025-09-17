@@ -1,685 +1,740 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp"
+      rel="stylesheet"
+    />
+    <title>Login–SIMP Project</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap");
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet" />
-  <title>Login–SIMP Project</title>
-  <style>
-    @import url("https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap");
-
-    :root {
-      --azure-blue: #20647c;
-      --green: #20a44c;
-      --card-bg: rgba(255, 255, 255, 0.15);
-      --glass-border: 1px solid rgba(255, 255, 255, 0.3);
-      --shadow: 0 8px 30px rgba(32, 100, 124, 0.2);
-      --brand-grad-a: #20647c;
-      --brand-grad-b: #20a44c;
-    }
-
-    * {
-      padding: 0;
-      margin: 0;
-      box-sizing: border-box;
-      font-family: "Raleway", sans-serif;
-    }
-
-    body {
-      margin: 0;
-      height: 100vh;
-      background: linear-gradient(135deg, #f8fbfd, #e7edf3);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-family: 'Segoe UI', sans-serif;
-      overflow: hidden;
-    }
-
-    /* ===== Shell (two panels + form in the middle) ===== */
-    .auth-shell {
-      position: relative;
-      width: min(980px, 94vw);
-      height: 560px;
-      border-radius: 26px;
-      background: #ffffff;
-      box-shadow: 0 24px 60px rgba(17, 24, 39, 0.15);
-      overflow: hidden;
-    }
-
-    .side {
-      position: absolute;
-      inset: 0;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-    }
-
-    .side .pane {
-      padding-inline: clamp(28px, 5vw, 56px);
-      padding-block: 56px;
-      display: grid;
-      place-items: center;
-      text-align: center;
-    }
-
-    .pane h1 {
-      font-size: clamp(28px, 3.2vw, 40px);
-      line-height: 1.15;
-      color: #111827;
-      margin-bottom: 10px;
-      font-weight: 800;
-    }
-
-    .pane p {
-      color: #4b5563;
-      max-width: 420px;
-      font-size: 15px;
-      line-height: 1.6;
-      margin: 10px auto 24px;
-    }
-
-    .ghost-btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 14px 28px;
-      border-radius: 999px;
-      font-weight: 700;
-      border: 2px solid rgba(0, 0, 0, 0.12);
-      background: transparent;
-      cursor: pointer;
-      transition: transform .08s ease, box-shadow .25s ease, border-color .25s ease, background .25s ease;
-      user-select: none;
-    }
-
-    .ghost-btn:hover {
-      box-shadow: 0 8px 26px rgba(0, 0, 0, 0.08);
-      border-color: rgba(0, 0, 0, 0.2);
-    }
-
-    .ghost-btn:active {
-      transform: translateY(1px);
-    }
-
-    /* Gradient halves (like your screenshots) */
-    .left-grad {
-      background: linear-gradient(135deg, #20a44c, #20647c);
-      color: #fff;
-      border-top-left-radius: 26px;
-      border-bottom-left-radius: 26px;
-    }
-
-    .right-grad {
-      background: linear-gradient(135deg, #20a44c, #20647c);
-      color: #fff;
-      border-top-right-radius: 26px;
-      border-bottom-right-radius: 26px;
-    }
-
-    .left-grad h1,
-    .right-grad h1,
-    .left-grad p,
-    .right-grad p {
-      color: #fff;
-    }
-
-    .left-grad .ghost-btn,
-    .right-grad .ghost-btn {
-      color: #fff;
-      border-color: rgba(255, 255, 255, 0.5);
-    }
-
-    .left-grad .ghost-btn:hover,
-    .right-grad .ghost-btn:hover {
-      border-color: #fff;
-      background: rgba(255, 255, 255, 0.08);
-    }
-
-    /* ===== Your original login card (kept) ===== */
-    .loginDiv {
-      position: absolute;
-      inset: 0;
-      left: 0;
-      right: 0;
-      top: 0;
-      bottom: 0;
-      margin: auto;
-      width: 100%;
-      max-width: 500px;
-      height: auto;
-      padding: 3rem 2.5rem;
-      background-color: white;
-      z-index: 2;
-      transition: transform .55s cubic-bezier(.2, .8, .2, 1);
-      border-radius: 0px;
-    }
-
-    /* Slider states: move the form toward the chosen side */
-    .mode-installer .loginDiv {
-      transform: translateX(-50%);
-    }
-
-    .mode-customer .loginDiv {
-      transform: translateX(50%);
-    }
-
-    .loginDiv .backBtn {
-      position: relative;
-      max-width: 50px;
-      width: 90%;
-      padding: 1px;
-      border: none;
-      border-radius: .1px;
-      background: none;
-      color: black;
-      cursor: pointer;
-      transition: background 0.3s ease;
-      margin-top: 0;
-    }
-
-    .loginDiv .backBtn:hover {
-      background: none;
-    }
-
-    .loginDivHeader {
-      display: grid;
-      place-items: center;
-      gap: .5rem;
-      margin-bottom: 4px;
-    }
-
-    .loginDiv img {
-      width: 4rem;
-    }
-
-    .loginDiv h2 {
-      color: black;
-      margin-bottom: 10px;
-      font-weight: 900;
-      font-size: 36px;
-      margin-top: 20px;
-    }
-
-    .role-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: #eef2f7;
-      border-radius: 999px;
-      padding: 6px 12px;
-      font-size: 12px;
-      font-weight: 700;
-      color: #111827;
-    }
-
-    /* NEW: compact segmented toggle for small screens (kept hidden on desktop) */
-    .role-toggle {
-      display: none;
-    }
-
-    .role-toggle button {
-      flex: 1;
-      border: 0;
-      border-radius: 10px;
-      padding: 10px 12px;
-      font-weight: 700;
-      background: transparent;
-      cursor: pointer;
-      transition: background .2s ease, transform .06s ease;
-    }
-
-    .role-toggle button:active {
-      transform: translateY(1px);
-    }
-
-    .loginDiv .role-toggle button {
-      background: #f5f7fb !important;
-      color: #111827;
-      box-shadow: none;
-      border-radius: 999px;
-      
-    }
-
-    html.mode-installer .role-toggle .btn-installer,
-    html.mode-customer .role-toggle .btn-customer {
-      background: linear-gradient(135deg, #20a44c, #20647c) !important;
-      color: #fff !important;
-      box-shadow: 0 2px 10px rgba(17, 24, 39, .06);
-    }
-
-    .loginDiv button {
-      position: relative;
-      width: 98%;
-      padding: 0.8rem;
-      border: none;
-      border-radius: 12px;
-      background: #20a44c;
-      color: #fff;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
-
-    .loginDiv button:hover {
-      background: #1a7f3a;
-    }
-
-    .loginDiv button:active,
-    .btn-primary:active {
-      top: 2px;
-      left: 1px;
-    }
-
-    input,
-    select {
-      width: 98%;
-      padding: 13px;
-      margin: 8px 0;
-      border: 1px solid #ccc;
-      border-radius: 12px;
-    }
-
-    /* hide the role dropdown but keep it in DOM for your JS */
-    #role {
-      display: none;
-      visibility: hidden;
-      height: 0;
-      padding: 0;
-      margin: 0;
-      border: 0;
-    }
-
-    p.footer-note {
-      text-align: center;
-      padding-top: .5rem;
-      margin-top: 2rem;
-      font-size: .9rem;
-      border-top: 1px solid lightgray;
-    }
-
-    p.footer-note a {
-      text-decoration: none;
-    }
-
-    /* ---------- MOBILE: compact + off-canvas panels ---------- */
-    @media (max-width: 820px) {
-      .loginDiv {
-        position: relative;
+      :root {
+        --azure-blue: #20647c;
+        --green: #20a44c;
+        --card-bg: rgba(255, 255, 255, 0.15);
+        --glass-border: 1px solid rgba(255, 255, 255, 0.3);
+        --shadow: 0 8px 30px rgba(32, 100, 124, 0.2);
+        --brand-grad-a: #20647c;
+        --brand-grad-b: #20a44c;
       }
 
+      * {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+        font-family: "Raleway", sans-serif;
+      }
+
+      body {
+        margin: 0;
+        height: 100vh;
+        background: linear-gradient(135deg, #f8fbfd, #e7edf3);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: "Segoe UI", sans-serif;
+        overflow: hidden;
+      }
+
+      /* ===== Shell (two panels + form in the middle) ===== */
       .auth-shell {
-        width: 100%;
-        max-width: 680px;
-        height: auto;
-        border-radius: 20px;
+        position: relative;
+        width: min(980px, 94vw);
+        height: 560px;
+        border-radius: 26px;
+        background: #ffffff;
+        box-shadow: 0 24px 60px rgba(17, 24, 39, 0.15);
+        overflow: hidden;
       }
 
-      /* Turn side panels into off-canvas sheets that slide OUT of the screen.
-         This keeps the form compact like the reference. */
       .side {
-        position: relative;
-        height: 0;
-        /* collapse the grid space */
-        grid-template-columns: 1fr;
-        pointer-events: none;
-        /* taps go to the form */
+        position: absolute;
+        inset: 0;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
       }
 
       .side .pane {
-        position: absolute;
-        top: 8px;
-        width: calc(100% - 24px);
-        max-width: 540px;
-        left: 50%;
-        transform: translateX(-50%);
-        border-radius: 16px;
-        box-shadow: 0 14px 28px rgba(17, 24, 39, .12);
-        padding-block: 22px;
-        opacity: .96;
-        transition: transform .55s cubic-bezier(.2, .8, .2, 1), opacity .3s;
+        padding-inline: clamp(28px, 5vw, 56px);
+        padding-block: 56px;
+        display: grid;
+        place-items: center;
+        text-align: center;
       }
 
-      /* Customer mode: push BOTH panels off-screen so the view is clean */
-      html.mode-customer .left-grad {
-        transform: translate(-130%, 0);
-        opacity: 0;
+      .pane h1 {
+        font-size: clamp(28px, 3.2vw, 40px);
+        line-height: 1.15;
+        color: #111827;
+        margin-bottom: 10px;
+        font-weight: 800;
       }
 
-      html.mode-customer .right-grad {
-        transform: translate(130%, 0);
-        opacity: 0;
-      }
-
-      /* Installer mode: same—both slide out so only the compact form shows */
-      html.mode-installer .left-grad {
-        transform: translate(-130%, 0);
-        opacity: 0;
-      }
-
-      html.mode-installer .right-grad {
-        transform: translate(130%, 0);
-        opacity: 0;
-      }
-
-      .loginDiv {
-        position: relative;
-        inset: auto;
-        width: 100%;
-        max-width: 680px;
-        transform: translateX(0) !important;
-        /* keep centered on mobile */
-      }
-
-      .loginDiv .backBtn {
-        margin-top: 50px;
-      }
-
-      .loginDiv h2 {
-        font-size: clamp(22px, 6vw, 28px);
-        margin-top: 10px;
-      }
-
-      input,
-      select,
-      .loginDiv button {
-        width: 100%;
+      .pane p {
+        color: #4b5563;
+        max-width: 420px;
+        font-size: 15px;
+        line-height: 1.6;
+        margin: 10px auto 24px;
       }
 
       .ghost-btn {
-        padding: 12px 18px;
-      }
-
-      .role-toggle {
-        display: flex;
-        position: absolute;
-        top: 10px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: min(100%, 600px);
-        background-color: #f5f7fb;
-        border: 1px solid #e6e8ee;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 14px 28px;
         border-radius: 999px;
-        gap: 6px;
-        padding: 6px;
-        box-shadow: 0 8px 20px rgba(17, 24, 39, .08);
-      }
-    }
-
-    /* Ultra-small devices (320–375px) */
-    @media (max-width: 430px) {
-      .loginDiv h2 {
-        font-size: clamp(22px, 8vw, 26px);
+        font-weight: 700;
+        border: 2px solid rgba(0, 0, 0, 0.12);
+        background: transparent;
+        cursor: pointer;
+        transition: transform 0.08s ease, box-shadow 0.25s ease,
+          border-color 0.25s ease, background 0.25s ease;
+        user-select: none;
       }
 
+      .ghost-btn:hover {
+        box-shadow: 0 8px 26px rgba(0, 0, 0, 0.08);
+        border-color: rgba(0, 0, 0, 0.2);
+      }
+
+      .ghost-btn:active {
+        transform: translateY(1px);
+      }
+
+      /* Gradient halves (like your screenshots) */
+      .left-grad {
+        background: linear-gradient(135deg, #20a44c, #20647c);
+        color: #fff;
+        border-top-left-radius: 26px;
+        border-bottom-left-radius: 26px;
+      }
+
+      .right-grad {
+        background: linear-gradient(135deg, #20a44c, #20647c);
+        color: #fff;
+        border-top-right-radius: 26px;
+        border-bottom-right-radius: 26px;
+      }
+
+      .left-grad h1,
+      .right-grad h1,
+      .left-grad p,
+      .right-grad p {
+        color: #fff;
+      }
+
+      .left-grad .ghost-btn,
+      .right-grad .ghost-btn {
+        color: #fff;
+        border-color: rgba(255, 255, 255, 0.5);
+      }
+
+      .left-grad .ghost-btn:hover,
+      .right-grad .ghost-btn:hover {
+        border-color: #fff;
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      /* ===== Your original login card (kept) ===== */
       .loginDiv {
-        padding: 18px 14px;
+        position: absolute;
+        inset: 0;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        margin: auto;
+        width: 100%;
+        max-width: 500px;
+        height: auto;
+        padding: 3rem 2.5rem;
+        background-color: white;
+        z-index: 2;
+        transition: transform 0.55s cubic-bezier(0.2, 0.8, 0.2, 1);
+        border-radius: 0px;
+      }
+
+      /* Slider states: move the form toward the chosen side */
+      .mode-installer .loginDiv {
+        transform: translateX(-50%);
+      }
+
+      .mode-customer .loginDiv {
+        transform: translateX(50%);
+      }
+
+      .loginDiv .backBtn {
+        position: relative;
+        max-width: 50px;
+        width: 90%;
+        padding: 1px;
+        border: none;
+        border-radius: 0.1px;
+        background: none;
+        color: black;
+        cursor: pointer;
+        transition: background 0.3s ease;
+        margin-top: 0;
+      }
+
+      .loginDiv .backBtn:hover {
+        background: none;
+      }
+
+      .loginDivHeader {
+        display: grid;
+        place-items: center;
+        gap: 0.5rem;
+        margin-bottom: 4px;
+      }
+
+      .loginDiv img {
+        width: 4rem;
+      }
+
+      .loginDiv h2 {
+        color: black;
+        margin-bottom: 10px;
+        font-weight: 900;
+        font-size: 36px;
+        margin-top: 20px;
       }
 
       .role-pill {
-        font-size: 11px;
-        padding: 5px 10px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #eef2f7;
+        border-radius: 999px;
+        padding: 6px 12px;
+        font-size: 12px;
+        font-weight: 700;
+        color: #111827;
       }
 
-      .loginDiv .role-toggle {
-        left: 50%;
-        transform: translateX(-50%);
-        width: min(100%, 300px);
+      /* NEW: compact segmented toggle for small screens (kept hidden on desktop) */
+      .role-toggle {
+        display: none;
       }
-    }
 
-    /* Respect safe area on iOS */
-    @supports (padding: max(0px)) {
+      .role-toggle button {
+        flex: 1;
+        border: 0;
+        border-radius: 10px;
+        padding: 10px 12px;
+        font-weight: 700;
+        background: transparent;
+        cursor: pointer;
+        transition: background 0.2s ease, transform 0.06s ease;
+      }
+
+      .role-toggle button:active {
+        transform: translateY(1px);
+      }
+
+      .loginDiv .role-toggle button {
+        background: #f5f7fb !important;
+        color: #111827;
+        box-shadow: none;
+        border-radius: 999px;
+      }
+
+      html.mode-installer .role-toggle .btn-installer,
+      html.mode-customer .role-toggle .btn-customer {
+        background: linear-gradient(135deg, #20a44c, #20647c) !important;
+        color: #fff !important;
+        box-shadow: 0 2px 10px rgba(17, 24, 39, 0.06);
+      }
+
+      .loginDiv button {
+        position: relative;
+        width: 98%;
+        padding: 0.8rem;
+        border: none;
+        border-radius: 12px;
+        background: #20a44c;
+        color: #fff;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background 0.3s ease;
+      }
+
+      .loginDiv button:hover {
+        background: #1a7f3a;
+      }
+
+      .loginDiv button:active,
+      .btn-primary:active {
+        top: 2px;
+        left: 1px;
+      }
+
+      input,
+      select {
+        width: 98%;
+        padding: 13px;
+        margin: 8px 0;
+        border: 1px solid #ccc;
+        border-radius: 12px;
+      }
+
+      /* hide the role dropdown but keep it in DOM for your JS */
+      #role {
+        display: none;
+        visibility: hidden;
+        height: 0;
+        padding: 0;
+        margin: 0;
+        border: 0;
+      }
+
+      p.footer-note {
+        text-align: center;
+        padding-top: 0.5rem;
+        margin-top: 2rem;
+        font-size: 0.9rem;
+        border-top: 1px solid lightgray;
+      }
+
+      p.footer-note a {
+        text-decoration: none;
+      }
+
+      /* ---------- MOBILE: compact + off-canvas panels ---------- */
       @media (max-width: 820px) {
-        body {
-          padding-left: max(16px, env(safe-area-inset-left));
-          padding-right: max(16px, env(safe-area-inset-right));
-          padding-top: max(16px, env(safe-area-inset-top));
-          padding-bottom: max(16px, env(safe-area-inset-bottom));
+        .loginDiv {
+          position: relative;
+        }
+
+        .auth-shell {
+          width: 100%;
+          max-width: 680px;
+          height: auto;
+          border-radius: 20px;
+        }
+
+        /* Turn side panels into off-canvas sheets that slide OUT of the screen.
+         This keeps the form compact like the reference. */
+        .side {
+          position: relative;
+          height: 0;
+          /* collapse the grid space */
+          grid-template-columns: 1fr;
+          pointer-events: none;
+          /* taps go to the form */
+        }
+
+        .side .pane {
+          position: absolute;
+          top: 8px;
+          width: calc(100% - 24px);
+          max-width: 540px;
+          left: 50%;
+          transform: translateX(-50%);
+          border-radius: 16px;
+          box-shadow: 0 14px 28px rgba(17, 24, 39, 0.12);
+          padding-block: 22px;
+          opacity: 0.96;
+          transition: transform 0.55s cubic-bezier(0.2, 0.8, 0.2, 1),
+            opacity 0.3s;
+        }
+
+        /* Customer mode: push BOTH panels off-screen so the view is clean */
+        html.mode-customer .left-grad {
+          transform: translate(-130%, 0);
+          opacity: 0;
+        }
+
+        html.mode-customer .right-grad {
+          transform: translate(130%, 0);
+          opacity: 0;
+        }
+
+        /* Installer mode: same—both slide out so only the compact form shows */
+        html.mode-installer .left-grad {
+          transform: translate(-130%, 0);
+          opacity: 0;
+        }
+
+        html.mode-installer .right-grad {
+          transform: translate(130%, 0);
+          opacity: 0;
+        }
+
+        .loginDiv {
+          position: relative;
+          inset: auto;
+          width: 100%;
+          max-width: 680px;
+          transform: translateX(0) !important;
+          /* keep centered on mobile */
+        }
+
+        .loginDiv .backBtn {
+          margin-top: 50px;
+        }
+
+        .loginDiv h2 {
+          font-size: clamp(22px, 6vw, 28px);
+          margin-top: 10px;
+        }
+
+        input,
+        select,
+        .loginDiv button {
+          width: 100%;
+        }
+
+        .ghost-btn {
+          padding: 12px 18px;
+        }
+
+        .role-toggle {
+          display: flex;
+          position: absolute;
+          top: 10px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: min(100%, 600px);
+          background-color: #f5f7fb;
+          border: 1px solid #e6e8ee;
+          border-radius: 999px;
+          gap: 6px;
+          padding: 6px;
+          box-shadow: 0 8px 20px rgba(17, 24, 39, 0.08);
         }
       }
-    }
 
-    /* Reduce motion if user prefers */
-    @media (prefers-reduced-motion: reduce) {
-      * {
-        animation-duration: .01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: .01ms !important;
-        scroll-behavior: auto !important;
-      }
-    }
-  </style>
+      /* Ultra-small devices (320–375px) */
+      @media (max-width: 430px) {
+        .loginDiv h2 {
+          font-size: clamp(22px, 8vw, 26px);
+        }
 
-  <script type="module">
-    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
-    import { SUPABASE_URL, SUPABASE_ANON_KEY } from "/supabase.js";
+        .loginDiv {
+          padding: 18px 14px;
+        }
 
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        .role-pill {
+          font-size: 11px;
+          padding: 5px 10px;
+        }
 
-    // If installer_documents is in another schema, e.g. "jobs", use:
-    // const db = supabase.schema("jobs");
-    const db = supabase; // public schema
-
-    // Paths
-    const INSTALLER_UPLOAD = "../pages/installer_pages/html_files/upload.html";
-    const INSTALLER_DASH = "../pages/installer_pages/html_files/dashboard.html";
-    const INSTALLER_REVIEW = "../pages/installer_pages/html_files/review.html";
-    const INSTALLER_APPROVED = "../pages/installer_pages/html_files/approved.html";
-    const INSTALLER_REJECTED = "../pages/installer_pages/html_files/rejected.html";
-    const CUSTOMER_DASH = "../pages/customer_pages/html_files/myJobPosts.html";
-
-    // Get the latest installer_documents row for this user
-    async function getLatestInstallerDoc(userId) {
-      const { data, error } = await db
-        .from("installer_documents")
-        .select("installer_id, status, updated_at, uploaded_at")
-        .eq("installer_id", userId)
-        .order("updated_at", { ascending: false, nullsLast: true })
-        .order("uploaded_at", { ascending: false, nullsLast: true })
-        .limit(1)
-        .maybeSingle();
-
-      if (error) throw error;
-      return data; // may be null if no docs yet
-    }
-
-    async function isCustomer(userId) {
-      const { data, error } = await supabase
-        .from("customer")
-        .select("id")
-        .eq("id", userId)
-        .maybeSingle();
-      if (error) throw error;
-      return !!data;
-    }
-
-    // ✅ NEW: check if user exists in public.installer table
-    async function isInstaller(userId) {
-      const { data, error } = await supabase
-        .from("installer")
-        .select("id")
-        .eq("id", userId)
-        .maybeSingle();
-      if (error) throw error;
-      return !!data;
-    }
-
-    // --- Role switching (no dropdown) ---
-    const roleSelect = document.getElementById("role"); // kept for compatibility
-    const shell = document.documentElement; // we'll toggle a class on <html> for transforms
-    const roleLabel = () => document.getElementById("activeRoleText");
-
-    function setRole(role) {
-      // Update hidden select so your existing login() keeps working
-      roleSelect.value = role;
-
-      // Update UI state class for sliding
-      if (role === "installer") {
-        shell.classList.add("mode-installer");
-        shell.classList.remove("mode-customer");
-      } else {
-        shell.classList.add("mode-customer");
-        shell.classList.remove("mode-installer");
+        .loginDiv .role-toggle {
+          left: 50%;
+          transform: translateX(-50%);
+          width: min(100%, 300px);
+        }
       }
 
-      // Update header pill text
-      const el = roleLabel();
-      if (el) el.textContent = role === "installer" ? "Logging in as Installer" : "Logging in as Customer";
-    }
+      /* Respect safe area on iOS */
+      @supports (padding: max(0px)) {
+        @media (max-width: 820px) {
+          body {
+            padding-left: max(16px, env(safe-area-inset-left));
+            padding-right: max(16px, env(safe-area-inset-right));
+            padding-top: max(16px, env(safe-area-inset-top));
+            padding-bottom: max(16px, env(safe-area-inset-bottom));
+          }
+        }
+      }
 
-    // Expose for inline buttons
-    window.chooseInstaller = () => setRole("installer");
-    window.chooseCustomer = () => setRole("customer");
+      /* Reduce motion if user prefers */
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+          scroll-behavior: auto !important;
+        }
+      }
+      .hint {
+        font-size: 12px;
+        color: var(--muted);
+        text-align: center;
+        margin-top: 10px;
+        margin-bottom: 20px;
+      }
+    </style>
 
-    // Default view (you can change to "installer" if you prefer)
-    setRole("customer");
+    <script type="module">
+      import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+      import { SUPABASE_URL, SUPABASE_ANON_KEY } from "/supabase.js";
 
-    // --- Your original login() kept intact, only reads role from hidden select ---
-    window.login = async () => {
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
-      const role = document.getElementById("role").value;
+      const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-      try {
-        // 1) Auth sign-in
-        const { data: signInData, error: signInError } =
-          await supabase.auth.signInWithPassword({ email, password });
-        if (signInError) throw signInError;
+      // If installer_documents is in another schema, e.g. "jobs", use:
+      // const db = supabase.schema("jobs");
+      const db = supabase; // public schema
 
-        const userId = signInData.user.id;
+      // Paths
+      const INSTALLER_UPLOAD =
+        "../pages/installer_pages/html_files/upload.html";
+      const INSTALLER_DASH =
+        "../pages/installer_pages/html_files/dashboard.html";
+      const INSTALLER_REVIEW =
+        "../pages/installer_pages/html_files/review.html";
+      const INSTALLER_APPROVED =
+        "../pages/installer_pages/html_files/approved.html";
+      const INSTALLER_REJECTED =
+        "../pages/installer_pages/html_files/rejected.html";
+      const CUSTOMER_DASH =
+        "../pages/customer_pages/html_files/myJobPosts.html";
 
+      // Get the latest installer_documents row for this user
+      async function getLatestInstallerDoc(userId) {
+        const { data, error } = await db
+          .from("installer_documents")
+          .select("installer_id, status, updated_at, uploaded_at")
+          .eq("installer_id", userId)
+          .order("updated_at", { ascending: false, nullsLast: true })
+          .order("uploaded_at", { ascending: false, nullsLast: true })
+          .limit(1)
+          .maybeSingle();
+
+        if (error) throw error;
+        return data; // may be null if no docs yet
+      }
+
+      async function isCustomer(userId) {
+        const { data, error } = await supabase
+          .from("customer")
+          .select("id")
+          .eq("id", userId)
+          .maybeSingle();
+        if (error) throw error;
+        return !!data;
+      }
+
+      // ✅ NEW: check if user exists in public.installer table
+      async function isInstaller(userId) {
+        const { data, error } = await supabase
+          .from("installer")
+          .select("id")
+          .eq("id", userId)
+          .maybeSingle();
+        if (error) throw error;
+        return !!data;
+      }
+
+      // --- Role switching (no dropdown) ---
+      const roleSelect = document.getElementById("role"); // kept for compatibility
+      const shell = document.documentElement; // we'll toggle a class on <html> for transforms
+      const roleLabel = () => document.getElementById("activeRoleText");
+
+      function setRole(role) {
+        // Update hidden select so your existing login() keeps working
+        roleSelect.value = role;
+
+        // Update UI state class for sliding
         if (role === "installer") {
-          // ✅ First, ensure this user is actually an installer
-          const installerExists = await isInstaller(userId);
-          if (!installerExists) {
-            alert(
-              "No installer profile found for this account. Please register as an installer first."
-            );
-            return;
-          }
-
-          const doc = await getLatestInstallerDoc(userId);
-
-          if (doc) {
-            const status = String(doc.status || "").toLowerCase();
-
-            if (status === "approved") {
-              try {
-                const { data: updated, error: updErr } = await db
-                  .from("installer_documents")
-                  .update({ status: "verified" })
-                  .eq("installer_id", userId)
-                  .select("status")
-                  .single();
-                if (updErr) throw updErr;
-                console.log("Status updated to:", updated.status);
-              } catch (e) {
-                console.warn("Auto-upgrade failed (still going to Approved page):", e);
-              }
-              window.location.href = INSTALLER_APPROVED;
-              return;
-            }
-
-            if (status === "verified") {
-              window.location.href = INSTALLER_DASH;
-              return;
-            }
-
-            if (
-              status === "pending review" ||
-              status === "pending" ||
-              status === "submitted" ||
-              status === "under review"
-            ) {
-              window.location.href = INSTALLER_REVIEW;
-              return;
-            }
-
-            if (status === "rejected") {
-              window.location.href = INSTALLER_REJECTED;
-              return;
-            }
-
-            window.location.href = INSTALLER_UPLOAD;
-            return;
-          } else {
-            alert("No installer documents found. Please upload your documents.");
-            window.location.href = INSTALLER_UPLOAD;
-            return;
-          }
+          shell.classList.add("mode-installer");
+          shell.classList.remove("mode-customer");
+        } else {
+          shell.classList.add("mode-customer");
+          shell.classList.remove("mode-installer");
         }
 
-        if (role === "customer") {
-          const customer = await isCustomer(userId);
-          if (customer) {
-            window.location.href = CUSTOMER_DASH;
-          } else {
-            alert("No customer profile found. Please register as customer.");
-          }
-        }
-      } catch (err) {
-        alert("Error: " + (err.message || "Login failed"));
-        console.error(err);
+        // Update header pill text
+        const el = roleLabel();
+        if (el)
+          el.textContent =
+            role === "installer"
+              ? "Logging in as Installer"
+              : "Logging in as Customer";
       }
-    };
-  </script>
-</head>
 
-<body>
-  <div class="auth-shell">
-    <!-- Sliding gradient panels (choose role) -->
-    <div class="side">
-      <div class="pane left-grad">
-        <div>
-          <img src="img/simpHappyMascotLogo.png" style="max-width:100px; width:95%;">
-          <h1>Welcome Back, Simpsters!</h1>
-          <p>Log in as <strong>Installer</strong> to manage jobs, documents, and earnings.</p>
-          <button class="ghost-btn" onclick="chooseInstaller()">LOG IN AS INSTALLER</button>
+      // Expose for inline buttons
+      window.chooseInstaller = () => setRole("installer");
+      window.chooseCustomer = () => setRole("customer");
+
+      // Default view (you can change to "installer" if you prefer)
+      setRole("customer");
+
+      // --- Your original login() kept intact, only reads role from hidden select ---
+      window.login = async () => {
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value;
+        const role = document.getElementById("role").value;
+
+        try {
+          // 1) Auth sign-in
+          const { data: signInData, error: signInError } =
+            await supabase.auth.signInWithPassword({ email, password });
+          if (signInError) throw signInError;
+
+          const userId = signInData.user.id;
+
+          if (role === "installer") {
+            // ✅ First, ensure this user is actually an installer
+            const installerExists = await isInstaller(userId);
+            if (!installerExists) {
+              alert(
+                "No installer profile found for this account. Please register as an installer first."
+              );
+              return;
+            }
+
+            const doc = await getLatestInstallerDoc(userId);
+
+            if (doc) {
+              const status = String(doc.status || "").toLowerCase();
+
+              if (status === "approved") {
+                try {
+                  const { data: updated, error: updErr } = await db
+                    .from("installer_documents")
+                    .update({ status: "verified" })
+                    .eq("installer_id", userId)
+                    .select("status")
+                    .single();
+                  if (updErr) throw updErr;
+                  console.log("Status updated to:", updated.status);
+                } catch (e) {
+                  console.warn(
+                    "Auto-upgrade failed (still going to Approved page):",
+                    e
+                  );
+                }
+                window.location.href = INSTALLER_APPROVED;
+                return;
+              }
+
+              if (status === "verified") {
+                window.location.href = INSTALLER_DASH;
+                return;
+              }
+
+              if (
+                status === "pending review" ||
+                status === "pending" ||
+                status === "submitted" ||
+                status === "under review"
+              ) {
+                window.location.href = INSTALLER_REVIEW;
+                return;
+              }
+
+              if (status === "rejected") {
+                window.location.href = INSTALLER_REJECTED;
+                return;
+              }
+
+              window.location.href = INSTALLER_UPLOAD;
+              return;
+            } else {
+              alert(
+                "No installer documents found. Please upload your documents."
+              );
+              window.location.href = INSTALLER_UPLOAD;
+              return;
+            }
+          }
+
+          if (role === "customer") {
+            const customer = await isCustomer(userId);
+            if (customer) {
+              window.location.href = CUSTOMER_DASH;
+            } else {
+              alert("No customer profile found. Please register as customer.");
+            }
+          }
+        } catch (err) {
+          alert("Error: " + (err.message || "Login failed"));
+          console.error(err);
+        }
+      };
+    </script>
+  </head>
+
+  <body>
+    <div class="auth-shell">
+      <!-- Sliding gradient panels (choose role) -->
+      <div class="side">
+        <div class="pane left-grad">
+          <div>
+            <img
+              src="img/simpHappyMascotLogo.png"
+              style="max-width: 100px; width: 95%"
+            />
+            <h1>Welcome Back, Simpsters!</h1>
+            <p>
+              Log in as <strong>Installer</strong> to manage jobs, documents,
+              and earnings.
+            </p>
+            <button class="ghost-btn" onclick="chooseInstaller()">
+              LOG IN AS INSTALLER
+            </button>
+          </div>
+        </div>
+        <div class="pane right-grad">
+          <div>
+            <img
+              src="img/simpHappyMascotLogo.png"
+              style="max-width: 100px; width: 95%"
+            />
+            <h1>Hello, Simpsters!</h1>
+            <p>
+              Log in as <strong>Customer</strong> to post jobs and track your
+              requests.
+            </p>
+            <button class="ghost-btn" onclick="chooseCustomer()">
+              LOG IN AS CUSTOMER
+            </button>
+          </div>
         </div>
       </div>
-      <div class="pane right-grad">
-        <div>
-          <img src="img/simpHappyMascotLogo.png" style="max-width:100px; width:95%;">
-          <h1>Hello, Simpsters!</h1>
-          <p>Log in as <strong>Customer</strong> to post jobs and track your requests.</p>
-          <button class="ghost-btn" onclick="chooseCustomer()">LOG IN AS CUSTOMER</button>
+
+      <!-- Your original login card (kept, lightly enhanced) -->
+      <div class="loginDiv">
+        <button class="backBtn" onclick="window.location.href='index.html'">
+          <span class="material-icons-sharp">arrow_back</span>
+        </button>
+        <div class="loginDivHeader">
+          <h2>Login</h2>
+          <div class="role-pill">
+            <span class="material-icons-sharp" style="font-size: 16px"
+              >person</span
+            >
+            <span id="activeRoleText">Logging in as Customer</span>
+          </div>
         </div>
+
+        <!-- Compact segmented toggle (only visible on mobile) -->
+        <div class="role-toggle">
+          <button class="btn-customer" type="button" onclick="chooseCustomer()">
+            Customer
+          </button>
+          <button
+            class="btn-installer"
+            type="button"
+            onclick="chooseInstaller()"
+          >
+            Installer
+          </button>
+        </div>
+
+        <input type="email" id="email" placeholder="Email" required />
+        <input type="password" id="password" placeholder="Password" required />
+
+        <!-- Role selector kept for JS compatibility but hidden -->
+        <select id="role" required>
+          <option value="" disabled>Select Role</option>
+          <option value="customer">Customer</option>
+          <option value="installer">Installer</option>
+        </select>
+        <div onclick="window.location.href='forgotPassword.html'" class="hint">
+          Forgot your password?
+        </div>
+        <button onclick="login()">Login</button>
+        <p class="footer-note">
+          Don't have an account? <a href="signup.html">Sign Up</a>
+        </p>
       </div>
     </div>
-
-    <!-- Your original login card (kept, lightly enhanced) -->
-    <div class="loginDiv">
-      <button class="backBtn" onclick="window.location.href='index.html'"><span
-          class="material-icons-sharp">arrow_back</span></button>
-      <div class="loginDivHeader">
-        <h2>Login</h2>
-        <div class="role-pill">
-          <span class="material-icons-sharp" style="font-size:16px">person</span>
-          <span id="activeRoleText">Logging in as Customer</span>
-        </div>
-      </div>
-
-      <!-- Compact segmented toggle (only visible on mobile) -->
-      <div class="role-toggle">
-        <button class="btn-customer" type="button" onclick="chooseCustomer()">Customer</button>
-        <button class="btn-installer" type="button" onclick="chooseInstaller()">Installer</button>
-      </div>
-
-      <input type="email" id="email" placeholder="Email" required />
-      <input type="password" id="password" placeholder="Password" required />
-
-      <!-- Role selector kept for JS compatibility but hidden -->
-      <select id="role" required>
-        <option value="" disabled>Select Role</option>
-        <option value="customer">Customer</option>
-        <option value="installer">Installer</option>
-      </select>
-
-      <button onclick="login()">Login</button>
-      <p class="footer-note">Don't have an account? <a href="signup.html">Sign Up</a></p>
-    </div>
-  </div>
-</body>
-
+  </body>
 </html>
