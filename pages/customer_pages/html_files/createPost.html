@@ -1,698 +1,1050 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet"/>
-    <link rel="stylesheet" href="../css_files/sideBar.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-    <title>Create Post</title>
-    <style>
-      /* ====== SKELETON (added) ====== */
-      .skeleton{display:none;padding:24px;}
-      body.loading .skeleton{display:block;}
-      body.loading main{display:none;}
-      .sk-card{background:var(--card,#fff);border-radius:16px;padding:24px;box-shadow:0 8px 24px rgba(0,0,0,.08);margin-bottom:30px;}
-      .sk-title{height:28px;width:clamp(200px,40%,340px);border-radius:8px;}
-      .sk-sub{height:14px;width:clamp(240px,55%,520px);border-radius:7px;margin-top:10px;}
-      .sk-grid{display:grid;gap:16px;grid-template-columns:repeat(2,minmax(0,1fr));margin-top:20px;}
-      @media (max-width:900px){.sk-grid{grid-template-columns:1fr;}}
-      .sk-field{display:grid;gap:10px;}
-      .sk-label{height:14px;width:120px;border-radius:6px;}
-      .sk-input{height:44px;border-radius:12px;}
-      .sk-textarea{height:110px;border-radius:12px;}
-      .sk-row-2{grid-column:span 2;}
-      @media (max-width:900px){.sk-row-2{grid-column:auto;}}
-      .sk-map{height:320px;border-radius:12px;}
-      .sk-actions{display:flex;justify-content:flex-end;gap:12px;margin-top:14px;}
-      .sk-btn{height:44px;width:120px;border-radius:12px;}
-      .sk{position:relative;overflow:hidden;background:#f1f5f9;border:1px solid var(--line,#e5e7eb);}
-      .sk::after{content:"";position:absolute;inset:0;transform:translateX(-100%);background:linear-gradient(90deg,rgba(255,255,255,0) 0%,rgba(255,255,255,.6) 50%,rgba(255,255,255,0) 100%);animation:sk-shimmer 1.25s infinite;}
-      @keyframes sk-shimmer{100%{transform:translateX(100%);}}
 
-      /* ====== ORIGINAL PAGE STYLES (unchanged) ====== */
-      main{margin-top:1.4rem;}
-      section.card{background:var(--card);padding:24px;border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,.08);margin-bottom:30px;animation:fadeIn .6s ease;}
-      @keyframes fadeIn{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
-      .hidden{display:none;}
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet" />
+  <link rel="stylesheet" href="../css_files/sideBar.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <title>Create Post</title>
+  <style>
+    /* ====== SKELETON (added) ====== */
+    .skeleton {
+      display: none;
+      padding: 24px;
+    }
 
-      .form-grid{display:grid;gap:16px;grid-template-columns:repeat(2,minmax(0,1fr));}
-      @media (max-width:900px){.form-grid{grid-template-columns:1fr;}}
-      .field{display:flex;flex-direction:column;gap:8px;}
-      .field.inline{flex-direction:row;align-items:center;gap:12px;}
-      .field label{font-size:.92rem;color:#111827;font-weight:600;}
-      .hint{font-size:.85rem;color:var(--muted);}
+    main {
+      margin-top: 1.4rem;
+      padding: 1rem;
+    }
 
-      .ctrl{position:relative;display:flex;align-items:center;background:#f9fafb;border:1px solid var(--line);border-radius:12px;padding:10px 12px;transition:border .15s,box-shadow .15s,background .15s;}
-      .ctrl:focus-within{border-color:var(--brand);box-shadow:0 0 0 4px var(--ring);background:#fff;}
-      .ctrl input,.ctrl textarea,.ctrl select{border:none;outline:none;background:transparent;width:100%;font-size:1rem;}
-      .ctrl textarea{min-height:110px;resize:vertical;}
+    body.loading .skeleton {
+      display: block;
+    }
 
-      .affix{user-select:none;display:inline-flex;align-items:center;gap:6px;font-size:.95rem;color:#6b7280;}
-      .affix.left{margin-right:10px;}
-      .affix.right{margin-left:10px;}
+    body.loading main {
+      display: none;
+    }
 
-      .row-2{grid-column:span 2;}
-      @media (max-width:900px){.row-2{grid-column:auto;}}
+    .sk-card {
+      background: var(--card, #fff);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, .08);
+      margin-bottom: 30px;
+    }
 
-      .slider-wrap{display:flex;align-items:center;gap:10px;}
-      input[type="range"]{width:100%;}
-      .badge{padding:4px 10px;border-radius:999px;background:#eef2ff;color:#4338ca;font-weight:600;font-size:.85rem;}
+    .sk-title {
+      height: 28px;
+      width: clamp(200px, 40%, 340px);
+      border-radius: 8px;
+    }
 
-      .dropzone{border:1.5px dashed #cbd5e1;border-radius:12px;padding:14px;text-align:center;background:#f9fafb;transition:border .15s,background .15s;}
-      .dropzone:hover{border-color:var(--brand);background:#fff;}
-      .dropzone input{display:none;}
-      .dz-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:8px;}
-      .dz-thumb{margin-top:12px;display:none;}
-      .dz-thumb img{max-width:100%;border-radius:10px;border:1px solid var(--line);}
+    .sk-sub {
+      height: 14px;
+      width: clamp(240px, 55%, 520px);
+      border-radius: 7px;
+      margin-top: 10px;
+    }
 
-      .actions{display:flex;gap:12px;justify-content:flex-end;margin-top:10px;}
-      .btn{appearance:none;border:none;border-radius:12px;padding:12px 16px;font-weight:700;cursor:pointer;background:var(--brand);color:#fff;transition:transform .04s ease,background .15s ease;}
-      .btn:hover{background:var(--brand-ink);}
-      .btn:active{transform:translateY(1px);}
-      .btn.ghost{background:#eef2ff;color:#3730a3;}
-      .btn.ghost:hover{background:#e0e7ff;}
+    .sk-grid {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin-top: 20px;
+    }
 
-      table{width:100%;border-collapse:collapse;margin-top:10px;}
-      th,td{padding:12px 10px;border-bottom:1px solid #eef2f7;text-align:left;font-size:.95rem;}
-      th{color:#0f172a;background:#f8fafc;font-weight:700;}
+    @media (max-width:900px) {
+      .sk-grid {
+        grid-template-columns: 1fr;
+      }
+    }
 
-      #job-map{height:320px;border-radius:12px;overflow:hidden;margin-top:6px;border:1px solid var(--line);}
-      .loc-hint{color:#6b7280;font-size:.88rem;margin:.2rem 0 .6rem;display:flex;gap:6px;align-items:center;}
-      .loc-row{display:flex;gap:10px;align-items:center;}
-      .loc-row .btn{white-space:nowrap;}
-      .hr{height:1px;background:var(--line);margin:12px 0;border-radius:1px;opacity:.7;}
-    </style>
-  </head>
+    .sk-field {
+      display: grid;
+      gap: 10px;
+    }
 
-  <!-- Initial 'loading' to show skeleton first -->
-  <body class="loading">
-    <div class="container">
-      <!-- Sidebar Section -->
-      <aside>
-        <div class="toggle">
-          <div class="logo">
-            <img src="#" />
-            <h2>SIMP<span class="danger">Project</span></h2>
-          </div>
-          <div class="close" id="close-btn">
-            <span class="material-icons-sharp">close</span>
-          </div>
+    .sk-label {
+      height: 14px;
+      width: 120px;
+      border-radius: 6px;
+    }
+
+    .sk-input {
+      height: 44px;
+      border-radius: 12px;
+    }
+
+    .sk-textarea {
+      height: 110px;
+      border-radius: 12px;
+    }
+
+    .sk-row-2 {
+      grid-column: span 2;
+    }
+
+    @media (max-width:900px) {
+      .sk-row-2 {
+        grid-column: auto;
+      }
+    }
+
+    .sk-map {
+      height: 320px;
+      border-radius: 12px;
+    }
+
+    .sk-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .sk-btn {
+      height: 44px;
+      width: 120px;
+      border-radius: 12px;
+    }
+
+    .sk {
+      position: relative;
+      overflow: hidden;
+      background: #f1f5f9;
+      border: 1px solid var(--line, #e5e7eb);
+    }
+
+    .sk::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      transform: translateX(-100%);
+      background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, .6) 50%, rgba(255, 255, 255, 0) 100%);
+      animation: sk-shimmer 1.25s infinite;
+    }
+
+    @keyframes sk-shimmer {
+      100% {
+        transform: translateX(100%);
+      }
+    }
+
+    /* ====== ORIGINAL PAGE STYLES (unchanged) ====== */
+    main {
+      margin-top: 1.4rem;
+    }
+
+    section.card {
+      background: white;
+      padding: 24px;
+      border-radius: 14px;
+      margin-bottom: 30px;
+      border: 1px solid #ccc;
+      animation: fadeIn .6s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    @media (max-width:900px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .field.inline {
+      flex-direction: row;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .field label {
+      font-size: .92rem;
+      color: #111827;
+      font-weight: 600;
+    }
+
+    .hint {
+      font-size: .85rem;
+      color: var(--muted);
+    }
+
+    .ctrl {
+      position: relative;
+      display: flex;
+      align-items: center;
+      background: #f9fafb;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px 12px;
+      transition: border .15s, box-shadow .15s, background .15s;
+    }
+
+    .ctrl:focus-within {
+      border-color: var(--brand);
+      box-shadow: 0 0 0 4px var(--ring);
+      background: #fff;
+    }
+
+    .ctrl input,
+    .ctrl textarea,
+    .ctrl select {
+      border: none;
+      outline: none;
+      background: transparent;
+      width: 100%;
+      font-size: 1rem;
+    }
+
+    .ctrl textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    .affix {
+      user-select: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: .95rem;
+      color: #6b7280;
+    }
+
+    .affix.left {
+      margin-right: 10px;
+    }
+
+    .affix.right {
+      margin-left: 10px;
+    }
+
+    .row-2 {
+      grid-column: span 2;
+    }
+
+    @media (max-width:900px) {
+      .row-2 {
+        grid-column: auto;
+      }
+    }
+
+    .slider-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+    }
+
+    .badge {
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: #eef2ff;
+      color: #4338ca;
+      font-weight: 600;
+      font-size: .85rem;
+    }
+
+    .dropzone {
+      border: 1.5px dashed #cbd5e1;
+      border-radius: 12px;
+      padding: 14px;
+      text-align: center;
+      background: #f9fafb;
+      transition: border .15s, background .15s;
+    }
+
+    .dropzone:hover {
+      border-color: var(--brand);
+      background: #fff;
+    }
+
+    .dropzone input {
+      display: none;
+    }
+
+    .dz-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .dz-thumb {
+      margin-top: 12px;
+      display: none;
+    }
+
+    .dz-thumb img {
+      max-width: 100%;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+      margin-top: 10px;
+    }
+
+    .btn {
+      appearance: none;
+      border: none;
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-weight: 700;
+      cursor: pointer;
+      background: var(--brand);
+      color: #fff;
+      transition: transform .04s ease, background .15s ease;
+    }
+
+    .btn:hover {
+      background: var(--brand-ink);
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+    }
+
+    .btn.ghost {
+      background: #eef2ff;
+      color: #3730a3;
+    }
+
+    .btn.ghost:hover {
+      background: #e0e7ff;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    th,
+    td {
+      padding: 12px 10px;
+      border-bottom: 1px solid #eef2f7;
+      text-align: left;
+      font-size: .95rem;
+    }
+
+    th {
+      color: #0f172a;
+      background: #f8fafc;
+      font-weight: 700;
+    }
+
+    #job-map {
+      height: 320px;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-top: 6px;
+      border: 1px solid var(--line);
+    }
+
+    .loc-hint {
+      color: #6b7280;
+      font-size: .88rem;
+      margin: .2rem 0 .6rem;
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .loc-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .loc-row .btn {
+      white-space: nowrap;
+    }
+
+    .hr {
+      height: 1px;
+      background: var(--line);
+      margin: 12px 0;
+      border-radius: 1px;
+      opacity: .7;
+    }
+  </style>
+</head>
+
+<!-- Initial 'loading' to show skeleton first -->
+
+<body class="loading">
+  <div class="container">
+    <!-- Sidebar Section -->
+    <aside>
+      <div class="toggle">
+        <div class="logo">
+          <img src="../../../img/simpHappyMascotLogo.png" alt="logo" />
+          <h2>SIMP<span class="danger">Project</span></h2>
         </div>
-
-        <div class="sidebar">
-          <a href="myJobPosts.html"><span class="material-icons-sharp">cases</span><h3>My Job Posts</h3></a>
-          <a href="createPost.html" class="active" id="nav-create"><span class="material-icons-sharp">add</span><h3>Create a post</h3></a>
-          <a href="settings.html" id="nav-create"><span class="material-icons-sharp">settings</span><h3>Settings</h3></a>
-          <a href="#" id="logout-btn"><span class="material-icons-sharp">logout</span><h3>Logout</h3></a>
+        <div class="close" id="close-btn">
+          <span class="material-icons-sharp">close</span>
         </div>
-      </aside>
-      <!-- End of Sidebar Section -->
-
-      <!-- ====== SKELETON UI (added) ====== -->
-      <div class="skeleton">
-        <section class="sk-card">
-          <div class="sk sk-title"></div>
-          <div class="sk sk-sub"></div>
-
-          <div class="sk-grid">
-            <div class="sk-field sk-row-2">
-              <div class="sk sk-label"></div>
-              <div class="sk sk-input" style="height:48px;"></div>
-            </div>
-
-            <div class="sk-field"><div class="sk sk-label"></div><div class="sk sk-input"></div></div>
-            <div class="sk-field"><div class="sk sk-label"></div><div class="sk sk-input"></div></div>
-            <div class="sk-field"><div class="sk sk-label"></div><div class="sk sk-input"></div></div>
-            <div class="sk-field"><div class="sk sk-label"></div><div class="sk sk-input"></div></div>
-            <div class="sk-field"><div class="sk sk-label"></div><div class="sk sk-input"></div></div>
-            <div class="sk-field"><div class="sk sk-label"></div><div class="sk sk-input"></div></div>
-
-            <div class="sk-field sk-row-2">
-              <div class="sk sk-label"></div>
-              <div class="sk sk-textarea"></div>
-            </div>
-
-            <div class="sk-field sk-row-2">
-              <div class="sk sk-label"></div>
-              <div class="sk sk-input"></div>
-              <div class="sk sk-map"></div>
-            </div>
-          </div>
-
-          <div class="sk-actions">
-            <div class="sk sk-btn"></div>
-            <div class="sk sk-btn" style="width:140px;"></div>
-          </div>
-        </section>
       </div>
 
-      <!--MAIN CONTENT-->
-      <main>
-        <!-- Create/Edit Post -->
-        <section class="card" id="create-post">
-          <h1 id="form-title">Create a Job Post</h1>
-          <p class="sub" id="form-sub">Keep it short, clear, and accurate—workers decide fast.</p>
+      <div class="sidebar">
+        <a href="myJobPosts.html"><span class="material-icons-sharp">cases</span>
+          <h3>My Job Posts</h3>
+        </a>
+        <a href="createPost.html" class="active" id="nav-create"><span class="material-icons-sharp">add</span>
+          <h3>Create a post</h3>
+        </a>
+        <a href="settings.html" id="nav-create"><span class="material-icons-sharp">settings</span>
+          <h3>Settings</h3>
+        </a>
+        <a href="#" id="logout-btn"><span class="material-icons-sharp">logout</span>
+          <h3>Logout</h3>
+        </a>
+      </div>
+    </aside>
+    <!-- End of Sidebar Section -->
 
-          <form id="jobForm" novalidate>
-            <div class="form-grid">
-              <!-- Title -->
-              <div class="field row-2">
-                <label for="job_title">Job Title</label>
-                <div class="ctrl">
-                  <input type="text" id="job_title" placeholder="e.g., Aircon cleaning for studio unit" required />
-                </div>
-              </div>
+    <!-- ====== SKELETON UI (added) ====== -->
+    <div class="skeleton">
+      <section class="sk-card">
+        <div class="sk sk-title"></div>
+        <div class="sk sk-sub"></div>
 
-              <!-- Category -->
-              <div class="field">
-                <label for="job_category">Category</label>
-                <div class="ctrl">
-                  <select id="job_category">
-                    <option value="">Select a category</option>
-                    <option>Cleaning</option>
-                    <option>Electrical</option>
-                    <option>Plumbing</option>
-                    <option>Delivery</option>
-                    <option>IT Support</option>
-                    <option>General Help</option>
-                  </select>
-                </div>
-                <div class="hint">Choose the closest fit.</div>
-              </div>
+        <div class="sk-grid">
+          <div class="sk-field sk-row-2">
+            <div class="sk sk-label"></div>
+            <div class="sk sk-input" style="height:48px;"></div>
+          </div>
 
-              <!-- Difficulty -->
-              <div class="field">
-                <label for="job_difficulty_range">Difficulty</label>
-                <div class="ctrl">
-                  <div class="slider-wrap">
-                    <input type="range" id="job_difficulty_range" min="1" max="10" step="1" value="3" />
-                    <span class="badge" id="diffBadge">3/10</span>
-                  </div>
-                </div>
-                <input type="hidden" id="job_difficulty" value="3" />
-                <div class="hint">1 = very easy, 10 = expert-level.</div>
-              </div>
+          <div class="sk-field">
+            <div class="sk sk-label"></div>
+            <div class="sk sk-input"></div>
+          </div>
+          <div class="sk-field">
+            <div class="sk sk-label"></div>
+            <div class="sk sk-input"></div>
+          </div>
+          <div class="sk-field">
+            <div class="sk sk-label"></div>
+            <div class="sk sk-input"></div>
+          </div>
+          <div class="sk-field">
+            <div class="sk sk-label"></div>
+            <div class="sk sk-input"></div>
+          </div>
+          <div class="sk-field">
+            <div class="sk sk-label"></div>
+            <div class="sk sk-input"></div>
+          </div>
+          <div class="sk-field">
+            <div class="sk sk-label"></div>
+            <div class="sk sk-input"></div>
+          </div>
 
-              <!-- Pay -->
-              <div class="field">
-                <label for="job_pay">Pay</label>
-                <div class="ctrl">
-                  <span class="affix left">₱</span>
-                  <input type="number" id="job_pay" inputmode="decimal" step="0.01" placeholder="e.g., 1500.00" required />
-                </div>
-                <div class="hint">Set a fair, competitive rate.</div>
-              </div>
+          <div class="sk-field sk-row-2">
+            <div class="sk sk-label"></div>
+            <div class="sk sk-textarea"></div>
+          </div>
 
-              <!-- Date -->
-              <div class="field">
-                <label for="job_date">Date</label>
-                <div class="ctrl">
-                  <input type="date" id="job_date" required />
-                </div>
-              </div>
+          <div class="sk-field sk-row-2">
+            <div class="sk sk-label"></div>
+            <div class="sk sk-input"></div>
+            <div class="sk sk-map"></div>
+          </div>
+        </div>
 
-              <!-- Time -->
-              <div class="field">
-                <label for="job_time">Start Time</label>
-                <div class="ctrl">
-                  <span class="affix left material-icons-sharp" aria-hidden="true">schedule</span>
-                  <input type="time" id="job_time" required />
-                </div>
-              </div>
-
-              <!-- Duration (Hours) -->
-              <div class="field">
-                <label for="job_duration">Estimated Duration</label>
-                <div class="ctrl">
-                  <input type="number" id="job_duration" min="1" step="1" placeholder="e.g., 3" required />
-                  <span class="affix right">hours</span>
-                </div>
-              </div>
-
-              <!-- Picture / Dropzone -->
-              <div class="field">
-                <label>Photo (optional)</label>
-                <div class="dropzone" id="dz">
-                  <div>
-                    Drag & drop a photo here, or
-                    <label for="job_picture" style="color:var(--brand);cursor:pointer;font-weight:700;">browse</label>
-                  </div>
-                  <input type="file" id="job_picture" accept="image/*" />
-                  <div class="dz-actions hint">Clear, well-lit photos help workers decide faster.</div>
-                  <div class="dz-thumb" id="dzThumb"><img id="dzImg" alt="Preview" /></div>
-                </div>
-              </div>
-
-              <!-- Description -->
-              <div class="field row-2">
-                <label for="job_description">Details / Instructions</label>
-                <div class="ctrl">
-                  <textarea id="job_description" placeholder="Key tasks, tools available, building rules, parking, contact person…"></textarea>
-                </div>
-              </div>
-
-              <!-- Location -->
-              <div class="field row-2">
-                <label for="job_location">Location</label>
-                <div class="ctrl">
-                  <input type="text" id="job_location" placeholder="Type an address or use the map" required />
-                </div>
-                <div class="loc-row">
-                  <button type="button" class="btn ghost" id="btnLocate">
-                    <span class="material-icons-sharp" style="vertical-align:middle">my_location</span>
-                    Locate me
-                  </button>
-                  <span class="hint">Click on the map or drag the pin to set the exact spot.</span>
-                </div>
-                <div id="job-map"></div>
-                <input type="hidden" id="job_lat" />
-                <input type="hidden" id="job_lng" />
-              </div>
-            </div>
-
-            <div class="hr"></div>
-
-            <div class="actions">
-              <button type="reset" class="btn ghost" id="btnReset">Reset</button>
-              <button type="submit" class="btn" id="submitBtn">Post Job</button>
-            </div>
-          </form>
-        </section>
-
-        <!-- View My Posts (optional, unchanged) -->
-        <section class="card hidden" id="view-posts">
-          <h1>My Job Posts</h1>
-          <table>
-            <thead>
-              <tr>
-                <th>Title</th>
-                <th>Date</th>
-                <th>Pay</th>
-                <th>Difficulty</th>
-              </tr>
-            </thead>
-            <tbody id="postsTable"></tbody>
-          </table>
-        </section>
-      </main>
+        <div class="sk-actions">
+          <div class="sk sk-btn"></div>
+          <div class="sk sk-btn" style="width:140px;"></div>
+        </div>
+      </section>
     </div>
 
-    <script src="../../general_files/index.js"></script>
-    <script type="module" src="../../general_files/session.js"></script>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!--MAIN CONTENT-->
+    <main>
+      <!-- Create/Edit Post -->
+      <h1 id="form-title">Create a Job Post</h1>
+      <p class="sub" id="form-sub">Keep it short, clear, and accurate—workers decide fast.</p>
+      <section class="card" id="create-post">
 
-    <script type="module">
-      import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
-      import { SUPABASE_URL, SUPABASE_ANON_KEY } from "../../../supabase.js";
-      const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-      // === Private storage bucket for job pictures (must exist & be "private") ===
-      const JOB_PICS_BUCKET = "jobs"; // change if your bucket name is different
+        <form id="jobForm" novalidate>
+          <div class="form-grid">
+            <!-- Title -->
+            <div class="field row-2">
+              <label for="job_title">Job Title</label>
+              <div class="ctrl">
+                <input type="text" id="job_title" placeholder="e.g., Aircon cleaning for studio unit" required />
+              </div>
+            </div>
 
-      // ====== LOADING GATES (added) ======
-      let mapLoaded = false;
-      let editLoaded = false;
-      function tryFinishLoading(){
-        if(mapLoaded && editLoaded){
-          document.body.classList.remove("loading");
-          setTimeout(()=>map.invalidateSize(),0);
-        }
+            <!-- Category -->
+            <div class="field">
+              <label for="job_category">Category</label>
+              <div class="ctrl">
+                <select id="job_category">
+                  <option value="">Select a category</option>
+                  <option>Cleaning</option>
+                  <option>Electrical</option>
+                  <option>Plumbing</option>
+                  <option>Delivery</option>
+                  <option>IT Support</option>
+                  <option>General Help</option>
+                </select>
+              </div>
+              <div class="hint">Choose the closest fit.</div>
+            </div>
+
+            <!-- Difficulty -->
+            <div class="field">
+              <label for="job_difficulty_range">Difficulty</label>
+              <div class="ctrl">
+                <div class="slider-wrap">
+                  <input type="range" id="job_difficulty_range" min="1" max="10" step="1" value="3" />
+                  <span class="badge" id="diffBadge">3/10</span>
+                </div>
+              </div>
+              <input type="hidden" id="job_difficulty" value="3" />
+              <div class="hint">1 = very easy, 10 = expert-level.</div>
+            </div>
+
+            <!-- Pay -->
+            <div class="field">
+              <label for="job_pay">Pay</label>
+              <div class="ctrl">
+                <span class="affix left">₱</span>
+                <input type="number" id="job_pay" inputmode="decimal" step="0.01" placeholder="e.g., 1500.00"
+                  required />
+              </div>
+              <div class="hint">Set a fair, competitive rate.</div>
+            </div>
+
+            <!-- Date -->
+            <div class="field">
+              <label for="job_date">Date</label>
+              <div class="ctrl">
+                <input type="date" id="job_date" required />
+              </div>
+            </div>
+
+            <!-- Time -->
+            <div class="field">
+              <label for="job_time">Start Time</label>
+              <div class="ctrl">
+                <span class="affix left material-icons-sharp" aria-hidden="true">schedule</span>
+                <input type="time" id="job_time" required />
+              </div>
+            </div>
+
+            <!-- Duration (Hours) -->
+            <div class="field">
+              <label for="job_duration">Estimated Duration</label>
+              <div class="ctrl">
+                <input type="number" id="job_duration" min="1" step="1" placeholder="e.g., 3" required />
+                <span class="affix right">hours</span>
+              </div>
+            </div>
+
+            <!-- Picture / Dropzone -->
+            <div class="field">
+              <label>Photo (optional)</label>
+              <div class="dropzone" id="dz">
+                <div>
+                  Drag & drop a photo here, or
+                  <label for="job_picture" style="color:var(--brand);cursor:pointer;font-weight:700;">browse</label>
+                </div>
+                <input type="file" id="job_picture" accept="image/*" />
+                <div class="dz-actions hint">Clear, well-lit photos help workers decide faster.</div>
+                <div class="dz-thumb" id="dzThumb"><img id="dzImg" alt="Preview" /></div>
+              </div>
+            </div>
+
+            <!-- Description -->
+            <div class="field row-2">
+              <label for="job_description">Details / Instructions</label>
+              <div class="ctrl">
+                <textarea id="job_description"
+                  placeholder="Key tasks, tools available, building rules, parking, contact person…"></textarea>
+              </div>
+            </div>
+
+            <!-- Location -->
+            <div class="field row-2">
+              <label for="job_location">Location</label>
+              <div class="ctrl">
+                <input type="text" id="job_location" placeholder="Type an address or use the map" required />
+              </div>
+              <div class="loc-row">
+                <button type="button" class="btn ghost" id="btnLocate">
+                  <span class="material-icons-sharp" style="vertical-align:middle">my_location</span>
+                  Locate me
+                </button>
+                <span class="hint">Click on the map or drag the pin to set the exact spot.</span>
+              </div>
+              <div id="job-map"></div>
+              <input type="hidden" id="job_lat" />
+              <input type="hidden" id="job_lng" />
+            </div>
+          </div>
+
+          <div class="hr"></div>
+
+          <div class="actions">
+            <button type="reset" class="btn ghost" id="btnReset">Reset</button>
+            <button type="submit" class="btn" id="submitBtn">Post Job</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- View My Posts (optional, unchanged) -->
+      <section class="card hidden" id="view-posts">
+        <h1>My Job Posts</h1>
+        <table>
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Date</th>
+              <th>Pay</th>
+              <th>Difficulty</th>
+            </tr>
+          </thead>
+          <tbody id="postsTable"></tbody>
+        </table>
+      </section>
+    </main>
+  </div>
+
+  <script src="../../general_files/index.js"></script>
+  <script type="module" src="../../general_files/session.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <script type="module">
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+    import { SUPABASE_URL, SUPABASE_ANON_KEY } from "../../../supabase.js";
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // === Private storage bucket for job pictures (must exist & be "private") ===
+    const JOB_PICS_BUCKET = "jobs"; // change if your bucket name is different
+
+    // ====== LOADING GATES (added) ======
+    let mapLoaded = false;
+    let editLoaded = false;
+    function tryFinishLoading() {
+      if (mapLoaded && editLoaded) {
+        document.body.classList.remove("loading");
+        setTimeout(() => map.invalidateSize(), 0);
       }
+    }
 
-      // ========= Helpers for INTERVAL <-> hours =========
-      function intervalToHours(v){
-        if(v==null) return null;
-        if(typeof v==="number" && isFinite(v)) return Math.max(0, Math.round(v));
-        const s=String(v).trim();
+    // ========= Helpers for INTERVAL <-> hours =========
+    function intervalToHours(v) {
+      if (v == null) return null;
+      if (typeof v === "number" && isFinite(v)) return Math.max(0, Math.round(v));
+      const s = String(v).trim();
 
-        let m=/^(\d{1,2}):([0-5]?\d)(?::([0-5]?\d))?$/.exec(s);
-        if(m){
-          const h=parseInt(m[1]||"0",10), min=parseInt(m[2]||"0",10);
-          return Math.max(0, Math.round(h + min/60));
-        }
-        m=/(?:(\d+)\s+day[s]?\s*)?(\d{1,2}):([0-5]?\d)(?::([0-5]?\d))?/i.exec(s);
-        if(m){
-          const d=parseInt(m[1]||"0",10), h=parseInt(m[2]||"0",10), min=parseInt(m[3]||"0",10);
-          return Math.max(0, Math.round(d*24 + h + min/60));
-        }
-        m=/^P(T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?)$/i.exec(s);
-        if(m){
-          const h=parseInt(m[2]||"0",10), min=parseInt(m[3]||"0",10);
-          return Math.max(0, Math.round(h + min/60));
-        }
-        if(/^\d+$/.test(s)) return Math.max(0, parseInt(s,10));
+      let m = /^(\d{1,2}):([0-5]?\d)(?::([0-5]?\d))?$/.exec(s);
+      if (m) {
+        const h = parseInt(m[1] || "0", 10), min = parseInt(m[2] || "0", 10);
+        return Math.max(0, Math.round(h + min / 60));
+      }
+      m = /(?:(\d+)\s+day[s]?\s*)?(\d{1,2}):([0-5]?\d)(?::([0-5]?\d))?/i.exec(s);
+      if (m) {
+        const d = parseInt(m[1] || "0", 10), h = parseInt(m[2] || "0", 10), min = parseInt(m[3] || "0", 10);
+        return Math.max(0, Math.round(d * 24 + h + min / 60));
+      }
+      m = /^P(T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?)$/i.exec(s);
+      if (m) {
+        const h = parseInt(m[2] || "0", 10), min = parseInt(m[3] || "0", 10);
+        return Math.max(0, Math.round(h + min / 60));
+      }
+      if (/^\d+$/.test(s)) return Math.max(0, parseInt(s, 10));
+      return null;
+    }
+    function hoursToInterval(hours) {
+      const h = Math.max(0, parseInt(hours, 10) || 0);
+      return `${String(h).padStart(2, "0")}:00:00`;
+    }
+
+    // ========= Signed URL helpers for Supabase Storage =========
+    function parsePublicBucketAndPath(publicUrl) {
+      try {
+        const marker = "/storage/v1/object/public/";
+        const i = publicUrl.indexOf(marker);
+        if (i === -1) return null;
+        const rest = publicUrl.substring(i + marker.length);
+        const slash = rest.indexOf("/");
+        if (slash === -1) return null;
+        const bucket = rest.substring(0, slash);
+        const path = rest.substring(slash + 1);
+        return { bucket, path };
+      } catch { return null; }
+    }
+    function parseStorageRef(ref) {
+      if (!ref) return null;
+      const s = String(ref).trim();
+      if (/^https?:\/\//i.test(s)) {
+        const parsed = parsePublicBucketAndPath(s);
+        return parsed || null;
+      }
+      const bi = s.indexOf("::");
+      if (bi > 0) return { bucket: s.slice(0, bi), path: s.slice(bi + 2) };
+      return { bucket: JOB_PICS_BUCKET, path: s };
+    }
+    async function createSignedUrl(bucket, path, expires = 3600) {
+      const { data, error } = await supabase.storage.from(bucket).createSignedUrl(path, expires);
+      if (error) throw error;
+      return data.signedUrl;
+    }
+    async function resolveSignedUrl(ref) {
+      if (!ref) return null;
+      if (/^https?:\/\//i.test(ref) && !ref.includes("/storage/v1/object/")) return ref;
+      const parsed = parseStorageRef(ref);
+      if (!parsed) return null;
+      try {
+        return await createSignedUrl(parsed.bucket, parsed.path, 3600);
+      } catch (e) {
+        console.warn("Failed to create signed URL:", e.message);
+        if (/^https?:\/\//i.test(ref)) return ref;
         return null;
       }
-      function hoursToInterval(hours){
-        const h=Math.max(0, parseInt(hours,10)||0);
-        return `${String(h).padStart(2,"0")}:00:00`;
-      }
+    }
 
-      // ========= Signed URL helpers for Supabase Storage =========
-      function parsePublicBucketAndPath(publicUrl){
-        try{
-          const marker="/storage/v1/object/public/";
-          const i=publicUrl.indexOf(marker);
-          if(i===-1) return null;
-          const rest=publicUrl.substring(i+marker.length);
-          const slash=rest.indexOf("/");
-          if(slash===-1) return null;
-          const bucket=rest.substring(0,slash);
-          const path=rest.substring(slash+1);
-          return {bucket,path};
-        }catch{return null;}
+    // ========= DOM hooks =========
+    const form = document.getElementById("jobForm");
+    const postsTable = document.getElementById("postsTable");
+
+    const diffRange = document.getElementById("job_difficulty_range");
+    const diffHidden = document.getElementById("job_difficulty");
+    const diffBadge = document.getElementById("diffBadge");
+
+    const dz = document.getElementById("dz");
+    const fileInput = document.getElementById("job_picture");
+    const dzThumb = document.getElementById("dzThumb");
+    const dzImg = document.getElementById("dzImg");
+    const btnReset = document.getElementById("btnReset");
+
+    const inputLocation = document.getElementById("job_location");
+    const inputLat = document.getElementById("job_lat");
+    const inputLng = document.getElementById("job_lng");
+    const btnLocate = document.getElementById("btnLocate");
+
+    const inputDate = document.getElementById("job_date");
+    const inputTitle = document.getElementById("job_title");
+    const inputCategory = document.getElementById("job_category");
+    const inputPay = document.getElementById("job_pay");
+    const inputTime = document.getElementById("job_time");
+    const inputDuration = document.getElementById("job_duration");
+    const inputDesc = document.getElementById("job_description");
+
+    const formTitle = document.getElementById("form-title");
+    const formSub = document.getElementById("form-sub");
+    const submitBtn = document.getElementById("submitBtn");
+
+    // ========= UX bits =========
+    diffRange.addEventListener("input", () => {
+      diffBadge.textContent = `${diffRange.value}/10`;
+      diffHidden.value = diffRange.value;
+    });
+
+    dz.addEventListener("dragover", (e) => { e.preventDefault(); dz.style.borderColor = "#6366f1"; });
+    dz.addEventListener("dragleave", () => { dz.style.borderColor = "#cbd5e1"; });
+    dz.addEventListener("drop", (e) => {
+      e.preventDefault(); dz.style.borderColor = "#cbd5e1";
+      if (e.dataTransfer.files?.length) {
+        fileInput.files = e.dataTransfer.files;
+        previewImage(fileInput.files[0]);
       }
-      function parseStorageRef(ref){
-        if(!ref) return null;
-        const s=String(ref).trim();
-        if(/^https?:\/\//i.test(s)){
-          const parsed=parsePublicBucketAndPath(s);
-          return parsed||null;
+    });
+    fileInput.addEventListener("change", () => { if (fileInput.files?.length) previewImage(fileInput.files[0]); });
+    function previewImage(file) {
+      const reader = new FileReader();
+      reader.onload = () => { dzImg.src = reader.result; dzThumb.style.display = "block"; };
+      reader.readAsDataURL(file);
+    }
+
+    // ========= MAP =========
+    const DEFAULT_CENTER = [14.5995, 120.9842]; // Manila
+    const DEFAULT_ZOOM = 12;
+
+    const map = L.map("job-map").setView(DEFAULT_CENTER, DEFAULT_ZOOM);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> contributors' }).addTo(map);
+    let marker = L.marker(DEFAULT_CENTER, { draggable: true }).addTo(map);
+
+    map.whenReady(() => { mapLoaded = true; tryFinishLoading(); });
+
+    async function reverseGeocode(lat, lng) {
+      try {
+        const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`;
+        const res = await fetch(url, { headers: { "Accept-Language": "en-PH", "User-Agent": "SIMPProject/1.0 (contact@example.com)" } });
+        if (!res.ok) throw new Error("Reverse geocoding failed");
+        const data = await res.json();
+        return data.display_name || `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+      } catch {
+        return `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+      }
+    }
+    async function setFromCoords(lat, lng, zoom = 16) {
+      inputLocation.value = "Resolving address…";
+      const addr = await reverseGeocode(lat, lng);
+      inputLocation.value = addr;
+      inputLat.value = lat;
+      inputLng.value = lng;
+      marker.setLatLng([lat, lng]);
+      map.setView([lat, lng], zoom);
+    }
+    setFromCoords(DEFAULT_CENTER[0], DEFAULT_CENTER[1], DEFAULT_ZOOM);
+    map.on("click", (e) => setFromCoords(e.latlng.lat, e.latlng.lng, 17));
+    marker.on("dragend", async () => {
+      const { lat, lng } = marker.getLatLng();
+      await setFromCoords(lat, lng, map.getZoom());
+    });
+    btnLocate.addEventListener("click", () => {
+      if (!navigator.geolocation) { alert("Geolocation not supported by your browser."); return; }
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          const { latitude: lat, longitude: lng, accuracy } = pos.coords;
+          await setFromCoords(lat, lng, accuracy && accuracy < 60 ? 17 : 16);
+        },
+        (err) => alert(`Unable to get your location. (${err?.message || "Unknown error"})`),
+        { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
+      );
+    });
+
+    // ========= Date min (today) =========
+    function todayYYYYMMDD() {
+      const d = new Date(), y = d.getFullYear(), m = String(d.getMonth() + 1).padStart(2, "0"), day = String(d.getDate()).padStart(2, "0");
+      return `${y}-${m}-${day}`;
+    }
+    const TODAY_STR = todayYYYYMMDD();
+    inputDate.setAttribute("min", TODAY_STR);
+
+    // ========= Edit mode detection & loader =========
+    const url = new URL(location.href);
+    const jobId = url.searchParams.get("job_id");
+    let EDIT_MODE = Boolean(jobId);
+    let ORIGINAL_JOB = null;
+
+    async function loadEditJob() {
+      if (!EDIT_MODE) {
+        editLoaded = true;
+        tryFinishLoading();
+        return;
+      }
+      formTitle.textContent = "Edit Job Post";
+      formSub.textContent = "Update details, then save your changes.";
+      submitBtn.textContent = "Save Changes";
+
+      try {
+        const cached = sessionStorage.getItem("edit_job_cache");
+        if (cached) {
+          const j = JSON.parse(cached);
+          if (j && j.job_id === jobId) ORIGINAL_JOB = j;
         }
-        const bi=s.indexOf("::");
-        if(bi>0) return {bucket:s.slice(0,bi), path:s.slice(bi+2)};
-        return {bucket:JOB_PICS_BUCKET, path:s};
-      }
-      async function createSignedUrl(bucket,path,expires=3600){
-        const {data,error}=await supabase.storage.from(bucket).createSignedUrl(path,expires);
-        if(error) throw error;
-        return data.signedUrl;
-      }
-      async function resolveSignedUrl(ref){
-        if(!ref) return null;
-        if(/^https?:\/\//i.test(ref) && !ref.includes("/storage/v1/object/")) return ref;
-        const parsed=parseStorageRef(ref);
-        if(!parsed) return null;
-        try{
-          return await createSignedUrl(parsed.bucket, parsed.path, 3600);
-        }catch(e){
-          console.warn("Failed to create signed URL:", e.message);
-          if(/^https?:\/\//i.test(ref)) return ref;
-          return null;
-        }
-      }
+      } catch { }
 
-      // ========= DOM hooks =========
-      const form=document.getElementById("jobForm");
-      const postsTable=document.getElementById("postsTable");
-
-      const diffRange=document.getElementById("job_difficulty_range");
-      const diffHidden=document.getElementById("job_difficulty");
-      const diffBadge=document.getElementById("diffBadge");
-
-      const dz=document.getElementById("dz");
-      const fileInput=document.getElementById("job_picture");
-      const dzThumb=document.getElementById("dzThumb");
-      const dzImg=document.getElementById("dzImg");
-      const btnReset=document.getElementById("btnReset");
-
-      const inputLocation=document.getElementById("job_location");
-      const inputLat=document.getElementById("job_lat");
-      const inputLng=document.getElementById("job_lng");
-      const btnLocate=document.getElementById("btnLocate");
-
-      const inputDate=document.getElementById("job_date");
-      const inputTitle=document.getElementById("job_title");
-      const inputCategory=document.getElementById("job_category");
-      const inputPay=document.getElementById("job_pay");
-      const inputTime=document.getElementById("job_time");
-      const inputDuration=document.getElementById("job_duration");
-      const inputDesc=document.getElementById("job_description");
-
-      const formTitle=document.getElementById("form-title");
-      const formSub=document.getElementById("form-sub");
-      const submitBtn=document.getElementById("submitBtn");
-
-      // ========= UX bits =========
-      diffRange.addEventListener("input",()=>{
-        diffBadge.textContent=`${diffRange.value}/10`;
-        diffHidden.value=diffRange.value;
-      });
-
-      dz.addEventListener("dragover",(e)=>{e.preventDefault();dz.style.borderColor="#6366f1";});
-      dz.addEventListener("dragleave",()=>{dz.style.borderColor="#cbd5e1";});
-      dz.addEventListener("drop",(e)=>{
-        e.preventDefault();dz.style.borderColor="#cbd5e1";
-        if(e.dataTransfer.files?.length){
-          fileInput.files=e.dataTransfer.files;
-          previewImage(fileInput.files[0]);
-        }
-      });
-      fileInput.addEventListener("change",()=>{ if(fileInput.files?.length) previewImage(fileInput.files[0]); });
-      function previewImage(file){
-        const reader=new FileReader();
-        reader.onload=()=>{ dzImg.src=reader.result; dzThumb.style.display="block"; };
-        reader.readAsDataURL(file);
-      }
-
-      // ========= MAP =========
-      const DEFAULT_CENTER=[14.5995,120.9842]; // Manila
-      const DEFAULT_ZOOM=12;
-
-      const map=L.map("job-map").setView(DEFAULT_CENTER, DEFAULT_ZOOM);
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> contributors'}).addTo(map);
-      let marker=L.marker(DEFAULT_CENTER,{draggable:true}).addTo(map);
-
-      map.whenReady(()=>{ mapLoaded=true; tryFinishLoading(); });
-
-      async function reverseGeocode(lat,lng){
-        try{
-          const url=`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`;
-          const res=await fetch(url,{headers:{"Accept-Language":"en-PH","User-Agent":"SIMPProject/1.0 (contact@example.com)"}});
-          if(!res.ok) throw new Error("Reverse geocoding failed");
-          const data=await res.json();
-          return data.display_name || `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
-        }catch{
-          return `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
-        }
-      }
-      async function setFromCoords(lat,lng,zoom=16){
-        inputLocation.value="Resolving address…";
-        const addr=await reverseGeocode(lat,lng);
-        inputLocation.value=addr;
-        inputLat.value=lat;
-        inputLng.value=lng;
-        marker.setLatLng([lat,lng]);
-        map.setView([lat,lng],zoom);
-      }
-      setFromCoords(DEFAULT_CENTER[0], DEFAULT_CENTER[1], DEFAULT_ZOOM);
-      map.on("click",(e)=>setFromCoords(e.latlng.lat,e.latlng.lng,17));
-      marker.on("dragend",async ()=>{
-        const {lat,lng}=marker.getLatLng();
-        await setFromCoords(lat,lng,map.getZoom());
-      });
-      btnLocate.addEventListener("click",()=>{
-        if(!navigator.geolocation){ alert("Geolocation not supported by your browser."); return; }
-        navigator.geolocation.getCurrentPosition(
-          async (pos)=>{
-            const {latitude:lat, longitude:lng, accuracy}=pos.coords;
-            await setFromCoords(lat,lng, accuracy && accuracy<60 ? 17 : 16);
-          },
-          (err)=>alert(`Unable to get your location. (${err?.message||"Unknown error"})`),
-          {enableHighAccuracy:true, timeout:12000, maximumAge:0}
-        );
-      });
-
-      // ========= Date min (today) =========
-      function todayYYYYMMDD(){
-        const d=new Date(), y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,"0"), day=String(d.getDate()).padStart(2,"0");
-        return `${y}-${m}-${day}`;
-      }
-      const TODAY_STR=todayYYYYMMDD();
-      inputDate.setAttribute("min",TODAY_STR);
-
-      // ========= Edit mode detection & loader =========
-      const url=new URL(location.href);
-      const jobId=url.searchParams.get("job_id");
-      let EDIT_MODE=Boolean(jobId);
-      let ORIGINAL_JOB=null;
-
-      async function loadEditJob(){
-        if(!EDIT_MODE){
-          editLoaded=true;
+      if (!ORIGINAL_JOB) {
+        const { data, error } = await supabase
+          .schema("jobs")
+          .from("job")
+          .select("job_id, job_code, job_title, job_description, job_difficulty, job_category, job_location, job_date, job_time, job_pay, job_picture_url, job_duration, posted_by")
+          .eq("job_id", jobId)
+          .maybeSingle();
+        if (error) {
+          alert("Unable to load job for editing.");
+          editLoaded = true;
           tryFinishLoading();
           return;
         }
-        formTitle.textContent="Edit Job Post";
-        formSub.textContent="Update details, then save your changes.";
-        submitBtn.textContent="Save Changes";
-
-        try{
-          const cached=sessionStorage.getItem("edit_job_cache");
-          if(cached){
-            const j=JSON.parse(cached);
-            if(j && j.job_id===jobId) ORIGINAL_JOB=j;
-          }
-        }catch{}
-
-        if(!ORIGINAL_JOB){
-          const {data,error}=await supabase
-            .schema("jobs")
-            .from("job")
-            .select("job_id, job_code, job_title, job_description, job_difficulty, job_category, job_location, job_date, job_time, job_pay, job_picture_url, job_duration, posted_by")
-            .eq("job_id",jobId)
-            .maybeSingle();
-          if(error){
-            alert("Unable to load job for editing.");
-            editLoaded=true;
-            tryFinishLoading();
-            return;
-          }
-          ORIGINAL_JOB=data;
-        }
-
-        if(ORIGINAL_JOB){
-          inputTitle.value=ORIGINAL_JOB.job_title||"";
-          inputCategory.value=ORIGINAL_JOB.job_category||"";
-          const diff=Number(ORIGINAL_JOB.job_difficulty||3);
-          diffRange.value=String(diff);
-          diffHidden.value=String(diff);
-          diffBadge.textContent=`${diff}/10`;
-
-          inputPay.value=ORIGINAL_JOB.job_pay??"";
-          inputDate.value=ORIGINAL_JOB.job_date??"";
-          inputTime.value=ORIGINAL_JOB.job_time??"";
-
-          const hrs=intervalToHours(ORIGINAL_JOB.job_duration);
-          inputDuration.value=hrs??1;
-
-          inputDesc.value=ORIGINAL_JOB.job_description||"";
-          inputLocation.value=ORIGINAL_JOB.job_location||"";
-
-          if(ORIGINAL_JOB.job_picture_url){
-            try{
-              const signed=await resolveSignedUrl(ORIGINAL_JOB.job_picture_url);
-              if(signed){ dzImg.src=signed; dzThumb.style.display="block"; }
-            }catch{}
-          }
-        }
-        editLoaded=true;
-        tryFinishLoading();
+        ORIGINAL_JOB = data;
       }
 
-      await loadEditJob();
+      if (ORIGINAL_JOB) {
+        inputTitle.value = ORIGINAL_JOB.job_title || "";
+        inputCategory.value = ORIGINAL_JOB.job_category || "";
+        const diff = Number(ORIGINAL_JOB.job_difficulty || 3);
+        diffRange.value = String(diff);
+        diffHidden.value = String(diff);
+        diffBadge.textContent = `${diff}/10`;
 
-      // ========= Reset behavior =========
-      btnReset.addEventListener("click",()=>{
-        dzThumb.style.display="none";
-        dzImg.src="";
-        diffRange.value="3";
-        diffBadge.textContent="3/10";
-        diffHidden.value="3";
-        inputDate.setAttribute("min",TODAY_STR);
+        inputPay.value = ORIGINAL_JOB.job_pay ?? "";
+        inputDate.value = ORIGINAL_JOB.job_date ?? "";
+        inputTime.value = ORIGINAL_JOB.job_time ?? "";
+
+        const hrs = intervalToHours(ORIGINAL_JOB.job_duration);
+        inputDuration.value = hrs ?? 1;
+
+        inputDesc.value = ORIGINAL_JOB.job_description || "";
+        inputLocation.value = ORIGINAL_JOB.job_location || "";
+
+        if (ORIGINAL_JOB.job_picture_url) {
+          try {
+            const signed = await resolveSignedUrl(ORIGINAL_JOB.job_picture_url);
+            if (signed) { dzImg.src = signed; dzThumb.style.display = "block"; }
+          } catch { }
+        }
+      }
+      editLoaded = true;
+      tryFinishLoading();
+    }
+
+    await loadEditJob();
+
+    // ========= Reset behavior =========
+    btnReset.addEventListener("click", () => {
+      dzThumb.style.display = "none";
+      dzImg.src = "";
+      diffRange.value = "3";
+      diffBadge.textContent = "3/10";
+      diffHidden.value = "3";
+      inputDate.setAttribute("min", TODAY_STR);
+      setFromCoords(DEFAULT_CENTER[0], DEFAULT_CENTER[1], DEFAULT_ZOOM);
+    });
+
+    // ========= Submit (create or update) =========
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { alert("You must be logged in."); return; }
+
+      const picked = inputDate.value;
+      if (!picked || picked < TODAY_STR) { alert("Please select today or a future date for the job."); return; }
+
+      let pictureRef = ORIGINAL_JOB?.job_picture_url || null;
+
+      if (fileInput.files && fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
+        const safeName = file.name.replace(/[^\w.\-]/g, "_");
+        const filePath = `${user.id}/${Date.now()}_${safeName}.${ext}`;
+        const { error: upErr } = await supabase.storage.from(JOB_PICS_BUCKET).upload(filePath, file, { upsert: true });
+        if (upErr) { alert("Error uploading picture: " + upErr.message); return; }
+        pictureRef = filePath;
+
+        try {
+          const previewUrl = await resolveSignedUrl(pictureRef);
+          if (previewUrl) { dzImg.src = previewUrl; dzThumb.style.display = "block"; }
+        } catch { }
+      }
+
+      const job_duration_interval = hoursToInterval(document.getElementById("job_duration").value);
+
+      const payload = {
+        job_title: inputTitle.value.trim(),
+        job_description: inputDesc.value.trim(),
+        job_difficulty: parseInt(diffHidden.value, 10),
+        job_category: inputCategory.value || null,
+        job_location: inputLocation.value.trim(),
+        job_date: inputDate.value,
+        job_time: inputTime.value,
+        job_duration: job_duration_interval,
+        job_pay: parseFloat(inputPay.value),
+        job_picture_url: pictureRef,
+      };
+
+      if (!EDIT_MODE) {
+        function genCode() {
+          const L = Array.from({ length: 4 }, () => String.fromCharCode(65 + Math.floor(Math.random() * 26))).join("");
+          const N = String(Math.floor(Math.random() * 10000)).padStart(4, "0");
+          return `${L}-${N}`;
+        }
+        const job_code = genCode();
+        const insertPayload = { ...payload, job_code, posted_by: user.id };
+        const { error } = await supabase.schema("jobs").from("job").insert([insertPayload]);
+        if (error) { alert("Error posting job: " + error.message); return; }
+        alert("Job posted successfully!");
+        form.reset();
+        dzThumb.style.display = "none";
+        dzImg.src = "";
+        diffRange.value = "3";
+        diffBadge.textContent = "3/10";
+        diffHidden.value = "3";
+        inputDate.setAttribute("min", TODAY_STR);
         setFromCoords(DEFAULT_CENTER[0], DEFAULT_CENTER[1], DEFAULT_ZOOM);
-      });
+      } else {
+        const { error } = await supabase
+          .schema("jobs")
+          .from("job")
+          .update({ ...payload, updated_at: new Date().toISOString() })
+          .eq("job_id", jobId)
+          .eq("posted_by", user.id);
+        if (error) { alert("Error saving changes: " + error.message); return; }
+        alert("Changes saved!");
+        window.location.href = "myJobPosts.html";
+      }
+    });
 
-      // ========= Submit (create or update) =========
-      form.addEventListener("submit", async (e)=>{
+    // ====== Optional: View posts (unchanged demo) ======
+    const navCreate = document.getElementById("nav-create");
+    const navView = document.getElementById("nav-view");
+    const sectionCreate = document.getElementById("create-post");
+    const sectionView = document.getElementById("view-posts");
+    if (navCreate && navView && sectionCreate && sectionView) {
+      function ensureMapSize() { setTimeout(() => map.invalidateSize(), 0); }
+      navCreate.addEventListener("click", (e) => {
         e.preventDefault();
-
-        const {data:{user}}=await supabase.auth.getUser();
-        if(!user){ alert("You must be logged in."); return; }
-
-        const picked=inputDate.value;
-        if(!picked || picked<TODAY_STR){ alert("Please select today or a future date for the job."); return; }
-
-        let pictureRef=ORIGINAL_JOB?.job_picture_url || null;
-
-        if(fileInput.files && fileInput.files.length>0){
-          const file=fileInput.files[0];
-          const ext=(file.name.split(".").pop()||"jpg").toLowerCase();
-          const safeName=file.name.replace(/[^\w.\-]/g,"_");
-          const filePath=`${user.id}/${Date.now()}_${safeName}.${ext}`;
-          const {error:upErr}=await supabase.storage.from(JOB_PICS_BUCKET).upload(filePath,file,{upsert:true});
-          if(upErr){ alert("Error uploading picture: "+upErr.message); return; }
-          pictureRef=filePath;
-
-          try{
-            const previewUrl=await resolveSignedUrl(pictureRef);
-            if(previewUrl){ dzImg.src=previewUrl; dzThumb.style.display="block"; }
-          }catch{}
-        }
-
-        const job_duration_interval=hoursToInterval(document.getElementById("job_duration").value);
-
-        const payload={
-          job_title:inputTitle.value.trim(),
-          job_description:inputDesc.value.trim(),
-          job_difficulty:parseInt(diffHidden.value,10),
-          job_category:inputCategory.value||null,
-          job_location:inputLocation.value.trim(),
-          job_date:inputDate.value,
-          job_time:inputTime.value,
-          job_duration:job_duration_interval,
-          job_pay:parseFloat(inputPay.value),
-          job_picture_url:pictureRef,
-        };
-
-        if(!EDIT_MODE){
-          function genCode(){
-            const L=Array.from({length:4},()=>String.fromCharCode(65+Math.floor(Math.random()*26))).join("");
-            const N=String(Math.floor(Math.random()*10000)).padStart(4,"0");
-            return `${L}-${N}`;
-          }
-          const job_code=genCode();
-          const insertPayload={...payload, job_code, posted_by:user.id};
-          const {error}=await supabase.schema("jobs").from("job").insert([insertPayload]);
-          if(error){ alert("Error posting job: "+error.message); return; }
-          alert("Job posted successfully!");
-          form.reset();
-          dzThumb.style.display="none";
-          dzImg.src="";
-          diffRange.value="3";
-          diffBadge.textContent="3/10";
-          diffHidden.value="3";
-          inputDate.setAttribute("min",TODAY_STR);
-          setFromCoords(DEFAULT_CENTER[0], DEFAULT_CENTER[1], DEFAULT_ZOOM);
-        }else{
-          const {error}=await supabase
-            .schema("jobs")
-            .from("job")
-            .update({...payload, updated_at:new Date().toISOString()})
-            .eq("job_id",jobId)
-            .eq("posted_by",user.id);
-          if(error){ alert("Error saving changes: "+error.message); return; }
-          alert("Changes saved!");
-          window.location.href="myJobPosts.html";
-        }
+        navCreate.classList.add("active");
+        navView.classList.remove("active");
+        sectionCreate.classList.remove("hidden");
+        sectionView.classList.add("hidden");
+        ensureMapSize();
       });
-
-      // ====== Optional: View posts (unchanged demo) ======
-      const navCreate=document.getElementById("nav-create");
-      const navView=document.getElementById("nav-view");
-      const sectionCreate=document.getElementById("create-post");
-      const sectionView=document.getElementById("view-posts");
-      if(navCreate && navView && sectionCreate && sectionView){
-        function ensureMapSize(){ setTimeout(()=>map.invalidateSize(),0); }
-        navCreate.addEventListener("click",(e)=>{
-          e.preventDefault();
-          navCreate.classList.add("active");
-          navView.classList.remove("active");
-          sectionCreate.classList.remove("hidden");
-          sectionView.classList.add("hidden");
-          ensureMapSize();
-        });
-        navView.addEventListener("click",async (e)=>{
-          e.preventDefault();
-          navView.classList.add("active");
-          navCreate.classList.remove("active");
-          sectionView.classList.remove("hidden");
-          sectionCreate.classList.add("hidden");
-          const {data:{user}}=await supabase.auth.getUser();
-          if(!user) return;
-          const {data}=await supabase.schema("jobs").from("job").select("job_title, job_date, job_pay, job_difficulty").eq("posted_by",user.id);
-          postsTable.innerHTML="";
-          (data||[]).forEach(job=>{
-            postsTable.innerHTML += `<tr>
+      navView.addEventListener("click", async (e) => {
+        e.preventDefault();
+        navView.classList.add("active");
+        navCreate.classList.remove("active");
+        sectionView.classList.remove("hidden");
+        sectionCreate.classList.add("hidden");
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+        const { data } = await supabase.schema("jobs").from("job").select("job_title, job_date, job_pay, job_difficulty").eq("posted_by", user.id);
+        postsTable.innerHTML = "";
+        (data || []).forEach(job => {
+          postsTable.innerHTML += `<tr>
               <td>${job.job_title}</td>
               <td>${job.job_date}</td>
-              <td>₱${Number(job.job_pay).toLocaleString("en-PH",{minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+              <td>₱${Number(job.job_pay).toLocaleString("en-PH", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
               <td>${job.job_difficulty}</td>
             </tr>`;
-          });
         });
-      }
-    </script>
-  </body>
+      });
+    }
+  </script>
+</body>
+
 </html>

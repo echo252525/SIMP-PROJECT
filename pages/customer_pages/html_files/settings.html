@@ -1,1058 +1,1111 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link
-      href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="../css_files/sideBar.css" />
-    <title>Settings</title>
-    <style>
-      :root {
-        --muted: #6b7280;
-        --ink: #1c2430;
-        --card: #ffffff;
-        --line: #e5e7eb;
-        --bg: #f8fafc;
-        --success: #20a44c;
-        --warn: #f59e0b;
-        --danger: #ef4444;
-        --chip: #eef2f7;
-        --sk-base: #eef2f7;
-        --sk-highlight: #f7fafc;
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet" />
+  <link rel="stylesheet" href="../css_files/sideBar.css" />
+  <title>Settings</title>
+  <style>
+    :root {
+      --muted: #6b7280;
+      --ink: #1c2430;
+      --card: #ffffff;
+      --line: #e5e7eb;
+      --bg: #f8fafc;
+      --success: #20a44c;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --chip: #eef2f7;
+      --sk-base: #eef2f7;
+      --sk-highlight: #f7fafc;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    .container {
+      display: grid;
+      width: 96%;
+      margin: 0 auto;
+      gap: 1.8rem;
+      grid-template-columns: 12rem auto 0;
+    }
+
+    main {
+      margin-top: 1.4rem;
+      padding: 1rem;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .header h1 {
+      margin: 0;
+      color: var(--ink);
+    }
+
+    .header .actions {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .icon-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.5rem 0.75rem;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--card);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .icon-btn:hover {
+      background: #fbfbfb;
+    }
+
+    .icon-btn[disabled] {
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 1rem;
+    }
+
+    .card h2 {
+      margin: 0.2rem 0 1rem;
+      font-size: 1.05rem;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .field label {
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .value,
+    input,
+    .readonly {
+      width: 100%;
+      padding: 0.7rem 0.8rem;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fff;
+    }
+
+    .readonly {
+      background: #f9fafb;
+      color: #374151;
+    }
+
+    input[readonly] {
+      background: #f9fafb;
+      color: #374151;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #cbd5e1;
+      box-shadow: 0 0 0 3px rgba(31, 41, 55, 0.06);
+    }
+
+    .row {
+      display: flex;
+      gap: 0.6rem;
+      align-items: center;
+    }
+
+    .hint {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.25rem 0.55rem;
+      border-radius: 999px;
+      background: var(--chip);
+      color: #374151;
+      font-size: 0.8rem;
+    }
+
+    .danger-zone {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 14px;
+      padding: 1rem;
+    }
+
+    .danger-zone h3 {
+      margin: 0.2rem 0 0.5rem;
+      color: #991b1b;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .danger-zone p {
+      margin: 0 0 0.8rem;
+      color: #6b7280;
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: #fff;
+      border: none;
+      padding: 0.7rem 1rem;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-danger:hover {
+      filter: brightness(0.96);
+    }
+
+    .footer-actions {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: flex-end;
+      margin-top: 0.6rem;
+    }
+
+    .btn {
+      padding: 0.7rem 1rem;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: #fff;
+      cursor: pointer;
+    }
+
+    .btn.primary {
+      background: var(--success);
+      color: #fff;
+      border-color: transparent;
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    /* ===== Skeleton Loader ===== */
+    .loading {
+      border: 1px dashed var(--line);
+      border-radius: 14px;
+      background: var(--card);
+      padding: 1rem;
+    }
+
+    .sk-shimmer {
+      position: relative;
+      overflow: hidden;
+      background: var(--sk-base);
+    }
+
+    .sk-shimmer::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      transform: translateX(-100%);
+      background: linear-gradient(90deg,
+          transparent,
+          var(--sk-highlight),
+          transparent);
+      animation: sk 1.2s infinite;
+    }
+
+    @keyframes sk {
+      100% {
+        transform: translateX(100%);
       }
-      * {
-        box-sizing: border-box;
-      }
-      body {
-        background: var(--bg);
-        color: var(--ink);
-      }
+    }
+
+    .sk-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .sk-title {
+      width: 180px;
+      height: 24px;
+      border-radius: 8px;
+    }
+
+    .sk-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .sk-chip,
+    .sk-btn {
+      height: 36px;
+      border-radius: 10px;
+    }
+
+    .sk-btn {
+      width: 90px;
+    }
+
+    .sk-chip {
+      width: 120px;
+    }
+
+    .sk-cards {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    .sk-card {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 1rem;
+      background: var(--card);
+    }
+
+    .sk-card-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 1rem;
+    }
+
+    .sk-icon {
+      width: 20px;
+      height: 20px;
+      border-radius: 6px;
+    }
+
+    .sk-h2 {
+      width: 160px;
+      height: 18px;
+      border-radius: 6px;
+    }
+
+    .sk-grid-2,
+    .sk-grid-3 {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .sk-grid-2 {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .sk-grid-3 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .sk-field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .sk-label {
+      width: 90px;
+      height: 12px;
+      border-radius: 6px;
+    }
+
+    .sk-input {
+      height: 42px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .sk-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 0.6rem;
+    }
+
+    .sk-danger {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 1rem;
+      background: #fff;
+    }
+
+    .sk-danger-h3 {
+      width: 200px;
+      height: 16px;
+      border-radius: 6px;
+      margin-bottom: 8px;
+    }
+
+    .sk-danger-p {
+      width: 100%;
+      max-width: 560px;
+      height: 12px;
+      border-radius: 6px;
+      margin-bottom: 10px;
+    }
+
+    .sk-danger-btn {
+      width: 160px;
+      height: 40px;
+      border-radius: 10px;
+    }
+
+    /* ===== Toast & Modal (unchanged) ===== */
+    .toast {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      background: #111827;
+      color: #fff;
+      padding: 0.8rem 1rem;
+      border-radius: 12px;
+      display: flex;
+      gap: 0.6rem;
+      align-items: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      opacity: 0;
+      transform: translateY(12px);
+      transition: 0.25s ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(17, 24, 39, 0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      z-index: 50;
+    }
+
+    .modal {
+      width: 100%;
+      max-width: 520px;
+      background: #fff;
+      border-radius: 16px;
+      padding: 1rem;
+      border: 1px solid var(--line);
+    }
+
+    .modal header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal h3 {
+      margin: 0.2rem 0;
+    }
+
+    .modal .body {
+      margin: 0.6rem 0 1rem;
+      color: #374151;
+    }
+
+    .modal .actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.5rem;
+    }
+
+    /* ====== Mobile compact layout ====== */
+    @media (max-width: 900px) {
       .container {
-        display: grid;
-        width: 96%;
-        margin: 0 auto;
-        gap: 1.8rem;
-        grid-template-columns: 12rem auto 0;
+        grid-template-columns: 1fr;
+        /* main stretches full width; sidebar handled elsewhere */
+        gap: 1rem;
+        width: 100%;
       }
+
       main {
-        margin-top: 1.4rem;
-        padding: 1rem;
+        padding: 0.75rem;
+        margin-top: 0.75rem;
+      }
+
+      .grid-2,
+      .grid-3 {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+      }
+
+      .card {
+        padding: 0.75rem;
+        border-radius: 12px;
+      }
+
+      .card h2 {
+        font-size: 1rem;
+        margin-bottom: 0.75rem;
       }
 
       .header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 1rem;
-      }
-      .header h1 {
-        margin: 0;
-        color: var(--ink);
-      }
-      .header .actions {
-        display: flex;
-        gap: 0.5rem;
-        align-items: center;
-      }
-      .icon-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.35rem;
-        padding: 0.5rem 0.75rem;
-        border: 1px solid var(--line);
-        border-radius: 10px;
-        background: var(--card);
-        cursor: pointer;
-        user-select: none;
-      }
-      .icon-btn:hover {
-        background: #fbfbfb;
-      }
-      .icon-btn[disabled] {
-        opacity: 0.6;
-        pointer-events: none;
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        background: var(--bg);
+        padding: 0.25rem 0;
+        margin-bottom: 0.5rem;
       }
 
-      .cards {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 1rem;
+      .header h1 {
+        font-size: 1.1rem;
       }
-      .card {
-        background: var(--card);
-        border: 1px solid var(--line);
-        border-radius: 14px;
-        padding: 1rem;
+
+      /* Icon-only buttons on small screens */
+      .icon-btn {
+        padding: 0.5rem;
+        border-radius: 10px;
+        gap: 0;
+        font-size: 0;
+        /* visually hide label text without altering DOM */
       }
-      .card h2 {
-        margin: 0.2rem 0 1rem;
-        font-size: 1.05rem;
-        color: var(--ink);
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
+
+      .icon-btn .material-icons-sharp {
+        font-size: 20px;
+        line-height: 1;
       }
-      .grid-2 {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1rem;
+
+      /* Shrink pills */
+      .pill {
+        padding: 0.2rem 0.45rem;
+        font-size: 0.75rem;
       }
-      .grid-3 {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 1rem;
-      }
-      .field {
-        display: flex;
-        flex-direction: column;
-        gap: 0.35rem;
-      }
-      .field label {
-        font-size: 0.9rem;
-        color: var(--muted);
-      }
-      .value,
+
+      /* Inputs tighter */
       input,
       .readonly {
-        width: 100%;
-        padding: 0.7rem 0.8rem;
-        border: 1px solid var(--line);
+        padding: 0.6rem 0.7rem;
         border-radius: 10px;
-        background: #fff;
-      }
-      .readonly {
-        background: #f9fafb;
-        color: #374151;
-      }
-      input[readonly] {
-        background: #f9fafb;
-        color: #374151;
-      }
-      input:focus {
-        outline: none;
-        border-color: #cbd5e1;
-        box-shadow: 0 0 0 3px rgba(31, 41, 55, 0.06);
-      }
-
-      .row {
-        display: flex;
-        gap: 0.6rem;
-        align-items: center;
-      }
-      .hint {
-        font-size: 0.85rem;
-        color: var(--muted);
-      }
-      .pill {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.35rem;
-        padding: 0.25rem 0.55rem;
-        border-radius: 999px;
-        background: var(--chip);
-        color: #374151;
-        font-size: 0.8rem;
-      }
-
-      .danger-zone {
-        border: 1px solid var(--line);
-        background: #fff;
-        border-radius: 14px;
-        padding: 1rem;
-      }
-      .danger-zone h3 {
-        margin: 0.2rem 0 0.5rem;
-        color: #991b1b;
-        display: flex;
-        align-items: center;
-        gap: 0.4rem;
-      }
-      .danger-zone p {
-        margin: 0 0 0.8rem;
-        color: #6b7280;
-      }
-      .btn-danger {
-        background: var(--danger);
-        color: #fff;
-        border: none;
-        padding: 0.7rem 1rem;
-        border-radius: 10px;
-        cursor: pointer;
-      }
-      .btn-danger:hover {
-        filter: brightness(0.96);
       }
 
       .footer-actions {
-        display: flex;
-        gap: 0.5rem;
-        justify-content: flex-end;
-        margin-top: 0.6rem;
-      }
-      .btn {
-        padding: 0.7rem 1rem;
-        border-radius: 10px;
-        border: 1px solid var(--line);
-        background: #fff;
-        cursor: pointer;
-      }
-      .btn.primary {
-        background: var(--success);
-        color: #fff;
-        border-color: transparent;
-      }
-      .btn:disabled {
-        opacity: 0.6;
-        pointer-events: none;
+        justify-content: stretch;
       }
 
-      /* ===== Skeleton Loader ===== */
-      .loading {
-        border: 1px dashed var(--line);
-        border-radius: 14px;
-        background: var(--card);
-        padding: 1rem;
+      .footer-actions .btn {
+        flex: 1;
       }
-      .sk-shimmer {
-        position: relative;
-        overflow: hidden;
-        background: var(--sk-base);
-      }
-      .sk-shimmer::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        transform: translateX(-100%);
-        background: linear-gradient(
-          90deg,
-          transparent,
-          var(--sk-highlight),
-          transparent
-        );
-        animation: sk 1.2s infinite;
-      }
-      @keyframes sk {
-        100% {
-          transform: translateX(100%);
-        }
-      }
-      .sk-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 1rem;
-      }
-      .sk-title {
-        width: 180px;
-        height: 24px;
-        border-radius: 8px;
-      }
-      .sk-actions {
-        display: flex;
-        gap: 8px;
-      }
-      .sk-chip,
-      .sk-btn {
-        height: 36px;
-        border-radius: 10px;
-      }
-      .sk-btn {
-        width: 90px;
-      }
-      .sk-chip {
-        width: 120px;
-      }
-      .sk-cards {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 1rem;
-      }
-      .sk-card {
-        border: 1px solid var(--line);
-        border-radius: 14px;
-        padding: 1rem;
-        background: var(--card);
-      }
-      .sk-card-head {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-bottom: 1rem;
-      }
-      .sk-icon {
-        width: 20px;
-        height: 20px;
-        border-radius: 6px;
-      }
-      .sk-h2 {
-        width: 160px;
-        height: 18px;
-        border-radius: 6px;
-      }
+
+      /* Skeleton mobile stack */
       .sk-grid-2,
       .sk-grid-3 {
-        display: grid;
-        gap: 1rem;
-      }
-      .sk-grid-2 {
-        grid-template-columns: 1fr 1fr;
-      }
-      .sk-grid-3 {
-        grid-template-columns: repeat(3, 1fr);
-      }
-      .sk-field {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-      }
-      .sk-label {
-        width: 90px;
-        height: 12px;
-        border-radius: 6px;
-      }
-      .sk-input {
-        height: 42px;
-        border-radius: 10px;
-        border: 1px solid var(--line);
-        background: #fff;
-      }
-      .sk-footer {
-        display: flex;
-        justify-content: flex-end;
-        gap: 8px;
-        margin-top: 0.6rem;
-      }
-      .sk-danger {
-        border: 1px solid var(--line);
-        border-radius: 14px;
-        padding: 1rem;
-        background: #fff;
-      }
-      .sk-danger-h3 {
-        width: 200px;
-        height: 16px;
-        border-radius: 6px;
-        margin-bottom: 8px;
-      }
-      .sk-danger-p {
-        width: 100%;
-        max-width: 560px;
-        height: 12px;
-        border-radius: 6px;
-        margin-bottom: 10px;
-      }
-      .sk-danger-btn {
-        width: 160px;
-        height: 40px;
-        border-radius: 10px;
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
       }
 
-      /* ===== Toast & Modal (unchanged) ===== */
-      .toast {
-        position: fixed;
-        right: 24px;
-        bottom: 24px;
-        background: #111827;
-        color: #fff;
-        padding: 0.8rem 1rem;
-        border-radius: 12px;
-        display: flex;
-        gap: 0.6rem;
-        align-items: center;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        opacity: 0;
-        transform: translateY(12px);
-        transition: 0.25s ease;
-      }
-      .toast.show {
-        opacity: 1;
-        transform: translateY(0);
+      .sk-card {
+        padding: 0.75rem;
       }
 
-      .modal-backdrop {
-        position: fixed;
-        inset: 0;
-        background: rgba(17, 24, 39, 0.6);
+      .sk-btn {
+        width: 44px;
+        /* small square hint for icon button */
+      }
+
+      .sk-chip {
+        width: 72px;
+        height: 28px;
+      }
+
+      .sk-title {
+        width: 120px;
+        height: 20px;
+      }
+    }
+
+    /* Ultra-compact for very small devices */
+    @media (max-width: 420px) {
+      .header h1 {
+        font-size: 1rem;
+      }
+
+      .pill {
         display: none;
-        align-items: center;
-        justify-content: center;
-        padding: 1rem;
-        z-index: 50;
+        /* hide datasource pill to save space */
       }
-      .modal {
-        width: 100%;
-        max-width: 520px;
-        background: #fff;
-        border-radius: 16px;
-        padding: 1rem;
-        border: 1px solid var(--line);
-      }
-      .modal header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-      }
-      .modal h3 {
-        margin: 0.2rem 0;
-      }
-      .modal .body {
-        margin: 0.6rem 0 1rem;
-        color: #374151;
-      }
-      .modal .actions {
-        display: flex;
-        justify-content: flex-end;
-        gap: 0.5rem;
-      }
+    }
+  </style>
+</head>
 
-      /* ====== Mobile compact layout ====== */
-      @media (max-width: 900px) {
-        .container {
-          grid-template-columns: 1fr; /* main stretches full width; sidebar handled elsewhere */
-          gap: 1rem;
-          width: 100%;
-        }
-        main {
-          padding: 0.75rem;
-          margin-top: 0.75rem;
-        }
-        .grid-2,
-        .grid-3 {
-          grid-template-columns: 1fr;
-          gap: 0.75rem;
-        }
-        .card {
-          padding: 0.75rem;
-          border-radius: 12px;
-        }
-        .card h2 {
-          font-size: 1rem;
-          margin-bottom: 0.75rem;
-        }
-        .header {
-          position: sticky;
-          top: 0;
-          z-index: 20;
-          background: var(--bg);
-          padding: 0.25rem 0;
-          margin-bottom: 0.5rem;
-        }
-        .header h1 {
-          font-size: 1.1rem;
-        }
-        /* Icon-only buttons on small screens */
-        .icon-btn {
-          padding: 0.5rem;
-          border-radius: 10px;
-          gap: 0;
-          font-size: 0; /* visually hide label text without altering DOM */
-        }
-        .icon-btn .material-icons-sharp {
-          font-size: 20px;
-          line-height: 1;
-        }
-        /* Shrink pills */
-        .pill {
-          padding: 0.2rem 0.45rem;
-          font-size: 0.75rem;
-        }
-        /* Inputs tighter */
-        input,
-        .readonly {
-          padding: 0.6rem 0.7rem;
-          border-radius: 10px;
-        }
-        .footer-actions {
-          justify-content: stretch;
-        }
-        .footer-actions .btn {
-          flex: 1;
-        }
-
-        /* Skeleton mobile stack */
-        .sk-grid-2,
-        .sk-grid-3 {
-          grid-template-columns: 1fr;
-          gap: 0.75rem;
-        }
-        .sk-card {
-          padding: 0.75rem;
-        }
-        .sk-btn {
-          width: 44px; /* small square hint for icon button */
-        }
-        .sk-chip {
-          width: 72px;
-          height: 28px;
-        }
-        .sk-title {
-          width: 120px;
-          height: 20px;
-        }
-      }
-
-      /* Ultra-compact for very small devices */
-      @media (max-width: 420px) {
-        .header h1 {
-          font-size: 1rem;
-        }
-        .pill {
-          display: none; /* hide datasource pill to save space */
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <!-- ===== Sidebar (kept as-is) ===== -->
-      <aside>
-        <div class="toggle">
-          <div class="logo">
-            <img src="#" alt="" />
-            <h2>SIMP<span class="danger">Project</span></h2>
-          </div>
-          <div class="close" id="close-btn">
-            <span class="material-icons-sharp">close</span>
-          </div>
+<body>
+  <div class="container">
+    <!-- ===== Sidebar (kept as-is) ===== -->
+    <aside>
+      <div class="toggle">
+        <div class="logo">
+          <img src="../../../img/simpHappyMascotLogo.png" alt="logo"/>
+          <h2>SIMP<span class="danger">Project</span></h2>
         </div>
-
-        <div class="sidebar">
-          <a href="myJobPosts.html">
-            <span class="material-icons-sharp">cases</span>
-            <h3>My Job Posts</h3>
-          </a>
-          <a href="createPost.html" id="nav-create">
-            <span class="material-icons-sharp">add</span>
-            <h3>Create a post</h3>
-          </a>
-          <a href="settings.html" class="active">
-            <span class="material-icons-sharp">settings</span>
-            <h3>Settings</h3>
-          </a>
-          <a href="#" id="logout-btn">
-            <span class="material-icons-sharp">logout</span>
-            <h3>Logout</h3>
-          </a>
-        </div>
-      </aside>
-      <!-- ===== End Sidebar ===== -->
-
-      <!-- ===== Main ===== -->
-      <main>
-        <div class="header">
-          <h1>Settings</h1>
-          <div class="actions">
-            <button id="editBtn" class="icon-btn" aria-label="Edit">
-              <span class="material-icons-sharp">edit</span> Edit
-            </button>
-            <span class="pill" title="Data source">
-              <span class="material-icons-sharp" style="font-size: 1rem"
-                >storage</span
-              >
-              public.customer
-            </span>
-          </div>
-        </div>
-
-        <!-- SKELETON: visible while loading -->
-        <div id="loading" class="loading" aria-hidden="true">
-          <!-- header skeleton mirroring real header -->
-          <div class="sk-header">
-            <div class="sk-title sk-shimmer"></div>
-            <div class="sk-actions">
-              <div class="sk-btn sk-shimmer"></div>
-              <div class="sk-chip sk-shimmer"></div>
-            </div>
-          </div>
-
-          <div class="sk-cards">
-            <!-- Profile card skeleton -->
-            <section class="sk-card">
-              <div class="sk-card-head">
-                <div class="sk-icon sk-shimmer"></div>
-                <div class="sk-h2 sk-shimmer"></div>
-              </div>
-              <div class="sk-grid-2">
-                <div class="sk-field">
-                  <div class="sk-label sk-shimmer"></div>
-                  <div class="sk-input sk-shimmer"></div>
-                </div>
-                <div class="sk-field">
-                  <div class="sk-label sk-shimmer"></div>
-                  <div class="sk-input sk-shimmer"></div>
-                </div>
-                <div class="sk-field">
-                  <div class="sk-label sk-shimmer"></div>
-                  <div class="sk-input sk-shimmer"></div>
-                </div>
-                <div class="sk-field">
-                  <div class="sk-label sk-shimmer"></div>
-                  <div class="sk-input sk-shimmer"></div>
-                </div>
-              </div>
-              <div class="sk-footer">
-                <div class="sk-btn sk-shimmer" style="width:90px;"></div>
-                <div class="sk-btn sk-shimmer" style="width:140px;"></div>
-              </div>
-            </section>
-
-            <!-- Personal card skeleton -->
-            <section class="sk-card">
-              <div class="sk-card-head">
-                <div class="sk-icon sk-shimmer"></div>
-                <div class="sk-h2 sk-shimmer"></div>
-              </div>
-              <div class="sk-grid-3">
-                <div class="sk-field">
-                  <div class="sk-label sk-shimmer"></div>
-                  <div class="sk-input sk-shimmer"></div>
-                </div>
-                <div class="sk-field">
-                  <div class="sk-label sk-shimmer"></div>
-                  <div class="sk-input sk-shimmer"></div>
-                </div>
-                <div class="sk-field">
-                  <div class="sk-label sk-shimmer"></div>
-                  <div class="sk-input sk-shimmer"></div>
-                </div>
-              </div>
-            </section>
-
-            <!-- Danger zone skeleton -->
-            <section class="sk-danger">
-              <div class="sk-danger-h3 sk-shimmer"></div>
-              <div class="sk-danger-p sk-shimmer"></div>
-              <div class="sk-danger-btn sk-shimmer"></div>
-            </section>
-          </div>
-        </div>
-
-        <!-- REAL CONTENT: hidden until data is loaded -->
-        <div id="content" class="cards" style="display: none">
-          <!-- Profile -->
-          <section class="card">
-            <h2><span class="material-icons-sharp">person</span> Profile</h2>
-            <div class="grid-2">
-              <div class="field">
-                <label for="name">Full Name</label>
-                <input id="name" type="text" placeholder="Your name" disabled />
-              </div>
-              <div class="field">
-                <label for="email">Email</label>
-                <input id="email" type="email" class="readonly" readonly />
-              </div>
-              <div class="field">
-                <label for="phone">Phone</label>
-                <input
-                  id="phone"
-                  type="tel"
-                  placeholder="+63 9xx xxx xxxx"
-                  disabled
-                />
-              </div>
-              <div class="field">
-                <label for="createdAt">Created</label>
-                <input id="createdAt" class="readonly" readonly />
-              </div>
-            </div>
-            <div class="footer-actions">
-              <button id="cancelBtn" class="btn" style="display: none">
-                Cancel
-              </button>
-              <button id="saveBtn" class="btn primary" style="display: none">
-                <span class="material-icons-sharp" style="font-size: 1rem"
-                  >save</span
-                >
-                Save changes
-              </button>
-            </div>
-          </section>
-
-          <!-- Personal -->
-          <section class="card">
-            <h2><span class="material-icons-sharp">badge</span> Personal</h2>
-            <div class="grid-3">
-              <div class="field">
-                <label for="birthdate">Birthdate</label>
-                <input id="birthdate" type="date" disabled />
-              </div>
-              <div class="field">
-                <label for="age">Age (auto)</label>
-                <input id="age" type="number" class="readonly" readonly />
-              </div>
-              <!-- User ID field removed visually; hidden input kept to avoid JS errors -->
-              <input id="uid" type="hidden" />
-            </div>
-          </section>
-
-          <!-- Danger zone -->
-          <section class="danger-zone">
-            <h3>
-              <span class="material-icons-sharp">warning</span> Danger zone
-            </h3>
-            <p>
-              Deleting your account removes your customer record and your Auth
-              user. This action is permanent.
-            </p>
-            <button id="deleteBtn" class="btn-danger">
-              <span class="material-icons-sharp" style="vertical-align: middle"
-                >delete_forever</span
-              >
-              Delete account
-            </button>
-          </section>
-        </div>
-      </main>
-
-      <div></div>
-    </div>
-
-    <!-- Toast -->
-    <div id="toast" class="toast">
-      <span id="toastIcon" class="material-icons-sharp">check_circle</span>
-      <span id="toastMsg">Saved</span>
-    </div>
-
-    <!-- Delete Modal -->
-    <div
-      id="deleteModal"
-      class="modal-backdrop"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="delTitle"
-    >
-      <div class="modal">
-        <header>
-          <h3 id="delTitle">Confirm account deletion</h3>
-          <button id="modalClose" class="icon-btn" aria-label="Close">
-            <span class="material-icons-sharp">close</span>
-          </button>
-        </header>
-        <div class="body">
-          <p>
-            This will call the <code>delete-account</code> Edge Function to
-            remove your Auth user and cascade delete related records. Type
-            <strong>DELETE</strong> to proceed.
-          </p>
-          <input id="confirmText" placeholder="Type DELETE to confirm" />
-        </div>
-        <div class="actions">
-          <button id="modalCancel" class="btn">Cancel</button>
-          <button
-            id="modalDelete"
-            class="btn danger"
-            style="background: #ef4444; color: #fff"
-          >
-            <span class="material-icons-sharp" style="font-size: 1rem"
-              >delete</span
-            >
-            Delete permanently
-          </button>
+        <div class="close" id="close-btn">
+          <span class="material-icons-sharp">close</span>
         </div>
       </div>
+
+      <div class="sidebar">
+        <a href="myJobPosts.html">
+          <span class="material-icons-sharp">cases</span>
+          <h3>My Job Posts</h3>
+        </a>
+        <a href="createPost.html" id="nav-create">
+          <span class="material-icons-sharp">add</span>
+          <h3>Create a post</h3>
+        </a>
+        <a href="settings.html" class="active">
+          <span class="material-icons-sharp">settings</span>
+          <h3>Settings</h3>
+        </a>
+        <a href="#" id="logout-btn">
+          <span class="material-icons-sharp">logout</span>
+          <h3>Logout</h3>
+        </a>
+      </div>
+    </aside>
+    <!-- ===== End Sidebar ===== -->
+
+    <!-- ===== Main ===== -->
+    <main>
+      <div class="header">
+        <h1>Settings</h1>
+        <div class="actions">
+          <button id="editBtn" class="icon-btn" aria-label="Edit">
+            <span class="material-icons-sharp">edit</span> Edit
+          </button>
+          <span class="pill" title="Data source">
+            <span class="material-icons-sharp" style="font-size: 1rem">storage</span>
+            public.customer
+          </span>
+        </div>
+      </div>
+
+      <!-- SKELETON: visible while loading -->
+      <div id="loading" class="loading" aria-hidden="true">
+        <!-- header skeleton mirroring real header -->
+        <div class="sk-header">
+          <div class="sk-title sk-shimmer"></div>
+          <div class="sk-actions">
+            <div class="sk-btn sk-shimmer"></div>
+            <div class="sk-chip sk-shimmer"></div>
+          </div>
+        </div>
+
+        <div class="sk-cards">
+          <!-- Profile card skeleton -->
+          <section class="sk-card">
+            <div class="sk-card-head">
+              <div class="sk-icon sk-shimmer"></div>
+              <div class="sk-h2 sk-shimmer"></div>
+            </div>
+            <div class="sk-grid-2">
+              <div class="sk-field">
+                <div class="sk-label sk-shimmer"></div>
+                <div class="sk-input sk-shimmer"></div>
+              </div>
+              <div class="sk-field">
+                <div class="sk-label sk-shimmer"></div>
+                <div class="sk-input sk-shimmer"></div>
+              </div>
+              <div class="sk-field">
+                <div class="sk-label sk-shimmer"></div>
+                <div class="sk-input sk-shimmer"></div>
+              </div>
+              <div class="sk-field">
+                <div class="sk-label sk-shimmer"></div>
+                <div class="sk-input sk-shimmer"></div>
+              </div>
+            </div>
+            <div class="sk-footer">
+              <div class="sk-btn sk-shimmer" style="width:90px;"></div>
+              <div class="sk-btn sk-shimmer" style="width:140px;"></div>
+            </div>
+          </section>
+
+          <!-- Personal card skeleton -->
+          <section class="sk-card">
+            <div class="sk-card-head">
+              <div class="sk-icon sk-shimmer"></div>
+              <div class="sk-h2 sk-shimmer"></div>
+            </div>
+            <div class="sk-grid-3">
+              <div class="sk-field">
+                <div class="sk-label sk-shimmer"></div>
+                <div class="sk-input sk-shimmer"></div>
+              </div>
+              <div class="sk-field">
+                <div class="sk-label sk-shimmer"></div>
+                <div class="sk-input sk-shimmer"></div>
+              </div>
+              <div class="sk-field">
+                <div class="sk-label sk-shimmer"></div>
+                <div class="sk-input sk-shimmer"></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Danger zone skeleton -->
+          <section class="sk-danger">
+            <div class="sk-danger-h3 sk-shimmer"></div>
+            <div class="sk-danger-p sk-shimmer"></div>
+            <div class="sk-danger-btn sk-shimmer"></div>
+          </section>
+        </div>
+      </div>
+
+      <!-- REAL CONTENT: hidden until data is loaded -->
+      <div id="content" class="cards" style="display: none">
+        <!-- Profile -->
+        <section class="card">
+          <h2><span class="material-icons-sharp">person</span> Profile</h2>
+          <div class="grid-2">
+            <div class="field">
+              <label for="name">Full Name</label>
+              <input id="name" type="text" placeholder="Your name" disabled />
+            </div>
+            <div class="field">
+              <label for="email">Email</label>
+              <input id="email" type="email" class="readonly" readonly />
+            </div>
+            <div class="field">
+              <label for="phone">Phone</label>
+              <input id="phone" type="tel" placeholder="+63 9xx xxx xxxx" disabled />
+            </div>
+            <div class="field">
+              <label for="createdAt">Created</label>
+              <input id="createdAt" class="readonly" readonly />
+            </div>
+          </div>
+          <div class="footer-actions">
+            <button id="cancelBtn" class="btn" style="display: none">
+              Cancel
+            </button>
+            <button id="saveBtn" class="btn primary" style="display: none">
+              <span class="material-icons-sharp" style="font-size: 1rem">save</span>
+              Save changes
+            </button>
+          </div>
+        </section>
+
+        <!-- Personal -->
+        <section class="card">
+          <h2><span class="material-icons-sharp">badge</span> Personal</h2>
+          <div class="grid-3">
+            <div class="field">
+              <label for="birthdate">Birthdate</label>
+              <input id="birthdate" type="date" disabled />
+            </div>
+            <div class="field">
+              <label for="age">Age (auto)</label>
+              <input id="age" type="number" class="readonly" readonly />
+            </div>
+            <!-- User ID field removed visually; hidden input kept to avoid JS errors -->
+            <input id="uid" type="hidden" />
+          </div>
+        </section>
+
+        <!-- Danger zone -->
+        <section class="danger-zone">
+          <h3>
+            <span class="material-icons-sharp">warning</span> Danger zone
+          </h3>
+          <p>
+            Deleting your account removes your customer record and your Auth
+            user. This action is permanent.
+          </p>
+          <button id="deleteBtn" class="btn-danger">
+            <span class="material-icons-sharp" style="vertical-align: middle">delete_forever</span>
+            Delete account
+          </button>
+        </section>
+      </div>
+    </main>
+
+    <div></div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast">
+    <span id="toastIcon" class="material-icons-sharp">check_circle</span>
+    <span id="toastMsg">Saved</span>
+  </div>
+
+  <!-- Delete Modal -->
+  <div id="deleteModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="delTitle">
+    <div class="modal">
+      <header>
+        <h3 id="delTitle">Confirm account deletion</h3>
+        <button id="modalClose" class="icon-btn" aria-label="Close">
+          <span class="material-icons-sharp">close</span>
+        </button>
+      </header>
+      <div class="body">
+        <p>
+          This will call the <code>delete-account</code> Edge Function to
+          remove your Auth user and cascade delete related records. Type
+          <strong>DELETE</strong> to proceed.
+        </p>
+        <input id="confirmText" placeholder="Type DELETE to confirm" />
+      </div>
+      <div class="actions">
+        <button id="modalCancel" class="btn">Cancel</button>
+        <button id="modalDelete" class="btn danger" style="background: #ef4444; color: #fff">
+          <span class="material-icons-sharp" style="font-size: 1rem">delete</span>
+          Delete permanently
+        </button>
+      </div>
     </div>
+  </div>
 
-    <!-- App Script -->
-    <script src="../../general_files/index.js"></script>
-    <script type="module">
-      import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
-      import { SUPABASE_URL, SUPABASE_ANON_KEY } from "../../../supabase.js";
+  <!-- App Script -->
+  <script src="../../general_files/index.js"></script>
+  <script type="module">
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+    import { SUPABASE_URL, SUPABASE_ANON_KEY } from "../../../supabase.js";
 
-      // Initialize client
-      const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    // Initialize client
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-      // UI refs
-      const loading = document.getElementById("loading");
-      const content = document.getElementById("content");
-      const editBtn = document.getElementById("editBtn");
-      const saveBtn = document.getElementById("saveBtn");
-      const cancelBtn = document.getElementById("cancelBtn");
+    // UI refs
+    const loading = document.getElementById("loading");
+    const content = document.getElementById("content");
+    const editBtn = document.getElementById("editBtn");
+    const saveBtn = document.getElementById("saveBtn");
+    const cancelBtn = document.getElementById("cancelBtn");
 
-      const nameEl = document.getElementById("name");
-      const emailEl = document.getElementById("email");
-      const phoneEl = document.getElementById("phone");
-      const birthEl = document.getElementById("birthdate");
-      const ageEl = document.getElementById("age");
-      const uidEl = document.getElementById("uid");
-      const createdAtEl = document.getElementById("createdAt");
+    const nameEl = document.getElementById("name");
+    const emailEl = document.getElementById("email");
+    const phoneEl = document.getElementById("phone");
+    const birthEl = document.getElementById("birthdate");
+    const ageEl = document.getElementById("age");
+    const uidEl = document.getElementById("uid");
+    const createdAtEl = document.getElementById("createdAt");
 
-      const toast = document.getElementById("toast");
-      const toastMsg = document.getElementById("toastMsg");
-      const toastIcon = document.getElementById("toastIcon");
+    const toast = document.getElementById("toast");
+    const toastMsg = document.getElementById("toastMsg");
+    const toastIcon = document.getElementById("toastIcon");
 
-      const deleteBtn = document.getElementById("deleteBtn");
-      const deleteModal = document.getElementById("deleteModal");
-      const modalClose = document.getElementById("modalClose");
-      const modalCancel = document.getElementById("modalCancel");
-      const modalDelete = document.getElementById("modalDelete");
-      const confirmText = document.getElementById("confirmText");
+    const deleteBtn = document.getElementById("deleteBtn");
+    const deleteModal = document.getElementById("deleteModal");
+    const modalClose = document.getElementById("modalClose");
+    const modalCancel = document.getElementById("modalCancel");
+    const modalDelete = document.getElementById("modalDelete");
+    const confirmText = document.getElementById("confirmText");
 
-      let currentUser = null;
-      let original = {};
+    let currentUser = null;
+    let original = {};
 
-      function showToast(msg, ok = true) {
-        toastMsg.textContent = msg;
-        toastIcon.textContent = ok ? "check_circle" : "error";
-        toast.style.background = ok ? "#111827" : "#7f1d1d";
-        toast.classList.add("show");
-        setTimeout(() => toast.classList.remove("show"), 2400);
+    function showToast(msg, ok = true) {
+      toastMsg.textContent = msg;
+      toastIcon.textContent = ok ? "check_circle" : "error";
+      toast.style.background = ok ? "#111827" : "#7f1d1d";
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 2400);
+    }
+
+    function setEditing(on) {
+      [nameEl, phoneEl, birthEl].forEach((el) => (el.disabled = !on));
+      saveBtn.style.display = on ? "" : "none";
+      cancelBtn.style.display = on ? "" : "none";
+      editBtn.disabled = on;
+    }
+
+    function calcAge(dateStr) {
+      if (!dateStr) return null;
+      const d = new Date(dateStr);
+      if (isNaN(d)) return null;
+      const today = new Date();
+      let age = today.getFullYear() - d.getFullYear();
+      const m = today.getMonth() - d.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < d.getDate())) age--;
+      return age >= 0 ? age : null;
+    }
+
+    async function loadData() {
+      const {
+        data: { user },
+        error: uerr,
+      } = await supabase.auth.getUser();
+      if (uerr || !user) {
+        loading.innerHTML = '<div class="hint">Not signed in.</div>';
+        return;
+      }
+      currentUser = user;
+
+      const { data, error } = await supabase
+        .from("customer")
+        .select("*")
+        .eq("id", user.id)
+        .single();
+
+      if (error) {
+        loading.innerHTML =
+          '<span class="material-icons-sharp">error</span><span>Could not load settings.</span>';
+        console.error(error);
+        return;
       }
 
-      function setEditing(on) {
-        [nameEl, phoneEl, birthEl].forEach((el) => (el.disabled = !on));
-        saveBtn.style.display = on ? "" : "none";
-        cancelBtn.style.display = on ? "" : "none";
-        editBtn.disabled = on;
+      original = { ...data };
+      nameEl.value = data.name || "";
+      emailEl.value = data.email || user.email || "";
+      phoneEl.value = data.phone || "";
+      birthEl.value = data.birthdate || "";
+      ageEl.value = data.age ?? calcAge(data.birthdate) ?? "";
+      if (uidEl) uidEl.value = user.id;
+      createdAtEl.value = data.createdAt
+        ? new Date(data.createdAt).toLocaleString()
+        : "";
+
+      loading.style.display = "none";
+      content.style.display = "";
+      setEditing(false);
+    }
+
+    birthEl?.addEventListener("change", () => {
+      ageEl.value = calcAge(birthEl.value) ?? "";
+    });
+    editBtn.addEventListener("click", () => setEditing(true));
+
+    cancelBtn.addEventListener("click", () => {
+      nameEl.value = original.name || "";
+      phoneEl.value = original.phone || "";
+      birthEl.value = original.birthdate || "";
+      ageEl.value = original.age ?? calcAge(original.birthdate) ?? "";
+      setEditing(false);
+    });
+
+    saveBtn.addEventListener("click", async () => {
+      if (!currentUser) return;
+
+      const updates = {
+        id: currentUser.id,
+        name: nameEl.value.trim(),
+        phone: (phoneEl.value || "").trim() || null,
+        birthdate: birthEl.value || null,
+        age: calcAge(birthEl.value),
+        email: emailEl.value || null, // mirrored (readonly here)
+      };
+
+      // PH phone sanity
+      if (
+        updates.phone &&
+        !/^(\+?63|0)9\d{9}$/.test(updates.phone.replace(/\s|-/g, ""))
+      ) {
+        showToast("Invalid phone number format", false);
+        return;
       }
 
-      function calcAge(dateStr) {
-        if (!dateStr) return null;
-        const d = new Date(dateStr);
-        if (isNaN(d)) return null;
-        const today = new Date();
-        let age = today.getFullYear() - d.getFullYear();
-        const m = today.getMonth() - d.getMonth();
-        if (m < 0 || (m === 0 && today.getDate() < d.getDate())) age--;
-        return age >= 0 ? age : null;
+      saveBtn.disabled = true;
+      const { error } = await supabase
+        .from("customer")
+        .upsert(updates, { onConflict: "id" });
+      saveBtn.disabled = false;
+
+      if (error) {
+        console.error(error);
+        showToast("Failed to save changes", false);
+        return;
       }
 
-      async function loadData() {
+      original = { ...original, ...updates };
+      setEditing(false);
+      showToast("Changes saved");
+    });
+
+    // Logout
+    document
+      .getElementById("logout-btn")
+      ?.addEventListener("click", async (e) => {
+        e.preventDefault();
+        await supabase.auth.signOut();
+        window.location.href = "../../../index.html";
+      });
+
+    // ===== NEW: helper to recursively list and delete files in jobs/<uid>/ =====
+    async function listAllFilesInFolder(bucket, folder) {
+      // Returns an array of full paths like "uid/file.jpg" or "uid/sub/f.png"
+      const paths = [];
+
+      async function walk(prefix) {
+        const { data, error } = await supabase.storage
+          .from(bucket)
+          .list(prefix, {
+            limit: 1000,
+            sortBy: { column: "name", order: "asc" },
+          });
+
+        if (error) {
+          console.error("List error for", `${bucket}:${prefix}`, error);
+          return;
+        }
+
+        for (const item of data) {
+          // Folders in Supabase Storage list usually have null metadata/id
+          const isFolder = !item.id && !item.metadata;
+          if (isFolder) {
+            await walk(`${prefix}/${item.name}`);
+          } else {
+            paths.push(`${prefix}/${item.name}`);
+          }
+        }
+      }
+
+      await walk(folder);
+      return paths;
+    }
+
+    async function deleteCustomerJobsFiles(customerId) {
+      try {
+        const base = customerId;
+        // Ensure the folder exists before listing
+        const { data: probe, error: probeErr } = await supabase.storage
+          .from("jobs")
+          .list(base, { limit: 1 });
+        if (probeErr) {
+          console.warn("Skipping storage cleanup (list error):", probeErr.message);
+          return;
+        }
+        if (!probe || probe.length === 0) {
+          // nothing to delete
+          return;
+        }
+
+        const allPaths = await listAllFilesInFolder("jobs", base);
+        if (!allPaths.length) return;
+
+        // Delete in chunks to avoid payload limits
+        const chunkSize = 100;
+        for (let i = 0; i < allPaths.length; i += chunkSize) {
+          const chunk = allPaths.slice(i, i + chunkSize);
+          const { data, error } = await supabase.storage
+            .from("jobs")
+            .remove(chunk);
+          if (error) {
+            console.error("Remove error:", error, "on", chunk);
+            // continue trying other chunks; we still proceed to account deletion
+          }
+        }
+        console.log(`Deleted ${allPaths.length} files from jobs/${base}`);
+      } catch (err) {
+        console.error("Storage cleanup failed:", err);
+        // Do not block account deletion if cleanup has issues
+      }
+    }
+    // ===== END NEW helpers =====
+
+    // Delete flow
+    function openDelete() {
+      deleteModal.style.display = "flex";
+      confirmText.value = "";
+      confirmText.focus();
+    }
+    function closeDelete() {
+      deleteModal.style.display = "none";
+    }
+
+    deleteBtn.addEventListener("click", openDelete);
+    modalClose.addEventListener("click", closeDelete);
+    modalCancel.addEventListener("click", closeDelete);
+
+    modalDelete.addEventListener("click", async () => {
+      if (confirmText.value !== "DELETE") {
+        showToast("Type DELETE to confirm", false);
+        return;
+      }
+      modalDelete.disabled = true;
+
+      try {
+        // get user id & pass it to the Edge Function (required by your function)
         const {
           data: { user },
           error: uerr,
         } = await supabase.auth.getUser();
-        if (uerr || !user) {
-          loading.innerHTML = '<div class="hint">Not signed in.</div>';
-          return;
-        }
-        currentUser = user;
+        if (uerr || !user) throw new Error("Not signed in");
 
-        const { data, error } = await supabase
-          .from("customer")
-          .select("*")
-          .eq("id", user.id)
-          .single();
+        // ===== NEW: delete files under jobs/<uid>/ BEFORE deleting the account =====
+        await deleteCustomerJobsFiles(user.id);
 
-        if (error) {
-          loading.innerHTML =
-            '<span class="material-icons-sharp">error</span><span>Could not load settings.</span>';
-          console.error(error);
-          return;
-        }
+        // Existing call to your Edge Function
+        const { data, error } = await supabase.functions.invoke(
+          "delete-account",
+          {
+            body: { user_id: user.id },
+          }
+        );
+        if (error) throw error;
 
-        original = { ...data };
-        nameEl.value = data.name || "";
-        emailEl.value = data.email || user.email || "";
-        phoneEl.value = data.phone || "";
-        birthEl.value = data.birthdate || "";
-        ageEl.value = data.age ?? calcAge(data.birthdate) ?? "";
-        if (uidEl) uidEl.value = user.id;
-        createdAtEl.value = data.createdAt
-          ? new Date(data.createdAt).toLocaleString()
-          : "";
-
-        loading.style.display = "none";
-        content.style.display = "";
-        setEditing(false);
-      }
-
-      birthEl?.addEventListener("change", () => {
-        ageEl.value = calcAge(birthEl.value) ?? "";
-      });
-      editBtn.addEventListener("click", () => setEditing(true));
-
-      cancelBtn.addEventListener("click", () => {
-        nameEl.value = original.name || "";
-        phoneEl.value = original.phone || "";
-        birthEl.value = original.birthdate || "";
-        ageEl.value = original.age ?? calcAge(original.birthdate) ?? "";
-        setEditing(false);
-      });
-
-      saveBtn.addEventListener("click", async () => {
-        if (!currentUser) return;
-
-        const updates = {
-          id: currentUser.id,
-          name: nameEl.value.trim(),
-          phone: (phoneEl.value || "").trim() || null,
-          birthdate: birthEl.value || null,
-          age: calcAge(birthEl.value),
-          email: emailEl.value || null, // mirrored (readonly here)
-        };
-
-        // PH phone sanity
-        if (
-          updates.phone &&
-          !/^(\+?63|0)9\d{9}$/.test(updates.phone.replace(/\s|-/g, ""))
-        ) {
-          showToast("Invalid phone number format", false);
-          return;
-        }
-
-        saveBtn.disabled = true;
-        const { error } = await supabase
-          .from("customer")
-          .upsert(updates, { onConflict: "id" });
-        saveBtn.disabled = false;
-
-        if (error) {
-          console.error(error);
-          showToast("Failed to save changes", false);
-          return;
-        }
-
-        original = { ...original, ...updates };
-        setEditing(false);
-        showToast("Changes saved");
-      });
-
-      // Logout
-      document
-        .getElementById("logout-btn")
-        ?.addEventListener("click", async (e) => {
-          e.preventDefault();
+        showToast("Account deleted");
+        setTimeout(async () => {
           await supabase.auth.signOut();
           window.location.href = "../../../index.html";
-        });
-
-      // ===== NEW: helper to recursively list and delete files in jobs/<uid>/ =====
-      async function listAllFilesInFolder(bucket, folder) {
-        // Returns an array of full paths like "uid/file.jpg" or "uid/sub/f.png"
-        const paths = [];
-
-        async function walk(prefix) {
-          const { data, error } = await supabase.storage
-            .from(bucket)
-            .list(prefix, {
-              limit: 1000,
-              sortBy: { column: "name", order: "asc" },
-            });
-
-          if (error) {
-            console.error("List error for", `${bucket}:${prefix}`, error);
-            return;
-          }
-
-          for (const item of data) {
-            // Folders in Supabase Storage list usually have null metadata/id
-            const isFolder = !item.id && !item.metadata;
-            if (isFolder) {
-              await walk(`${prefix}/${item.name}`);
-            } else {
-              paths.push(`${prefix}/${item.name}`);
-            }
-          }
-        }
-
-        await walk(folder);
-        return paths;
-      }
-
-      async function deleteCustomerJobsFiles(customerId) {
+        }, 900);
+      } catch (err) {
+        // show HTTP status + body if available
+        let details = err?.message || "Unknown error";
         try {
-          const base = customerId;
-          // Ensure the folder exists before listing
-          const { data: probe, error: probeErr } = await supabase.storage
-            .from("jobs")
-            .list(base, { limit: 1 });
-          if (probeErr) {
-            console.warn("Skipping storage cleanup (list error):", probeErr.message);
-            return;
-          }
-          if (!probe || probe.length === 0) {
-            // nothing to delete
-            return;
-          }
-
-          const allPaths = await listAllFilesInFolder("jobs", base);
-          if (!allPaths.length) return;
-
-          // Delete in chunks to avoid payload limits
-          const chunkSize = 100;
-          for (let i = 0; i < allPaths.length; i += chunkSize) {
-            const chunk = allPaths.slice(i, i + chunkSize);
-            const { data, error } = await supabase.storage
-              .from("jobs")
-              .remove(chunk);
-            if (error) {
-              console.error("Remove error:", error, "on", chunk);
-              // continue trying other chunks; we still proceed to account deletion
-            }
-          }
-          console.log(`Deleted ${allPaths.length} files from jobs/${base}`);
-        } catch (err) {
-          console.error("Storage cleanup failed:", err);
-          // Do not block account deletion if cleanup has issues
-        }
+          const res = err?.context?.response;
+          if (res) details = `HTTP ${res.status} – ${await res.text()}`;
+        } catch { }
+        console.error("Delete failed:", err);
+        showToast(details, false);
+      } finally {
+        modalDelete.disabled = false;
       }
-      // ===== END NEW helpers =====
+    });
 
-      // Delete flow
-      function openDelete() {
-        deleteModal.style.display = "flex";
-        confirmText.value = "";
-        confirmText.focus();
-      }
-      function closeDelete() {
-        deleteModal.style.display = "none";
-      }
+    // Kickoff
+    loadData();
+  </script>
+</body>
 
-      deleteBtn.addEventListener("click", openDelete);
-      modalClose.addEventListener("click", closeDelete);
-      modalCancel.addEventListener("click", closeDelete);
-
-      modalDelete.addEventListener("click", async () => {
-        if (confirmText.value !== "DELETE") {
-          showToast("Type DELETE to confirm", false);
-          return;
-        }
-        modalDelete.disabled = true;
-
-        try {
-          // get user id & pass it to the Edge Function (required by your function)
-          const {
-            data: { user },
-            error: uerr,
-          } = await supabase.auth.getUser();
-          if (uerr || !user) throw new Error("Not signed in");
-
-          // ===== NEW: delete files under jobs/<uid>/ BEFORE deleting the account =====
-          await deleteCustomerJobsFiles(user.id);
-
-          // Existing call to your Edge Function
-          const { data, error } = await supabase.functions.invoke(
-            "delete-account",
-            {
-              body: { user_id: user.id },
-            }
-          );
-          if (error) throw error;
-
-          showToast("Account deleted");
-          setTimeout(async () => {
-            await supabase.auth.signOut();
-            window.location.href = "../../../index.html";
-          }, 900);
-        } catch (err) {
-          // show HTTP status + body if available
-          let details = err?.message || "Unknown error";
-          try {
-            const res = err?.context?.response;
-            if (res) details = `HTTP ${res.status} – ${await res.text()}`;
-          } catch {}
-          console.error("Delete failed:", err);
-          showToast(details, false);
-        } finally {
-          modalDelete.disabled = false;
-        }
-      });
-
-      // Kickoff
-      loadData();
-    </script>
-  </body>
 </html>

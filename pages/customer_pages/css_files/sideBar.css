@@ -7,7 +7,7 @@ aside {
 aside .toggle {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   margin-top: 1.4rem;
 }
 
@@ -161,7 +161,7 @@ aside .sidebar .message-count {
 
 :root {
   --color-primary: #6c9bcf;
-  --color-danger: #ff0060;
+  --color-danger: #20a44c;
   --color-success: #1b9c85;
   --color-warning: #f7d060;
   --color-white: #fff;
@@ -227,6 +227,8 @@ h1 {
 h2 {
   font-weight: 600;
   font-size: 1.4rem;
+  display: flex;
+  align-items: center;
 }
 
 h3 {
@@ -240,6 +242,7 @@ small {
 
 p {
   color: var(--color-dark-variant);
+  margin-bottom: 1rem;
 }
 
 b {
