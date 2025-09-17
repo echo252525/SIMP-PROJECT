@@ -4,179 +4,563 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap"
+    rel="stylesheet">
+
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet" />
   <link rel="stylesheet" href="../css_files/sideBar.css" />
   <title>Earnings</title>
 
   <style>
-    :root{
-      --ink:#1c2430; --muted:#6c7a8a; --line:#e7edf3; --brand:#20a44c; --danger:#e53935; --warn:#f59e0b;
-      --bg:#f8fbfd; --card:#ffffff; --radius:14px;
+    :root {
+      --ink: #1c2430;
+      --muted: #6c7a8a;
+      --line: #e7edf3;
+      --brand: #20a44c;
+      --danger: #e53935;
+      --warn: #f59e0b;
+      --bg: #f8fbfd;
+      --card: #ffffff;
+      --radius: 14px;
     }
-    body{background:var(--bg);}
-    main{ margin-top:1.4rem; }
-    .titlePageDiv h1{ color:var(--ink); margin:0 0 .4rem; }
-    .titlePageDiv p{ color:var(--muted); margin:0; }
+
+    .titlePageDiv h1 {
+      color: var(--ink);
+      margin: 0 0 .4rem;
+    }
+
+    .titlePageDiv p {
+      color: var(--muted);
+      margin: 0;
+    }
 
     /* Summary cards */
-    .summary-grid{
-      margin-top:1rem; display:grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: .9rem;
+    .summary-grid {
+      margin-top: 1rem;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: .9rem;
     }
-    @media (max-width:1100px){ .summary-grid{ grid-template-columns: repeat(2, minmax(0,1fr)); } }
-    @media (max-width:580px){ .summary-grid{ grid-template-columns: 1fr; } }
 
-    .card{ background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:1rem; display:grid; gap:.3rem; }
-    .card .label{ color:var(--muted); font-size:.9rem; }
-    .card .value{ color:var(--ink); font-size:1.4rem; font-weight:600; }
-    .sub{ color:var(--muted); font-size:.85rem; }
-    .bar{ height:8px; border-radius:8px; background:#eef3f7; overflow:hidden; margin-top:.4rem; }
-    .bar > span{ display:block; height:100%; background:linear-gradient(90deg, var(--brand), #25c06e); width:0%; transition: width .4s ease; }
+    @media (max-width:1100px) {
+      .summary-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width:580px) {
+      .summary-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 1rem;
+      display: grid;
+      gap: .3rem;
+    }
+
+    .card .label {
+      color: var(--muted);
+      font-size: .9rem;
+    }
+
+    .card .value {
+      color: var(--ink);
+      font-size: 1.4rem;
+      font-weight: 600;
+    }
+
+    .sub {
+      color: var(--muted);
+      font-size: .85rem;
+    }
+
+    .bar {
+      height: 8px;
+      border-radius: 8px;
+      background: #eef3f7;
+      overflow: hidden;
+      margin-top: .4rem;
+    }
+
+    .bar>span {
+      display: block;
+      height: 100%;
+      background: linear-gradient(90deg, var(--brand), #25c06e);
+      width: 0%;
+      transition: width .4s ease;
+    }
 
     /* Controls */
-    .controls{
-      margin-top:1rem; display:grid; gap:.6rem; grid-template-columns: 1.2fr repeat(2, .9fr) auto auto; align-items:end;
+    .controls {
+      margin-top: 1rem;
+      display: grid;
+      gap: .6rem;
+      grid-template-columns: 1.2fr repeat(2, .9fr) auto auto;
+      align-items: end;
     }
-    @media (max-width:980px){ .controls{ grid-template-columns: 1fr 1fr; } }
-    .field{display:grid; gap:.3rem;}
-    .field label{font-size:.85rem; color:var(--muted);}
-    .field input[type="text"], .field input[type="date"], .field select{
-      border:1px solid var(--line); background:#fff; border-radius:10px; padding:.55rem .7rem; outline:none;
+
+    @media (max-width:980px) {
+      .controls {
+        grid-template-columns: 1fr 1fr;
+      }
     }
-    .btn{
-      display:inline-grid; grid-auto-flow:column; gap:.4rem; align-items:center; background:var(--ink); color:#fff;
-      border:none; border-radius:10px; padding:.6rem .9rem; cursor:pointer;
+
+    .field {
+      display: grid;
+      gap: .3rem;
     }
-    .btn.secondary{ background:#1f6d86; }
-    .btn.ghost{ background:transparent; color:var(--ink); border:1px solid var(--line); }
-    .btn:disabled{ opacity:.6; cursor:not-allowed; }
+
+    .field label {
+      font-size: .85rem;
+      color: var(--muted);
+    }
+
+    .field input[type="text"],
+    .field input[type="date"],
+    .field select {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 10px;
+      padding: .55rem .7rem;
+      outline: none;
+    }
+
+    .btn {
+      display: inline-grid;
+      grid-auto-flow: column;
+      gap: .4rem;
+      align-items: center;
+      background: var(--ink);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: .6rem .9rem;
+      cursor: pointer;
+    }
+
+    .btn.secondary {
+      background: #1f6d86;
+    }
+
+    .btn.ghost {
+      background: transparent;
+      color: var(--ink);
+      border: 1px solid var(--line);
+    }
+
+    .btn:disabled {
+      opacity: .6;
+      cursor: not-allowed;
+    }
 
     /* Tabs */
-    .tabs{ margin-top:1.2rem; display:grid; gap:.8rem; }
-    .tabbar{ display:grid; grid-auto-flow:column; justify-content:start; gap:.4rem; border-bottom:1px solid var(--line); }
-    .tabbar button{
-      background:transparent; border:none; padding:.7rem 1rem; cursor:pointer; color:#6c7a8a;
-      border-bottom:3px solid transparent; font-weight:600; position:relative; display:inline-flex; align-items:center; gap:.5rem;
+    .tabs {
+      margin-top: 1.2rem;
+      display: grid;
+      gap: .8rem;
     }
-    .tabbar button.active{ color:#1c2430; border-color:#20a44c; }
+
+    .tabbar {
+      display: grid;
+      grid-auto-flow: column;
+      justify-content: start;
+      gap: .4rem;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .tabbar button {
+      background: transparent;
+      border: none;
+      padding: .7rem 1rem;
+      cursor: pointer;
+      color: #6c7a8a;
+      border-bottom: 3px solid transparent;
+      font-weight: 600;
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+    }
+
+    .tabbar button.active {
+      color: #1c2430;
+      border-color: #20a44c;
+    }
 
     /* NEW: tiny update badges */
-    .badge{
-      display:inline-grid; place-items:center; min-width:22px; height:20px;
-      padding:0 .4rem; border-radius:999px; background:#e91e63; color:#fff; font-size:.72rem; font-weight:700;
-      box-shadow:0 2px 6px rgba(233,30,99,.25);
+    .badge {
+      display: inline-grid;
+      place-items: center;
+      min-width: 22px;
+      height: 20px;
+      padding: 0 .4rem;
+      border-radius: 999px;
+      background: #e91e63;
+      color: #fff;
+      font-size: .72rem;
+      font-weight: 700;
+      box-shadow: 0 2px 6px rgba(233, 30, 99, .25);
     }
-    .badge[hidden]{ display:none !important; }
+
+    .badge[hidden] {
+      display: none !important;
+    }
 
     /* Tables */
-    .tablewrap{ background:var(--card); border:1px solid var(--line); border-radius:var(--radius); overflow:auto; }
-    table{ width:100%; border-collapse:collapse; font-size:.95rem; }
-    thead th{
-      text-align:left; background:#fbfdff; color:#6c7a8a; font-weight:600; position:sticky; top:0; z-index:1;
-      border-bottom:1px solid var(--line); padding:.8rem .9rem;
+    .tablewrap {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: auto;
     }
-    tbody td{ padding:.75rem .9rem; border-bottom:1px solid #f0f4f7; color:var(--ink); vertical-align:middle; }
-    tbody tr:hover{ background:#fcfdfd; }
-    .pill{ display:inline-block; padding:.25rem .5rem; border-radius:999px; font-size:.78rem; font-weight:600; border:1px solid; }
-    .pill.paid{ color:#136d3c; border-color:#cfe9db; background:#ecf9f2; }
-    .pill.unpaid{ color:#8a2c0f; border-color:#f7d8c6; background:#fff4ec; }
-    .pill.approved{ color:#1f4f86; border-color:#cfe0f3; background:#eef5ff; }
-    /* NEW: pending_payout visual */
-    .pill.pending{ color:#684a02; border-color:#fde2b3; background:#fff7e6; }
 
-    .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .95rem;
+    }
+
+    thead th {
+      text-align: left;
+      background: #fbfdff;
+      color: #6c7a8a;
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      border-bottom: 1px solid var(--line);
+      padding: .8rem .9rem;
+    }
+
+    tbody td {
+      padding: .75rem .9rem;
+      border-bottom: 1px solid #f0f4f7;
+      color: var(--ink);
+      vertical-align: middle;
+    }
+
+    tbody tr:hover {
+      background: #fcfdfd;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: .25rem .5rem;
+      border-radius: 999px;
+      font-size: .78rem;
+      font-weight: 600;
+      border: 1px solid;
+    }
+
+    .pill.paid {
+      color: #136d3c;
+      border-color: #cfe9db;
+      background: #ecf9f2;
+    }
+
+    .pill.unpaid {
+      color: #8a2c0f;
+      border-color: #f7d8c6;
+      background: #fff4ec;
+    }
+
+    .pill.approved {
+      color: #1f4f86;
+      border-color: #cfe0f3;
+      background: #eef5ff;
+    }
+
+    /* NEW: pending_payout visual */
+    .pill.pending {
+      color: #684a02;
+      border-color: #fde2b3;
+      background: #fff7e6;
+    }
+
+    .mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    }
 
     /* Footer helper box */
-    .helper{ margin-top:1rem; padding:1rem; background:#fff; border:1px dashed #d7e3ea; border-radius:12px; color:var(--muted); }
-    .helper strong{ color:var(--ink); }
+    .helper {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: #fff;
+      border: 1px dashed #d7e3ea;
+      border-radius: 12px;
+      color: var(--muted);
+    }
+
+    .helper strong {
+      color: var(--ink);
+    }
 
     /* Modal */
-    .modal{ position:fixed; inset:0; display:none; place-items:center; background:rgba(28,36,48,.22); padding:1rem; z-index: 50; }
-    .modal.open{ display:grid; }
-    .modal-card{ width:min(720px, 100%); background:#fff; border-radius:16px; border:1px solid var(--line); box-shadow:0 20px 60px rgba(0,0,0,.08); overflow:hidden; }
-    .modal-head{ display:flex; justify-content:space-between; align-items:center; padding:1rem 1rem .8rem; border-bottom:1px solid var(--line); }
-    .modal-head h3{ margin:0; color:var(--ink); }
-    .modal-body{ padding:1rem; display:grid; gap:.6rem; }
-    .modal-foot{ padding:1rem; display:flex; justify-content:flex-end; gap:.6rem; border-top:1px solid var(--line); }
+    .modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      place-items: center;
+      background: rgba(28, 36, 48, .22);
+      padding: 1rem;
+      z-index: 50;
+    }
+
+    .modal.open {
+      display: grid;
+    }
+
+    .modal-card {
+      width: min(720px, 100%);
+      background: #fff;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .08);
+      overflow: hidden;
+    }
+
+    .modal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 1rem .8rem;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .modal-head h3 {
+      margin: 0;
+      color: var(--ink);
+    }
+
+    .modal-body {
+      padding: 1rem;
+      display: grid;
+      gap: .6rem;
+    }
+
+    .modal-foot {
+      padding: 1rem;
+      display: flex;
+      justify-content: flex-end;
+      gap: .6rem;
+      border-top: 1px solid var(--line);
+    }
 
     /* Tiny legend */
-    .legend{ display:grid; grid-auto-flow:column; gap:1rem; align-items:center; color:var(--muted); font-size:.85rem; }
-    .dot{ width:10px; height:10px; border-radius:999px; display:inline-block; }
-    .dot.approved{ background:#20a44c; }
-    .dot.pending{ background:#f59e0b; }
-    .dot.payouted{ background:#1f6d86; } /* class name kept; just label text changes */
+    .legend {
+      display: grid;
+      grid-auto-flow: column;
+      gap: 1rem;
+      align-items: center;
+      color: var(--muted);
+      font-size: .85rem;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      display: inline-block;
+    }
+
+    .dot.approved {
+      background: #20a44c;
+    }
+
+    .dot.pending {
+      background: #f59e0b;
+    }
+
+    .dot.payouted {
+      background: #1f6d86;
+    }
+
+    /* class name kept; just label text changes */
 
     /* Select Mode toolbar */
-    .select-toolbar{
-      display:none; align-items:center; gap:.8rem; padding:.6rem .8rem; border:1px dashed var(--line);
-      border-radius:12px; background:#fff; margin:.6rem 0;
+    .select-toolbar {
+      display: none;
+      align-items: center;
+      gap: .8rem;
+      padding: .6rem .8rem;
+      border: 1px dashed var(--line);
+      border-radius: 12px;
+      background: #fff;
+      margin: .6rem 0;
     }
-    .select-toolbar.show{ display:flex; }
-    .select-toolbar .count{ color:var(--muted); }
-    .row-check{ margin-right:.5rem; }
-    .row-check[disabled]{ opacity:.45; cursor:not-allowed; }
+
+    .select-toolbar.show {
+      display: flex;
+    }
+
+    .select-toolbar .count {
+      color: var(--muted);
+    }
+
+    .row-check {
+      margin-right: .5rem;
+    }
+
+    .row-check[disabled] {
+      opacity: .45;
+      cursor: not-allowed;
+    }
 
     /* ====================
        EXTRA RESPONSIVE UX
        ==================== */
 
     /* Make tab bar easy to reach on phones */
-    @media (max-width: 980px){
-      .tabbar{
-        position: sticky; top: 0; background: var(--bg); z-index: 4; overflow-x: auto;
+    @media (max-width: 980px) {
+      .tabbar {
+        position: sticky;
+        top: 0;
+        background: var(--bg);
+        z-index: 4;
+        overflow-x: auto;
       }
-      .tabbar::-webkit-scrollbar{ height:6px; }
-      .tabbar::-webkit-scrollbar-thumb{ background:#e5e7eb; border-radius:999px; }
+
+      .tabbar::-webkit-scrollbar {
+        height: 6px;
+      }
+
+      .tabbar::-webkit-scrollbar-thumb {
+        background: #e5e7eb;
+        border-radius: 999px;
+      }
     }
 
     /* Hide some table columns on very small screens for readability */
-    @media (max-width: 720px){
+    @media (max-width: 720px) {
+
       /* hide Updated At */
-      #tab-unpaid thead th:nth-child(3), #tab-unpaid tbody td:nth-child(3),
-      #tab-paid thead th:nth-child(3),   #tab-paid   tbody td:nth-child(3){ display:none; }
+      #tab-unpaid thead th:nth-child(3),
+      #tab-unpaid tbody td:nth-child(3),
+      #tab-paid thead th:nth-child(3),
+      #tab-paid tbody td:nth-child(3) {
+        display: none;
+      }
+
       /* hide Actions column only on narrow screens */
-      #tab-unpaid thead th:nth-child(6), #tab-unpaid tbody td:nth-child(6){ display:none; }
+      #tab-unpaid thead th:nth-child(6),
+      #tab-unpaid tbody td:nth-child(6) {
+        display: none;
+      }
     }
 
     /* --- Mobile "Filters" minimal UI --- */
-    .filter-fab{
-      position: fixed; right: 16px; bottom: 16px; z-index: 62;
-      display: none; place-items: center; gap:.4rem;
-      width:56px; height:56px; border-radius:16px; border:none; cursor:pointer;
-      background: var(--ink); color:#fff; box-shadow:0 10px 24px rgba(0,0,0,.18);
+    .filter-fab {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      z-index: 62;
+      display: none;
+      place-items: center;
+      gap: .4rem;
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      border: none;
+      cursor: pointer;
+      background: var(--ink);
+      color: #fff;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, .18);
     }
-    .filter-fab .material-icons-sharp{ font-size:24px; }
-    .filters-backdrop{
-      position: fixed; inset: 0; background: rgba(0,0,0,.35);
-      opacity: 0; pointer-events: none; transition: opacity .2s ease; z-index: 60;
-    }
-    .filter-close-btn{
-      position: fixed; right: 14px; bottom: 78px; z-index: 62; display: none;
-      border: none; background: #ffffff; color: var(--ink); border:1px solid var(--line);
-      border-radius: 10px; padding:.4rem .6rem; box-shadow:0 8px 20px rgba(0,0,0,.12);
-    }
-    .filter-close-btn .material-icons-sharp{ font-size:20px; }
 
-    @media (max-width: 980px){
-      .filter-fab, .filter-close-btn{ display: grid; }
+    .filter-fab .material-icons-sharp {
+      font-size: 24px;
+    }
+
+    .filters-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .35);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s ease;
+      z-index: 60;
+    }
+
+    .filter-close-btn {
+      position: fixed;
+      right: 14px;
+      bottom: 78px;
+      z-index: 62;
+      display: none;
+      border: none;
+      background: #ffffff;
+      color: var(--ink);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: .4rem .6rem;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, .12);
+    }
+
+    .filter-close-btn .material-icons-sharp {
+      font-size: 20px;
+    }
+
+    @media (max-width: 980px) {
+
+      .filter-fab,
+      .filter-close-btn {
+        display: grid;
+      }
+
       /* Turn .controls into a bottom sheet */
-      .controls{
-        position: fixed; left: 0; right: 0; bottom: 0; z-index: 61;
-        max-height: 80vh; overflow: auto; padding: 1rem 1rem calc(env(safe-area-inset-bottom) + 14px);
-        background: var(--card); border-top-left-radius: 16px; border-top-right-radius: 16px;
-        box-shadow: 0 -16px 40px rgba(0,0,0,.25);
-        transform: translateY(105%); transition: transform .25s ease;
-        grid-template-columns: 1fr; gap: .75rem;
+      .controls {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 61;
+        max-height: 80vh;
+        overflow: auto;
+        padding: 1rem 1rem calc(env(safe-area-inset-bottom) + 14px);
+        background: var(--card);
+        border-top-left-radius: 16px;
+        border-top-right-radius: 16px;
+        box-shadow: 0 -16px 40px rgba(0, 0, 0, .25);
+        transform: translateY(105%);
+        transition: transform .25s ease;
+        grid-template-columns: 1fr;
+        gap: .75rem;
       }
+
       /* Add a small header via CSS */
-      .controls::before{
-        content: "Filters"; font-weight: 700; color: var(--ink);
-        position: sticky; top: 0; display:block; padding-bottom:.5rem; background: var(--card);
+      .controls::before {
+        content: "Filters";
+        font-weight: 700;
+        color: var(--ink);
+        position: sticky;
+        top: 0;
+        display: block;
+        padding-bottom: .5rem;
+        background: var(--card);
       }
+
       /* Full-width buttons for easier tapping */
-      .controls .btn{ width:100%; }
+      .controls .btn {
+        width: 100%;
+      }
+
       /* When open */
-      body.filters-open .controls{ transform: translateY(0); }
-      body.filters-open .filters-backdrop{ opacity: 1; pointer-events: auto; }
+      body.filters-open .controls {
+        transform: translateY(0);
+      }
+
+      body.filters-open .filters-backdrop {
+        opacity: 1;
+        pointer-events: auto;
+      }
     }
 
     /* ===========================
@@ -184,68 +568,217 @@
        =========================== */
 
     /* Show skeleton while loading; hide app */
-    body.is-loading main { display: none; }
-    body:not(.is-loading) #earnings-skeleton { display: none; }
+    body.is-loading main {
+      display: none;
+    }
 
-    #earnings-skeleton{
+    body:not(.is-loading) #earnings-skeleton {
+      display: none;
+    }
+
+    #earnings-skeleton {
       margin: 1.4rem 0 0 0;
       display: grid;
       gap: 1rem;
       animation: fadeIn .25s ease;
     }
-    @keyframes fadeIn { from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:none} }
 
-    .sk-card, .sk-bar, .sk-chip, .sk-td, .sk-input, .sk-btn{
-      position: relative; overflow: hidden; background: #eef3f7; border-radius: 10px;
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(6px)
+      }
+
+      to {
+        opacity: 1;
+        transform: none
+      }
     }
-    .sk-card{ border-radius: var(--radius); border:1px solid var(--line); background:#fff; }
-    .sk-shine::after{
-      content:""; position:absolute; inset:0;
-      background: linear-gradient(110deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.6) 18%, rgba(255,255,255,0) 33%);
-      transform: translateX(-100%); animation: shine 1.2s infinite;
+
+    .sk-card,
+    .sk-bar,
+    .sk-chip,
+    .sk-td,
+    .sk-input,
+    .sk-btn {
+      position: relative;
+      overflow: hidden;
+      background: #eef3f7;
+      border-radius: 10px;
     }
-    @keyframes shine { to{ transform: translateX(100%); } }
+
+    .sk-card {
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .sk-shine::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(110deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, .6) 18%, rgba(255, 255, 255, 0) 33%);
+      transform: translateX(-100%);
+      animation: shine 1.2s infinite;
+    }
+
+    @keyframes shine {
+      to {
+        transform: translateX(100%);
+      }
+    }
 
     /* Title skeleton */
-    .sk-title{ height: 28px; width: clamp(180px, 40%, 360px); }
-    .sk-sub{ height: 16px; width: clamp(140px, 30%, 280px); margin-top: 6px; }
+    .sk-title {
+      height: 28px;
+      width: clamp(180px, 40%, 360px);
+    }
+
+    .sk-sub {
+      height: 16px;
+      width: clamp(140px, 30%, 280px);
+      margin-top: 6px;
+    }
 
     /* Summary skeleton grid */
-    .sk-summary{
-      display:grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap:.9rem;
+    .sk-summary {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: .9rem;
     }
-    @media (max-width:1100px){ .sk-summary{ grid-template-columns: repeat(2, minmax(0,1fr)); } }
-    @media (max-width:580px){ .sk-summary{ grid-template-columns: 1fr; } }
-    .sk-summary .sk-card{ padding: 1rem; display:grid; gap:.6rem; }
-    .sk-sm-line{ height:14px; width:60%; }
-    .sk-lg-line{ height:24px; width:50%; }
-    .sk-bar{ height:8px; width:100%; }
+
+    @media (max-width:1100px) {
+      .sk-summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width:580px) {
+      .sk-summary {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .sk-summary .sk-card {
+      padding: 1rem;
+      display: grid;
+      gap: .6rem;
+    }
+
+    .sk-sm-line {
+      height: 14px;
+      width: 60%;
+    }
+
+    .sk-lg-line {
+      height: 24px;
+      width: 50%;
+    }
+
+    .sk-bar {
+      height: 8px;
+      width: 100%;
+    }
 
     /* Controls skeleton */
-    .sk-controls{
-      display:grid; gap:.6rem; grid-template-columns: 1.2fr repeat(2, .9fr) auto auto; align-items:end;
+    .sk-controls {
+      display: grid;
+      gap: .6rem;
+      grid-template-columns: 1.2fr repeat(2, .9fr) auto auto;
+      align-items: end;
     }
-    @media (max-width:980px){ .sk-controls{ grid-template-columns: 1fr 1fr; } }
-    .sk-field{ display:grid; gap:.3rem; }
-    .sk-label{ height: 12px; width: 40%; }
-    .sk-input{ height: 40px; border:1px solid var(--line); background:#fff; }
-    .sk-btn{ height: 42px; width: 140px; border:1px solid var(--line); background:#fff; }
+
+    @media (max-width:980px) {
+      .sk-controls {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .sk-field {
+      display: grid;
+      gap: .3rem;
+    }
+
+    .sk-label {
+      height: 12px;
+      width: 40%;
+    }
+
+    .sk-input {
+      height: 40px;
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .sk-btn {
+      height: 42px;
+      width: 140px;
+      border: 1px solid var(--line);
+      background: #fff;
+    }
 
     /* Tabs skeleton */
-    .sk-tabbar{ display:grid; grid-auto-flow:column; justify-content:start; gap:.4rem; border-bottom:1px solid var(--line); padding-bottom:.5rem; }
-    .sk-chip{ height: 36px; width: 130px; background:#fff; border:1px solid var(--line); border-bottom:3px solid transparent; }
+    .sk-tabbar {
+      display: grid;
+      grid-auto-flow: column;
+      justify-content: start;
+      gap: .4rem;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: .5rem;
+    }
+
+    .sk-chip {
+      height: 36px;
+      width: 130px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-bottom: 3px solid transparent;
+    }
 
     /* Table skeleton */
-    .sk-table{ background:#fff; border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; }
-    .sk-thead{ display:grid; grid-template-columns: 1.4fr 2fr 1.4fr 1fr 1fr 1fr; gap:0; padding:.8rem .9rem; border-bottom:1px solid var(--line); }
-    .sk-th{ height:14px; width:80%; }
-    .sk-rows{ display:grid; }
-    .sk-row{ display:grid; grid-template-columns: 1.4fr 2fr 1.4fr 1fr 1fr 1fr; gap:0; padding:.75rem .9rem; border-bottom:1px solid #f0f4f7; align-items:center; }
-    .sk-td{ height:16px; }
+    .sk-table {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
 
-    @media (max-width:720px){
-      .sk-thead, .sk-row{
-        grid-template-columns: 1.4fr 2fr 1fr 1fr; /* hide Updated At & Actions for narrow mimic */
+    .sk-thead {
+      display: grid;
+      grid-template-columns: 1.4fr 2fr 1.4fr 1fr 1fr 1fr;
+      gap: 0;
+      padding: .8rem .9rem;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .sk-th {
+      height: 14px;
+      width: 80%;
+    }
+
+    .sk-rows {
+      display: grid;
+    }
+
+    .sk-row {
+      display: grid;
+      grid-template-columns: 1.4fr 2fr 1.4fr 1fr 1fr 1fr;
+      gap: 0;
+      padding: .75rem .9rem;
+      border-bottom: 1px solid #f0f4f7;
+      align-items: center;
+    }
+
+    .sk-td {
+      height: 16px;
+    }
+
+    @media (max-width:720px) {
+
+      .sk-thead,
+      .sk-row {
+        grid-template-columns: 1.4fr 2fr 1fr 1fr;
+        /* hide Updated At & Actions for narrow mimic */
       }
     }
   </style>
@@ -257,7 +790,7 @@
     <aside>
       <div class="toggle">
         <div class="logo">
-          <img src="../../../img/simpLogo.png" />
+          <img src="../../../img/simpHappyMascotLogo.png" alt="logo" />
           <h2>SIMP<span class="danger">Project</span></h2>
         </div>
         <div class="close" id="close-btn">
@@ -378,28 +911,52 @@
           <div class="sk-rows">
             <!-- 6 rows -->
             <div class="sk-row">
-              <div class="sk-td sk-shine"></div><div class="sk-td sk-shine"></div><div class="sk-td sk-shine"></div>
-              <div class="sk-td sk-shine"></div><div class="sk-td sk-shine"></div><div class="sk-td sk-shine"></div>
+              <div class="sk-td sk-shine"></div>
+              <div class="sk-td sk-shine"></div>
+              <div class="sk-td sk-shine"></div>
+              <div class="sk-td sk-shine"></div>
+              <div class="sk-td sk-shine"></div>
+              <div class="sk-td sk-shine"></div>
             </div>
             <div class="sk-row">
-              <div class="sk-td sk-shine"></div><div class="sk-td sk-shine"></div><div class="sk-td sk-shine"></div>
-              <div class="sk-td sk-shine"></div><div class="sk-td sk-shine"></div><div class="sk-td sk-shine"></div>
+              <div class="sk-td sk-shine"></div>
+              <div class="sk-td sk-shine"></div>
+              <div class="sk-td sk-shine"></div>
+              <div class="sk-td sk-shine"></div>
+              <div class="sk-td sk-shine"></div>
+              <div class="sk-td sk-shine"></div>
             </div>
             <div class="sk-row">
-              <div class="sk-td sk-shine"></div><div class="sk-td sk-shine"></div><div class="sk-td sk-shine"></div>
-              <div class="sk-td sk-shine"></div><div class="sk-td sk-shine"></div><div class="sk-td sk-shine"></div>
+              <div class="sk-td sk-shine"></div>
+              <div class="sk-td sk-shine"></div>
+              <div class="sk-td sk-shine"></div>
+              <div class="sk-td sk-shine"></div>
+              <div class="sk-td sk-shine"></div>
+              <div class="sk-td sk-shine"></div>
             </div>
             <div class="sk-row">
-              <div class="sk-td sk-shine"></div><div class="sk-td sk-shine"></div><div class="sk-td sk-shine"></div>
-              <div class="sk-td sk-shine"></div><div class="sk-td sk-shine"></div><div class="sk-td sk-shine"></div>
+              <div class="sk-td sk-shine"></div>
+              <div class="sk-td sk-shine"></div>
+              <div class="sk-td sk-shine"></div>
+              <div class="sk-td sk-shine"></div>
+              <div class="sk-td sk-shine"></div>
+              <div class="sk-td sk-shine"></div>
             </div>
             <div class="sk-row">
-              <div class="sk-td sk-shine"></div><div class="sk-td sk-shine"></div><div class="sk-td sk-shine"></div>
-              <div class="sk-td sk-shine"></div><div class="sk-td sk-shine"></div><div class="sk-td sk-shine"></div>
+              <div class="sk-td sk-shine"></div>
+              <div class="sk-td sk-shine"></div>
+              <div class="sk-td sk-shine"></div>
+              <div class="sk-td sk-shine"></div>
+              <div class="sk-td sk-shine"></div>
+              <div class="sk-td sk-shine"></div>
             </div>
             <div class="sk-row">
-              <div class="sk-td sk-shine"></div><div class="sk-td sk-shine"></div><div class="sk-td sk-shine"></div>
-              <div class="sk-td sk-shine"></div><div class="sk-td sk-shine"></div><div class="sk-td sk-shine"></div>
+              <div class="sk-td sk-shine"></div>
+              <div class="sk-td sk-shine"></div>
+              <div class="sk-td sk-shine"></div>
+              <div class="sk-td sk-shine"></div>
+              <div class="sk-td sk-shine"></div>
+              <div class="sk-td sk-shine"></div>
             </div>
           </div>
         </div>
@@ -535,7 +1092,8 @@
       </section>
 
       <div class="helper" id="helperBox">
-        <strong>Heads up:</strong> Sign in, or pass <code>?installer=&lt;uuid&gt;</code> in the URL to view a specific installer. Exports respect your current filters.
+        <strong>Heads up:</strong> Sign in, or pass <code>?installer=&lt;uuid&gt;</code> in the URL to view a specific
+        installer. Exports respect your current filters.
       </div>
     </main>
   </div>
@@ -567,7 +1125,8 @@
       </div>
       <div class="modal-foot">
         <button class="btn ghost" id="cancelPayout">Cancel</button>
-        <button class="btn" id="confirmPayout"><span class="material-icons-sharp">check_circle</span> Confirm Request</button>
+        <button class="btn" id="confirmPayout"><span class="material-icons-sharp">check_circle</span> Confirm
+          Request</button>
       </div>
     </div>
   </div>
@@ -638,7 +1197,7 @@
 
     // NEW: badge elements & counters
     const badgeUnpaid = document.getElementById('badge-unpaid');
-    const badgePaid   = document.getElementById('badge-paid');
+    const badgePaid = document.getElementById('badge-paid');
     const updateCounts = { unpaid: 0, paid: 0 };
 
     // ====== Mobile filter UI (ADDED) ======
@@ -646,51 +1205,51 @@
     const filterClose = document.getElementById('filterClose');
     const filtersBackdrop = document.getElementById('filtersBackdrop');
     const isMobile = () => window.matchMedia('(max-width: 980px)').matches;
-    const openFilters = () => { document.body.classList.add('filters-open'); filtersBackdrop.setAttribute('aria-hidden','false'); };
-    const closeFilters = () => { document.body.classList.remove('filters-open'); filtersBackdrop.setAttribute('aria-hidden','true'); };
+    const openFilters = () => { document.body.classList.add('filters-open'); filtersBackdrop.setAttribute('aria-hidden', 'false'); };
+    const closeFilters = () => { document.body.classList.remove('filters-open'); filtersBackdrop.setAttribute('aria-hidden', 'true'); };
     filterFab.addEventListener('click', openFilters);
     filterClose.addEventListener('click', closeFilters);
     filtersBackdrop.addEventListener('click', closeFilters);
-    window.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeFilters(); });
-    window.addEventListener('resize', ()=>{ if(!isMobile()) closeFilters(); });
+    window.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeFilters(); });
+    window.addEventListener('resize', () => { if (!isMobile()) closeFilters(); });
 
     // ========= UTILS =========
-    const fmt = (n)=> CURRENCY + (Number(n)||0).toLocaleString('en-PH', {minimumFractionDigits:2, maximumFractionDigits:2});
-    const fmtDateTimeLocal = (v)=>{
-      if(!v) return '—';
+    const fmt = (n) => CURRENCY + (Number(n) || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const fmtDateTimeLocal = (v) => {
+      if (!v) return '—';
       const d = new Date(v);
       if (isNaN(d.getTime())) return '—';
       return d.toLocaleString('en-PH', {
-        year:'numeric', month:'short', day:'numeric',
-        hour:'numeric', minute:'2-digit'
+        year: 'numeric', month: 'short', day: 'numeric',
+        hour: 'numeric', minute: '2-digit'
       });
     };
-    const inRange = (dt, from, to)=>{
-      if(!from && !to) return true;
+    const inRange = (dt, from, to) => {
+      if (!from && !to) return true;
       const x = new Date(dt).getTime();
       if (isNaN(x)) return false;
-      const start = from ? new Date(from).setHours(0,0,0,0) : null;
-      const end   = to   ? new Date(to).setHours(23,59,59,999) : null;
-      if (start!==null && x < start) return false;
-      if (end!==null   && x > end)   return false;
+      const start = from ? new Date(from).setHours(0, 0, 0, 0) : null;
+      const end = to ? new Date(to).setHours(23, 59, 59, 999) : null;
+      if (start !== null && x < start) return false;
+      if (end !== null && x > end) return false;
       return true;
     };
 
     // Generate a batch number via RPC; fallback to client-side
-    async function getPayoutBatchNo(){
-      try{
+    async function getPayoutBatchNo() {
+      try {
         const { data, error } = await supabase.rpc('next_payout_batch', { prefix: 'BATCH' });
         if (error) throw error;
         if (data && typeof data === 'string' && data.length) return data;
-      }catch(err){
+      } catch (err) {
         console.warn('RPC next_payout_batch failed, using client fallback:', err?.message || err);
       }
-      const d = new Date().toISOString().slice(0,10).replace(/-/g,'');
-      const rnd = (crypto.randomUUID ? crypto.randomUUID() : (Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2))).slice(0,8).toUpperCase();
+      const d = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+      const rnd = (crypto.randomUUID ? crypto.randomUUID() : (Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2))).slice(0, 8).toUpperCase();
       return `BATCH-${d}-${rnd}`;
     }
 
-    async function getInstallerId(){
+    async function getInstallerId() {
       const param = new URLSearchParams(location.search).get('installer');
       if (param) return param;
       const { data: { session } } = await supabase.auth.getSession();
@@ -698,7 +1257,7 @@
     }
 
     // ========= DATA LOAD =========
-    async function loadFromSupabase(installerId){
+    async function loadFromSupabase(installerId) {
       const { data: payments, error: payErr } = await supabase
         .schema("earnings")
         .from('payments')
@@ -707,9 +1266,9 @@
 
       if (payErr) throw payErr;
 
-      const jobIds = Array.from(new Set((payments || []).map(p=>p.job_id)));
+      const jobIds = Array.from(new Set((payments || []).map(p => p.job_id)));
       let jobs = [];
-      if (jobIds.length){
+      if (jobIds.length) {
         const { data: jobRows, error: jobErr } = await supabase
           .schema("jobs")
           .from('job')
@@ -720,15 +1279,15 @@
       }
 
       // Build maps & UI rows
-      const jobById = new Map(jobs.map(j=>[j.job_id, j]));
+      const jobById = new Map(jobs.map(j => [j.job_id, j]));
 
-      EARNINGS = (payments || []).map(p=>{
+      EARNINGS = (payments || []).map(p => {
         const j = jobById.get(p.job_id) || {};
         const uiStatus =
-          p.payment_status === 'disbursed'     ? 'paid' :
-          p.payment_status === 'paid'           ? 'approved' :
-          p.payment_status === 'pending_payout' ? 'approved' :
-                                                  'unpaid';
+          p.payment_status === 'disbursed' ? 'paid' :
+            p.payment_status === 'paid' ? 'approved' :
+              p.payment_status === 'pending_payout' ? 'approved' :
+                'unpaid';
 
         return {
           payment_id: p.id,
@@ -741,8 +1300,8 @@
           status: uiStatus,                      // derived (only used for Disbursed pill)
           updated_at: p.updated_at,              // DISPLAY & FILTER by updated_at
           paid_ref: p.payment_status === 'disbursed'
-                      ? (p.reference_number || p.payout_batch_no || String(p.id).slice(-8).toUpperCase())
-                      : null
+            ? (p.reference_number || p.payout_batch_no || String(p.id).slice(-8).toUpperCase())
+            : null
         };
       });
 
@@ -751,17 +1310,17 @@
 
       // Eligibility set (only exact 'paid' may be requested)
       ELIGIBLE.clear();
-      for (const p of PAYMENTS){
+      for (const p of PAYMENTS) {
         if (p.payment_status === 'paid') ELIGIBLE.add(p.id);
       }
     }
 
     // ========= SUMMARY =========
-    function computePaymentsSummary(){
-      const jobById = new Map(JOBS.map(j=>[j.job_id, j]));
-      const sums = { unpaid:0, paid:0, disbursed:0 };
+    function computePaymentsSummary() {
+      const jobById = new Map(JOBS.map(j => [j.job_id, j]));
+      const sums = { unpaid: 0, paid: 0, disbursed: 0 };
 
-      for (const p of PAYMENTS){
+      for (const p of PAYMENTS) {
         const j = jobById.get(p.job_id);
         if (!j) continue;
         const amt = Number(j.job_pay) || 0;
@@ -782,7 +1341,7 @@
     }
 
     // ========= TABLES =========
-    function pillForPaymentStatus(payment_status){
+    function pillForPaymentStatus(payment_status) {
       // Show EXACT text coming from payments.payment_status
       if (payment_status === 'unpaid') return '<span class="pill unpaid">unpaid</span>';
       if (payment_status === 'paid') return '<span class="pill approved">paid</span>';
@@ -792,10 +1351,10 @@
     }
 
     // Not Disbursed rows → show raw payment_status chip
-    function rowHTMLUnpaid(r){
+    function rowHTMLUnpaid(r) {
       const canSelect = ELIGIBLE.has(r.payment_id);
       const checkHTML = SELECT_MODE
-        ? `<input type="checkbox" class="row-check" data-payid="${r.payment_id}" ${canSelect ? '' : 'disabled title="Only Approved (paid) rows are eligible"'} ${SELECTED.has(r.payment_id)?'checked':''}/>`
+        ? `<input type="checkbox" class="row-check" data-payid="${r.payment_id}" ${canSelect ? '' : 'disabled title="Only Approved (paid) rows are eligible"'} ${SELECTED.has(r.payment_id) ? 'checked' : ''}/>`
         : '';
 
       return `
@@ -811,7 +1370,7 @@
     }
 
     // Disbursed rows → keep the nice “Disbursed” pill and show reference number
-    function rowHTMLPaid(r){
+    function rowHTMLPaid(r) {
       return `
         <tr data-payid="${r.payment_id}">
           <td class="mono">${r.code}</td>
@@ -824,12 +1383,12 @@
       `;
     }
 
-    function applyFilters(){
+    function applyFilters() {
       const q = (searchEl.value || '').trim().toLowerCase();
       const f = dateFromEl.value || null;
       const t = dateToEl.value || null;
 
-      const filtered = EARNINGS.filter(e=>{
+      const filtered = EARNINGS.filter(e => {
         const hay = [e.code, e.title].join(' ').toLowerCase();
         const hit = hay.includes(q);
         const okDate = e.updated_at ? inRange(e.updated_at, f, t) : true;
@@ -853,49 +1412,49 @@
       wireRowCheckboxes();
     }
 
-    function updatePayoutButton(rows){
+    function updatePayoutButton(rows) {
       const eligible = rows
         .filter(r => r.payment_status === 'paid') // only 'paid' (approved) can be requested
-        .reduce((s,r)=>s+r.amount,0);
+        .reduce((s, r) => s + r.amount, 0);
 
       document.getElementById('btnRequestPayout').title =
         SELECT_MODE
           ? 'Review selected items'
           : (eligible < PAYOUT_THRESHOLD
-                ? `Need at least ${fmt(PAYOUT_THRESHOLD)} to request payout`
-                : 'Select which jobs to include in this payout');
+            ? `Need at least ${fmt(PAYOUT_THRESHOLD)} to request payout`
+            : 'Select which jobs to include in this payout');
     }
 
-    function exportCSV(){
+    function exportCSV() {
       const activeTab = document.querySelector('.tabbar button.active').dataset.tab;
       const tableBody = (activeTab === 'unpaid') ? tbodyUnpaid : tbodyPaid;
 
       const rows = Array.from(tableBody.querySelectorAll('tr'))
         .filter(tr => tr.querySelector('td'));
 
-      const headers = (activeTab==='unpaid')
-        ? ['Job Code','Title','Updated At','Amount','Status']
-        : ['Job Code','Title','Updated At','Amount','Status','Reference Number'];
+      const headers = (activeTab === 'unpaid')
+        ? ['Job Code', 'Title', 'Updated At', 'Amount', 'Status']
+        : ['Job Code', 'Title', 'Updated At', 'Amount', 'Status', 'Reference Number'];
 
-      const records = rows.map(tr=>{
+      const records = rows.map(tr => {
         const cells = Array.from(tr.querySelectorAll('td'));
-        const text = cells.map(td => td.innerText.replace(/\n/g,' ').trim());
-        if (activeTab==='unpaid') text.pop(); // drop actions col in unpaid
+        const text = cells.map(td => td.innerText.replace(/\n/g, ' ').trim());
+        if (activeTab === 'unpaid') text.pop(); // drop actions col in unpaid
         return text;
       });
 
       const csv = [headers, ...records]
         .map(r => r.map(v => {
           const s = String(v ?? '');
-          return /[",\n]/.test(s) ? `"${s.replace(/"/g,'""')}"` : s;
+          return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
         }).join(','))
         .join('\n');
 
-      const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `earnings_${activeTab}_${new Date().toISOString().slice(0,10)}.csv`;
+      a.download = `earnings_${activeTab}_${new Date().toISOString().slice(0, 10)}.csv`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -903,9 +1462,9 @@
     }
 
     // ========= MODAL & REQUEST FLOW =========
-    function openPayout(){
+    function openPayout() {
       // First click → enter Select Mode
-      if (!SELECT_MODE){
+      if (!SELECT_MODE) {
         setSelectMode(true);
         btnRequestPayout.innerHTML = '<span class="material-icons-sharp">playlist_add_check</span> Review Selection';
         helperBox.innerHTML = `<strong>Select Mode:</strong> Choose the approved jobs to include, then click <em>Review Selection</em>.`;
@@ -915,15 +1474,15 @@
       // Second click → review selection in modal
       const chosen = EARNINGS.filter(r => SELECTED.has(r.payment_id));
       const eligibleChosen = chosen.filter(r => r.payment_status === 'paid'); // raw status
-      const total = eligibleChosen.reduce((s,r)=>s + (Number(r.amount)||0), 0);
+      const total = eligibleChosen.reduce((s, r) => s + (Number(r.amount) || 0), 0);
 
       modalEligible.textContent = fmt(total);
       modalMethod.textContent = PAYOUT_METHOD;
 
-      if (eligibleChosen.length === 0){
+      if (eligibleChosen.length === 0) {
         modalNote.textContent = `No eligible (paid) rows selected. Select at least one to proceed.`;
         confirmPayout.disabled = true;
-      } else if (total < PAYOUT_THRESHOLD){
+      } else if (total < PAYOUT_THRESHOLD) {
         modalNote.textContent = `You currently don't meet the payout minimum of ${fmt(PAYOUT_THRESHOLD)} for the selected items.`;
         confirmPayout.disabled = true;
       } else {
@@ -933,9 +1492,9 @@
 
       modal.classList.add('open');
     }
-    function closePayout(){ modal.classList.remove('open'); }
+    function closePayout() { modal.classList.remove('open'); }
 
-    async function confirmPayoutRequest(){
+    async function confirmPayoutRequest() {
       const ids = Array.from(SELECTED).filter(id => {
         const row = EARNINGS.find(e => e.payment_id === id);
         return row?.payment_status === 'paid';
@@ -945,7 +1504,7 @@
       confirmPayout.disabled = true;
       confirmPayout.innerHTML = '<span class="material-icons-sharp">hourglass_top</span> Working...';
 
-      try{
+      try {
         const batchNo = await getPayoutBatchNo();
 
         const { error: updErr } = await supabase
@@ -956,8 +1515,8 @@
 
         if (updErr) throw updErr;
 
-        for (const p of PAYMENTS){
-          if (ids.includes(p.id)){
+        for (const p of PAYMENTS) {
+          if (ids.includes(p.id)) {
             p.payment_status = 'pending_payout';
             p.payout_batch_no = batchNo;
           }
@@ -968,7 +1527,7 @@
         );
 
         ELIGIBLE.clear();
-        for (const p of PAYMENTS){
+        for (const p of PAYMENTS) {
           if (p.payment_status === 'paid') ELIGIBLE.add(p.id);
         }
 
@@ -983,19 +1542,19 @@
         renderBadges();
 
         alert(`Request submitted for ${ids.length} job(s).\nBatch: ${batchNo}`);
-      }catch(err){
+      } catch (err) {
         console.error(err);
         alert('Failed to submit payout request: ' + (err?.message || 'Unknown error'));
-      }finally{
+      } finally {
         confirmPayout.disabled = false;
         confirmPayout.innerHTML = '<span class="material-icons-sharp">check_circle</span> Confirm Request';
       }
     }
 
     // ========= SELECT MODE =========
-    function setSelectMode(on){
+    function setSelectMode(on) {
       SELECT_MODE = !!on;
-      if (!SELECT_MODE){
+      if (!SELECT_MODE) {
         SELECTED.clear();
         chkSelectAll.checked = false;
         selectToolbar.classList.remove('show');
@@ -1006,14 +1565,14 @@
       applyFilters();
     }
 
-    function updateSelectToolbarCount(){
+    function updateSelectToolbarCount() {
       selCount.textContent = `${SELECTED.size} selected`;
     }
 
-    function wireRowCheckboxes(){
+    function wireRowCheckboxes() {
       if (!SELECT_MODE) return;
-      tbodyUnpaid.querySelectorAll('.row-check').forEach(chk=>{
-        chk.addEventListener('change', ()=>{
+      tbodyUnpaid.querySelectorAll('.row-check').forEach(chk => {
+        chk.addEventListener('change', () => {
           const id = chk.getAttribute('data-payid');
           if (!id || chk.disabled) return;
           if (chk.checked) SELECTED.add(id);
@@ -1023,13 +1582,13 @@
       });
     }
 
-    chkSelectAll.addEventListener('change', ()=>{
+    chkSelectAll.addEventListener('change', () => {
       if (!SELECT_MODE) return;
       SELECTED.clear();
-      tbodyUnpaid.querySelectorAll('.row-check').forEach(chk=>{
-        if (!chk.disabled){
+      tbodyUnpaid.querySelectorAll('.row-check').forEach(chk => {
+        if (!chk.disabled) {
           chk.checked = chkSelectAll.checked;
-          if (chk.checked){
+          if (chk.checked) {
             const id = chk.getAttribute('data-payid');
             if (id) SELECTED.add(id);
           }
@@ -1039,17 +1598,17 @@
     });
 
     // ========= BADGES (render & realtime) =========
-    function renderBadges(){
+    function renderBadges() {
       const cap = n => (n > 99 ? '99+' : String(n));
       // unpaid tab
-      if (updateCounts.unpaid > 0){
+      if (updateCounts.unpaid > 0) {
         badgeUnpaid.hidden = false;
         badgeUnpaid.textContent = cap(updateCounts.unpaid);
       } else {
         badgeUnpaid.hidden = true;
       }
       // paid tab
-      if (updateCounts.paid > 0){
+      if (updateCounts.paid > 0) {
         badgePaid.hidden = false;
         badgePaid.textContent = cap(updateCounts.paid);
       } else {
@@ -1060,13 +1619,13 @@
     // ========= INIT + REALTIME =========
     let realtimeChannel = null;
 
-    (async function init(){
+    (async function init() {
       // --- SHOW SKELETON (ADDED) ---
       document.body.classList.add('is-loading');
-      try{
+      try {
         const installerId = await getInstallerId();
         CURRENT_INSTALLER_ID = installerId;
-        if (!installerId){
+        if (!installerId) {
           helperBox.innerHTML = `<strong>Heads up:</strong> No installer ID found. Sign in or append <code>?installer=&lt;uuid&gt;</code> to the URL.`;
         } else {
           helperBox.innerHTML = `<strong>Viewing installer:</strong> <code>${installerId}</code>`;
@@ -1102,28 +1661,28 @@
               // console.log('Realtime status:', status);
             });
         }
-      } catch (err){
+      } catch (err) {
         console.error(err);
         helperBox.innerHTML = `<strong>Error:</strong> ${err.message || err}`;
       } finally {
         computePaymentsSummary();
         applyFilters();
         // --- HIDE SKELETON (ADDED) ---
-        requestAnimationFrame(()=>document.body.classList.remove('is-loading'));
+        requestAnimationFrame(() => document.body.classList.remove('is-loading'));
       }
     })();
 
     // Optional cleanup if your environment needs it
-    window.addEventListener('beforeunload', ()=>{
+    window.addEventListener('beforeunload', () => {
       if (realtimeChannel) {
         supabase.removeChannel(realtimeChannel);
       }
     });
 
     // Invoice button (hook)
-    document.addEventListener('click', (e)=>{
+    document.addEventListener('click', (e) => {
       const btn = e.target.closest('button[data-invoice]');
-      if(!btn) return;
+      if (!btn) return;
       const code = btn.getAttribute('data-invoice');
       alert('Generate/Download invoice for ' + code);
     });
@@ -1138,20 +1697,20 @@
     dateFromEl.addEventListener('change', applyFilters);
     dateToEl.addEventListener('change', applyFilters);
 
-    tabs.forEach(b=>{
-      b.addEventListener('click', ()=>{
-        tabs.forEach(x=>x.classList.remove('active'));
+    tabs.forEach(b => {
+      b.addEventListener('click', () => {
+        tabs.forEach(x => x.classList.remove('active'));
         b.classList.add('active');
         const tab = b.dataset.tab;
-        if(tab==='unpaid'){
-          tabUnpaidWrap.style.display='block';
-          tabPaidWrap.style.display='none';
+        if (tab === 'unpaid') {
+          tabUnpaidWrap.style.display = 'block';
+          tabPaidWrap.style.display = 'none';
           selectToolbar.style.display = SELECT_MODE ? 'flex' : 'none';
           // NEW: reset badge for this tab
           updateCounts.unpaid = 0; renderBadges();
         } else {
-          tabUnpaidWrap.style.display='none';
-          tabPaidWrap.style.display='block';
+          tabUnpaidWrap.style.display = 'none';
+          tabPaidWrap.style.display = 'block';
           selectToolbar.style.display = 'none';
           // NEW: reset badge for this tab
           updateCounts.paid = 0; renderBadges();
@@ -1160,4 +1719,5 @@
     });
   </script>
 </body>
+
 </html>

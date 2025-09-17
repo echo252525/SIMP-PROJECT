@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap');
 
 aside {
   height: 100vh;
@@ -101,6 +101,11 @@ aside .sidebar .message-count {
 }
 
 @media screen and (max-width: 1200px) {
+  .container {
+    width: 95%;
+    grid-template-columns: 7rem auto 23rem;
+  }
+
   aside .logo h2 {
     display: none;
   }
@@ -120,6 +125,12 @@ aside .sidebar .message-count {
 }
 
 @media screen and (max-width: 768px) {
+  .container {
+    width: 100%;
+    grid-template-columns: 1fr;
+    padding: 0 var(--padding-1);
+  }
+
   aside {
     position: fixed;
     background-color: var(--color-white);
@@ -161,7 +172,7 @@ aside .sidebar .message-count {
 
 :root {
   --color-primary: #6c9bcf;
-  --color-danger: #ff0060;
+  --color-danger: #20a44c;
   --color-success: #1b9c85;
   --color-warning: #f7d060;
   --color-white: #fff;
@@ -178,15 +189,6 @@ aside .sidebar .message-count {
   --card-padding: 1.8rem;
   --padding-1: 1.2rem;
 
-  --box-shadow: 0 2rem 3rem var(--color-light);
-}
-
-.dark-mode-variables {
-  --color-background: #181a1e;
-  --color-white: #202528;
-  --color-dark: #edeffd;
-  --color-dark-variant: #a3bdcc;
-  --color-light: rgba(0, 0, 0, 0.4);
   --box-shadow: 0 2rem 3rem var(--color-light);
 }
 
@@ -213,6 +215,10 @@ body {
   overflow-x: hidden;
   color: var(--color-dark);
   background: var(--color-background);
+}
+
+main {
+  margin-top: 1.4rem;
 }
 
 a {

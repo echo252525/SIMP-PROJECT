@@ -1,319 +1,696 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet"/>
-    <link rel="stylesheet" href="../css_files/sideBar.css" />
-    <title>Shop</title>
-    <style>
-      /* ───────── MAIN-ONLY STYLES ───────── */
-      :root{
-        --line:#e5e7eb; --card:#fff; --ink:#111827; --muted:#6b7280;
-        --brand:#20a44c; --accent:#20647c;
-      }
-      main { margin-top: 1.4rem; scroll-behavior:smooth; }
 
-      /* layout */
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap"
+    rel="stylesheet">
+
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet" />
+  <link rel="stylesheet" href="../css_files/sideBar.css" />
+  <title>Shop</title>
+  <style>
+    /* ───────── MAIN-ONLY STYLES ───────── */
+    :root {
+      --line: #e5e7eb;
+      --card: #fff;
+      --ink: #111827;
+      --muted: #6b7280;
+      --brand: #20a44c;
+      --accent: #20647c;
+    }
+
+    main {
+      scroll-behavior: smooth;
+    }
+
+    /* layout */
+    main .shop-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      align-items: start;
+      margin-top: 1rem;
+    }
+
+    main .panel {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, .05);
+      padding: 1rem;
+    }
+
+    main .panel h2 {
+      margin: 0 0 .75rem;
+      font-size: 1rem;
+      color: var(--ink);
+    }
+
+    /* left column: product list */
+    main .product-list {
+      display: flex;
+      flex-direction: column;
+      gap: .6rem;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      max-height: calc(100vh - 12rem);
+      overflow: auto;
+    }
+
+    main .product-card {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      transition: transform .08s ease, box-shadow .2s ease, border-color .2s ease;
+      background: var(--card);
+    }
+
+    main .product-card:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, .06);
+      border-color: #d1d5db;
+    }
+
+    main .product-card a {
+      display: grid;
+      grid-template-columns: 56px 1fr auto;
+      gap: .8rem;
+      padding: .75rem;
+      text-decoration: none;
+      color: inherit;
+      align-items: center;
+    }
+
+    main .productImage {
+      width: 56px;
+      height: 56px;
+      border-radius: 10px;
+      background: #f3f4f6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .75rem;
+      color: #6b7280;
+      user-select: none;
+      object-fit: cover;
+    }
+
+    main .meta h3 {
+      margin: 0;
+      font-size: .95rem;
+      line-height: 1.2;
+      color: var(--ink);
+    }
+
+    main .price {
+      font-weight: 600;
+      font-size: .95rem;
+      white-space: nowrap;
+      color: var(--brand);
+    }
+
+    /* right column: details */
+    main .details-panel {
+      position: relative;
+      min-height: 420px;
+      max-height: calc(100vh - 5rem);
+      overflow: auto;
+    }
+
+    main .product-detail {
+      display: none;
+      animation: fadeIn .15s ease;
+    }
+
+    main .product-detail.active {
+      display: block;
+    }
+
+    main .placeholder {
+      padding: 2rem;
+      text-align: center;
+      color: #6b7280;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: .7;
+        transform: translateY(2px);
+      }
+
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    /* detail header block */
+    main .detail-head {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      padding-bottom: .75rem;
+      border-bottom: 1px solid #e5e7eb;
+      margin-bottom: 1rem;
+    }
+
+    main .detail-thumb {
+      width: 90px;
+      height: 90px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f3f4f6;
+      overflow: hidden;
+    }
+
+    main .detail-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    main .title-price {
+      flex: 1;
+    }
+
+    main .title-price h3 {
+      margin: .1rem 0;
+      font-size: 1.1rem;
+    }
+
+    main .badges {
+      display: flex;
+      gap: .4rem;
+      flex-wrap: wrap;
+      margin-top: .25rem;
+    }
+
+    main .badge {
+      font-size: .72rem;
+      padding: .15rem .5rem;
+      border-radius: 999px;
+      background: #eef2ff;
+      color: #4f46e5;
+      border: 1px solid #e0e7ff;
+    }
+
+    main .sold-small {
+      color: var(--muted);
+      font-size: .85rem;
+    }
+
+    /* detail sections */
+    main .detail-grid>div:last-child {
+      grid-column: span 2;
+    }
+
+    main .field {
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: .9rem;
+      margin-bottom: 1rem;
+    }
+
+    main .field h4 {
+      margin: 0 0 .5rem;
+      font-size: .88rem;
+      color: #374151;
+    }
+
+    main .desc {
+      grid-column: 1 / -1;
+    }
+
+    main .desc p {
+      margin: 0;
+      color: #374151;
+      font-size: .92rem;
+    }
+
+    /* action button */
+    main .actions {
+      display: flex;
+      gap: .6rem;
+      flex-wrap: wrap;
+      margin-top: .25rem;
+    }
+
+    main .btn {
+      border-radius: 12px;
+      border: 1px solid transparent;
+      padding: .6rem .9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform .06s ease, box-shadow .15s ease, background .2s ease;
+    }
+
+    main .btn:active {
+      transform: translateY(1px);
+    }
+
+    main .btn-primary {
+      background: var(--brand);
+      color: #fff;
+    }
+
+    main .btn-outline {
+      background: #fff;
+      color: var(--ink);
+      border-color: #d1d5db;
+    }
+
+    /* responsive */
+    @media (max-width:980px) {
       main .shop-grid {
-        display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; align-items: start; margin-top: 1rem;
-      }
-      main .panel {
-        background: var(--card); border: 1px solid var(--line); border-radius: 16px;
-        box-shadow: 0 4px 16px rgba(0,0,0,.05); padding: 1rem;
-      }
-      main .panel h2 { margin: 0 0 .75rem; font-size: 1rem; color: var(--ink); }
-
-      /* left column: product list */
-      main .product-list { display:flex; flex-direction:column; gap:.6rem; margin:0; padding:0; list-style:none; max-height: calc(100vh - 12rem); overflow:auto; }
-      main .product-card { border:1px solid var(--line); border-radius:12px; transition:transform .08s ease, box-shadow .2s ease, border-color .2s ease; background:var(--card); }
-      main .product-card:hover { transform: translateY(-1px); box-shadow:0 6px 20px rgba(0,0,0,.06); border-color:#d1d5db; }
-      main .product-card a { display:grid; grid-template-columns:56px 1fr auto; gap:.8rem; padding:.75rem; text-decoration:none; color:inherit; align-items:center; }
-      main .productImage { width:56px; height:56px; border-radius:10px; background:#f3f4f6; display:flex; align-items:center; justify-content:center; font-size:.75rem; color:#6b7280; user-select:none; object-fit:cover; }
-      main .meta h3 { margin:0; font-size:.95rem; line-height:1.2; color:var(--ink); }
-      main .price { font-weight:600; font-size:.95rem; white-space:nowrap; color: var(--brand); }
-
-      /* right column: details */
-      main .details-panel { position:relative; min-height: 420px; max-height: calc(100vh - 12rem); overflow:auto; }
-      main .product-detail { display:none; animation: fadeIn .15s ease; }
-      main .product-detail.active { display:block; }
-      main .placeholder { padding:2rem; text-align:center; color:#6b7280; }
-      @keyframes fadeIn { from{ opacity:.7; transform: translateY(2px);} to{opacity:1; transform:none;} }
-
-      /* detail header block */
-      main .detail-head { display:flex; gap:1rem; align-items:center; padding-bottom:.75rem; border-bottom:1px solid #e5e7eb; margin-bottom:1rem; }
-      main .detail-thumb { width:90px; height:90px; border-radius:12px; display:flex; align-items:center; justify-content:center; background:#f3f4f6; overflow:hidden; }
-      main .detail-thumb img{ width:100%; height:100%; object-fit:cover; }
-      main .title-price { flex:1; }
-      main .title-price h3 { margin:.1rem 0; font-size:1.1rem; }
-      main .badges { display:flex; gap:.4rem; flex-wrap:wrap; margin-top:.25rem; }
-      main .badge { font-size:.72rem; padding:.15rem .5rem; border-radius:999px; background:#eef2ff; color:#4f46e5; border:1px solid #e0e7ff; }
-      main .sold-small { color: var(--muted); font-size:.85rem; }
-
-      /* detail sections */
-      main .detail-grid { display:grid; gap:1rem; grid-template-columns:1fr 1fr; }
-      main .detail-grid > div:last-child { grid-column: span 2; }
-      main .field { border:1px solid #e5e7eb; border-radius:12px; padding:.9rem; }
-      main .field h4 { margin:0 0 .5rem; font-size:.88rem; color:#374151; }
-      main .desc { grid-column:1 / -1; }
-      main .desc p { margin:0; color:#374151; font-size:.92rem; }
-
-      /* action button */
-      main .actions { display:flex; gap:.6rem; flex-wrap:wrap; margin-top:.25rem; }
-      main .btn { border-radius:12px; border:1px solid transparent; padding:.6rem .9rem; font-weight:600; cursor:pointer; transition: transform .06s ease, box-shadow .15s ease, background .2s ease; }
-      main .btn:active{ transform: translateY(1px); }
-      main .btn-primary{ background: var(--brand); color:#fff; }
-      main .btn-outline{ background:#fff; color: var(--ink); border-color:#d1d5db; }
-
-      /* responsive */
-      @media (max-width:980px){
-        main .shop-grid{ grid-template-columns:1fr; }
-        main .detail-grid{ grid-template-columns:1fr; }
-        /* hide the side details panel on phones; we'll show a modal instead */
-        main .details-panel{ display:none; }
-        /* larger touch targets */
-        main .product-card a{ grid-template-columns:64px 1fr auto; gap:1rem; padding:1rem; }
-        main .productImage{ width:64px; height:64px; }
+        grid-template-columns: 1fr;
       }
 
-      /* nice list-in animation */
-      @keyframes listIn { from{opacity:0; transform:translateY(6px) scale(.995);} to{opacity:1; transform:none;} }
-      main .product-list .product-card{ animation:listIn .32s ease both; }
-      main .product-list .product-card:nth-child(1){ animation-delay:.02s; }
-      main .product-list .product-card:nth-child(2){ animation-delay:.06s; }
-      main .product-list .product-card:nth-child(3){ animation-delay:.1s; }
-      main .product-list .product-card:nth-child(4){ animation-delay:.14s; }
-      main .product-list .product-card:nth-child(5){ animation-delay:.18s; }
-
-      /* scrollbars */
-      main .product-list::-webkit-scrollbar, main .details-panel::-webkit-scrollbar{ width:10px; }
-      main .product-list::-webkit-scrollbar-thumb, main .details-panel::-webkit-scrollbar-thumb{ background: linear-gradient(#e5e7eb,#d1d5db); border-radius:999px; }
-      main .product-list::-webkit-scrollbar-track, main .details-panel::-webkit-scrollbar-track{ background:#f3f4f6; border-radius:999px; }
-
-      /* placeholder pulse */
-      @keyframes hintPulse{ 0%,100%{opacity:.7; transform:translateY(0);} 50%{opacity:1; transform:translateY(-1px);} }
-      main .placeholder{ animation: hintPulse 2.4s ease-in-out infinite; }
-
-      /* ====== Skeletons ====== */
-      .sk-list .product-card{ pointer-events:none; }
-      .sk-line{ height:12px; width:100%; border-radius:8px; background:#eef2f7; position:relative; overflow:hidden; }
-      .sk-thumb{ width:56px; height:56px; border-radius:10px; background:#eef2f7; position:relative; overflow:hidden; }
-      .shimmer::after{
-        content:""; position:absolute; inset:0; transform:translateX(-100%);
-        background:linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.6) 50%, rgba(255,255,255,0) 100%);
-        animation: shimmer 1.2s infinite;
+      main .detail-grid {
+        grid-template-columns: 1fr;
       }
-      @keyframes shimmer{ 0%{transform:translateX(-100%);} 100%{transform:translateX(100%);} }
-      .sk-chip{ width:70px; height:22px; border-radius:999px; background:#eef2f7; position:relative; overflow:hidden; }
 
-      /* ───────── Mobile Preview Modal (ADDED) ───────── */
-      .mmodal{ position:fixed; inset:0; display:none; z-index:999; }
-      .mmodal.open{ display:block; }
-      .mmodal .mm-backdrop{
-        position:absolute; inset:0; background:rgba(0,0,0,.4); backdrop-filter:saturate(120%) blur(2px);
+      /* hide the side details panel on phones; we'll show a modal instead */
+      main .details-panel {
+        display: none;
       }
-      .mmodal .mm-sheet{
-        position:absolute; left:0; right:0; bottom:0;
-        background:var(--card); border-radius:16px 16px 0 0;
-        box-shadow:0 -12px 32px rgba(0,0,0,.28);
-        max-height:80vh; overflow:auto; transform:translateY(8px);
-        animation:mmIn .18s ease both;
-        padding:1rem;
-      }
-      .mmodal .mm-close{
-        position:absolute; right:.5rem; top:.5rem; border:none; background:#f3f4f6; border-radius:10px; padding:.35rem; cursor:pointer;
-      }
-      .mmodal .mm-close .material-icons-sharp{ font-size:20px; }
-      .mmodal .mm-content .detail-head{ margin-top:.25rem; }
-      @keyframes mmIn{ from{opacity:.9; transform:translateY(12px);} to{opacity:1; transform:translateY(0);} }
 
-      /* Only show modal behavior on small screens */
-      @media (min-width:981px){
-        .mmodal{ display:none !important; }
+      /* larger touch targets */
+      main .product-card a {
+        grid-template-columns: 64px 1fr auto;
+        gap: 1rem;
+        padding: 1rem;
       }
-    </style>
-  </head>
 
-  <body>
-    <div class="container">
-      <!-- Sidebar Section -->
-      <aside>
-        <div class="toggle">
-          <div class="logo">
-            <img src="../images/STEQ Logo 3.png" />
-            <h2>SIMP<span class="danger">Project</span></h2>
-          </div>
-          <div class="close" id="close-btn">
-            <span class="material-icons-sharp">close</span>
-          </div>
+      main .productImage {
+        width: 64px;
+        height: 64px;
+      }
+    }
+
+    /* nice list-in animation */
+    @keyframes listIn {
+      from {
+        opacity: 0;
+        transform: translateY(6px) scale(.995);
+      }
+
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    main .product-list .product-card {
+      animation: listIn .32s ease both;
+    }
+
+    main .product-list .product-card:nth-child(1) {
+      animation-delay: .02s;
+    }
+
+    main .product-list .product-card:nth-child(2) {
+      animation-delay: .06s;
+    }
+
+    main .product-list .product-card:nth-child(3) {
+      animation-delay: .1s;
+    }
+
+    main .product-list .product-card:nth-child(4) {
+      animation-delay: .14s;
+    }
+
+    main .product-list .product-card:nth-child(5) {
+      animation-delay: .18s;
+    }
+
+    /* scrollbars */
+    main .product-list::-webkit-scrollbar,
+    main .details-panel::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    main .product-list::-webkit-scrollbar-thumb,
+    main .details-panel::-webkit-scrollbar-thumb {
+      background: linear-gradient(#e5e7eb, #d1d5db);
+      border-radius: 999px;
+    }
+
+    main .product-list::-webkit-scrollbar-track,
+    main .details-panel::-webkit-scrollbar-track {
+      background: #f3f4f6;
+      border-radius: 999px;
+    }
+
+    /* placeholder pulse */
+    @keyframes hintPulse {
+
+      0%,
+      100% {
+        opacity: .7;
+        transform: translateY(0);
+      }
+
+      50% {
+        opacity: 1;
+        transform: translateY(-1px);
+      }
+    }
+
+    main .placeholder {
+      animation: hintPulse 2.4s ease-in-out infinite;
+    }
+
+    /* ====== Skeletons ====== */
+    .sk-list .product-card {
+      pointer-events: none;
+    }
+
+    .sk-line {
+      height: 12px;
+      width: 100%;
+      border-radius: 8px;
+      background: #eef2f7;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .sk-thumb {
+      width: 56px;
+      height: 56px;
+      border-radius: 10px;
+      background: #eef2f7;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .shimmer::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      transform: translateX(-100%);
+      background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, .6) 50%, rgba(255, 255, 255, 0) 100%);
+      animation: shimmer 1.2s infinite;
+    }
+
+    @keyframes shimmer {
+      0% {
+        transform: translateX(-100%);
+      }
+
+      100% {
+        transform: translateX(100%);
+      }
+    }
+
+    .sk-chip {
+      width: 70px;
+      height: 22px;
+      border-radius: 999px;
+      background: #eef2f7;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* ───────── Mobile Preview Modal (ADDED) ───────── */
+    .mmodal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      z-index: 999;
+    }
+
+    .mmodal.open {
+      display: block;
+    }
+
+    .mmodal .mm-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, .4);
+      backdrop-filter: saturate(120%) blur(2px);
+    }
+
+    .mmodal .mm-sheet {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--card);
+      border-radius: 16px 16px 0 0;
+      box-shadow: 0 -12px 32px rgba(0, 0, 0, .28);
+      max-height: 80vh;
+      overflow: auto;
+      transform: translateY(8px);
+      animation: mmIn .18s ease both;
+      padding: 1rem;
+    }
+
+    .mmodal .mm-close {
+      position: absolute;
+      right: .5rem;
+      top: .5rem;
+      border: none;
+      background: #f3f4f6;
+      border-radius: 10px;
+      padding: .35rem;
+      cursor: pointer;
+    }
+
+    .mmodal .mm-close .material-icons-sharp {
+      font-size: 20px;
+    }
+
+    .mmodal .mm-content .detail-head {
+      margin-top: .25rem;
+    }
+
+    @keyframes mmIn {
+      from {
+        opacity: .9;
+        transform: translateY(12px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Only show modal behavior on small screens */
+    @media (min-width:981px) {
+      .mmodal {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <!-- Sidebar Section -->
+    <aside>
+      <div class="toggle">
+        <div class="logo">
+          <img src="../../../img/simpHappyMascotLogo.png" alt="logo" />
+          <h2>SIMP<span class="danger">Project</span></h2>
         </div>
-        <div class="sidebar">
-          <a href="dashboard.html"><span class="material-icons-sharp">dashboard</span><h3>Dashboard</h3></a>
-          <a href="job.html"><span class="material-icons-sharp">work</span><h3>Jobs</h3></a>
-          <a href="myApplication.html"><span class="material-icons-sharp">receipt</span><h3>My Application</h3></a>
-          <a href="courses.html"><span class="material-icons-sharp">school</span><h3>Courses</h3></a>
-          <a href="shop.html" class="active"><span class="material-icons-sharp">shopping_cart</span><h3>Shop</h3></a>
-          <a href="earnings.html"><span class="material-icons-sharp">account_balance</span><h3>Earnings</h3></a>
-          <a href="documents.html"><span class="material-icons-sharp">file_copy</span><h3>Documents</h3></a>
-          <a href="settings.html"><span class="material-icons-sharp">settings</span><h3>Settings</h3></a>
-          <a href="#" id="logout-btn"><span class="material-icons-sharp">logout</span><h3>Logout</h3></a>
-        </div>
-      </aside>
-      <!-- End of Sidebar Section -->
-
-      <!--MAIN CONTENT-->
-      <main>
-        <div class="titlePageDiv">
-          <h1>Shop for your tools!</h1>
-          <p>Pick a product to see details, then open it in Shopee or Lazada.</p>
-        </div>
-
-        <section class="shop-grid">
-          <!-- LEFT: product list (dynamic) -->
-          <section class="panel">
-            <h2>Products</h2>
-            <ul class="product-list" id="productList"></ul>
-          </section>
-
-          <!-- RIGHT: details (dynamic) -->
-          <section class="panel details-panel">
-            <article id="detail" class="product-detail"></article>
-            <div class="placeholder" id="placeholder">Select a product on the left to see full details.</div>
-          </section>
-        </section>
-      </main>
-    </div>
-
-    <!-- Mobile Modal (ADDED) -->
-    <div id="mobileModal" class="mmodal" aria-hidden="true">
-      <div class="mm-backdrop" tabindex="-1"></div>
-      <div class="mm-sheet" role="dialog" aria-modal="true" aria-labelledby="mm-title">
-        <button class="mm-close" type="button" aria-label="Close">
+        <div class="close" id="close-btn">
           <span class="material-icons-sharp">close</span>
-        </button>
-        <div id="mm-content" class="mm-content"><!-- injected detail --></div>
+        </div>
       </div>
+      <div class="sidebar">
+        <a href="dashboard.html"><span class="material-icons-sharp">dashboard</span>
+          <h3>Dashboard</h3>
+        </a>
+        <a href="job.html"><span class="material-icons-sharp">work</span>
+          <h3>Jobs</h3>
+        </a>
+        <a href="myApplication.html"><span class="material-icons-sharp">receipt</span>
+          <h3>My Application</h3>
+        </a>
+        <a href="courses.html"><span class="material-icons-sharp">school</span>
+          <h3>Courses</h3>
+        </a>
+        <a href="shop.html" class="active"><span class="material-icons-sharp">shopping_cart</span>
+          <h3>Shop</h3>
+        </a>
+        <a href="earnings.html"><span class="material-icons-sharp">account_balance</span>
+          <h3>Earnings</h3>
+        </a>
+        <a href="documents.html"><span class="material-icons-sharp">file_copy</span>
+          <h3>Documents</h3>
+        </a>
+        <a href="settings.html"><span class="material-icons-sharp">settings</span>
+          <h3>Settings</h3>
+        </a>
+        <a href="#" id="logout-btn"><span class="material-icons-sharp">logout</span>
+          <h3>Logout</h3>
+        </a>
+      </div>
+    </aside>
+    <!-- End of Sidebar Section -->
+
+    <!--MAIN CONTENT-->
+    <main>
+      <div class="titlePageDiv">
+        <h1>Shop for your tools!</h1>
+        <p>Pick a product to see details, then open it in Shopee or Lazada.</p>
+      </div>
+
+      <section class="shop-grid">
+        <!-- LEFT: product list (dynamic) -->
+        <section class="panel">
+          <h2>Products</h2>
+          <ul class="product-list" id="productList"></ul>
+        </section>
+
+        <!-- RIGHT: details (dynamic) -->
+        <section class="panel details-panel">
+          <article id="detail" class="product-detail"></article>
+          <div class="placeholder" id="placeholder">Select a product on the left to see full details.</div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <!-- Mobile Modal (ADDED) -->
+  <div id="mobileModal" class="mmodal" aria-hidden="true">
+    <div class="mm-backdrop" tabindex="-1"></div>
+    <div class="mm-sheet" role="dialog" aria-modal="true" aria-labelledby="mm-title">
+      <button class="mm-close" type="button" aria-label="Close">
+        <span class="material-icons-sharp">close</span>
+      </button>
+      <div id="mm-content" class="mm-content"><!-- injected detail --></div>
     </div>
+  </div>
 
-    <!-- Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script type="module">
-      import { SUPABASE_URL, SUPABASE_ANON_KEY } from "../../../supabase.js";
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="module">
+    import { SUPABASE_URL, SUPABASE_ANON_KEY } from "../../../supabase.js";
 
-      // Supabase (point DB default schema to "shop"; storage is schema-agnostic)
-      const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { db: { schema: "shop" } });
+    // Supabase (point DB default schema to "shop"; storage is schema-agnostic)
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { db: { schema: "shop" } });
 
-      // DOM
-      const listEl = document.getElementById("productList");
-      const detailEl = document.getElementById("detail");
-      const placeholderEl = document.getElementById("placeholder");
+    // DOM
+    const listEl = document.getElementById("productList");
+    const detailEl = document.getElementById("detail");
+    const placeholderEl = document.getElementById("placeholder");
 
-      // ===== Signed URL helpers for product images =====
-      // If your bucket name is different, change this:
-      const DEFAULT_PRODUCT_BUCKET = "shop_products";
+    // ===== Signed URL helpers for product images =====
+    // If your bucket name is different, change this:
+    const DEFAULT_PRODUCT_BUCKET = "shop_products";
 
-      function escapeHtml(s){
-        return String(s||"").replace(/[&<>"']/g,(m)=>(
-          { "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[m]
-        ));
+    function escapeHtml(s) {
+      return String(s || "").replace(/[&<>"']/g, (m) => (
+        { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]
+      ));
+    }
+
+    // Parse a Supabase *public* storage URL -> { bucket, path }
+    function parsePublicBucketAndPath(publicUrl) {
+      try {
+        const marker = '/storage/v1/object/public/';
+        const i = publicUrl.indexOf(marker);
+        if (i === -1) return null;
+        const rest = publicUrl.substring(i + marker.length);
+        const slash = rest.indexOf('/');
+        if (slash === -1) return null;
+        const bucket = rest.substring(0, slash);
+        let path = rest.substring(slash + 1);
+        try { path = decodeURIComponent(path); } catch { }
+        return { bucket, path: path.replace(/^\/+/, '') };
+      } catch { return null; }
+    }
+
+    // Accepts:
+    //  - Full Supabase public URL (we'll sign it)
+    //  - "bucket::path/to/file.jpg"
+    //  - "relative/path.jpg" (assumes DEFAULT_PRODUCT_BUCKET)
+    //  - External http(s) (left as-is)
+    function parseStorageRef(ref) {
+      if (!ref) return null;
+      const s = String(ref).trim();
+
+      // Non-supabase external URL -> passthrough later
+      if (/^https?:\/\//i.test(s) && !s.includes('/storage/v1/object/')) {
+        return { externalUrl: s };
       }
 
-      // Parse a Supabase *public* storage URL -> { bucket, path }
-      function parsePublicBucketAndPath(publicUrl){
-        try{
-          const marker = '/storage/v1/object/public/';
-          const i = publicUrl.indexOf(marker);
-          if (i === -1) return null;
-          const rest = publicUrl.substring(i + marker.length);
-          const slash = rest.indexOf('/');
-          if (slash === -1) return null;
-          const bucket = rest.substring(0, slash);
-          let path = rest.substring(slash + 1);
-          try { path = decodeURIComponent(path); } catch {}
-          return { bucket, path: path.replace(/^\/+/, '') };
-        }catch{ return null; }
+      // Supabase public URL
+      if (s.includes('/storage/v1/object/public/')) {
+        const parsed = parsePublicBucketAndPath(s);
+        return parsed ? { bucket: parsed.bucket, path: parsed.path } : null;
       }
 
-      // Accepts:
-      //  - Full Supabase public URL (we'll sign it)
-      //  - "bucket::path/to/file.jpg"
-      //  - "relative/path.jpg" (assumes DEFAULT_PRODUCT_BUCKET)
-      //  - External http(s) (left as-is)
-      function parseStorageRef(ref){
-        if (!ref) return null;
-        const s = String(ref).trim();
-
-        // Non-supabase external URL -> passthrough later
-        if (/^https?:\/\//i.test(s) && !s.includes('/storage/v1/object/')) {
-          return { externalUrl: s };
-        }
-
-        // Supabase public URL
-        if (s.includes('/storage/v1/object/public/')) {
-          const parsed = parsePublicBucketAndPath(s);
-          return parsed ? { bucket: parsed.bucket, path: parsed.path } : null;
-        }
-
-        // "bucket::path"
-        const bi = s.indexOf('::');
-        if (bi > 0){
-          let path = s.slice(bi + 2);
-          try { path = decodeURIComponent(path); } catch {}
-          return { bucket: s.slice(0, bi), path: path.replace(/^\/+/, '') };
-        }
-
-        // plain relative path -> default bucket
-        let path = s;
-        try { path = decodeURIComponent(path); } catch {}
-        return { bucket: DEFAULT_PRODUCT_BUCKET, path: path.replace(/^\/+/, '') };
+      // "bucket::path"
+      const bi = s.indexOf('::');
+      if (bi > 0) {
+        let path = s.slice(bi + 2);
+        try { path = decodeURIComponent(path); } catch { }
+        return { bucket: s.slice(0, bi), path: path.replace(/^\/+/, '') };
       }
 
-      async function createSignedUrl(bucket, path, expires = 3600){
-        const { data, error } = await supabase.storage.from(bucket).createSignedUrl(path, expires);
-        if (error) throw error;
-        return data.signedUrl;
+      // plain relative path -> default bucket
+      let path = s;
+      try { path = decodeURIComponent(path); } catch { }
+      return { bucket: DEFAULT_PRODUCT_BUCKET, path: path.replace(/^\/+/, '') };
+    }
+
+    async function createSignedUrl(bucket, path, expires = 3600) {
+      const { data, error } = await supabase.storage.from(bucket).createSignedUrl(path, expires);
+      if (error) throw error;
+      return data.signedUrl;
+    }
+
+    async function resolveProductImageSignedUrl(image_url) {
+      if (!image_url) return null;
+
+      // External (non-supabase) http(s) -> leave as-is
+      if (/^https?:\/\//i.test(image_url) && !image_url.includes('/storage/v1/object/')) {
+        return image_url;
       }
 
-      async function resolveProductImageSignedUrl(image_url){
-        if (!image_url) return null;
+      const ref = parseStorageRef(image_url);
+      if (!ref) return null;
 
-        // External (non-supabase) http(s) -> leave as-is
-        if (/^https?:\/\//i.test(image_url) && !image_url.includes('/storage/v1/object/')) {
-          return image_url;
-        }
+      if (ref.externalUrl) return ref.externalUrl;
 
-        const ref = parseStorageRef(image_url);
-        if (!ref) return null;
-
-        if (ref.externalUrl) return ref.externalUrl;
-
-        try {
-          return await createSignedUrl(ref.bucket, ref.path, 60 * 60); // 1 hour
-        } catch (e) {
-          console.warn("Signing product image failed:", e?.message || e);
-          return null;
-        }
+      try {
+        return await createSignedUrl(ref.bucket, ref.path, 60 * 60); // 1 hour
+      } catch (e) {
+        console.warn("Signing product image failed:", e?.message || e);
+        return null;
       }
+    }
 
-      // ===== Other helpers =====
-      const php = new Intl.NumberFormat("en-PH", { style:"currency", currency:"PHP", maximumFractionDigits:0 });
-      function productExternalUrl(p){
-        const link = (p.product_link||"").trim();
-        if (link && /^https?:\/\//i.test(link)) return link;
-        const q = encodeURIComponent(p.product_name || "");
-        if (p.platform === "Shopee") return `https://shopee.ph/search?keyword=${q}`;
-        if (p.platform === "Lazada") return `https://www.lazada.com.ph/catalog/?q=${q}`;
-        return "#";
-      }
+    // ===== Other helpers =====
+    const php = new Intl.NumberFormat("en-PH", { style: "currency", currency: "PHP", maximumFractionDigits: 0 });
+    function productExternalUrl(p) {
+      const link = (p.product_link || "").trim();
+      if (link && /^https?:\/\//i.test(link)) return link;
+      const q = encodeURIComponent(p.product_name || "");
+      if (p.platform === "Shopee") return `https://shopee.ph/search?keyword=${q}`;
+      if (p.platform === "Lazada") return `https://www.lazada.com.ph/catalog/?q=${q}`;
+      return "#";
+    }
 
-      // Skeleton list while loading
-      function showSkeletonList(count=6){
-        listEl.classList.add("sk-list");
-        listEl.innerHTML = "";
-        for (let i=0; i<count; i++){
-          const li = document.createElement("li");
-          li.className = "product-card";
-          li.innerHTML = `
+    // Skeleton list while loading
+    function showSkeletonList(count = 6) {
+      listEl.classList.add("sk-list");
+      listEl.innerHTML = "";
+      for (let i = 0; i < count; i++) {
+        const li = document.createElement("li");
+        li.className = "product-card";
+        li.innerHTML = `
             <div style="display:grid; grid-template-columns:56px 1fr auto; gap:.8rem; padding:.75rem; align-items:center;">
               <div class="sk-thumb shimmer"></div>
               <div>
@@ -323,42 +700,42 @@
               <div class="sk-line shimmer" style="width:60px;"></div>
             </div>
           `;
-          listEl.appendChild(li);
-        }
+        listEl.appendChild(li);
+      }
+    }
+
+    // Load only published products
+    async function fetchPublished() {
+      const { data, error } = await supabase
+        .from("products")
+        .select("id, product_name, price, platform, product_link, image_url, features, description, is_published, created_at")
+        .eq("is_published", true)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data || [];
+    }
+
+    async function renderList(items) {
+      listEl.classList.remove("sk-list");
+      listEl.innerHTML = "";
+      if (!items.length) {
+        listEl.innerHTML = `<li style="color:#6b7280; padding:.5rem .25rem;">No published products yet.</li>`;
+        return;
       }
 
-      // Load only published products
-      async function fetchPublished(){
-        const { data, error } = await supabase
-          .from("products")
-          .select("id, product_name, price, platform, product_link, image_url, features, description, is_published, created_at")
-          .eq("is_published", true)
-          .order("created_at", { ascending:false });
-        if (error) throw error;
-        return data || [];
-      }
+      // Resolve all image URLs up front
+      const signedUrls = await Promise.all(items.map(p => resolveProductImageSignedUrl(p.image_url)));
 
-      async function renderList(items){
-        listEl.classList.remove("sk-list");
-        listEl.innerHTML = "";
-        if (!items.length){
-          listEl.innerHTML = `<li style="color:#6b7280; padding:.5rem .25rem;">No published products yet.</li>`;
-          return;
-        }
+      items.forEach((p, idx) => {
+        const li = document.createElement("li");
+        li.className = "product-card";
+        const price = php.format(Number(p.price || 0));
+        const src = signedUrls[idx];
+        const imgHtml = src
+          ? `<img src="${escapeHtml(src)}" class="productImage" alt="${escapeHtml(p.product_name)}" onerror="this.onerror=null;this.src='../images/profile-4.jpg';">`
+          : `<div class="productImage">IMG</div>`;
 
-        // Resolve all image URLs up front
-        const signedUrls = await Promise.all(items.map(p => resolveProductImageSignedUrl(p.image_url)));
-
-        items.forEach((p, idx) => {
-          const li = document.createElement("li");
-          li.className = "product-card";
-          const price = php.format(Number(p.price||0));
-          const src = signedUrls[idx];
-          const imgHtml = src
-            ? `<img src="${escapeHtml(src)}" class="productImage" alt="${escapeHtml(p.product_name)}" onerror="this.onerror=null;this.src='../images/profile-4.jpg';">`
-            : `<div class="productImage">IMG</div>`;
-
-          li.innerHTML = `
+        li.innerHTML = `
             <a href="#">
               <div class="thumb">${imgHtml}</div>
               <div class="meta">
@@ -368,35 +745,35 @@
             </a>
           `;
 
-          li.querySelector("a").addEventListener("click", async (e)=>{
-            e.preventDefault();
-            await renderDetail(p);
-          });
-
-          listEl.appendChild(li);
+        li.querySelector("a").addEventListener("click", async (e) => {
+          e.preventDefault();
+          await renderDetail(p);
         });
-      }
 
-      async function renderDetail(p){
-        const price = php.format(Number(p.price||0));
-        const signed = await resolveProductImageSignedUrl(p.image_url);
-        const imgHtml = signed
-          ? `<img src="${escapeHtml(signed)}" class="productImage" alt="${escapeHtml(p.product_name)}" style="width:100%; height:100%; object-fit:cover;" onerror="this.onerror=null;this.src='../images/profile-4.jpg';">`
-          : "";
-        const features = Array.isArray(p.features) ? p.features : [];
-        const btnLabel = p.platform ? `Open in ${escapeHtml(p.platform)}` : "Open product";
-        const link = productExternalUrl(p);
-        const descriptionHtml = escapeHtml(p.description || "");
+        listEl.appendChild(li);
+      });
+    }
 
-        detailEl.classList.add("active");
-        placeholderEl.style.display = "none";
-        detailEl.innerHTML = `
+    async function renderDetail(p) {
+      const price = php.format(Number(p.price || 0));
+      const signed = await resolveProductImageSignedUrl(p.image_url);
+      const imgHtml = signed
+        ? `<img src="${escapeHtml(signed)}" class="productImage" alt="${escapeHtml(p.product_name)}" style="width:100%; height:100%; object-fit:cover;" onerror="this.onerror=null;this.src='../images/profile-4.jpg';">`
+        : "";
+      const features = Array.isArray(p.features) ? p.features : [];
+      const btnLabel = p.platform ? `Open in ${escapeHtml(p.platform)}` : "Open product";
+      const link = productExternalUrl(p);
+      const descriptionHtml = escapeHtml(p.description || "");
+
+      detailEl.classList.add("active");
+      placeholderEl.style.display = "none";
+      detailEl.innerHTML = `
           <div class="detail-head">
             <div class="detail-thumb">${imgHtml || "IMG"}</div>
             <div class="title-price">
               <h3>${escapeHtml(p.product_name)}</h3>
               <div class="badges">
-                ${features.slice(0,6).map(f=>`<span class="badge">${escapeHtml(f)}</span>`).join("")}
+                ${features.slice(0, 6).map(f => `<span class="badge">${escapeHtml(f)}</span>`).join("")}
               </div>
               <div class="sold-small">${escapeHtml(p.platform || "—")}</div>
             </div>
@@ -431,79 +808,80 @@
           </div>
         `;
 
-        // Copy link handler (details panel)
-        detailEl.querySelector("#copyLinkBtn")?.addEventListener("click", async ()=>{
-          try{
-            await navigator.clipboard.writeText(link);
-            alert("Product link copied!");
-          }catch{
-            prompt("Copy this link:", link);
-          }
-        });
-
-        // === Mobile modal preview (ADDED) ===
-        if (isMobile()) {
-          openMobileModal(detailEl.innerHTML, link);
-        } else {
-          closeMobileModal();
+      // Copy link handler (details panel)
+      detailEl.querySelector("#copyLinkBtn")?.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(link);
+          alert("Product link copied!");
+        } catch {
+          prompt("Copy this link:", link);
         }
-      }
-
-      async function init(){
-        showSkeletonList(6);
-        try{
-          const items = await fetchPublished();
-          await renderList(items);
-          if (items.length){ await renderDetail(items[0]); }
-        }catch(e){
-          listEl.classList.remove("sk-list");
-          listEl.innerHTML = `<li style="color:#b4232c; padding:.5rem .25rem;">Failed to load products: ${escapeHtml(e.message || e)}</li>`;
-        }
-      }
-
-      // ====== Mobile modal helpers (ADDED) ======
-      const modalEl = document.getElementById("mobileModal");
-      const modalContent = document.getElementById("mm-content");
-      const modalCloseBtn = modalEl.querySelector(".mm-close");
-      const modalBackdrop = modalEl.querySelector(".mm-backdrop");
-
-      function isMobile(){ return window.matchMedia("(max-width: 980px)").matches; }
-
-      function openMobileModal(html, productLink){
-        modalContent.innerHTML = html;
-        // re-bind copy button inside modal
-        modalContent.querySelector("#copyLinkBtn")?.addEventListener("click", async ()=>{
-          try{
-            await navigator.clipboard.writeText(productLink);
-            alert("Product link copied!");
-          }catch{
-            prompt("Copy this link:", productLink);
-          }
-        });
-        modalEl.classList.add("open");
-        modalEl.setAttribute("aria-hidden","false");
-        document.body.style.overflow = "hidden";
-      }
-
-      function closeMobileModal(){
-        modalEl.classList.remove("open");
-        modalEl.setAttribute("aria-hidden","true");
-        document.body.style.overflow = "";
-        modalContent.innerHTML = "";
-      }
-
-      modalCloseBtn.addEventListener("click", closeMobileModal);
-      modalBackdrop.addEventListener("click", closeMobileModal);
-      window.addEventListener("keydown", (e)=>{ if(e.key === "Escape") closeMobileModal(); });
-      window.addEventListener("resize", ()=>{
-        if (!isMobile()) closeMobileModal();
       });
 
-      init();
-    </script>
+      // === Mobile modal preview (ADDED) ===
+      if (isMobile()) {
+        openMobileModal(detailEl.innerHTML, link);
+      } else {
+        closeMobileModal();
+      }
+    }
 
-    <!-- Your global scripts (unchanged) -->
-    <script src="../../general_files/index.js"></script>
-    <script type="module" src="../../general_files/session.js"></script>
-  </body>
+    async function init() {
+      showSkeletonList(6);
+      try {
+        const items = await fetchPublished();
+        await renderList(items);
+        if (items.length) { await renderDetail(items[0]); }
+      } catch (e) {
+        listEl.classList.remove("sk-list");
+        listEl.innerHTML = `<li style="color:#b4232c; padding:.5rem .25rem;">Failed to load products: ${escapeHtml(e.message || e)}</li>`;
+      }
+    }
+
+    // ====== Mobile modal helpers (ADDED) ======
+    const modalEl = document.getElementById("mobileModal");
+    const modalContent = document.getElementById("mm-content");
+    const modalCloseBtn = modalEl.querySelector(".mm-close");
+    const modalBackdrop = modalEl.querySelector(".mm-backdrop");
+
+    function isMobile() { return window.matchMedia("(max-width: 980px)").matches; }
+
+    function openMobileModal(html, productLink) {
+      modalContent.innerHTML = html;
+      // re-bind copy button inside modal
+      modalContent.querySelector("#copyLinkBtn")?.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(productLink);
+          alert("Product link copied!");
+        } catch {
+          prompt("Copy this link:", productLink);
+        }
+      });
+      modalEl.classList.add("open");
+      modalEl.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeMobileModal() {
+      modalEl.classList.remove("open");
+      modalEl.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+      modalContent.innerHTML = "";
+    }
+
+    modalCloseBtn.addEventListener("click", closeMobileModal);
+    modalBackdrop.addEventListener("click", closeMobileModal);
+    window.addEventListener("keydown", (e) => { if (e.key === "Escape") closeMobileModal(); });
+    window.addEventListener("resize", () => {
+      if (!isMobile()) closeMobileModal();
+    });
+
+    init();
+  </script>
+
+  <!-- Your global scripts (unchanged) -->
+  <script src="../../general_files/index.js"></script>
+  <script type="module" src="../../general_files/session.js"></script>
+</body>
+
 </html>

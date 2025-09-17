@@ -1,1088 +1,1634 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!-- Keep your existing sidebar styles and icons -->
-    <link rel="stylesheet" href="../css_files/sideBar.css" />
-    <link
-      href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp"
-      rel="stylesheet"
-    />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>Settings • Installer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap"
+    rel="stylesheet">
 
-    <style>
-      @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap");
+  <!-- Keep your existing sidebar styles and icons -->
+  <link rel="stylesheet" href="../css_files/sideBar.css" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet" />
 
-      :root {
-        --color-primary: #6c9bcf;
-        --color-danger: #ff3b30;
-        --color-white: #fff;
-        --color-info-dark: #7d8da1;
-        --color-dark: #363949;
-        --color-light: rgba(132, 139, 200, 0.18);
-        --color-background: #f6f6f9;
-        --box-shadow: 0 2rem 3rem var(--color-light);
-        --success: #1b9c85;
+  <title>Settings • Installer</title>
 
-        /* Skeleton tokens */
-        --sk-bg: #eef3f9;
-        --sk-shine: linear-gradient(
-          90deg,
+  <style>
+    :root {
+      --color-primary: #6c9bcf;
+      --color-danger: #20a44c;
+      --color-white: #fff;
+      --color-info-dark: #7d8da1;
+      --color-dark: #363949;
+      --color-light: rgba(132, 139, 200, 0.18);
+      --color-background: #f6f6f9;
+      --box-shadow: 0 2rem 3rem var(--color-light);
+      --success: #1b9c85;
+
+      /* Skeleton tokens */
+      --sk-bg: #eef3f9;
+      --sk-shine: linear-gradient(90deg,
           rgba(255, 255, 255, 0) 0%,
           rgba(255, 255, 255, 0.7) 50%,
-          rgba(255, 255, 255, 0) 100%
-        );
+          rgba(255, 255, 255, 0) 100%);
+    }
+
+    .container {
+      display: grid;
+      width: 96%;
+      margin: 0 auto;
+      gap: 1.8rem;
+      grid-template-columns: 12rem auto;
+    }
+
+    /* ===== Sidebar (kept) ===== */
+    aside {
+      min-height: 100vh;
+    }
+
+    aside .toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 1.4rem;
+    }
+
+    aside .toggle .logo {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    aside .toggle .logo img {
+      width: 2rem;
+      height: 2rem;
+    }
+
+    aside .toggle .close {
+      display: none;
+      padding-right: 1rem;
+    }
+
+    aside .sidebar {
+      display: flex;
+      flex-direction: column;
+      background: var(--color-white);
+      box-shadow: var(--box-shadow);
+      border-radius: 15px;
+      height: 88vh;
+      position: relative;
+      top: 1.5rem;
+      transition: 0.3s ease;
+    }
+
+    aside .sidebar:hover {
+      box-shadow: none;
+    }
+
+    aside .sidebar a {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      height: 3.7rem;
+      color: var(--color-info-dark);
+      position: relative;
+      margin-left: 2rem;
+      transition: 0.3s ease;
+    }
+
+    aside .sidebar a span {
+      font-size: 1.6rem;
+      transition: 0.3s ease;
+    }
+
+    aside .sidebar a:last-child {
+      position: absolute;
+      bottom: 2rem;
+      width: 100%;
+    }
+
+    aside .sidebar a.active {
+      width: 100%;
+      color: var(--color-primary);
+      background: var(--color-light);
+      margin-left: 0;
+    }
+
+    aside .sidebar a.active::before {
+      content: "";
+      width: 6px;
+      height: 18px;
+      background: var(--color-primary);
+    }
+
+    aside .sidebar a.active span {
+      color: var(--color-primary);
+      margin-left: calc(1rem - 3px);
+    }
+
+    aside .sidebar a:hover {
+      color: var(--color-primary);
+    }
+
+    aside .sidebar a:hover span {
+      margin-left: 0.6rem;
+    }
+
+    /* ===== Main / Settings ===== */
+    main {
+      margin-top: 1.4rem;
+    }
+
+    .page {
+      background: var(--color-white);
+      border-radius: 15px;
+      box-shadow: var(--box-shadow);
+      padding: 1.2rem 1.4rem;
+      min-height: 60vh;
+      border: 1px solid #e5e7eb;
+    }
+
+    .page h1 {
+      font-size: 1.4rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .page p.lead {
+      color: var(--color-info-dark);
+      margin-bottom: 1rem;
+    }
+
+    .card {
+      border: 1px solid var(--color-light);
+      border-radius: 12px;
+      padding: 1rem;
+      background: #fff;
+      margin-top: 1rem;
+    }
+
+    .card h2 {
+      font-size: 1.05rem;
+      margin: 0 0 0.6rem;
+    }
+
+    /* simple head row to place Created At on the right */
+    .card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .meta {
+      font-size: 0.92rem;
+      color: #314155;
+      display: flex;
+      gap: 0.4rem;
+      align-items: center;
+    }
+
+    .meta .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .35rem;
+      background: #f3f6fa;
+      border: 1px solid #dbe5f1;
+      color: #233047;
+      padding: 0.25rem 0.55rem;
+      border-radius: 999px;
+      font-size: 0.86rem;
+    }
+
+    .meta .material-icons-sharp {
+      font-size: 18px;
+    }
+
+    .row {
+      display: grid;
+      gap: 0.65rem;
+    }
+
+    @media (min-width: 860px) {
+      .row {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (min-width: 1100px) {
+      .row-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    .field {
+      display: grid;
+      gap: 0.35rem;
+      align-content: start;
+    }
+
+    .field label {
+      font-weight: 700;
+      color: #314155;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+
+    .field .hint {
+      color: var(--color-info-dark);
+      font-size: 0.85rem;
+    }
+
+    .value-view {
+      border: 1px dashed #e1e7f0;
+      background: #fafcff;
+      color: #233047;
+      padding: 0.6rem 0.7rem;
+      border-radius: 10px;
+      min-height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+
+    .value-view .text {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .value-view .actions {
+      display: flex;
+      gap: 0.25rem;
+    }
+
+    .icon-btn {
+      appearance: none;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      padding: 0.2rem;
+      border-radius: 8px;
+    }
+
+    .icon-btn:hover {
+      background: #eef3f9;
+    }
+
+    .icon-btn .material-icons-sharp {
+      font-size: 18px;
+      vertical-align: middle;
+    }
+
+    input,
+    select {
+      border: 1px solid #dbe5f1;
+      border-radius: 10px;
+      padding: 0.6rem 0.7rem;
+      font: inherit;
+      background: #fff;
+      width: 100%;
+    }
+
+    input[readonly],
+    input:disabled {
+      background: #f3f6fa;
+      color: #6d7b8e;
+    }
+
+    .edit-wrap {
+      display: none;
+      gap: 0.4rem;
+      align-items: center;
+    }
+
+    .edit-wrap.show {
+      display: flex;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 10px;
+      padding: 0.55rem 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: .45rem;
+    }
+
+    .btn.danger {
+      background: var(--color-danger);
+      color: #fff;
+    }
+
+    .btn.ghost {
+      background: #eef3f9;
+      color: #233047;
+    }
+
+    .btn.primary {
+      background: var(--color-primary);
+      color: #fff;
+    }
+
+    .btn.outline {
+      background: #fff;
+      border: 1px solid #dbe5f1;
+      color: #233047;
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .btn .material-icons-sharp {
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    .mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    }
+
+    .toast {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      background: #121a24;
+      color: #fff;
+      padding: 0.75rem 1rem;
+      border-radius: 10px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, .2);
+      display: none;
+      z-index: 9999;
+      max-width: 78vw;
+    }
+
+    .toast.show {
+      display: block;
+    }
+
+    .danger-box {
+      border: 1px solid #ffd8d6;
+      background: #fff4f3;
+      border-radius: 12px;
+      padding: 1rem;
+      color: #7a1a14;
+    }
+
+    /* ===== Avatar Uploader ===== */
+    .avatar-card {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .avatar {
+      width: 92px;
+      height: 92px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      font-size: 1.4rem;
+      color: #fff;
+      background: linear-gradient(135deg, #6c9bcf, #1b9c85);
+      user-select: none;
+      overflow: hidden;
+      border: 3px solid #eef3f9;
+    }
+
+    .avatar img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .avatar-actions {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .muted {
+      color: var(--color-info-dark);
+      font-size: 0.9rem;
+    }
+
+    .avatar-hint {
+      margin-top: 0.3rem;
+    }
+
+    .progress {
+      display: none;
+      height: 8px;
+      border-radius: 999px;
+      background: #eef3f9;
+      overflow: hidden;
+      margin-top: 0.5rem;
+    }
+
+    .progress>div {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #6c9bcf, #1b9c85);
+    }
+
+    /* ====== RESPONSIVE ENHANCEMENTS ====== */
+    @media (max-width: 1100px) {
+      .container {
+        width: 98%;
+        gap: 1.2rem;
       }
 
-      * { margin: 0; padding: 0; box-sizing: border-box; }
-      html { font-size: 14px; }
-      body {
-        width: 100vw; min-height: 100vh; overflow-x: hidden;
-        font-family: "Poppins", sans-serif; color: var(--color-dark);
-        background: var(--color-background);
+      .page {
+        padding: 1rem 1.1rem;
+      }
+    }
+
+    @media (max-width: 860px) {
+
+      /* Layout compaction */
+      .container {
+        grid-template-columns: 1fr;
+        width: 100%;
+        gap: 1rem;
       }
 
-      .container { display: grid; width: 96%; margin: 0 auto; gap: 1.8rem; grid-template-columns: 12rem auto; }
-
-      /* ===== Sidebar (kept) ===== */
-      aside { min-height: 100vh; }
-      aside .toggle { display: flex; align-items: center; justify-content: space-between; margin-top: 1.4rem; }
-      aside .toggle .logo { display: flex; gap: 0.5rem; align-items: center; }
-      aside .toggle .logo img { width: 2rem; height: 2rem; }
-      aside .toggle .close { display: none; padding-right: 1rem; }
-
-      aside .sidebar {
-        display: flex; flex-direction: column; background: var(--color-white);
-        box-shadow: var(--box-shadow); border-radius: 15px; height: 88vh;
-        position: relative; top: 1.5rem; transition: 0.3s ease;
+      main {
+        margin-top: 0.8rem;
       }
-      aside .sidebar:hover { box-shadow: none; }
-      aside .sidebar a {
-        display: flex; align-items: center; gap: 1rem; height: 3.7rem;
-        color: var(--color-info-dark); position: relative; margin-left: 2rem; transition: 0.3s ease;
+
+      .page {
+        padding: 0.9rem 0.9rem;
+        border-radius: 12px;
+        box-shadow: none;
       }
-      aside .sidebar a span { font-size: 1.6rem; transition: 0.3s ease; }
-      aside .sidebar a:last-child { position: absolute; bottom: 2rem; width: 100%; }
-      aside .sidebar a.active { width: 100%; color: var(--color-primary); background: var(--color-light); margin-left: 0; }
-      aside .sidebar a.active::before { content: ""; width: 6px; height: 18px; background: var(--color-primary); }
-      aside .sidebar a.active span { color: var(--color-primary); margin-left: calc(1rem - 3px); }
-      aside .sidebar a:hover { color: var(--color-primary); }
-      aside .sidebar a:hover span { margin-left: 0.6rem; }
 
-      /* ===== Main / Settings ===== */
-      main { margin-top: 1.4rem; }
-      .page { background: var(--color-white); border-radius: 15px; box-shadow: var(--box-shadow); padding: 1.2rem 1.4rem; min-height: 60vh; }
-      .page h1 { font-size: 1.4rem; margin-bottom: 0.25rem; }
-      .page p.lead { color: var(--color-info-dark); margin-bottom: 1rem; }
-
-      .card { border: 1px solid var(--color-light); border-radius: 12px; padding: 1rem; background: #fff; margin-top: 1rem; }
-      .card h2 { font-size: 1.05rem; margin: 0 0 0.6rem; }
-
-      /* simple head row to place Created At on the right */
-      .card-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 0.6rem; }
-      .meta { font-size: 0.92rem; color: #314155; display: flex; gap: 0.4rem; align-items: center; }
-      .meta .badge {
-        display: inline-flex; align-items: center; gap: .35rem;
-        background: #f3f6fa; border: 1px solid #dbe5f1; color: #233047;
-        padding: 0.25rem 0.55rem; border-radius: 999px; font-size: 0.86rem;
+      .page h1 {
+        font-size: 1.2rem;
       }
-      .meta .material-icons-sharp { font-size: 18px; }
 
-      .row { display: grid; gap: 0.65rem; }
-      @media (min-width: 860px) { .row { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-      @media (min-width: 1100px) { .row-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+      .page p.lead {
+        font-size: 0.95rem;
+      }
 
-      .field { display: grid; gap: 0.35rem; align-content: start; }
-      .field label { font-weight: 700; color: #314155; display: flex; align-items: center; gap: 0.45rem; }
-      .field .hint { color: var(--color-info-dark); font-size: 0.85rem; }
+      .card {
+        padding: 0.8rem;
+        border-radius: 10px;
+      }
+
+      .row,
+      .row-3 {
+        grid-template-columns: 1fr !important;
+        gap: 0.55rem;
+      }
+
+      .field label {
+        font-size: 0.95rem;
+      }
+
+      .field .hint {
+        font-size: 0.8rem;
+      }
 
       .value-view {
-        border: 1px dashed #e1e7f0; background: #fafcff; color: #233047; padding: 0.6rem 0.7rem;
-        border-radius: 10px; min-height: 40px; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
+        min-height: 38px;
+        padding: 0.5rem 0.6rem;
       }
-      .value-view .text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-      .value-view .actions { display: flex; gap: 0.25rem; }
-      .icon-btn { appearance: none; border: none; background: transparent; cursor: pointer; padding: 0.2rem; border-radius: 8px; }
-      .icon-btn:hover { background: #eef3f9; }
-      .icon-btn .material-icons-sharp { font-size: 18px; vertical-align: middle; }
 
-      input, select {
-        border: 1px solid #dbe5f1; border-radius: 10px; padding: 0.6rem 0.7rem; font: inherit; background: #fff; width: 100%;
+      .value-view .text {
+        max-width: 70vw;
       }
-      input[readonly], input:disabled { background: #f3f6fa; color: #6d7b8e; }
 
-      .edit-wrap { display: none; gap: 0.4rem; align-items: center; }
-      .edit-wrap.show { display: flex; }
-
-      .btn { border: none; border-radius: 10px; padding: 0.55rem 0.8rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: .45rem; }
-      .btn.danger { background: var(--color-danger); color: #fff; }
-      .btn.ghost { background: #eef3f9; color: #233047; }
-      .btn.primary { background: var(--color-primary); color: #fff; }
-      .btn.outline { background: #fff; border: 1px solid #dbe5f1; color: #233047; }
-      .btn:disabled { opacity: 0.6; cursor: not-allowed; }
-
-      .btn .material-icons-sharp { font-size: 18px; line-height: 1; }
-
-      .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; }
-
-      .toast {
-        position: fixed; right: 16px; bottom: 16px; background: #121a24; color: #fff;
-        padding: 0.75rem 1rem; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,.2);
-        display: none; z-index: 9999; max-width: 78vw;
-      }
-      .toast.show { display: block; }
-
-      .danger-box { border: 1px solid #ffd8d6; background: #fff4f3; border-radius: 12px; padding: 1rem; color: #7a1a14; }
-
-      /* ===== Avatar Uploader ===== */
       .avatar-card {
-        display: grid; grid-template-columns: auto 1fr; gap: 1rem; align-items: center;
+        grid-template-columns: 72px 1fr;
+        gap: 0.75rem;
       }
+
       .avatar {
-        width: 92px; height: 92px; border-radius: 50%;
-        display: grid; place-items: center; font-weight: 800; font-size: 1.4rem; color: #fff;
-        background: linear-gradient(135deg, #6c9bcf, #1b9c85); user-select: none; overflow: hidden; border: 3px solid #eef3f9;
-      }
-      .avatar img { display: block; width: 100%; height: 100%; object-fit: cover; }
-      .avatar-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
-      .muted { color: var(--color-info-dark); font-size: 0.9rem; }
-      .avatar-hint { margin-top: 0.3rem; }
-      .progress { display: none; height: 8px; border-radius: 999px; background: #eef3f9; overflow: hidden; margin-top: 0.5rem; }
-      .progress > div { height: 100%; width: 0%; background: linear-gradient(90deg, #6c9bcf, #1b9c85); }
-
-      /* ====== RESPONSIVE ENHANCEMENTS ====== */
-      @media (max-width: 1100px) {
-        .container { width: 98%; gap: 1.2rem; }
-        .page { padding: 1rem 1.1rem; }
+        width: 72px;
+        height: 72px;
+        font-size: 1.1rem;
+        border-width: 2px;
       }
 
-      @media (max-width: 860px) {
-        /* Layout compaction */
-        .container { grid-template-columns: 1fr; width: 100%; gap: 1rem; }
-        main { margin-top: 0.8rem; }
-        .page { padding: 0.9rem 0.9rem; border-radius: 12px; box-shadow: none; }
-        .page h1 { font-size: 1.2rem; }
-        .page p.lead { font-size: 0.95rem; }
-
-        .card { padding: 0.8rem; border-radius: 10px; }
-        .row, .row-3 { grid-template-columns: 1fr !important; gap: 0.55rem; }
-        .field label { font-size: 0.95rem; }
-        .field .hint { font-size: 0.8rem; }
-
-        .value-view { min-height: 38px; padding: 0.5rem 0.6rem; }
-        .value-view .text { max-width: 70vw; }
-
-        .avatar-card { grid-template-columns: 72px 1fr; gap: 0.75rem; }
-        .avatar { width: 72px; height: 72px; font-size: 1.1rem; border-width: 2px; }
-
-        /* Icon-only buttons that shouldn't keep text/padding */
-        .avatar-actions { gap: 0.35rem; }
-
-        .iconify-on-mobile { 
-          width: 44px; height: 44px; padding: 0 !important; 
-          justify-content: center; align-items: center; 
-          border-radius: 10px; 
-        }
-        .iconify-on-mobile .btn-label { display: none !important; }
-        .iconify-on-mobile .material-icons-sharp { font-size: 20px; }
-
-        /* Keep small icon buttons tidy */
-        .icon-btn { padding: 0.3rem; }
-
-        .danger-box { padding: 0.8rem; }
+      /* Icon-only buttons that shouldn't keep text/padding */
+      .avatar-actions {
+        gap: 0.35rem;
       }
 
-      @media (max-width: 400px) {
-        .page { padding: 0.75rem; }
-        .card { padding: 0.7rem; }
-        .avatar { width: 64px; height: 64px; font-size: 1rem; }
-        .iconify-on-mobile { width: 40px; height: 40px; }
+      .iconify-on-mobile {
+        width: 44px;
+        height: 44px;
+        padding: 0 !important;
+        justify-content: center;
+        align-items: center;
+        border-radius: 10px;
       }
 
-      /* Visually hidden utility for JS placeholders */
-      .sr-only {
-        position: absolute !important;
-        width: 1px; height: 1px; padding: 0; margin: -1px;
-        overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+      .iconify-on-mobile .btn-label {
+        display: none !important;
       }
 
-      /* ====== SKELETON LOADER ====== */
-      @keyframes shimmer {
-        0% { background-position: -200% 0; }
-        100% { background-position: 200% 0; }
+      .iconify-on-mobile .material-icons-sharp {
+        font-size: 20px;
       }
-      .skeleton {
-        background: var(--color-white);
-        border-radius: 15px;
-        box-shadow: var(--box-shadow);
-        padding: 1.2rem 1.4rem;
-        min-height: 60vh;
+
+      /* Keep small icon buttons tidy */
+      .icon-btn {
+        padding: 0.3rem;
       }
-      .sk-line,
-      .sk-rect,
-      .sk-circle {
-        position: relative;
-        overflow: hidden;
-        background: var(--sk-bg);
+
+      .danger-box {
+        padding: 0.8rem;
       }
-      .sk-line::after,
-      .sk-rect::after,
-      .sk-circle::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background-image: var(--sk-shine);
-        background-size: 200% 100%;
-        animation: shimmer 1.2s linear infinite;
+    }
+
+    @media (max-width: 400px) {
+      .page {
+        padding: 0.75rem;
       }
-      .sk-title { height: 22px; width: min(340px, 60%); border-radius: 8px; }
-      .sk-subtitle { height: 14px; width: min(520px, 80%); margin-top: 10px; border-radius: 8px; }
 
-      .sk-card { border: 1px solid var(--color-light); border-radius: 12px; padding: 1rem; margin-top: 1rem; }
-      .sk-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 0.6rem; }
-      .sk-badge { height: 28px; width: 160px; border-radius: 999px; }
+      .card {
+        padding: 0.7rem;
+      }
 
-      .sk-avatar-row { display: grid; grid-template-columns: auto 1fr; gap: 1rem; align-items: center; }
-      .sk-avatar { width: 92px; height: 92px; border-radius: 50%; }
-      .sk-btns { display: flex; gap: 0.5rem; flex-wrap: wrap; }
-      .sk-btn { height: 38px; width: 130px; border-radius: 10px; }
-      .sk-hint { height: 14px; width: 60%; margin-top: 8px; border-radius: 6px; }
+      .avatar {
+        width: 64px;
+        height: 64px;
+        font-size: 1rem;
+      }
 
-      .sk-grid { display: grid; gap: 0.65rem; }
-      @media (min-width: 860px) { .sk-grid.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-      @media (min-width: 1100px) { .sk-grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+      .iconify-on-mobile {
+        width: 40px;
+        height: 40px;
+      }
+    }
 
-      .sk-field { display: grid; gap: 0.35rem; }
-      .sk-label { height: 14px; width: 140px; border-radius: 6px; }
-      .sk-value { height: 40px; border-radius: 10px; }
+    /* Visually hidden utility for JS placeholders */
+    .sr-only {
+      position: absolute !important;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
 
-      .sk-danger { border: 1px solid #ffd8d6; background: #fff4f3; border-radius: 12px; padding: 1rem; margin-top: 1rem; }
-      .sk-danger-line { height: 16px; width: 70%; border-radius: 8px; }
-      .sk-danger-btn { height: 40px; width: 160px; border-radius: 10px; margin-top: 10px; }
+    /* ====== SKELETON LOADER ====== */
+    @keyframes shimmer {
+      0% {
+        background-position: -200% 0;
+      }
 
-      /* Toggle visibility: show skeleton while loading */
-      body.is-loading .page { display: none !important; }
-      body.is-loading .skeleton { display: block !important; }
-      body:not(.is-loading) .skeleton { display: none !important; }
-    </style>
-  </head>
+      100% {
+        background-position: 200% 0;
+      }
+    }
 
-  <body>
-    <div class="container">
-      <!-- ===== Sidebar (unchanged) ===== -->
-      <aside>
-        <div class="toggle">
-          <div class="logo">
-            <img src="images/logo.png" alt="logo" />
-            <h2>Asmr<span class="danger">Prog</span></h2>
+    .skeleton {
+      background: var(--color-white);
+      border-radius: 15px;
+      box-shadow: var(--box-shadow);
+      padding: 1.2rem 1.4rem;
+      min-height: 60vh;
+    }
+
+    .sk-line,
+    .sk-rect,
+    .sk-circle {
+      position: relative;
+      overflow: hidden;
+      background: var(--sk-bg);
+    }
+
+    .sk-line::after,
+    .sk-rect::after,
+    .sk-circle::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: var(--sk-shine);
+      background-size: 200% 100%;
+      animation: shimmer 1.2s linear infinite;
+    }
+
+    .sk-title {
+      height: 22px;
+      width: min(340px, 60%);
+      border-radius: 8px;
+    }
+
+    .sk-subtitle {
+      height: 14px;
+      width: min(520px, 80%);
+      margin-top: 10px;
+      border-radius: 8px;
+    }
+
+    .sk-card {
+      border: 1px solid var(--color-light);
+      border-radius: 12px;
+      padding: 1rem;
+      margin-top: 1rem;
+    }
+
+    .sk-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .sk-badge {
+      height: 28px;
+      width: 160px;
+      border-radius: 999px;
+    }
+
+    .sk-avatar-row {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .sk-avatar {
+      width: 92px;
+      height: 92px;
+      border-radius: 50%;
+    }
+
+    .sk-btns {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .sk-btn {
+      height: 38px;
+      width: 130px;
+      border-radius: 10px;
+    }
+
+    .sk-hint {
+      height: 14px;
+      width: 60%;
+      margin-top: 8px;
+      border-radius: 6px;
+    }
+
+    .sk-grid {
+      display: grid;
+      gap: 0.65rem;
+    }
+
+    @media (min-width: 860px) {
+      .sk-grid.cols-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (min-width: 1100px) {
+      .sk-grid.cols-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    .sk-field {
+      display: grid;
+      gap: 0.35rem;
+    }
+
+    .sk-label {
+      height: 14px;
+      width: 140px;
+      border-radius: 6px;
+    }
+
+    .sk-value {
+      height: 40px;
+      border-radius: 10px;
+    }
+
+    .sk-danger {
+      border: 1px solid #ffd8d6;
+      background: #fff4f3;
+      border-radius: 12px;
+      padding: 1rem;
+      margin-top: 1rem;
+    }
+
+    .sk-danger-line {
+      height: 16px;
+      width: 70%;
+      border-radius: 8px;
+    }
+
+    .sk-danger-btn {
+      height: 40px;
+      width: 160px;
+      border-radius: 10px;
+      margin-top: 10px;
+    }
+
+    /* Toggle visibility: show skeleton while loading */
+    body.is-loading .page {
+      display: none !important;
+    }
+
+    body.is-loading .skeleton {
+      display: block !important;
+    }
+
+    body:not(.is-loading) .skeleton {
+      display: none !important;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <!-- ===== Sidebar (unchanged) ===== -->
+    <aside>
+      <div class="toggle">
+        <div class="logo">
+          <img src="../../../img/simpHappyMascotLogo.png" alt="logo" />
+          <h2>SIMP<span class="danger">Project</span></h2>
+        </div>
+        <div class="close" id="close-btn">
+          <span class="material-icons-sharp">close</span>
+        </div>
+      </div>
+
+      <div class="sidebar">
+        <a href="dashboard.html"><span class="material-icons-sharp">dashboard</span>
+          <h3>Dashboard</h3>
+        </a>
+        <a href="job.html"><span class="material-icons-sharp">work</span>
+          <h3>Jobs</h3>
+        </a>
+        <a href="myApplication.html"><span class="material-icons-sharp">receipt</span>
+          <h3>My Application</h3>
+        </a>
+        <a href="courses.html"><span class="material-icons-sharp">school</span>
+          <h3>Courses</h3>
+        </a>
+        <a href="shop.html"><span class="material-icons-sharp">shopping_cart</span>
+          <h3>Shop</h3>
+        </a>
+        <a href="earnings.html"><span class="material-icons-sharp">account_balance</span>
+          <h3>Earnings</h3>
+        </a>
+        <a href="documents.html"><span class="material-icons-sharp">file_copy</span>
+          <h3>Documents</h3>
+        </a>
+        <a href="settings.html" class="active"><span class="material-icons-sharp">settings</span>
+          <h3>Settings</h3>
+        </a>
+        <a href="#" id="logout-btn"><span class="material-icons-sharp">logout</span>
+          <h3>Logout</h3>
+        </a>
+      </div>
+    </aside>
+
+    <!-- ===== Settings Main Content ===== -->
+    <main>
+      <!-- ===== Skeleton shown while loading (PC + Mobile) ===== -->
+      <div class="skeleton" id="settingsSkeleton" aria-hidden="true">
+        <div class="sk-title sk-line"></div>
+        <div class="sk-subtitle sk-line"></div>
+
+        <!-- Profile Picture card -->
+        <div class="sk-card">
+          <div class="sk-head">
+            <div class="sk-line" style="height:18px; width:140px; border-radius:8px;"></div>
+            <div class="sk-badge sk-line"></div>
           </div>
-          <div class="close" id="close-btn">
-            <span class="material-icons-sharp">close</span>
+          <div class="sk-avatar-row">
+            <div class="sk-avatar sk-circle"></div>
+            <div>
+              <div class="sk-btns">
+                <div class="sk-btn sk-rect"></div>
+                <div class="sk-btn sk-rect" style="width:120px;"></div>
+              </div>
+              <div class="sk-hint sk-line"></div>
+            </div>
           </div>
         </div>
 
-        <div class="sidebar">
-          <a href="dashboard.html"><span class="material-icons-sharp">dashboard</span><h3>Dashboard</h3></a>
-          <a href="job.html"><span class="material-icons-sharp">work</span><h3>Jobs</h3></a>
-          <a href="myApplication.html"><span class="material-icons-sharp">receipt</span><h3>My Application</h3></a>
-          <a href="courses.html"><span class="material-icons-sharp">school</span><h3>Courses</h3></a>
-          <a href="shop.html"><span class="material-icons-sharp">shopping_cart</span><h3>Shop</h3></a>
-          <a href="earnings.html"><span class="material-icons-sharp">account_balance</span><h3>Earnings</h3></a>
-          <a href="documents.html"><span class="material-icons-sharp">file_copy</span><h3>Documents</h3></a>
-          <a href="settings.html" class="active"><span class="material-icons-sharp">settings</span><h3>Settings</h3></a>
-          <a href="#" id="logout-btn"><span class="material-icons-sharp">logout</span><h3>Logout</h3></a>
-        </div>
-      </aside>
-
-      <!-- ===== Settings Main Content ===== -->
-      <main>
-        <!-- ===== Skeleton shown while loading (PC + Mobile) ===== -->
-        <div class="skeleton" id="settingsSkeleton" aria-hidden="true">
-          <div class="sk-title sk-line"></div>
-          <div class="sk-subtitle sk-line"></div>
-
-          <!-- Profile Picture card -->
-          <div class="sk-card">
-            <div class="sk-head">
-              <div class="sk-line" style="height:18px; width:140px; border-radius:8px;"></div>
-              <div class="sk-badge sk-line"></div>
+        <!-- Profile card -->
+        <div class="sk-card">
+          <div class="sk-line" style="height:18px; width:120px; border-radius:8px; margin-bottom:8px;"></div>
+          <div class="sk-grid cols-2">
+            <div class="sk-field">
+              <div class="sk-label sk-line"></div>
+              <div class="sk-value sk-rect"></div>
             </div>
-            <div class="sk-avatar-row">
-              <div class="sk-avatar sk-circle"></div>
-              <div>
-                <div class="sk-btns">
-                  <div class="sk-btn sk-rect"></div>
-                  <div class="sk-btn sk-rect" style="width:120px;"></div>
-                </div>
-                <div class="sk-hint sk-line"></div>
-              </div>
+            <div class="sk-field">
+              <div class="sk-label sk-line"></div>
+              <div class="sk-value sk-rect"></div>
             </div>
           </div>
-
-          <!-- Profile card -->
-          <div class="sk-card">
-            <div class="sk-line" style="height:18px; width:120px; border-radius:8px; margin-bottom:8px;"></div>
-            <div class="sk-grid cols-2">
-              <div class="sk-field">
-                <div class="sk-label sk-line"></div>
-                <div class="sk-value sk-rect"></div>
-              </div>
-              <div class="sk-field">
-                <div class="sk-label sk-line"></div>
-                <div class="sk-value sk-rect"></div>
-              </div>
+          <div class="sk-grid cols-2" style="margin-top:.6rem;">
+            <div class="sk-field">
+              <div class="sk-label sk-line"></div>
+              <div class="sk-value sk-rect"></div>
             </div>
-            <div class="sk-grid cols-2" style="margin-top:.6rem;">
-              <div class="sk-field">
-                <div class="sk-label sk-line"></div>
-                <div class="sk-value sk-rect"></div>
-              </div>
-              <div class="sk-field">
-                <div class="sk-label sk-line"></div>
-                <div class="sk-value sk-rect"></div>
-              </div>
+            <div class="sk-field">
+              <div class="sk-label sk-line"></div>
+              <div class="sk-value sk-rect"></div>
             </div>
-          </div>
-
-          <!-- Education & Employment -->
-          <div class="sk-card">
-            <div class="sk-line" style="height:18px; width:220px; border-radius:8px; margin-bottom:8px;"></div>
-            <div class="sk-grid cols-2">
-              <div class="sk-field">
-                <div class="sk-label sk-line"></div>
-                <div class="sk-value sk-rect"></div>
-              </div>
-              <div class="sk-field">
-                <div class="sk-label sk-line"></div>
-                <div class="sk-value sk-rect"></div>
-              </div>
-            </div>
-            <div class="sk-grid cols-2" style="margin-top:.6rem;">
-              <div class="sk-field">
-                <div class="sk-label sk-line"></div>
-                <div class="sk-value sk-rect"></div>
-              </div>
-              <div class="sk-field">
-                <div class="sk-label sk-line"></div>
-                <div class="sk-value sk-rect"></div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Payout Details -->
-          <div class="sk-card">
-            <div class="sk-line" style="height:18px; width:160px; border-radius:8px; margin-bottom:8px;"></div>
-            <div class="sk-grid cols-2">
-              <div class="sk-field">
-                <div class="sk-label sk-line"></div>
-                <div class="sk-value sk-rect"></div>
-              </div>
-              <div class="sk-field">
-                <div class="sk-label sk-line"></div>
-                <div class="sk-value sk-rect"></div>
-              </div>
-            </div>
-            <div class="sk-grid cols-2" style="margin-top:.6rem;">
-              <div class="sk-field">
-                <div class="sk-label sk-line"></div>
-                <div class="sk-value sk-rect"></div>
-              </div>
-              <div class="sk-field">
-                <div class="sk-label sk-line"></div>
-                <div class="sk-value sk-rect"></div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Danger Zone -->
-          <div class="sk-danger">
-            <div class="sk-danger-line sk-line"></div>
-            <div class="sk-danger-btn sk-rect"></div>
           </div>
         </div>
 
-        <!-- ===== REAL CONTENT (hidden while loading) ===== -->
-        <div class="page" id="settingsPage">
-          <h1>Installer Settings</h1>
-          <p class="lead">View and update your profile, employment, and payout details. Click the ✏️ to edit a field.</p>
-
-          <!-- Profile Picture (with Created At on the right) -->
-          <section class="card">
-            <div class="card-head">
-              <h2>Profile Picture</h2>
-              <div class="meta">
-                <span class="badge" title="Account creation date">
-                  <span class="material-icons-sharp" aria-hidden="true">event</span>
-                  <strong>Created:</strong>
-                  <span id="createdAtTop">—</span>
-                </span>
-              </div>
+        <!-- Education & Employment -->
+        <div class="sk-card">
+          <div class="sk-line" style="height:18px; width:220px; border-radius:8px; margin-bottom:8px;"></div>
+          <div class="sk-grid cols-2">
+            <div class="sk-field">
+              <div class="sk-label sk-line"></div>
+              <div class="sk-value sk-rect"></div>
             </div>
-
-            <div class="avatar-card">
-              <div class="avatar" id="avatarBox" aria-label="Profile avatar"></div>
-              <div>
-                <div class="avatar-actions">
-                  <!-- Iconify on mobile without extra padding -->
-                  <button class="btn primary iconify-on-mobile" id="btnPickPhoto" title="Replace Photo" aria-label="Replace Photo">
-                    <span class="material-icons-sharp">upload</span>
-                    <span class="btn-label">Replace Photo</span>
-                  </button>
-                  <button class="btn outline iconify-on-mobile" id="btnRemovePhoto" title="Remove Photo" aria-label="Remove Photo">
-                    <span class="material-icons-sharp">delete</span>
-                    <span class="btn-label">Remove Photo</span>
-                  </button>
-                </div>
-                <div class="muted avatar-hint">JPG/PNG, up to ~5 MB. Stored in <code>installer_profile/&lt;userId&gt;/avatar.jpg</code>.</div>
-                <div class="progress" id="avatarProgress" aria-hidden="true" aria-label="Upload progress">
-                  <div id="avatarProgressFill"></div>
-                </div>
-              </div>
+            <div class="sk-field">
+              <div class="sk-label sk-line"></div>
+              <div class="sk-value sk-rect"></div>
             </div>
-            <input id="avatarInput" type="file" accept="image/*" style="display:none" />
-          </section>
-
-          <!-- Profile -->
-          <section class="card">
-            <h2>Profile</h2>
-            <div class="row">
-              <!-- Name -->
-              <div class="field" data-key="name">
-                <label>Full Name</label>
-                <div class="value-view">
-                  <span class="text" data-view></span>
-                  <span class="actions"><button class="icon-btn" data-edit title="Edit"><span class="material-icons-sharp">edit</span></button></span>
-                </div>
-                <div class="edit-wrap" data-editwrap>
-                  <input type="text" data-input placeholder="e.g. Juan Dela Cruz" />
-                  <button class="icon-btn" data-save title="Save"><span class="material-icons-sharp">check_circle</span></button>
-                  <button class="icon-btn" data-cancel title="Cancel"><span class="material-icons-sharp">cancel</span></button>
-                </div>
-              </div>
-
-              <!-- Email (read-only) -->
-              <div class="field">
-                <label>Email</label>
-                <div class="value-view"><span class="text mono" id="emailView"></span></div>
-                <div class="hint">Email is from your sign-in and can’t be edited here.</div>
-              </div>
+          </div>
+          <div class="sk-grid cols-2" style="margin-top:.6rem;">
+            <div class="sk-field">
+              <div class="sk-label sk-line"></div>
+              <div class="sk-value sk-rect"></div>
             </div>
-
-            <div class="row">
-              <!-- Birthdate -->
-              <div class="field" data-key="birthdate">
-                <label>Birthdate</label>
-                <div class="value-view">
-                  <span class="text" data-view></span>
-                  <span class="actions"><button class="icon-btn" data-edit title="Edit"><span class="material-icons-sharp">edit</span></button></span>
-                </div>
-                <div class="edit-wrap" data-editwrap>
-                  <input type="date" data-input />
-                  <button class="icon-btn" data-save title="Save"><span class="material-icons-sharp">check_circle</span></button>
-                  <button class="icon-btn" data-cancel title="Cancel"><span class="material-icons-sharp">cancel</span></button>
-                </div>
-              </div>
-
-              <!-- Age -->
-              <div class="field" data-key="age">
-                <label>Age</label>
-                <div class="value-view">
-                  <span class="text" data-view></span>
-                  <span class="actions"><button class="icon-btn" data-edit title="Edit"><span class="material-icons-sharp">edit</span></button></span>
-                </div>
-                <div class="edit-wrap" data-editwrap>
-                  <input type="number" min="0" step="1" data-input />
-                  <button class="icon-btn" data-save title="Save"><span class="material-icons-sharp">check_circle</span></button>
-                  <button class="icon-btn" data-cancel title="Cancel"><span class="material-icons-sharp">cancel</span></button>
-                </div>
-                <div class="hint">Usually computed from birthdate; you can adjust if needed.</div>
-              </div>
+            <div class="sk-field">
+              <div class="sk-label sk-line"></div>
+              <div class="sk-value sk-rect"></div>
             </div>
-          </section>
-
-          <!-- Education & Employment -->
-          <section class="card">
-            <h2>Education & Employment</h2>
-            <div class="row">
-              <div class="field" data-key="highestQualification">
-                <label>Highest Qualification</label>
-                <div class="value-view">
-                  <span class="text" data-view></span>
-                  <span class="actions"><button class="icon-btn" data-edit title="Edit"><span class="material-icons-sharp">edit</span></button></span>
-                </div>
-                <div class="edit-wrap" data-editwrap>
-                  <input type="text" data-input placeholder="e.g. Bachelor's Degree" />
-                  <button class="icon-btn" data-save title="Save"><span class="material-icons-sharp">check_circle</span></button>
-                  <button class="icon-btn" data-cancel title="Cancel"><span class="material-icons-sharp">cancel</span></button>
-                </div>
-              </div>
-
-              <div class="field" data-key="employmentStatus">
-                <label>Employment Status</label>
-                <div class="value-view">
-                  <span class="text" data-view></span>
-                  <span class="actions"><button class="icon-btn" data-edit title="Edit"><span class="material-icons-sharp">edit</span></button></span>
-                </div>
-                <div class="edit-wrap" data-editwrap>
-                  <select data-input>
-                    <option value="">Select…</option>
-                    <option>Employed</option>
-                    <option>Self-employed</option>
-                    <option>Unemployed</option>
-                    <option>Student</option>
-                  </select>
-                  <button class="icon-btn" data-save title="Save"><span class="material-icons-sharp">check_circle</span></button>
-                  <button class="icon-btn" data-cancel title="Cancel"><span class="material-icons-sharp">cancel</span></button>
-                </div>
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="field" data-key="employer">
-                <label>Employer (optional)</label>
-                <div class="value-view">
-                  <span class="text" data-view></span>
-                  <span class="actions"><button class="icon-btn" data-edit title="Edit"><span class="material-icons-sharp">edit</span></button></span>
-                </div>
-                <div class="edit-wrap" data-editwrap>
-                  <input type="text" data-input placeholder="Company name (optional)" />
-                  <button class="icon-btn" data-save title="Save"><span class="material-icons-sharp">check_circle</span></button>
-                  <button class="icon-btn" data-cancel title="Cancel"><span class="material-icons-sharp">cancel</span></button>
-                </div>
-              </div>
-
-              <div class="field" data-key="mainIncomeSource">
-                <label>Main Income Source</label>
-                <div class="value-view">
-                  <span class="text" data-view></span>
-                  <span class="actions"><button class="icon-btn" data-edit title="Edit"><span class="material-icons-sharp">edit</span></button></span>
-                </div>
-                <div class="edit-wrap" data-editwrap>
-                  <input type="text" data-input placeholder="e.g. Contracting" />
-                  <button class="icon-btn" data-save title="Save"><span class="material-icons-sharp">check_circle</span></button>
-                  <button class="icon-btn" data-cancel title="Cancel"><span class="material-icons-sharp">cancel</span></button>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- Payout / Bank -->
-          <section class="card">
-            <h2>Payout Details</h2>
-            <div class="row">
-              <div class="field" data-key="bankName">
-                <label>Bank Name</label>
-                <div class="value-view">
-                  <span class="text" data-view></span>
-                  <span class="actions"><button class="icon-btn" data-edit title="Edit"><span class="material-icons-sharp">edit</span></button></span>
-                </div>
-                <div class="edit-wrap" data-editwrap>
-                  <input type="text" data-input placeholder="e.g. BPI / BDO / GCash" />
-                  <button class="icon-btn" data-save title="Save"><span class="material-icons-sharp">check_circle</span></button>
-                  <button class="icon-btn" data-cancel title="Cancel"><span class="material-icons-sharp">cancel</span></button>
-                </div>
-              </div>
-
-              <div class="field" data-key="accountHolder">
-                <label>Account Holder</label>
-                <div class="value-view">
-                  <span class="text" data-view></span>
-                  <span class="actions"><button class="icon-btn" data-edit title="Edit"><span class="material-icons-sharp">edit</span></button></span>
-                </div>
-                <div class="edit-wrap" data-editwrap>
-                  <input type="text" data-input placeholder="Name on the account" />
-                  <button class="icon-btn" data-save title="Save"><span class="material-icons-sharp">check_circle</span></button>
-                  <button class="icon-btn" data-cancel title="Cancel"><span class="material-icons-sharp">cancel</span></button>
-                </div>
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="field" data-key="accountNumber">
-                <label>Account / Mobile No.</label>
-                <div class="value-view">
-                  <span class="text" data-view></span>
-                  <span class="actions"><button class="icon-btn" data-edit title="Edit"><span class="material-icons-sharp">edit</span></button></span>
-                </div>
-                <div class="edit-wrap" data-editwrap>
-                  <input type="text" data-input placeholder="09xxxxxxxxx or account #" />
-                  <button class="icon-btn" data-save title="Save"><span class="material-icons-sharp">check_circle</span></button>
-                  <button class="icon-btn" data-cancel title="Cancel"><span class="material-icons-sharp">cancel</span></button>
-                </div>
-                <div class="hint">For GCash, use your registered mobile number.</div>
-              </div>
-
-              <div class="field">
-                <label>Masked Preview</label>
-                <div class="value-view"><span class="text mono" id="accountMasked">—</span></div>
-              </div>
-            </div>
-          </section>
-
-          <!-- Danger zone -->
-          <section class="card danger-box" style="margin-bottom: 0.2rem">
-            <h2 style="margin-bottom: 0.4rem">Danger Zone</h2>
-            <p style="margin-bottom: 0.6rem">
-              Deleting your account will remove your sign-in and (because your tables reference
-              <code>auth.users</code> with <strong>ON DELETE CASCADE</strong>) related rows will be removed
-              automatically. This action is permanent.
-            </p>
-            <button class="btn danger" id="deleteAccountBtn" title="Delete Account" aria-label="Delete Account">
-              <span class="material-icons-sharp" style="vertical-align: middle; font-size: 18px">delete_forever</span>
-              Delete Account
-            </button>
-            <div class="hint" style="margin-top: 0.45rem">
-              Note: Client apps cannot call the Admin API with an anon key. This button will try an Edge Function
-              <code>delete-account</code> (recommended), and will fall back to the Admin API if your environment allows it.
-            </div>
-          </section>
+          </div>
         </div>
-      </main>
-    </div>
 
-    <!-- Hidden placeholders so existing JS stays happy (no visual output) -->
-    <div aria-hidden="true" class="sr-only">
-      <span id="levelView">0</span>
-      <span id="balanceView">₱0.00</span>
-      <span id="userIdView">—</span>
-    </div>
+        <!-- Payout Details -->
+        <div class="sk-card">
+          <div class="sk-line" style="height:18px; width:160px; border-radius:8px; margin-bottom:8px;"></div>
+          <div class="sk-grid cols-2">
+            <div class="sk-field">
+              <div class="sk-label sk-line"></div>
+              <div class="sk-value sk-rect"></div>
+            </div>
+            <div class="sk-field">
+              <div class="sk-label sk-line"></div>
+              <div class="sk-value sk-rect"></div>
+            </div>
+          </div>
+          <div class="sk-grid cols-2" style="margin-top:.6rem;">
+            <div class="sk-field">
+              <div class="sk-label sk-line"></div>
+              <div class="sk-value sk-rect"></div>
+            </div>
+            <div class="sk-field">
+              <div class="sk-label sk-line"></div>
+              <div class="sk-value sk-rect"></div>
+            </div>
+          </div>
+        </div>
 
-    <!-- Toast -->
-    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+        <!-- Danger Zone -->
+        <div class="sk-danger">
+          <div class="sk-danger-line sk-line"></div>
+          <div class="sk-danger-btn sk-rect"></div>
+        </div>
+      </div>
+      <h1>Installer Settings</h1>
+      <p class="lead">View and update your profile, employment, and payout details. Click the ✏️ to edit a field.</p><br>
+      <!-- ===== REAL CONTENT (hidden while loading) ===== -->
+      <div class="page" id="settingsPage">
 
-    <script src="../../general_files/index.js"></script>
-    <script type="module" src="../../general_files/session.js"></script>
-    <!-- Supabase UMD + your keys -->
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-    <script type="module">
-      const { createClient } = supabase;
-      import { SUPABASE_URL, SUPABASE_ANON_KEY } from "../../../supabase.js";
-      const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-      const toast = (msg, ok = true) => {
-        const el = document.getElementById("toast");
-        el.textContent = msg;
-        el.style.background = ok ? "#121a24" : "#b42318";
-        el.classList.add("show");
-        setTimeout(() => el.classList.remove("show"), 2400);
-      };
+        <!-- Profile Picture (with Created At on the right) -->
+        <section class="card">
+          <div class="card-head">
+            <h2>Profile Picture</h2>
+            <div class="meta">
+              <span class="badge" title="Account creation date">
+                <span class="material-icons-sharp" aria-hidden="true">event</span>
+                <strong>Created:</strong>
+                <span id="createdAtTop">—</span>
+              </span>
+            </div>
+          </div>
 
-      const peso = (n) =>
-        "₱" + Number(n || 0).toLocaleString("en-PH", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-      const maskAccount = (v) => {
-        const s = String(v || "").replace(/\s+/g, "");
-        if (!s) return "—";
-        if (s.length <= 4) return "••••";
-        return "•••• •••• •••• " + s.slice(-4);
-      };
-      const computeAgeFromDOB = (iso) => {
-        if (!iso) return "";
-        const d = new Date(iso);
-        if (isNaN(d)) return "";
-        const t = new Date();
-        let age = t.getFullYear() - d.getFullYear();
-        const m = t.getMonth() - d.getMonth();
-        if (m < 0 || (m === 0 && t.getDate() < d.getDate())) age--;
-        return Math.max(0, age);
-      };
+          <div class="avatar-card">
+            <div class="avatar" id="avatarBox" aria-label="Profile avatar"></div>
+            <div>
+              <div class="avatar-actions">
+                <!-- Iconify on mobile without extra padding -->
+                <button class="btn primary iconify-on-mobile" id="btnPickPhoto" title="Replace Photo"
+                  aria-label="Replace Photo">
+                  <span class="material-icons-sharp">upload</span>
+                  <span class="btn-label">Replace Photo</span>
+                </button>
+                <button class="btn outline iconify-on-mobile" id="btnRemovePhoto" title="Remove Photo"
+                  aria-label="Remove Photo">
+                  <span class="material-icons-sharp">delete</span>
+                  <span class="btn-label">Remove Photo</span>
+                </button>
+              </div>
+              <div class="muted avatar-hint">JPG/PNG, up to ~5 MB. Stored in
+                <code>installer_profile/&lt;userId&gt;/avatar.jpg</code>.
+              </div>
+              <div class="progress" id="avatarProgress" aria-hidden="true" aria-label="Upload progress">
+                <div id="avatarProgressFill"></div>
+              </div>
+            </div>
+          </div>
+          <input id="avatarInput" type="file" accept="image/*" style="display:none" />
+        </section>
 
-      // Map field -> column name (exact, with quotes where needed)
-      const COLS = {
-        name: "name",
-        birthdate: "birthdate",
-        age: "age",
-        phone: "phone",
-        profession: "profession",
-        highestQualification: '"highestQualification"',
-        employmentStatus: '"employmentStatus"',
-        employer: "employer",
-        mainIncomeSource: '"mainIncomeSource"',
-        bankName: '"bankName"',
-        accountNumber: '"accountNumber"',
-        accountHolder: '"accountHolder"',
-      };
+        <!-- Profile -->
+        <section class="card">
+          <h2>Profile</h2>
+          <div class="row">
+            <!-- Name -->
+            <div class="field" data-key="name">
+              <label>Full Name</label>
+              <div class="value-view">
+                <span class="text" data-view></span>
+                <span class="actions"><button class="icon-btn" data-edit title="Edit"><span
+                      class="material-icons-sharp">edit</span></button></span>
+              </div>
+              <div class="edit-wrap" data-editwrap>
+                <input type="text" data-input placeholder="e.g. Juan Dela Cruz" />
+                <button class="icon-btn" data-save title="Save"><span
+                    class="material-icons-sharp">check_circle</span></button>
+                <button class="icon-btn" data-cancel title="Cancel"><span
+                    class="material-icons-sharp">cancel</span></button>
+              </div>
+            </div>
 
-      // ===== Avatar (private bucket ready) =====
-      const AVATAR_BUCKET = "installer_profile";
-      const avatarPathFor = (userId) => `${userId}/avatar.jpg`;
+            <!-- Email (read-only) -->
+            <div class="field">
+              <label>Email</label>
+              <div class="value-view"><span class="text mono" id="emailView"></span></div>
+              <div class="hint">Email is from your sign-in and can’t be edited here.</div>
+            </div>
+          </div>
 
-      function parseStorageRef(ref) {
-        if (!ref) return null;
-        if (ref.startsWith("storage://")) {
-          const [, bucket, ...rest] = ref.split("/");
-          return { bucket, path: rest.join("/") };
-        }
-        // public form: /storage/v1/object/public/<bucket>/<path>
-        let m = ref.match(/\/storage\/v1\/object\/public\/([^/]+)\/(.+)$/);
-        if (m) return { bucket: m[1], path: m[2] };
-        // signed form: /storage\/v1\/object\/sign\/([^/]+)\/(.+)\?/
-        m = ref.match(/\/storage\/v1\/object\/sign\/([^/]+)\/(.+)\?/);
-        if (m) return { bucket: m[1], path: m[2] };
-        return null;
+          <div class="row">
+            <!-- Birthdate -->
+            <div class="field" data-key="birthdate">
+              <label>Birthdate</label>
+              <div class="value-view">
+                <span class="text" data-view></span>
+                <span class="actions"><button class="icon-btn" data-edit title="Edit"><span
+                      class="material-icons-sharp">edit</span></button></span>
+              </div>
+              <div class="edit-wrap" data-editwrap>
+                <input type="date" data-input />
+                <button class="icon-btn" data-save title="Save"><span
+                    class="material-icons-sharp">check_circle</span></button>
+                <button class="icon-btn" data-cancel title="Cancel"><span
+                    class="material-icons-sharp">cancel</span></button>
+              </div>
+            </div>
+
+            <!-- Age -->
+            <div class="field" data-key="age">
+              <label>Age</label>
+              <div class="value-view">
+                <span class="text" data-view></span>
+                <span class="actions"><button class="icon-btn" data-edit title="Edit"><span
+                      class="material-icons-sharp">edit</span></button></span>
+              </div>
+              <div class="edit-wrap" data-editwrap>
+                <input type="number" min="0" step="1" data-input />
+                <button class="icon-btn" data-save title="Save"><span
+                    class="material-icons-sharp">check_circle</span></button>
+                <button class="icon-btn" data-cancel title="Cancel"><span
+                    class="material-icons-sharp">cancel</span></button>
+              </div>
+              <div class="hint">Usually computed from birthdate; you can adjust if needed.</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Education & Employment -->
+        <section class="card">
+          <h2>Education & Employment</h2>
+          <div class="row">
+            <div class="field" data-key="highestQualification">
+              <label>Highest Qualification</label>
+              <div class="value-view">
+                <span class="text" data-view></span>
+                <span class="actions"><button class="icon-btn" data-edit title="Edit"><span
+                      class="material-icons-sharp">edit</span></button></span>
+              </div>
+              <div class="edit-wrap" data-editwrap>
+                <input type="text" data-input placeholder="e.g. Bachelor's Degree" />
+                <button class="icon-btn" data-save title="Save"><span
+                    class="material-icons-sharp">check_circle</span></button>
+                <button class="icon-btn" data-cancel title="Cancel"><span
+                    class="material-icons-sharp">cancel</span></button>
+              </div>
+            </div>
+
+            <div class="field" data-key="employmentStatus">
+              <label>Employment Status</label>
+              <div class="value-view">
+                <span class="text" data-view></span>
+                <span class="actions"><button class="icon-btn" data-edit title="Edit"><span
+                      class="material-icons-sharp">edit</span></button></span>
+              </div>
+              <div class="edit-wrap" data-editwrap>
+                <select data-input>
+                  <option value="">Select…</option>
+                  <option>Employed</option>
+                  <option>Self-employed</option>
+                  <option>Unemployed</option>
+                  <option>Student</option>
+                </select>
+                <button class="icon-btn" data-save title="Save"><span
+                    class="material-icons-sharp">check_circle</span></button>
+                <button class="icon-btn" data-cancel title="Cancel"><span
+                    class="material-icons-sharp">cancel</span></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="field" data-key="employer">
+              <label>Employer (optional)</label>
+              <div class="value-view">
+                <span class="text" data-view></span>
+                <span class="actions"><button class="icon-btn" data-edit title="Edit"><span
+                      class="material-icons-sharp">edit</span></button></span>
+              </div>
+              <div class="edit-wrap" data-editwrap>
+                <input type="text" data-input placeholder="Company name (optional)" />
+                <button class="icon-btn" data-save title="Save"><span
+                    class="material-icons-sharp">check_circle</span></button>
+                <button class="icon-btn" data-cancel title="Cancel"><span
+                    class="material-icons-sharp">cancel</span></button>
+              </div>
+            </div>
+
+            <div class="field" data-key="mainIncomeSource">
+              <label>Main Income Source</label>
+              <div class="value-view">
+                <span class="text" data-view></span>
+                <span class="actions"><button class="icon-btn" data-edit title="Edit"><span
+                      class="material-icons-sharp">edit</span></button></span>
+              </div>
+              <div class="edit-wrap" data-editwrap>
+                <input type="text" data-input placeholder="e.g. Contracting" />
+                <button class="icon-btn" data-save title="Save"><span
+                    class="material-icons-sharp">check_circle</span></button>
+                <button class="icon-btn" data-cancel title="Cancel"><span
+                    class="material-icons-sharp">cancel</span></button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Payout / Bank -->
+        <section class="card">
+          <h2>Payout Details</h2>
+          <div class="row">
+            <div class="field" data-key="bankName">
+              <label>Bank Name</label>
+              <div class="value-view">
+                <span class="text" data-view></span>
+                <span class="actions"><button class="icon-btn" data-edit title="Edit"><span
+                      class="material-icons-sharp">edit</span></button></span>
+              </div>
+              <div class="edit-wrap" data-editwrap>
+                <input type="text" data-input placeholder="e.g. BPI / BDO / GCash" />
+                <button class="icon-btn" data-save title="Save"><span
+                    class="material-icons-sharp">check_circle</span></button>
+                <button class="icon-btn" data-cancel title="Cancel"><span
+                    class="material-icons-sharp">cancel</span></button>
+              </div>
+            </div>
+
+            <div class="field" data-key="accountHolder">
+              <label>Account Holder</label>
+              <div class="value-view">
+                <span class="text" data-view></span>
+                <span class="actions"><button class="icon-btn" data-edit title="Edit"><span
+                      class="material-icons-sharp">edit</span></button></span>
+              </div>
+              <div class="edit-wrap" data-editwrap>
+                <input type="text" data-input placeholder="Name on the account" />
+                <button class="icon-btn" data-save title="Save"><span
+                    class="material-icons-sharp">check_circle</span></button>
+                <button class="icon-btn" data-cancel title="Cancel"><span
+                    class="material-icons-sharp">cancel</span></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="field" data-key="accountNumber">
+              <label>Account / Mobile No.</label>
+              <div class="value-view">
+                <span class="text" data-view></span>
+                <span class="actions"><button class="icon-btn" data-edit title="Edit"><span
+                      class="material-icons-sharp">edit</span></button></span>
+              </div>
+              <div class="edit-wrap" data-editwrap>
+                <input type="text" data-input placeholder="09xxxxxxxxx or account #" />
+                <button class="icon-btn" data-save title="Save"><span
+                    class="material-icons-sharp">check_circle</span></button>
+                <button class="icon-btn" data-cancel title="Cancel"><span
+                    class="material-icons-sharp">cancel</span></button>
+              </div>
+              <div class="hint">For GCash, use your registered mobile number.</div>
+            </div>
+
+            <div class="field">
+              <label>Masked Preview</label>
+              <div class="value-view"><span class="text mono" id="accountMasked">—</span></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Danger zone -->
+        <section class="card danger-box" style="margin-bottom: 0.2rem">
+          <h2 style="margin-bottom: 0.4rem">Danger Zone</h2>
+          <p style="margin-bottom: 0.6rem">
+            Deleting your account will remove your sign-in and (because your tables reference
+            <code>auth.users</code> with <strong>ON DELETE CASCADE</strong>) related rows will be removed
+            automatically. This action is permanent.
+          </p>
+          <button class="btn danger" id="deleteAccountBtn" title="Delete Account" aria-label="Delete Account">
+            <span class="material-icons-sharp" style="vertical-align: middle; font-size: 18px">delete_forever</span>
+            Delete Account
+          </button>
+          <div class="hint" style="margin-top: 0.45rem">
+            Note: Client apps cannot call the Admin API with an anon key. This button will try an Edge Function
+            <code>delete-account</code> (recommended), and will fall back to the Admin API if your environment allows
+            it.
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <!-- Hidden placeholders so existing JS stays happy (no visual output) -->
+  <div aria-hidden="true" class="sr-only">
+    <span id="levelView">0</span>
+    <span id="balanceView">₱0.00</span>
+    <span id="userIdView">—</span>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="../../general_files/index.js"></script>
+  <script type="module" src="../../general_files/session.js"></script>
+  <!-- Supabase UMD + your keys -->
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script type="module">
+    const { createClient } = supabase;
+    import { SUPABASE_URL, SUPABASE_ANON_KEY } from "../../../supabase.js";
+    const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const toast = (msg, ok = true) => {
+      const el = document.getElementById("toast");
+      el.textContent = msg;
+      el.style.background = ok ? "#121a24" : "#b42318";
+      el.classList.add("show");
+      setTimeout(() => el.classList.remove("show"), 2400);
+    };
+
+    const peso = (n) =>
+      "₱" + Number(n || 0).toLocaleString("en-PH", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const maskAccount = (v) => {
+      const s = String(v || "").replace(/\s+/g, "");
+      if (!s) return "—";
+      if (s.length <= 4) return "••••";
+      return "•••• •••• •••• " + s.slice(-4);
+    };
+    const computeAgeFromDOB = (iso) => {
+      if (!iso) return "";
+      const d = new Date(iso);
+      if (isNaN(d)) return "";
+      const t = new Date();
+      let age = t.getFullYear() - d.getFullYear();
+      const m = t.getMonth() - d.getMonth();
+      if (m < 0 || (m === 0 && t.getDate() < d.getDate())) age--;
+      return Math.max(0, age);
+    };
+
+    // Map field -> column name (exact, with quotes where needed)
+    const COLS = {
+      name: "name",
+      birthdate: "birthdate",
+      age: "age",
+      phone: "phone",
+      profession: "profession",
+      highestQualification: '"highestQualification"',
+      employmentStatus: '"employmentStatus"',
+      employer: "employer",
+      mainIncomeSource: '"mainIncomeSource"',
+      bankName: '"bankName"',
+      accountNumber: '"accountNumber"',
+      accountHolder: '"accountHolder"',
+    };
+
+    // ===== Avatar (private bucket ready) =====
+    const AVATAR_BUCKET = "installer_profile";
+    const avatarPathFor = (userId) => `${userId}/avatar.jpg`;
+
+    function parseStorageRef(ref) {
+      if (!ref) return null;
+      if (ref.startsWith("storage://")) {
+        const [, bucket, ...rest] = ref.split("/");
+        return { bucket, path: rest.join("/") };
+      }
+      // public form: /storage/v1/object/public/<bucket>/<path>
+      let m = ref.match(/\/storage\/v1\/object\/public\/([^/]+)\/(.+)$/);
+      if (m) return { bucket: m[1], path: m[2] };
+      // signed form: /storage\/v1\/object\/sign\/([^/]+)\/(.+)\?/
+      m = ref.match(/\/storage\/v1\/object\/sign\/([^/]+)\/(.+)\?/);
+      if (m) return { bucket: m[1], path: m[2] };
+      return null;
+    }
+
+    async function getDisplayableAvatarURL(userId, storedUrl) {
+      const parsed =
+        parseStorageRef(storedUrl) || { bucket: AVATAR_BUCKET, path: avatarPathFor(userId) };
+
+      try {
+        const { data: signed, error } = await sb.storage
+          .from(parsed.bucket)
+          .createSignedUrl(parsed.path, 60 * 60 * 24);
+        if (error) throw error;
+        if (signed?.signedUrl) return `${signed.signedUrl}&t=${Date.now()}`;
+      } catch (e) {
+        console.warn("createSignedUrl failed, will attempt publicUrl fallback:", e?.message);
       }
 
-      async function getDisplayableAvatarURL(userId, storedUrl) {
-        const parsed =
-          parseStorageRef(storedUrl) || { bucket: AVATAR_BUCKET, path: avatarPathFor(userId) };
+      try {
+        const { data: pub } = sb.storage.from(parsed.bucket).getPublicUrl(parsed.path);
+        if (pub?.publicUrl) return `${pub.publicUrl}?t=${Date.now()}`;
+      } catch { }
 
-        try {
-          const { data: signed, error } = await sb.storage
-            .from(parsed.bucket)
-            .createSignedUrl(parsed.path, 60 * 60 * 24);
-          if (error) throw error;
-          if (signed?.signedUrl) return `${signed.signedUrl}&t=${Date.now()}`;
-        } catch (e) {
-          console.warn("createSignedUrl failed, will attempt publicUrl fallback:", e?.message);
-        }
+      return null;
+    }
 
-        try {
-          const { data: pub } = sb.storage.from(parsed.bucket).getPublicUrl(parsed.path);
-          if (pub?.publicUrl) return `${pub.publicUrl}?t=${Date.now()}`;
-        } catch {}
+    const avatarBox = () => document.getElementById("avatarBox");
+    const avatarInput = () => document.getElementById("avatarInput");
+    const progressWrap = () => document.getElementById("avatarProgress");
+    const progressFill = () => document.getElementById("avatarProgressFill");
 
-        return null;
-      }
+    function initialsFrom(nameOrEmail) {
+      const src = (nameOrEmail || "").trim();
+      if (!src) return "U";
+      const parts = src.split(/\s+/).filter(Boolean);
+      if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+      if (parts.length === 1) return parts[0][0].toUpperCase();
+      return src[0]?.toUpperCase() || "U";
+    }
 
-      const avatarBox = () => document.getElementById("avatarBox");
-      const avatarInput = () => document.getElementById("avatarInput");
-      const progressWrap = () => document.getElementById("avatarProgress");
-      const progressFill = () => document.getElementById("avatarProgressFill");
+    function renderAvatar(url, nameOrEmail) {
+      const box = document.getElementById("avatarBox");
+      box.innerHTML = "";
+      if (url) {
+        const img = new Image();
+        img.alt = "Profile photo";
+        img.src = url;
 
-      function initialsFrom(nameOrEmail) {
-        const src = (nameOrEmail || "").trim();
-        if (!src) return "U";
-        const parts = src.split(/\s+/).filter(Boolean);
-        if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-        if (parts.length === 1) return parts[0][0].toUpperCase();
-        return src[0]?.toUpperCase() || "U";
-      }
-
-      function renderAvatar(url, nameOrEmail) {
-        const box = document.getElementById("avatarBox");
-        box.innerHTML = "";
-        if (url) {
-          const img = new Image();
-          img.alt = "Profile photo";
-          img.src = url;
-
-          // If a signed URL expires, re-sign once automatically
-          let retried = false;
-          img.onerror = async () => {
-            if (retried) return;
-            retried = true;
-            const refreshed = await getDisplayableAvatarURL(USER?.id, CURRENT?.profile_pic_url);
-            if (refreshed) img.src = refreshed;
-          };
-
-          box.appendChild(img);
-        } else {
-          const initialsFrom = (s) => {
-            const src = (s || "").trim();
-            if (!src) return "U";
-            const parts = src.split(/\s+/).filter(Boolean);
-            if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-            if (parts.length === 1) return parts[0][0].toUpperCase();
-            return src[0]?.toUpperCase() || "U";
-          };
-          box.textContent = initialsFrom(nameOrEmail);
-        }
-      }
-
-      async function uploadAvatar(file) {
-        if (!USER?.id) return { ok: false, message: "Not signed in." };
-        if (!file) return { ok: false, message: "No file selected." };
-        if (!/^image\//.test(file.type)) return { ok: false, message: "Please choose an image file." };
-        if (file.size > 5 * 1024 * 1024) return { ok: false, message: "File too large. Max ~5MB." };
-
-        // simple fake progress
-        progressWrap().style.display = "block";
-        progressFill().style.width = "10%";
-
-        const path = avatarPathFor(USER.id);
-        try {
-          const { error: upErr } = await sb.storage
-            .from(AVATAR_BUCKET)
-            .upload(path, file, { cacheControl: "3600", upsert: true, contentType: file.type || "image/jpeg" });
-          if (upErr) throw upErr;
-          progressFill().style.width = "70%";
-
-          const toPersist = `storage://${AVATAR_BUCKET}/${path}`;
-          const { error: updErr } = await sb.from("installer").update({ profile_pic_url: toPersist }).eq("id", USER.id);
-          if (updErr) throw updErr;
-
-          CURRENT.profile_pic_url = toPersist;
-          const displayUrl = await getDisplayableAvatarURL(USER.id, toPersist);
-          renderAvatar(displayUrl, CURRENT?.name || CURRENT?.email);
-
-          progressFill().style.width = "100%";
-          setTimeout(() => (progressWrap().style.display = "none"), 500);
-          return { ok: true, message: "Profile photo updated." };
-        } catch (e) {
-          progressWrap().style.display = "none";
-          return { ok: false, message: e?.message || "Upload failed." };
-        }
-      }
-
-      async function removeAvatar() {
-        if (!USER?.id) return { ok: false, message: "Not signed in." };
-        const path = avatarPathFor(USER.id);
-        try {
-          await sb.storage.from(AVATAR_BUCKET).remove([path]).catch(() => {});
-          const { error: updErr } = await sb.from("installer").update({ profile_pic_url: null }).eq("id", USER.id);
-          if (updErr) throw updErr;
-
-          CURRENT.profile_pic_url = null;
-          renderAvatar(null, CURRENT?.name || CURRENT?.email);
-          return { ok: true, message: "Profile photo removed." };
-        } catch (e) {
-          return { ok: false, message: e?.message || "Remove failed." };
-        }
-      }
-
-      let CURRENT = null;
-      let USER = null;
-
-      function wireField(el, key) {
-        const view = el.querySelector("[data-view]");
-        const wrap = el.querySelector("[data-editwrap]");
-        const input = el.querySelector("[data-input]");
-        const btnEdit = el.querySelector("[data-edit]");
-        const btnSave = el.querySelector("[data-save]");
-        const btnCancel = el.querySelector("[data-cancel]");
-
-        const setView = (v) => { view.textContent = v ?? "—"; };
-
-        const open = () => {
-          const curr = CURRENT?.[key] ?? "";
-          if (input.type === "date") input.value = curr ? String(curr).slice(0, 10) : "";
-          else if (input.tagName === "SELECT") input.value = curr ?? "";
-          else input.value = curr ?? "";
-          wrap.classList.add("show");
-          el.querySelector(".value-view").style.display = "none";
-          input.focus();
+        // If a signed URL expires, re-sign once automatically
+        let retried = false;
+        img.onerror = async () => {
+          if (retried) return;
+          retried = true;
+          const refreshed = await getDisplayableAvatarURL(USER?.id, CURRENT?.profile_pic_url);
+          if (refreshed) img.src = refreshed;
         };
 
-        const close = () => {
-          wrap.classList.remove("show");
-          el.querySelector(".value-view").style.display = "";
+        box.appendChild(img);
+      } else {
+        const initialsFrom = (s) => {
+          const src = (s || "").trim();
+          if (!src) return "U";
+          const parts = src.split(/\s+/).filter(Boolean);
+          if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+          if (parts.length === 1) return parts[0][0].toUpperCase();
+          return src[0]?.toUpperCase() || "U";
         };
-
-        const save = async () => {
-          if (!USER?.id) return;
-          let value = input.value;
-
-          if (key === "age") {
-            value = Number(value || 0);
-            if (isNaN(value) || value < 0) return toast("Age must be a valid number.", false);
-          }
-          if (key === "birthdate" && value) {
-            const computed = computeAgeFromDOB(value);
-            if (computed && computed !== CURRENT?.age) {
-              CURRENT.age = computed;
-              document.querySelector('[data-key="age"] [data-view]').textContent = String(computed);
-            }
-          }
-          if (key === "accountNumber" && String(value).trim().length < 4) {
-            return toast("Account number looks too short.", false);
-          }
-
-          const col = COLS[key];
-          const updateObj = {}; updateObj[col] = value?.trim?.() ?? value;
-          try {
-            const { error } = await sb.from("installer").update(updateObj).eq("id", USER.id);
-            if (error) throw error;
-
-            CURRENT[key] = input.type === "number" ? Number(value) : value;
-
-            if (key === "accountNumber") {
-              document.getElementById("accountMasked").textContent = maskAccount(value);
-            }
-            if (key === "name" && !CURRENT.profile_pic_url) {
-              renderAvatar(null, CURRENT?.name || CURRENT?.email);
-            }
-
-            setView(CURRENT[key] || "—");
-            toast("Saved ✓", true);
-            close();
-          } catch (e) {
-            console.error(e);
-            toast(e?.message || "Failed to save.", false);
-          }
-        };
-
-        btnEdit?.addEventListener("click", open);
-        btnCancel?.addEventListener("click", close);
-        btnSave?.addEventListener("click", save);
-
-        setView(CURRENT?.[key] ?? "—");
+        box.textContent = initialsFrom(nameOrEmail);
       }
+    }
 
-      function fillAllViews(row) {
-        document.getElementById("emailView").textContent = row?.email ?? "—";
+    async function uploadAvatar(file) {
+      if (!USER?.id) return { ok: false, message: "Not signed in." };
+      if (!file) return { ok: false, message: "No file selected." };
+      if (!/^image\//.test(file.type)) return { ok: false, message: "Please choose an image file." };
+      if (file.size > 5 * 1024 * 1024) return { ok: false, message: "File too large. Max ~5MB." };
 
-        document.querySelectorAll(".field[data-key]").forEach((el) => {
-          const key = el.getAttribute("data-key");
-          const view = el.querySelector("[data-view]");
-          let val = row?.[key];
-          if (key === "birthdate" && val) val = String(val).slice(0, 10);
-          view.textContent = val ?? "—";
-        });
+      // simple fake progress
+      progressWrap().style.display = "block";
+      progressFill().style.width = "10%";
 
-        renderAvatar(null, row?.name || row?.email);
+      const path = avatarPathFor(USER.id);
+      try {
+        const { error: upErr } = await sb.storage
+          .from(AVATAR_BUCKET)
+          .upload(path, file, { cacheControl: "3600", upsert: true, contentType: file.type || "image/jpeg" });
+        if (upErr) throw upErr;
+        progressFill().style.width = "70%";
 
-        document.getElementById("accountMasked").textContent = maskAccount(row?.accountNumber);
+        const toPersist = `storage://${AVATAR_BUCKET}/${path}`;
+        const { error: updErr } = await sb.from("installer").update({ profile_pic_url: toPersist }).eq("id", USER.id);
+        if (updErr) throw updErr;
 
-        // moved createdAt to the top badge
-        document.getElementById("createdAtTop").textContent =
-          row?.createdAt ? new Date(row.createdAt).toLocaleString() : "—";
+        CURRENT.profile_pic_url = toPersist;
+        const displayUrl = await getDisplayableAvatarURL(USER.id, toPersist);
+        renderAvatar(displayUrl, CURRENT?.name || CURRENT?.email);
 
-        // keep these updates for compatibility (hidden placeholders exist)
-        document.getElementById("levelView").textContent = row?.levelstatus ?? 0;
-        document.getElementById("balanceView").textContent = peso(row?.earningBalance ?? 0);
-        document.getElementById("userIdView").textContent = row?.id ?? "—";
+        progressFill().style.width = "100%";
+        setTimeout(() => (progressWrap().style.display = "none"), 500);
+        return { ok: true, message: "Profile photo updated." };
+      } catch (e) {
+        progressWrap().style.display = "none";
+        return { ok: false, message: e?.message || "Upload failed." };
       }
+    }
 
-      async function loadInstaller() {
-        const { data: { user }, error: uErr } = await sb.auth.getUser();
-        if (uErr) { toast("Auth error. Please sign in again.", false); return; }
-        USER = user;
-        if (!user) { toast("Not signed in.", false); return; }
+    async function removeAvatar() {
+      if (!USER?.id) return { ok: false, message: "Not signed in." };
+      const path = avatarPathFor(USER.id);
+      try {
+        await sb.storage.from(AVATAR_BUCKET).remove([path]).catch(() => { });
+        const { error: updErr } = await sb.from("installer").update({ profile_pic_url: null }).eq("id", USER.id);
+        if (updErr) throw updErr;
 
-        const { data, error } = await sb
-          .from("installer")
-          .select(
-            'id, email, name, birthdate, age, phone, profession, "highestQualification", "employmentStatus", employer, "mainIncomeSource", "bankName", "accountNumber", "accountHolder", "createdAt", levelstatus, "earningBalance", profile_pic_url'
-          )
-          .eq("id", user.id)
-          .maybeSingle();
-
-        if (error) { console.error(error); toast("Failed to load settings.", false); }
-
-        CURRENT = data || { id: user.id, email: user.email };
-        fillAllViews(CURRENT);
-
-        if (CURRENT?.profile_pic_url) {
-          const displayUrl = await getDisplayableAvatarURL(USER.id, CURRENT.profile_pic_url);
-          if (displayUrl) renderAvatar(displayUrl, CURRENT?.name || CURRENT?.email);
-        }
-
-        document.querySelectorAll(".field[data-key]").forEach((el) => wireField(el, el.getAttribute("data-key")));
+        CURRENT.profile_pic_url = null;
+        renderAvatar(null, CURRENT?.name || CURRENT?.email);
+        return { ok: true, message: "Profile photo removed." };
+      } catch (e) {
+        return { ok: false, message: e?.message || "Remove failed." };
       }
+    }
 
-      // === documents_review purge (kept) ===
-      async function listAllPaths(bucket, prefix) {
-        const paths = []; const stack = [prefix];
-        while (stack.length) {
-          const folder = stack.pop();
-          const { data, error } = await sb.storage.from(bucket).list(folder, {
-            limit: 1000, offset: 0, sortBy: { column: "name", order: "asc" },
-          });
-          if (error) { if (error.message?.toLowerCase().includes("not found")) continue; throw error; }
-          for (const item of data || []) {
-            if (item?.metadata) paths.push((folder ? folder + "/" : "") + item.name);
-            else stack.push((folder ? folder + "/" : "") + item.name);
-          }
-        }
-        return paths;
-      }
+    let CURRENT = null;
+    let USER = null;
 
-      async function purgeDocumentsReviewFolder(userId) {
-        const bucket = "documents_review"; const prefix = userId;
-        try {
-          const files = await listAllPaths(bucket, prefix);
-          if (!files.length) return { ok: true, deleted: 0, message: "No files to delete" };
-          const chunkSize = 100; let deleted = 0;
-          for (let i = 0; i < files.length; i += chunkSize) {
-            const chunk = files.slice(i, i + chunkSize);
-            const { data, error } = await sb.storage.from(bucket).remove(chunk);
-            if (error) throw error;
-            deleted += data?.length || chunk.length;
-          }
-          return { ok: true, deleted, message: `Deleted ${deleted} file(s)` };
-        } catch (e) {
-          return { ok: false, deleted: 0, message: e?.message || "Failed to purge storage" };
-        }
-      }
+    function wireField(el, key) {
+      const view = el.querySelector("[data-view]");
+      const wrap = el.querySelector("[data-editwrap]");
+      const input = el.querySelector("[data-input]");
+      const btnEdit = el.querySelector("[data-edit]");
+      const btnSave = el.querySelector("[data-save]");
+      const btnCancel = el.querySelector("[data-cancel]");
 
-      // Delete account helpers (kept)
-      async function deleteViaEdgeFunction(userId) {
-        try {
-          const { data, error } = await sb.functions.invoke("delete-account", { body: { user_id: userId } });
-          if (error) throw error;
-          return { ok: true, message: data?.message || "Deleted." };
-        } catch (e) {
-          return { ok: false, message: e?.message || "Edge function failed." };
-        }
-      }
-      async function deleteViaAdminAPI(userId) {
-        try {
-          const { error } = await sb.auth.admin.deleteUser(userId);
-          if (error) throw error;
-          return { ok: true, message: "Deleted." };
-        } catch (e) {
-          return { ok: false, message: e?.message || "Admin API not permitted with this key." };
-        }
-      }
+      const setView = (v) => { view.textContent = v ?? "—"; };
 
-      document.getElementById("deleteAccountBtn").addEventListener("click", async () => {
-        if (!USER?.id) return toast("Not signed in.", false);
-        const c1 = confirm("Delete your account permanently? This cannot be undone."); if (!c1) return;
-        const c2 = confirm("Final confirmation: Delete your account now?"); if (!c2) return;
-
-        const btn = document.getElementById("deleteAccountBtn");
-        const prev = btn.innerHTML; btn.disabled = true; btn.textContent = "Deleting…";
-
-        const purge = await purgeDocumentsReviewFolder(USER.id);
-        toast(purge.ok ? `Storage: ${purge.message}` : `Storage cleanup failed: ${purge.message}`, purge.ok);
-
-        let res = await deleteViaEdgeFunction(USER.id);
-        if (!res.ok) res = await deleteViaAdminAPI(USER.id);
-
-        if (res.ok) {
-          toast("Account deleted. Signing out…", true);
-          try { await sb.auth.signOut(); } catch {}
-          setTimeout(() => { window.location.href = "../../../index.html"; }, 1200);
-        } else {
-          btn.disabled = false; btn.innerHTML = prev;
-          toast("Deletion not configured. Set up an Edge Function `delete-account` to call the Admin API. (" + res.message + ")", false);
-        }
-      });
-
-      // Avatar events
-      document.getElementById("btnPickPhoto").addEventListener("click", () => avatarInput().click());
-      document.getElementById("btnRemovePhoto").addEventListener("click", async () => {
-        if (!USER?.id) return toast("Not signed in.", false);
-        const ok = confirm("Remove your profile photo?"); if (!ok) return;
-        const res = await removeAvatar(); toast(res.message, !!res.ok);
-      });
-      avatarInput().addEventListener("change", async (e) => {
-        const file = e.target.files?.[0]; if (!file) return;
-        const res = await uploadAvatar(file); toast(res.message, !!res.ok);
-        e.target.value = "";
-      });
-
-      // ===== Loading toggles (ONLY additions) =====
-      const setLoading = (on) => {
-        document.body.classList.toggle('is-loading', !!on);
+      const open = () => {
+        const curr = CURRENT?.[key] ?? "";
+        if (input.type === "date") input.value = curr ? String(curr).slice(0, 10) : "";
+        else if (input.tagName === "SELECT") input.value = curr ?? "";
+        else input.value = curr ?? "";
+        wrap.classList.add("show");
+        el.querySelector(".value-view").style.display = "none";
+        input.focus();
       };
 
-      // Boot
-      (async function init() {
+      const close = () => {
+        wrap.classList.remove("show");
+        el.querySelector(".value-view").style.display = "";
+      };
+
+      const save = async () => {
+        if (!USER?.id) return;
+        let value = input.value;
+
+        if (key === "age") {
+          value = Number(value || 0);
+          if (isNaN(value) || value < 0) return toast("Age must be a valid number.", false);
+        }
+        if (key === "birthdate" && value) {
+          const computed = computeAgeFromDOB(value);
+          if (computed && computed !== CURRENT?.age) {
+            CURRENT.age = computed;
+            document.querySelector('[data-key="age"] [data-view]').textContent = String(computed);
+          }
+        }
+        if (key === "accountNumber" && String(value).trim().length < 4) {
+          return toast("Account number looks too short.", false);
+        }
+
+        const col = COLS[key];
+        const updateObj = {}; updateObj[col] = value?.trim?.() ?? value;
         try {
-          setLoading(true);                         // <-- show skeleton
-          const { data: { user } } = await sb.auth.getUser();
-          USER = user;
-          await loadInstaller();
+          const { error } = await sb.from("installer").update(updateObj).eq("id", USER.id);
+          if (error) throw error;
+
+          CURRENT[key] = input.type === "number" ? Number(value) : value;
+
+          if (key === "accountNumber") {
+            document.getElementById("accountMasked").textContent = maskAccount(value);
+          }
+          if (key === "name" && !CURRENT.profile_pic_url) {
+            renderAvatar(null, CURRENT?.name || CURRENT?.email);
+          }
+
+          setView(CURRENT[key] || "—");
+          toast("Saved ✓", true);
+          close();
         } catch (e) {
           console.error(e);
-          toast("Could not initialize settings.", false);
-        } finally {
-          setLoading(false);                        // <-- hide skeleton, show content
+          toast(e?.message || "Failed to save.", false);
         }
-      })();
-    </script>
-  </body>
+      };
+
+      btnEdit?.addEventListener("click", open);
+      btnCancel?.addEventListener("click", close);
+      btnSave?.addEventListener("click", save);
+
+      setView(CURRENT?.[key] ?? "—");
+    }
+
+    function fillAllViews(row) {
+      document.getElementById("emailView").textContent = row?.email ?? "—";
+
+      document.querySelectorAll(".field[data-key]").forEach((el) => {
+        const key = el.getAttribute("data-key");
+        const view = el.querySelector("[data-view]");
+        let val = row?.[key];
+        if (key === "birthdate" && val) val = String(val).slice(0, 10);
+        view.textContent = val ?? "—";
+      });
+
+      renderAvatar(null, row?.name || row?.email);
+
+      document.getElementById("accountMasked").textContent = maskAccount(row?.accountNumber);
+
+      // moved createdAt to the top badge
+      document.getElementById("createdAtTop").textContent =
+        row?.createdAt ? new Date(row.createdAt).toLocaleString() : "—";
+
+      // keep these updates for compatibility (hidden placeholders exist)
+      document.getElementById("levelView").textContent = row?.levelstatus ?? 0;
+      document.getElementById("balanceView").textContent = peso(row?.earningBalance ?? 0);
+      document.getElementById("userIdView").textContent = row?.id ?? "—";
+    }
+
+    async function loadInstaller() {
+      const { data: { user }, error: uErr } = await sb.auth.getUser();
+      if (uErr) { toast("Auth error. Please sign in again.", false); return; }
+      USER = user;
+      if (!user) { toast("Not signed in.", false); return; }
+
+      const { data, error } = await sb
+        .from("installer")
+        .select(
+          'id, email, name, birthdate, age, phone, profession, "highestQualification", "employmentStatus", employer, "mainIncomeSource", "bankName", "accountNumber", "accountHolder", "createdAt", levelstatus, "earningBalance", profile_pic_url'
+        )
+        .eq("id", user.id)
+        .maybeSingle();
+
+      if (error) { console.error(error); toast("Failed to load settings.", false); }
+
+      CURRENT = data || { id: user.id, email: user.email };
+      fillAllViews(CURRENT);
+
+      if (CURRENT?.profile_pic_url) {
+        const displayUrl = await getDisplayableAvatarURL(USER.id, CURRENT.profile_pic_url);
+        if (displayUrl) renderAvatar(displayUrl, CURRENT?.name || CURRENT?.email);
+      }
+
+      document.querySelectorAll(".field[data-key]").forEach((el) => wireField(el, el.getAttribute("data-key")));
+    }
+
+    // === documents_review purge (kept) ===
+    async function listAllPaths(bucket, prefix) {
+      const paths = []; const stack = [prefix];
+      while (stack.length) {
+        const folder = stack.pop();
+        const { data, error } = await sb.storage.from(bucket).list(folder, {
+          limit: 1000, offset: 0, sortBy: { column: "name", order: "asc" },
+        });
+        if (error) { if (error.message?.toLowerCase().includes("not found")) continue; throw error; }
+        for (const item of data || []) {
+          if (item?.metadata) paths.push((folder ? folder + "/" : "") + item.name);
+          else stack.push((folder ? folder + "/" : "") + item.name);
+        }
+      }
+      return paths;
+    }
+
+    async function purgeDocumentsReviewFolder(userId) {
+      const bucket = "documents_review"; const prefix = userId;
+      try {
+        const files = await listAllPaths(bucket, prefix);
+        if (!files.length) return { ok: true, deleted: 0, message: "No files to delete" };
+        const chunkSize = 100; let deleted = 0;
+        for (let i = 0; i < files.length; i += chunkSize) {
+          const chunk = files.slice(i, i + chunkSize);
+          const { data, error } = await sb.storage.from(bucket).remove(chunk);
+          if (error) throw error;
+          deleted += data?.length || chunk.length;
+        }
+        return { ok: true, deleted, message: `Deleted ${deleted} file(s)` };
+      } catch (e) {
+        return { ok: false, deleted: 0, message: e?.message || "Failed to purge storage" };
+      }
+    }
+
+    // Delete account helpers (kept)
+    async function deleteViaEdgeFunction(userId) {
+      try {
+        const { data, error } = await sb.functions.invoke("delete-account", { body: { user_id: userId } });
+        if (error) throw error;
+        return { ok: true, message: data?.message || "Deleted." };
+      } catch (e) {
+        return { ok: false, message: e?.message || "Edge function failed." };
+      }
+    }
+    async function deleteViaAdminAPI(userId) {
+      try {
+        const { error } = await sb.auth.admin.deleteUser(userId);
+        if (error) throw error;
+        return { ok: true, message: "Deleted." };
+      } catch (e) {
+        return { ok: false, message: e?.message || "Admin API not permitted with this key." };
+      }
+    }
+
+    document.getElementById("deleteAccountBtn").addEventListener("click", async () => {
+      if (!USER?.id) return toast("Not signed in.", false);
+      const c1 = confirm("Delete your account permanently? This cannot be undone."); if (!c1) return;
+      const c2 = confirm("Final confirmation: Delete your account now?"); if (!c2) return;
+
+      const btn = document.getElementById("deleteAccountBtn");
+      const prev = btn.innerHTML; btn.disabled = true; btn.textContent = "Deleting…";
+
+      const purge = await purgeDocumentsReviewFolder(USER.id);
+      toast(purge.ok ? `Storage: ${purge.message}` : `Storage cleanup failed: ${purge.message}`, purge.ok);
+
+      let res = await deleteViaEdgeFunction(USER.id);
+      if (!res.ok) res = await deleteViaAdminAPI(USER.id);
+
+      if (res.ok) {
+        toast("Account deleted. Signing out…", true);
+        try { await sb.auth.signOut(); } catch { }
+        setTimeout(() => { window.location.href = "../../../index.html"; }, 1200);
+      } else {
+        btn.disabled = false; btn.innerHTML = prev;
+        toast("Deletion not configured. Set up an Edge Function `delete-account` to call the Admin API. (" + res.message + ")", false);
+      }
+    });
+
+    // Avatar events
+    document.getElementById("btnPickPhoto").addEventListener("click", () => avatarInput().click());
+    document.getElementById("btnRemovePhoto").addEventListener("click", async () => {
+      if (!USER?.id) return toast("Not signed in.", false);
+      const ok = confirm("Remove your profile photo?"); if (!ok) return;
+      const res = await removeAvatar(); toast(res.message, !!res.ok);
+    });
+    avatarInput().addEventListener("change", async (e) => {
+      const file = e.target.files?.[0]; if (!file) return;
+      const res = await uploadAvatar(file); toast(res.message, !!res.ok);
+      e.target.value = "";
+    });
+
+    // ===== Loading toggles (ONLY additions) =====
+    const setLoading = (on) => {
+      document.body.classList.toggle('is-loading', !!on);
+    };
+
+    // Boot
+    (async function init() {
+      try {
+        setLoading(true);                         // <-- show skeleton
+        const { data: { user } } = await sb.auth.getUser();
+        USER = user;
+        await loadInstaller();
+      } catch (e) {
+        console.error(e);
+        toast("Could not initialize settings.", false);
+      } finally {
+        setLoading(false);                        // <-- hide skeleton, show content
+      }
+    })();
+  </script>
+</body>
+
 </html>
