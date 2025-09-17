@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap');
 
 aside {
   height: 100vh;
@@ -167,7 +167,7 @@ aside .sidebar .message-count {
 
 :root {
   --color-primary: #6c9bcf;
-  --color-danger: #ff0060;
+  --color-danger: #20a44c;
   --color-success: #1b9c85;
   --color-warning: #f7d060;
   --color-white: #fff;
@@ -219,6 +219,10 @@ body {
   overflow-x: hidden;
   color: var(--color-dark);
   background: var(--color-background);
+}
+
+main {
+  margin-top: 1.4rem;
 }
 
 a {
