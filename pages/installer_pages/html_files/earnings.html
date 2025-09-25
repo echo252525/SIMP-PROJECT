@@ -14,6 +14,9 @@
   <link rel="stylesheet" href="../css_files/sideBar.css" />
   <title>Earnings</title>
 
+  <!-- SweetAlert2 (ADDED) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"/>
+
   <style>
     :root {
       --ink: #1c2430;
@@ -325,6 +328,10 @@
       border: 1px solid var(--line);
       box-shadow: 0 20px 60px rgba(0, 0, 0, .08);
       overflow: hidden;
+      /* MODAL SIZE TWEAK (ADDED) */
+      max-height: 520px;           /* keep it shorter so viewport doesn't jump */
+      display: grid;
+      grid-template-rows: auto 1fr auto; /* header, body (scroll), footer */
     }
 
     .modal-head {
@@ -344,6 +351,7 @@
       padding: 1rem;
       display: grid;
       gap: .6rem;
+      overflow: auto; /* ADDED: scroll internally if content grows */
     }
 
     .modal-foot {
@@ -1133,6 +1141,8 @@
 
   <!-- Supabase JS -->
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <!-- SweetAlert2 (ADDED) -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
   <!-- (Optional) your global scripts -->
   <script src="../../general_files/index.js"></script>
   <script type="module" src="../../general_files/session.js"></script>
@@ -1142,6 +1152,28 @@
     // ========= CONFIG =========
     import { SUPABASE_URL, SUPABASE_ANON_KEY } from "../../../supabase.js";
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // ========= SWEETALERT2 HELPERS (ADDED) =========
+    const swalPrimary = '#20a44c';
+    const toast = (message, icon = 'info') =>
+      Swal.mixin({
+        toast: true,
+        position: 'top',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true
+      }).fire({ icon, title: message });
+
+    const showSuccess = (message, title = 'Success') =>
+      Swal.fire({ icon: 'success', title, text: message, confirmButtonColor: swalPrimary });
+
+    const showError = (error, title = 'Something went wrong') => {
+      const text = (typeof error === 'string') ? error : (error?.message || 'Please try again.');
+      return Swal.fire({ icon: 'error', title, text, confirmButtonColor: swalPrimary });
+    };
+
+    // Upgrade all existing alert() calls to SweetAlert2 (keeps your code unchanged)
+    window.alert = (msg) => Swal.fire({ icon: 'info', title: 'Notice', text: String(msg), confirmButtonColor: swalPrimary });
 
     // ========= STATE =========
     let JOBS = [];      // [{ job_id, job_code, job_title, job_pay, job_date }]
@@ -1459,6 +1491,9 @@
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
+
+      // Friendly toast (ADDED)
+      toast('Your CSV export has started.', 'success');
     }
 
     // ========= MODAL & REQUEST FLOW =========
@@ -1468,6 +1503,8 @@
         setSelectMode(true);
         btnRequestPayout.innerHTML = '<span class="material-icons-sharp">playlist_add_check</span> Review Selection';
         helperBox.innerHTML = `<strong>Select Mode:</strong> Choose the approved jobs to include, then click <em>Review Selection</em>.`;
+        // Gentle guidance (ADDED)
+        toast('Select approved jobs, then tap “Review Selection”.', 'info');
         return;
       }
 
@@ -1541,10 +1578,12 @@
         updateCounts.unpaid += 1;
         renderBadges();
 
-        alert(`Request submitted for ${ids.length} job(s).\nBatch: ${batchNo}`);
+        // Friendlier success (REPLACES alert)
+        showSuccess(`Your payout request for ${ids.length} job(s) has been sent.`, `Payout Requested • ${batchNo}`);
       } catch (err) {
         console.error(err);
-        alert('Failed to submit payout request: ' + (err?.message || 'Unknown error'));
+        // Friendlier error (REPLACES alert)
+        showError(err, 'Failed to submit payout request');
       } finally {
         confirmPayout.disabled = false;
         confirmPayout.innerHTML = '<span class="material-icons-sharp">check_circle</span> Confirm Request';
@@ -1626,7 +1665,8 @@
         const installerId = await getInstallerId();
         CURRENT_INSTALLER_ID = installerId;
         if (!installerId) {
-          helperBox.innerHTML = `<strong>Heads up:</strong> No installer ID found. Sign in or append <code>?installer=&lt;uuid&gt;</code> to the URL.`;
+          helperBox.innerHTML = `<strong>Heads up:</strong> We couldn't detect your installer ID. Please sign in, or append <code>?installer=&lt;uuid&gt;</code> to the URL.`;
+          toast('Sign in to view your earnings, or add ?installer=<uuid> to the URL.', 'warning');
         } else {
           helperBox.innerHTML = `<strong>Viewing installer:</strong> <code>${installerId}</code>`;
           await loadFromSupabase(installerId);
@@ -1654,6 +1694,7 @@
                   applyFilters();
                 } catch (e) {
                   console.error('Realtime refresh failed:', e);
+                  toast('Live update failed to refresh. Try reloading.', 'error');
                 }
               }
             )
@@ -1664,6 +1705,7 @@
       } catch (err) {
         console.error(err);
         helperBox.innerHTML = `<strong>Error:</strong> ${err.message || err}`;
+        showError(err, 'Loading error');
       } finally {
         computePaymentsSummary();
         applyFilters();
@@ -1684,7 +1726,13 @@
       const btn = e.target.closest('button[data-invoice]');
       if (!btn) return;
       const code = btn.getAttribute('data-invoice');
-      alert('Generate/Download invoice for ' + code);
+      // Friendlier info (REPLACES alert)
+      Swal.fire({
+        icon: 'info',
+        title: 'Invoice',
+        html: `Preparing invoice for <code>${code}</code>.`,
+        confirmButtonColor: swalPrimary
+      });
     });
 
     document.getElementById('btnExport').addEventListener('click', exportCSV);

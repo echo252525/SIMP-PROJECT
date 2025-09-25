@@ -13,6 +13,10 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet" />
   <link rel="stylesheet" href="../css_files/sideBar.css" />
   <title>myJobPosts</title>
+
+  <!-- SweetAlert2 (added) -->
+  <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet" />
+
   <style>
     :root{
       --card-border:#e7edf3;
@@ -169,10 +173,11 @@
       width:min(980px, 100%);
       background:var(--modal-card);
       border-radius:16px; overflow:hidden; box-shadow: 0 20px 48px rgba(0,0,0,.18);
-      max-height: 92vh; display:flex; flex-direction:column;
+      /* SHORTER so the screen doesn't resize much */
+      max-height: 84vh; display:flex; flex-direction:column;
     }
     .modal-hero{
-      position:relative; height:220px; background:#f3f4f6; overflow:hidden;
+      position:relative; height:180px; background:#f3f4f6; overflow:hidden; /* reduced from 220px */
     }
     .modal-hero .hero-img{
       position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
@@ -194,7 +199,7 @@
       padding:16px; overflow:auto;
     }
     .modal-title{
-      margin:-44px 0 8px 0; color:#fff; font-weight:800; font-size:1.35rem; text-shadow: 0 1px 2px rgba(0,0,0,.4);
+      margin:-32px 0 8px 0; color:#fff; font-weight:800; font-size:1.25rem; text-shadow: 0 1px 2px rgba(0,0,0,.4);
       padding:0 16px;
     }
     .modal-section{
@@ -637,11 +642,39 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../../general_files/index.js"></script>
   <script type="module" src="../../general_files/session.js"></script>
+  <!-- SweetAlert2 (added) -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <script type="module">
     // ---------- CONFIG: defaults ----------
     const DEFAULT_JOB_PICS_BUCKET = 'jobs';
     const DEFAULT_INSTALLER_PICS_BUCKET = 'installer_profile';
+
+    // ---------- NEW: SweetAlert helpers ----------
+    const Toast = Swal.mixin({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 2200,
+      timerProgressBar: true
+    });
+    function notifySuccess(msg){ Toast.fire({ icon: 'success', title: msg }); }
+    function notifyInfo(msg){ Toast.fire({ icon: 'info', title: msg }); }
+    function notifyWarn(msg){ Toast.fire({ icon: 'warning', title: msg }); }
+    function notifyError(msg, title='Something went wrong'){
+      Swal.fire({ icon:'error', title, text: msg, confirmButtonText: 'OK' });
+    }
+    async function confirmDialog({title='Are you sure?', text='This action cannot be undone.', confirmText='Yes', icon='warning'}={}){
+      const res = await Swal.fire({
+        icon, title, text,
+        showCancelButton: true,
+        confirmButtonText: confirmText,
+        cancelButtonText: 'Cancel',
+        reverseButtons: true,
+        focusCancel: true
+      });
+      return res.isConfirmed;
+    }
 
     // ---------- NEW: simple loading toggler ----------
     const rootEl = document.documentElement; // for a global class
@@ -992,16 +1025,13 @@
       if (!JOBS.length){
         cardsContainer.innerHTML = "";
         emptyState.style.display = "flex";
-        // no jobs -> still hide skeleton because we're done loading
         showSkeleton(false);
         return;
       }
       emptyState.style.display = "none";
       cardsContainer.innerHTML = JOBS.map(cardHtml).join("");
       applyClientFilters();
-      // Avatars may require signing (async) — we can already show real content now
       showSkeleton(false);
-      // After rendering, hydrate installer avatars with signed URLs
       hydrateInstallerAvatars().catch(console.warn);
     }
 
@@ -1045,6 +1075,7 @@
       if (uErr || !u?.user?.id) {
         console.error("auth.getUser error:", uErr);
         cardsContainer.innerHTML = `<div class="empty"><span class="material-icons-sharp">person_off</span><span>Please log in to see your jobs.</span></div>`;
+        notifyWarn('Please sign in to view your job posts.');
         showSkeleton(false);
         return;
       }
@@ -1059,6 +1090,7 @@
       if (error) {
         console.error("jobs fetch error:", error);
         cardsContainer.innerHTML = `<div class="empty"><span class="material-icons-sharp">error_outline</span><span>Unable to load your jobs.</span></div>`;
+        notifyError('We couldn’t load your jobs right now. Please try again in a moment.');
         showSkeleton(false);
         return;
       }
@@ -1074,12 +1106,14 @@
           .limit(1000);
         if (insErr) {
           console.error("installer fetch error:", insErr);
+          notifyWarn('Some installer profiles failed to load. You can still view your jobs.');
         } else {
           (installers || []).forEach(i => INSTALLER_BY_ID.set(i.id, i));
         }
       }
 
       render();
+      notifyInfo('Your job posts are up to date.');
     }
 
     // ---------- Server-side filtered & sorted loader ----------
@@ -1112,6 +1146,7 @@
       if (uErr || !u?.user?.id) {
         console.error("auth.getUser error:", uErr);
         cardsContainer.innerHTML = `<div class="empty"><span class="material-icons-sharp">person_off</span><span>Please log in to see your jobs.</span></div>`;
+        notifyWarn('Please sign in to view your job posts.');
         showSkeleton(false);
         return;
       }
@@ -1154,6 +1189,7 @@
       const { data: jobs, error } = await q;
       if (error){
         console.error("jobs fetch error (filtered):", error);
+        notifyError('We couldn’t apply your filters. Showing default list.');
         await loadMyJobs(); // fallback handles its own skeleton toggle
         return;
       }
@@ -1170,6 +1206,7 @@
           .limit(1000);
         if (insErr) {
           console.error("installer fetch error:", insErr);
+          notifyWarn('Some installer profiles failed to load.');
         } else {
           (installers || []).forEach(i => INSTALLER_BY_ID.set(i.id, i));
         }
@@ -1304,7 +1341,7 @@
         reschedSubmit.textContent = 'Save Date';
         reschedSubmit.onclick = async () => {
           const nd = reschedDate.value;
-          if (!nd) { alert('Pick a new date.'); return; }
+          if (!nd) { notifyWarn('Please pick a new date.'); return; }
           await updateJob(job.job_id, { job_date: nd, job_status: 'pending' }, 'Date updated. Status set to Pending.');
         };
       } else if (status === 'pending' || status === 'viewed'){
@@ -1353,13 +1390,13 @@
       return () => { try { sessionStorage.setItem('edit_job_cache', JSON.stringify(job)); } catch {} };
     }
 
-    // Update job helper
+    // Update job helper (SweetAlert messages)
     async function updateJob(job_id, updates, successMsg='Updated.'){
       const client = await ensureSupabaseClient();
       const { error } = await fromInSchema(client, 'jobs', 'job').update(updates).eq('job_id', job_id);
       if (error) {
-        alert('Update failed: ' + error.message);
         console.error(error);
+        notifyError(error.message || 'Please try again.');
         return false;
       }
       const idx = JOBS.findIndex(j => j.job_id === job_id);
@@ -1368,27 +1405,34 @@
         if (updates.job_duration) JOBS[idx]._duration_hours = intervalToHours(updates.job_duration);
       }
       render();
-      alert(successMsg);
+      notifySuccess(successMsg);
       return true;
     }
 
     async function deleteJob(job){
       if (job.installer_id_assigned){
-        alert('Cannot delete: an installer is assigned. View installer profile instead.');
+        notifyWarn('This job already has an assigned installer and cannot be deleted.');
         return;
       }
-      if (!confirm('Delete this job posting? This cannot be undone.')) return;
+      const ok = await confirmDialog({
+        title: 'Delete this job?',
+        text: 'This will permanently remove the post.',
+        confirmText: 'Delete',
+        icon: 'warning'
+      });
+      if (!ok) return;
+
       const client = await ensureSupabaseClient();
       const { error } = await fromInSchema(client, 'jobs', 'job').delete().eq('job_id', job.job_id);
       if (error){
-        alert('Delete failed: ' + error.message);
         console.error(error);
+        notifyError(error.message || 'Delete failed. Please try again.');
         return;
       }
       JOBS = JOBS.filter(j => j.job_id !== job.job_id);
       render();
       hideJobModal();
-      alert('Job deleted.');
+      notifySuccess('Job was deleted.');
     }
 
     async function openInstallerProfile(installerId){
@@ -1399,7 +1443,7 @@
           .select('id, name, email, phone, profession, employer, "highestQualification", "employmentStatus", levelstatus, profile_pic_url')
           .eq('id', installerId)
           .maybeSingle();
-        if (error){ console.error(error); }
+        if (error){ console.error(error); notifyWarn('We couldn’t load full installer details.'); }
         if (data){ inst = data; INSTALLER_BY_ID.set(installerId, data); }
       }
 
@@ -1492,9 +1536,7 @@
     window.addEventListener('keydown', (e)=> { if (e.key === 'Escape'){ hideJobModal(); hideInstModal(); } });
 
     // ---------- Init ----------
-    // Show skeleton immediately
     showSkeleton(true);
-    // Load, then filtered load (kept as you had it)
     loadMyJobs().then(() => {
       loadMyJobsWithFilters();
     });

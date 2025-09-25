@@ -607,6 +607,36 @@
         background-position: -200% 0;
       }
     }
+
+    /* ====== SweetAlert2 compact styling (ADDED) ====== */
+    .swal2-popup.swal-compact {
+      border-radius: 16px !important;
+      max-width: 28rem !important; /* keep it short/narrow so layout doesn't jump */
+      padding: 1rem 1rem !important;
+      font-family: "Raleway", system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol" !important;
+    }
+
+    .swal2-title {
+      font-size: 1.1rem !important;
+      line-height: 1.2 !important;
+      font-weight: 700 !important;
+    }
+
+    .swal2-html-container {
+      font-size: 0.92rem !important;
+      color: #374151 !important;
+      margin: 0.5rem 0 0 !important;
+    }
+
+    .swal2-actions .swal2-styled {
+      border-radius: 999px !important;
+      padding: .55rem 1rem !important;
+      font-weight: 700 !important;
+    }
+
+    .swal2-actions {
+      gap: .5rem !important;
+    }
   </style>
 </head>
 
@@ -707,6 +737,8 @@
   <script src="../../general_files/index.js"></script>
   <script type="module" src="../../general_files/session.js"></script>
   <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <!-- SweetAlert2 (ADDED) -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <script type="module">
     const { createClient } = supabase;
@@ -721,6 +753,47 @@
     const statusMenu = document.getElementById("statusMenu");
     const statusLabel = document.getElementById("statusLabel");
     const searchInput = document.getElementById("searchInput");
+
+    // ===== SweetAlert2 helpers (ADDED) =====
+    const swal = Swal.mixin({
+      width: 420,
+      padding: '1rem',
+      customClass: {
+        popup: 'swal-compact'
+      },
+      confirmButtonColor: '#20647c',
+      cancelButtonColor: '#9ca3af',
+      buttonsStyling: true,
+      focusConfirm: false,
+      allowEscapeKey: true,
+      allowOutsideClick: false,
+      showClass: { popup: 'swal2-noanimation' }, // snappy open/close
+      hideClass: { popup: 'swal2-noanimation' },
+      scrollbarPadding: false,   // avoid layout nudge
+      heightAuto: false          // keep viewport height stable
+    });
+
+    const showToast = (title = '', icon = 'success', timer = 1800) =>
+      swal.fire({ title, icon, timer, toast: true, position: 'top', showConfirmButton: false });
+
+    const showNotice = (title = 'Notice', text = '', icon = 'info') =>
+      swal.fire({ icon, title, html: text || undefined, confirmButtonText: 'Okay' });
+
+    const showError = (title = 'Something went wrong', text = '') =>
+      swal.fire({ icon: 'error', title, html: text || 'Please try again.', confirmButtonText: 'Okay' });
+
+    const showConfirm = async (title = 'Are you sure?', text = 'This action cannot be undone.', confirmText = 'Yes, continue') => {
+      const res = await swal.fire({
+        icon: 'question',
+        title,
+        html: text,
+        showCancelButton: true,
+        confirmButtonText: confirmText,
+        cancelButtonText: 'Cancel',
+        reverseButtons: true
+      });
+      return res.isConfirmed;
+    };
 
     // Status presentation map
     const STATUS_MAP = Object.freeze({
@@ -924,8 +997,7 @@
                      <span class="material-icons" aria-hidden="true">${actionIcon}</span>
                      ${actionLabel}
                    </button>`
-            : ``
-          }
+            : ``}
           `;
 
         container.appendChild(card);
@@ -953,8 +1025,10 @@
         if (!id) return;
 
         if (status === "approved") {
-          const ok = confirm(
-            "Mark this application as DONE? This will set its status to 'done', mark the job as 'done', and create a payment record."
+          const ok = await showConfirm(
+            "Mark this application as done?",
+            "This will set the application status to <b>Done</b>, mark the job as <b>Done</b>, and create a payment record.",
+            "Mark as Done"
           );
           if (!ok) return;
 
@@ -981,9 +1055,9 @@
           // 3) Upsert payment record
           const installerId = await getCurrentUserId();
           if (!installerId) {
-            alert("Done status saved, but unable to identify current user for payment record.");
+            await showNotice("Saved as done", "We couldn’t identify your user for the payment record. Please refresh and try again.", "warning");
           } else if (!app.job_id) {
-            alert("Done status saved, but no job_id found to create payment record.");
+            await showNotice("Saved as done", "No related job ID was found to create the payment record.", "warning");
           } else {
             const payload = { installer_id: installerId, job_id: app.job_id };
             const { error: payErr } = await sb
@@ -997,15 +1071,19 @@
               console.error("payments upsert error:", payErr);
               const msg =
                 payErr.code === "42501"
-                  ? "Payment record could not be created due to permissions. Please contact an administrator."
-                  : `Payment record could not be created: ${payErr.message}`;
-              alert(msg);
+                  ? "Payment record couldn’t be created due to permissions. Please contact an administrator."
+                  : `Payment record couldn’t be created: ${esc(payErr.message)}`;
+              await showNotice("Done with a note", msg, "warning");
             } else {
-              alert("Application marked as Done. Job marked as Done. Payment record created/updated.");
+              await showToast("Marked as done");
             }
           }
         } else if (status === "pending" || status === "viewed") {
-          const ok = confirm("Cancel this application? This will permanently delete it.");
+          const ok = await showConfirm(
+            "Cancel this application?",
+            "This will permanently delete your application.",
+            "Cancel Application"
+          );
           if (!ok) return;
 
           const { error } = await sb
@@ -1014,9 +1092,13 @@
             .delete()
             .eq("application_id", id);
           if (error) throw error;
-          alert("Application cancelled and deleted.");
+          await showToast("Application cancelled");
         } else if (status === "overdue") {
-          const ok = confirm("Delete this overdue application? This will permanently delete it.");
+          const ok = await showConfirm(
+            "Delete overdue application?",
+            "This will permanently delete this overdue application.",
+            "Delete"
+          );
           if (!ok) return;
 
           const { error } = await sb
@@ -1025,9 +1107,13 @@
             .delete()
             .eq("application_id", id);
           if (error) throw error;
-          alert("Overdue application deleted.");
+          await showToast("Overdue application deleted");
         } else if (status === "rejected") {
-          const ok = confirm("Delete this rejected application? This will permanently delete it.");
+          const ok = await showConfirm(
+            "Delete rejected application?",
+            "This will permanently delete this rejected application.",
+            "Delete"
+          );
           if (!ok) return;
 
           const { error } = await sb
@@ -1036,9 +1122,9 @@
             .delete()
             .eq("application_id", id);
           if (error) throw error;
-          alert("Rejected application deleted.");
+          await showToast("Rejected application deleted");
         } else if (status === "done") {
-          alert("This application is already done.");
+          await showNotice("Already completed", "This application is already marked as <b>Done</b>.", "info");
           return;
         }
 
@@ -1046,7 +1132,7 @@
         await loadApplications();
       } catch (err) {
         console.error(err);
-        alert("Operation failed: " + (err?.message || "Unknown error"));
+        await showError("Operation failed", esc(err?.message || "Unknown error"));
       }
     }
 
@@ -1124,6 +1210,7 @@
         console.error("Error fetching applications:", appErr);
         setLoading(false);
         container.innerHTML = `<p>Error loading applications: ${esc(appErr.message)}</p>`;
+        await showError("Can’t load applications", esc(appErr.message));
         return;
       }
 
@@ -1153,6 +1240,7 @@
           console.error("Error fetching jobs:", jobErr);
           setLoading(false);
           container.innerHTML = `<p>Error loading jobs: ${esc(jobErr.message)}</p>`;
+          await showError("Can’t load related jobs", esc(jobErr.message));
           return;
         }
 

@@ -130,6 +130,7 @@
       padding: 10px 14px;
       border-bottom: 1px solid #e5e7eb;
       background: #f8fafc;
+      position: relative;
     }
 
     .preview-header h3 {
@@ -181,14 +182,11 @@
     .preview-body {
       padding: 10px;
       overflow: hidden;
-      /* fill the pane; inner scroller handles scroll */
       display: grid;
       place-items: stretch;
-      /* make children stretch to full size */
       background: #fff;
     }
 
-    /* when we add toolbar + content */
     .preview-body.with-toolbar {
       grid-template-rows: auto 1fr;
     }
@@ -197,7 +195,6 @@
       width: 100%;
       height: 100%;
       overflow: auto;
-      /* scroll inside the embed container */
     }
 
     .preview-body iframe,
@@ -209,7 +206,6 @@
       border: 0;
       border-radius: 8px;
       max-height: none;
-      /* allow full height inside the pane */
     }
 
     .preview-placeholder {
@@ -242,7 +238,7 @@
       border-color: #93c5fd;
     }
 
-    /* Modal */
+    /* Modal (legacy kept; no removal) */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -455,7 +451,6 @@
         grid-template-columns: 1fr;
       }
 
-      /* Make each doc item stack nicely */
       main .doc-item {
         padding: 1rem 1rem;
         flex-direction: column;
@@ -504,8 +499,6 @@
     }
 
     @media (max-width: 980px) {
-
-      /* default hidden, slides up when body has .preview-open */
       main .doc-preview {
         position: fixed;
         left: 0;
@@ -701,7 +694,6 @@
       overflow: hidden;
     }
 
-    /* Shimmer animation */
     .sk-shimmer::after,
     .sk-title::after,
     .sk-subtitle::after,
@@ -722,7 +714,6 @@
       }
     }
 
-    /* Mobile: stack grid */
     @media (max-width: 980px) {
       .sk-grid {
         grid-template-columns: 1fr;
@@ -737,6 +728,46 @@
       .sk-drop {
         width: 100%;
       }
+    }
+
+    /* ============== SweetAlert2 compact styling (added) ============== */
+    .swal2-popup.swal-compact {
+      border-radius: 14px !important;
+      padding: 14px 16px !important;
+      width: 26rem !important; /* shorter/smaller so page doesn't resize */
+      font-family: "Raleway", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
+
+    .swal2-title {
+      font-size: 1rem !important;
+      font-weight: 700 !important;
+      color: #0f172a !important;
+    }
+
+    .swal2-html-container {
+      font-size: 0.92rem !important;
+      color: #334155 !important;
+      margin-top: 6px !important;
+    }
+
+    .swal2-actions .swal2-confirm,
+    .swal2-actions .swal2-deny,
+    .swal2-actions .swal2-cancel {
+      border-radius: 10px !important;
+      padding: 6px 12px !important;
+      font-size: 0.92rem !important;
+    }
+
+    .swal2-actions .swal2-confirm {
+      background: #0ea5e9 !important;
+    }
+
+    .swal2-actions .swal2-confirm:hover {
+      background: #0284c7 !important;
+    }
+
+    .swal2-timer-progress-bar {
+      height: 3px !important;
     }
   </style>
 </head>
@@ -919,7 +950,7 @@
   <!-- Backdrop for mobile preview (non-intrusive on desktop) -->
   <div id="previewBackdrop" class="preview-backdrop" aria-hidden="true"></div>
 
-  <!-- Approval Hold Modal -->
+  <!-- Approval Hold Modal (kept; no removal) -->
   <div id="reviewModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="reviewTitleModal"
     aria-describedby="reviewDesc">
     <div class="modal-sheet">
@@ -946,6 +977,8 @@
 
   <!-- Supabase UMD -->
   <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <!-- SweetAlert2 (added) -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <!-- Your shared scripts (if any control the sidebar/menu) -->
   <script src="../../general_files/index.js"></script>
   <script type="module" src="../../general_files/session.js"></script>
@@ -996,18 +1029,85 @@
       }
     });
 
+    /* ================= SweetAlert2 helpers (added) ================= */
+    const Toast = Swal.mixin({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 2200,
+      timerProgressBar: true,
+      customClass: { popup: 'swal-compact' }
+    });
+
+    function notifySuccess(title = "Done", text = "") {
+      Swal.fire({
+        icon: "success",
+        title,
+        text,
+        customClass: { popup: "swal-compact" },
+        confirmButtonText: "OK",
+        allowOutsideClick: true,
+        allowEscapeKey: true
+      });
+    }
+
+    function notifyInfo(title = "Notice", text = "") {
+      Swal.fire({
+        icon: "info",
+        title,
+        text,
+        customClass: { popup: "swal-compact" },
+        confirmButtonText: "OK",
+      });
+    }
+
+    function notifyError(title = "Something went wrong", text = "Please try again.") {
+      Swal.fire({
+        icon: "error",
+        title,
+        text,
+        customClass: { popup: "swal-compact" },
+        confirmButtonText: "OK",
+      });
+    }
+
+    function toastInfo(title = "Working on it…") {
+      Toast.fire({ icon: "info", title });
+    }
+
+    function toastError(title = "Couldn’t complete that action.") {
+      Toast.fire({ icon: "error", title });
+    }
+
+    // Replaces legacy modal UI with compact SweetAlert + auto-redirect
     function showReviewHoldModal() {
-      modalEl.classList.add("show");
+      // Keep legacy behavior (2s redirect), but via SweetAlert
       clearTimeout(autoRedirectTimer);
-      autoRedirectTimer = setTimeout(() => {
+      Swal.fire({
+        icon: "success",
+        title: "Document received",
+        html: "Thanks! Your document is now in review. Redirecting to the review page…",
+        timer: 2000,
+        timerProgressBar: true,
+        showConfirmButton: false,
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        customClass: { popup: "swal-compact" }
+      }).then(() => {
         window.location.href = "review.html";
-      }, 2000);
+      });
     }
     function hideReviewHoldModal() {
+      // Keep the function since the DOM exists; hide legacy modal if ever shown
       modalEl.classList.remove("show");
       clearTimeout(autoRedirectTimer);
+      Swal.close();
     }
     modalCloseEl.addEventListener("click", hideReviewHoldModal);
+    // Keep link active if legacy modal is used somewhere else
+    if (modalGoReviewEl) {
+      modalGoReviewEl.addEventListener("click", () => { /* no-op */ });
+    }
 
     // Utility: extract a nice filename from a path or URL
     function friendlyName(pathOrUrl) {
@@ -1123,7 +1223,6 @@
       const ext = extOf(url);
       const safeUrl = encodeURI(url);
 
-      // Decide best viewer per file type (favor Google Viewer for mobile & PDFs/Office)
       const isImage = [
         "png",
         "jpg",
@@ -1138,26 +1237,19 @@
         ext
       );
 
-      // Defaults for the action buttons
       let openHref = safeUrl;
 
       if (isImage) {
-        // Inline <img> works across devices
         previewBodyEl.innerHTML = `<img src="${safeUrl}" alt="${filename}">`;
-        // PDFs
       } else if (isPdf) {
-        // Try inline first (desktop). Your "Open" button should point to safeUrl for a new-tab fallback.
         previewBodyEl.innerHTML = `<embed src="${safeUrl}#toolbar=1&navpanes=0&scrollbar=1" type="application/pdf">`;
-
-        // Office docs
       } else if (isOffice) {
         const office = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(
           safeUrl
         )}`;
-        openHref = office; // your "Open" button
+        openHref = office;
         previewBodyEl.innerHTML = `<iframe src="${office}" allowfullscreen></iframe>`;
       } else {
-        // Unknown type: simple fallback
         previewBodyEl.innerHTML = `
             <div class="preview-placeholder">
               <p style="margin:0 0 8px 0;">Cannot preview this file type.</p>
@@ -1165,7 +1257,7 @@
             </div>`;
       }
 
-      // Wire the action buttons
+      // Action buttons
       previewOpenEl.href = openHref;
       previewOpenEl.style.display = "inline-grid";
       previewDownloadEl.href = safeUrl;
@@ -1177,19 +1269,16 @@
     function setPreview({ label, value, installerId }) {
       clearPreview();
 
-      // If already an external URL, render directly
       if (isUrl(value)) {
         renderPreviewFromUrl(label, value);
         openMobilePreview();
         return;
       }
 
-      // Try signed URLs first (private buckets); fallback to public (in case bucket is public)
       (async () => {
         try {
           const key = buildStorageKey(value, installerId);
           if (!key) {
-            // fallback to public builder (will still return empty if value is empty)
             const url = publicDocUrl(value, installerId);
             renderPreviewFromUrl(label, url);
             openMobilePreview();
@@ -1199,7 +1288,6 @@
           const { signedViewUrl, signedDownloadUrl, filename } =
             await createSignedPreviewAndDownload(key);
 
-          // Wire actions with signed URLs (render will re-apply open href for non-images)
           previewTitleEl.textContent = label;
           previewOpenEl.href = signedViewUrl;
           previewOpenEl.style.display = "inline-grid";
@@ -1207,7 +1295,6 @@
           previewDownloadEl.setAttribute("download", filename);
           previewDownloadEl.style.display = "inline-grid";
 
-          // Render using the signed view URL (handles image/pdf/office)
           renderPreviewFromUrl(label, signedViewUrl);
         } catch (e) {
           console.warn(
@@ -1378,7 +1465,7 @@
         li.innerHTML = `
             <span class="cert-name">${friendlyName(c)}</span>
             <span class="cert-status ${status}">${status[0].toUpperCase() + status.slice(1)
-          }</span>
+        }</span>
           `;
         li.addEventListener("click", () =>
           showCertificatePreview(installerId, certs, certStatuses, i)
@@ -1410,7 +1497,6 @@
           viewUrl = signedViewUrl;
           dlUrl = signedDownloadUrl;
         } else {
-          // Fallback if it's already a URL or key building failed
           viewUrl = publicDocUrl(path, installerId);
           dlUrl = viewUrl;
         }
@@ -1425,12 +1511,8 @@
 
       const name = friendlyName(path);
 
-      // Draw the actual file first
       renderPreviewFromUrl(name, viewUrl);
 
-      // Wire actions for this selected item
-      // (renderPreviewFromUrl may switch to Google Viewer for PDFs/Office)
-      // Keep download as direct URL so filename works
       previewOpenEl.href =
         document.querySelector(".preview-body iframe")?.src || viewUrl;
       previewOpenEl.style.display = "inline-grid";
@@ -1438,7 +1520,6 @@
       previewDownloadEl.setAttribute("download", name || "file");
       previewDownloadEl.style.display = "inline-grid";
 
-      // Then wrap it with a toolbar and make the body fill the pane
       const currentEmbed = previewBodyEl.innerHTML;
       const canPrev = index > 0;
       const canNext = index < total - 1;
@@ -1463,7 +1544,6 @@
           </div>
         `;
 
-      // Wire prev/next only
       const prevBtn = previewBodyEl.querySelector("#prevCertBtn");
       const nextBtn = previewBodyEl.querySelector("#nextCertBtn");
       if (prevBtn) {
@@ -1528,7 +1608,6 @@
       const meta = wrapper.querySelector(".doc-meta");
       meta.addEventListener("click", () => onClick?.());
 
-      /* NEW: make the whole card open preview (except when clicking the dropzone) */
       wrapper.addEventListener("click", (e) => {
         if (!e.target.closest(".dropzone")) {
           onClick?.();
@@ -1553,6 +1632,7 @@
       } = await sb.auth.getUser();
       if (error) {
         console.warn("auth.getUser error:", error);
+        toastError("Couldn’t load your session.");
         return null;
       }
       return user?.id ?? null;
@@ -1567,6 +1647,7 @@
         .maybeSingle();
       if (error) {
         console.warn("installer_documents fetch error:", error);
+        toastError("Couldn’t load your documents.");
         return null;
       }
       return data;
@@ -1636,10 +1717,11 @@
               renderDocuments(updated, installerId);
               setPreview({ label: it.label, value: storedName, installerId });
 
+              // Friendly SweetAlert
               showReviewHoldModal();
             } catch (e) {
               console.error("Upload failed:", e);
-              alert("Upload failed. Please try again.");
+              notifyError("Upload failed", "Please check your connection and try again.");
             }
           },
           multiple: false,
@@ -1713,7 +1795,6 @@
               ? updated.certificates_status
               : [];
             if (updatedCerts.length) {
-              // Start preview at the first newly added
               showCertificatePreview(
                 installerId,
                 updatedCerts,
@@ -1725,7 +1806,7 @@
             showReviewHoldModal();
           } catch (e) {
             console.error("Upload failed:", e);
-            alert("Upload failed. Please try again.");
+            notifyError("Upload failed", "Please check your connection and try again.");
           }
         },
         multiple: true,
@@ -1762,8 +1843,11 @@
         renderDocuments(row, installerId || "");
 
         clearPreview();
+
+        Toast.fire({ icon: "success", title: "Documents loaded" });
       } catch (err) {
         console.warn("bootstrap error:", err);
+        toastError("Couldn’t load the page fully.");
       } finally {
         // HIDE skeleton, SHOW real content
         document.body.classList.remove("loading");

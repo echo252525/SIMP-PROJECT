@@ -7,143 +7,64 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet" />
   <title>Upload Documents – SIMP Project</title>
   <style>
-    main {
-      margin-top: 1.4rem;
-    }
+    main { margin-top: 1.4rem; }
 
     * {
-      margin: 0;
-      padding: 0;
-      outline: 0;
-      appearance: 0;
-      border: 0;
-      text-decoration: none;
-      box-sizing: border-box;
+      margin: 0; padding: 0; outline: 0; appearance: 0; border: 0;
+      text-decoration: none; box-sizing: border-box;
       font-family: "Raleway", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
     }
 
-    .uploadDiv {
-      max-width: 900px;
-      width: 90%;
-      margin: 2.5rem auto;
-    }
+    .uploadDiv { max-width: 900px; width: 90%; margin: 2.5rem auto; }
+    .labelDiv { display: grid; grid-template-columns: repeat(12, 1fr); gap: 2rem; }
 
-    .labelDiv {
-      display: grid;
-      grid-template-columns: repeat(12, 1fr);
-      gap: 2rem;
-    }
-
-    h2 {
-      margin-bottom: 1rem;
-      text-align: center;
-    }
+    h2 { margin-bottom: 1rem; text-align: center; }
 
     label {
-      font-size: .9rem;
-      grid-column: span 4;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
+      font-size: .9rem; grid-column: span 4;
+      display: flex; flex-direction: column; gap: 6px;
     }
 
     .dropzone {
-      position: relative;
-      border: 2px dashed #cbd5e1;
-      border-radius: 12px;
-      padding: 2rem 1rem;
-      background: #fff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      cursor: pointer;
-      transition: border-color .2s ease, background .2s ease;
+      position: relative; border: 2px dashed #cbd5e1; border-radius: 12px;
+      padding: 2rem 1rem; background: #fff; display: flex;
+      flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; cursor: pointer; transition: border-color .2s ease, background .2s ease;
     }
+    .dropzone:hover { border-color: #20647c; background: #f9fafb; }
 
-    .dropzone:hover {
-      border-color: #20647c;
-      background: #f9fafb;
-    }
-
-    .dropzone .material-icons-sharp {
-      font-size: 36px;
-      color: #20647c;
-      margin-bottom: 10px;
-    }
-
-    .dropzone strong {
-      display: block;
-      font-weight: 600;
-      margin-bottom: 4px;
-      color: #1c2430;
-    }
-
-    .dropzone small {
-      font-size: 0.8rem;
-      color: #6b7280;
-      margin-bottom: 10px;
-    }
+    .dropzone .material-icons-sharp { font-size: 36px; color: #20647c; margin-bottom: 10px; }
+    .dropzone strong { display: block; font-weight: 600; margin-bottom: 4px; color: #1c2430; }
+    .dropzone small { font-size: 0.8rem; color: #6b7280; margin-bottom: 10px; }
 
     .dropzone span.browse {
-      display: inline-block;
-      background: #20a44c;
-      color: #fff;
-      font-size: 0.85rem;
-      padding: 6px 12px;
-      border-radius: 6px;
-      transition: background .2s ease;
+      display: inline-block; background: #20a44c; color: #fff; font-size: 0.85rem;
+      padding: 6px 12px; border-radius: 6px; transition: background .2s ease;
+    }
+    .dropzone span.browse:hover { background: #20647c; }
+
+    input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+
+    /* ADDED: filename chip */
+    .file-name {
+      margin-top: 8px; font-size: 0.8rem; color: #111827; background: #f1f5f9;
+      padding: 6px 10px; border-radius: 8px; max-width: 100%;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     }
 
-    .dropzone span.browse:hover {
-      background: #20647c;
-    }
-
-    input[type="file"] {
-      position: absolute;
-      inset: 0;
-      opacity: 0;
-      cursor: pointer;
-    }
-
-    .actions {
-      margin-top: 20px;
-      display: flex;
-      gap: 10px;
-    }
-
-    button {
-      padding: 10px 16px;
-      border: 0;
-      border-radius: 10px;
-      cursor: pointer;
-      font: inherit;
-    }
-
-    .btn-primary {
-      background: #20a44c;
-      color: white;
-    }
-
-    .btn-primary:hover {
-      background: #20647c;
-    }
+    .actions { margin-top: 20px; display: flex; gap: 10px; }
+    button { padding: 10px 16px; border: 0; border-radius: 10px; cursor: pointer; font: inherit; }
+    .btn-primary { background: #20a44c; color: white; }
+    .btn-primary:hover { background: #20647c; }
 
     /* Tablet (≤1024px) → 2 per row */
-    @media (max-width: 1024px) {
-      label {
-        grid-column: span 6;
-      }
-    }
+    @media (max-width: 1024px) { label { grid-column: span 6; } }
 
     /* Mobile (≤640px) → 1 per row */
-    @media (max-width: 640px) {
-      label {
-        grid-column: span 12;
-      }
-    }
+    @media (max-width: 640px) { label { grid-column: span 12; } }
   </style>
+  <!-- ADDED: SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
@@ -158,6 +79,8 @@
           <small>PDF, PNG, JPG up to 50MB</small>
           <span class="browse">Browse File</span>
           <input id="nbi" type="file" accept="application/pdf,image/*" required />
+          <!-- ADDED -->
+          <div class="file-name" id="nbi-name" aria-live="polite"></div>
         </div>
       </label>
 
@@ -168,6 +91,8 @@
           <small>PDF, PNG, JPG up to 50MB</small>
           <span class="browse">Browse File</span>
           <input id="police" type="file" accept="application/pdf,image/*" required />
+          <!-- ADDED -->
+          <div class="file-name" id="police-name" aria-live="polite"></div>
         </div>
       </label>
 
@@ -178,6 +103,8 @@
           <small>PDF format only</small>
           <span class="browse">Browse File</span>
           <input id="resume" type="file" accept="application/pdf" required />
+          <!-- ADDED -->
+          <div class="file-name" id="resume-name" aria-live="polite"></div>
         </div>
       </label>
 
@@ -188,6 +115,8 @@
           <small>PDF, PNG, JPG</small>
           <span class="browse">Browse File</span>
           <input id="portfolio" type="file" accept="application/pdf,image/*" required />
+          <!-- ADDED -->
+          <div class="file-name" id="portfolio-name" aria-live="polite"></div>
         </div>
       </label>
 
@@ -198,6 +127,8 @@
           <small>Upload multiple files (PDF, PNG, JPG)</small>
           <span class="browse">Browse Files</span>
           <input id="certificates" type="file" accept="application/pdf,image/*" multiple />
+          <!-- ADDED -->
+          <div class="file-name" id="certificates-name" aria-live="polite"></div>
         </div>
       </label>
 
@@ -208,6 +139,8 @@
           <small>PDF, PNG, JPG</small>
           <span class="browse">Browse File</span>
           <input id="tor" type="file" accept="application/pdf,image/*" required />
+          <!-- ADDED -->
+          <div class="file-name" id="tor-name" aria-live="polite"></div>
         </div>
       </label>
     </div>
@@ -219,12 +152,49 @@
 
   <script type="module">
     import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
-
     import { SUPABASE_URL, SUPABASE_ANON_KEY } from "../../../supabase.js";
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+    // ADDED: friendly SweetAlert wrapper (shorter modal, no layout shift)
+    function showNotice(title, text = "", icon = "info", opts = {}) {
+      return Swal.fire({
+        title, text, icon,
+        confirmButtonText: "OK",
+        width: 420,               // a bit shorter
+        heightAuto: false,        // prevent viewport resize jumps
+        scrollbarPadding: false,  // avoid layout shift on body padding
+        showClass: { popup: "swal2-noanimation" }, // snappy open
+        hideClass: { popup: "swal2-noanimation" },
+        ...opts,
+      });
+    }
+
     function sanitizeFileName(fileName) {
       return fileName.replace(/\s/g, "_").replace(/[()]/g, "");
+    }
+
+    // ADDED: display selected filenames under each dropzone
+    function bindFileName(inputId, labelId, multiple = false) {
+      const input = document.getElementById(inputId);
+      const label = document.getElementById(labelId);
+      if (!input || !label) return;
+
+      input.addEventListener("change", () => {
+        if (!input.files || input.files.length === 0) {
+          label.textContent = "";
+          return;
+        }
+        if (!multiple) {
+          label.textContent = input.files[0].name;
+        } else {
+          const names = Array.from(input.files).map(f => f.name);
+          if (names.length <= 2) {
+            label.textContent = names.join(", ");
+          } else {
+            label.textContent = `${names[0]}, ${names[1]} +${names.length - 2} more`;
+          }
+        }
+      });
     }
 
     document.addEventListener("DOMContentLoaded", async () => {
@@ -235,11 +205,23 @@
       } = await supabase.auth.getUser();
 
       if (userError || !user) {
-        alert("You must be logged in to upload documents.");
+        await showNotice(
+          "Sign in required",
+          "Please log in first to upload your documents.",
+          "warning"
+        );
         // this file is in pages/installer_pages/, so go 2 levels up to login.html
         window.location.href = "../../../login.html";
         return;
       }
+
+      // ADDED: bind filename previews
+      bindFileName("nbi", "nbi-name");
+      bindFileName("police", "police-name");
+      bindFileName("resume", "resume-name");
+      bindFileName("portfolio", "portfolio-name");
+      bindFileName("tor", "tor-name");
+      bindFileName("certificates", "certificates-name", true);
 
       const uploadBtn = document.getElementById("uploadBtn");
       uploadBtn.addEventListener("click", async () => {
@@ -252,14 +234,12 @@
           tor: document.getElementById("tor").files[0],
         };
 
-        if (
-          !files.nbi ||
-          !files.police ||
-          !files.resume ||
-          !files.portfolio ||
-          !files.tor
-        ) {
-          alert("Please select all required files!");
+        if (!files.nbi || !files.police || !files.resume || !files.portfolio || !files.tor) {
+          await showNotice(
+            "Missing files",
+            "Please select all required documents before uploading.",
+            "error"
+          );
           return;
         }
 
@@ -276,6 +256,18 @@
             return data.path; // returns "<userId>/<subfolder>/<name>"
           }
 
+          // ADDED: simple progress notice
+          Swal.fire({
+            title: "Uploading…",
+            text: "Please wait while we upload your documents.",
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            didOpen: () => Swal.showLoading(),
+            width: 420,
+            heightAuto: false,
+            scrollbarPadding: false,
+          });
+
           const nbiPath = await uploadFile(files.nbi);
           const policePath = await uploadFile(files.police);
           const resumePath = await uploadFile(files.resume);
@@ -284,10 +276,7 @@
 
           const certificatePaths = [];
           for (let i = 0; i < files.certificates.length; i++) {
-            const p = await uploadFile(
-              files.certificates[i],
-              "certificates/"
-            );
+            const p = await uploadFile(files.certificates[i], "certificates/");
             certificatePaths.push(p);
           }
 
@@ -314,15 +303,27 @@
             .update({ status: "pending" })
             .eq("id", user.id);
           if (statusErr) {
-            // Not fatal; just log it so you can fix any RLS issues later
             console.warn("Status update warning:", statusErr);
           }
+
+          // Success → short message then redirect
+          await showNotice(
+            "Documents submitted",
+            "Thanks! Your documents were uploaded successfully. We’ll notify you after the review.",
+            "success"
+          );
 
           // Go to the “under review” page (same folder)
           window.location.href = "review.html";
         } catch (err) {
           console.error("Error uploading documents:", err);
-          alert("Error uploading files: " + (err.message || "Unknown error"));
+          await showNotice(
+            "Upload failed",
+            (err && err.message)
+              ? `We couldn't finish uploading: ${err.message}`
+              : "We couldn't finish uploading due to an unexpected error.",
+            "error"
+          );
         }
       });
     });

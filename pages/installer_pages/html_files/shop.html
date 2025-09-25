@@ -13,6 +13,10 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet" />
   <link rel="stylesheet" href="../css_files/sideBar.css" />
   <title>Shop</title>
+
+  <!-- SweetAlert2 (ADDED) -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
   <style>
     /* ───────── MAIN-ONLY STYLES ───────── */
     :root {
@@ -446,7 +450,8 @@
       background: var(--card);
       border-radius: 16px 16px 0 0;
       box-shadow: 0 -12px 32px rgba(0, 0, 0, .28);
-      max-height: 80vh;
+      /* slightly shorter so big content doesn't resize the viewport (CHANGED) */
+      max-height: 72vh;
       overflow: auto;
       transform: translateY(8px);
       animation: mmIn .18s ease both;
@@ -489,6 +494,39 @@
       .mmodal {
         display: none !important;
       }
+    }
+
+    /* ───────── SweetAlert2 refinements (ADDED) ───────── */
+    .swal2-popup.simp-alert {
+      width: min(92vw, 380px) !important; /* keep it short so screen won't jump */
+      padding: 1rem 1rem .9rem !important;
+      border-radius: 14px !important;
+    }
+
+    .swal2-title.simp-alert-title {
+      font-size: 1rem !important;
+      line-height: 1.2 !important;
+      margin-top: .2rem !important;
+    }
+
+    .swal2-html-container.simp-alert-text {
+      font-size: .92rem !important;
+      color: #374151 !important;
+      margin-top: .35rem !important;
+    }
+
+    .swal2-styled.simp-confirm {
+      background: var(--brand) !important;
+      border-radius: 10px !important;
+      font-weight: 700 !important;
+    }
+
+    .swal2-styled.simp-cancel {
+      background: #fff !important;
+      color: var(--ink) !important;
+      border: 1px solid #d1d5db !important;
+      border-radius: 10px !important;
+      font-weight: 600 !important;
     }
   </style>
 </head>
@@ -585,8 +623,57 @@
     const detailEl = document.getElementById("detail");
     const placeholderEl = document.getElementById("placeholder");
 
+    // ===== SweetAlert2 helpers (ADDED) =====
+    function showToast({ icon = "success", title = "" } = {}) {
+      Swal.fire({
+        toast: true,
+        position: "top",
+        icon,
+        title,
+        showConfirmButton: false,
+        timer: 2000,
+        timerProgressBar: true,
+        customClass: { popup: "simp-alert" }
+      });
+    }
+
+    function showModalMessage({ icon = "info", title = "", text = "" } = {}) {
+      Swal.fire({
+        icon,
+        title,
+        text,
+        confirmButtonText: "OK",
+        customClass: {
+          popup: "simp-alert",
+          title: "simp-alert-title",
+          htmlContainer: "simp-alert-text",
+          confirmButton: "simp-confirm"
+        }
+      });
+    }
+
+    async function copyToClipboardOrPrompt(linkText) {
+      try {
+        await navigator.clipboard.writeText(linkText);
+        showToast({ icon: "success", title: "Link copied to clipboard." });
+      } catch {
+        // Fallback: show copyable input (short, non-resizing SweetAlert)
+        await Swal.fire({
+          title: "Copy this link",
+          input: "text",
+          inputValue: linkText,
+          confirmButtonText: "Close",
+          customClass: {
+            popup: "simp-alert",
+            title: "simp-alert-title",
+            htmlContainer: "simp-alert-text",
+            confirmButton: "simp-confirm"
+          }
+        });
+      }
+    }
+
     // ===== Signed URL helpers for product images =====
-    // If your bucket name is different, change this:
     const DEFAULT_PRODUCT_BUCKET = "shop_products";
 
     function escapeHtml(s) {
@@ -595,7 +682,6 @@
       ));
     }
 
-    // Parse a Supabase *public* storage URL -> { bucket, path }
     function parsePublicBucketAndPath(publicUrl) {
       try {
         const marker = '/storage/v1/object/public/';
@@ -620,18 +706,15 @@
       if (!ref) return null;
       const s = String(ref).trim();
 
-      // Non-supabase external URL -> passthrough later
       if (/^https?:\/\//i.test(s) && !s.includes('/storage/v1/object/')) {
         return { externalUrl: s };
       }
 
-      // Supabase public URL
       if (s.includes('/storage/v1/object/public/')) {
         const parsed = parsePublicBucketAndPath(s);
         return parsed ? { bucket: parsed.bucket, path: parsed.path } : null;
       }
 
-      // "bucket::path"
       const bi = s.indexOf('::');
       if (bi > 0) {
         let path = s.slice(bi + 2);
@@ -639,7 +722,6 @@
         return { bucket: s.slice(0, bi), path: path.replace(/^\/+/, '') };
       }
 
-      // plain relative path -> default bucket
       let path = s;
       try { path = decodeURIComponent(path); } catch { }
       return { bucket: DEFAULT_PRODUCT_BUCKET, path: path.replace(/^\/+/, '') };
@@ -654,7 +736,6 @@
     async function resolveProductImageSignedUrl(image_url) {
       if (!image_url) return null;
 
-      // External (non-supabase) http(s) -> leave as-is
       if (/^https?:\/\//i.test(image_url) && !image_url.includes('/storage/v1/object/')) {
         return image_url;
       }
@@ -720,6 +801,11 @@
       listEl.innerHTML = "";
       if (!items.length) {
         listEl.innerHTML = `<li style="color:#6b7280; padding:.5rem .25rem;">No published products yet.</li>`;
+        showModalMessage({
+          icon: "info",
+          title: "No products yet",
+          text: "There are no published products at the moment. Please check back later."
+        });
         return;
       }
 
@@ -752,6 +838,8 @@
 
         listEl.appendChild(li);
       });
+
+      showToast({ icon: "success", title: "Products loaded." });
     }
 
     async function renderDetail(p) {
@@ -808,14 +896,9 @@
           </div>
         `;
 
-      // Copy link handler (details panel)
+      // Copy link handler (details panel) — replaced alert/prompt with SweetAlert2 (ADDED)
       detailEl.querySelector("#copyLinkBtn")?.addEventListener("click", async () => {
-        try {
-          await navigator.clipboard.writeText(link);
-          alert("Product link copied!");
-        } catch {
-          prompt("Copy this link:", link);
-        }
+        await copyToClipboardOrPrompt(link);
       });
 
       // === Mobile modal preview (ADDED) ===
@@ -834,11 +917,16 @@
         if (items.length) { await renderDetail(items[0]); }
       } catch (e) {
         listEl.classList.remove("sk-list");
-        listEl.innerHTML = `<li style="color:#b4232c; padding:.5rem .25rem;">Failed to load products: ${escapeHtml(e.message || e)}</li>`;
+        listEl.innerHTML = `<li style="color:#b4232c; padding:.5rem .25rem;">Failed to load products.</li>`;
+        showModalMessage({
+          icon: "error",
+          title: "Couldn’t load products",
+          text: "Please check your internet connection and try again."
+        });
       }
     }
 
-    // ====== Mobile modal helpers (ADDED) ======
+    // ====== Mobile modal helpers (existing + slight tweaks) ======
     const modalEl = document.getElementById("mobileModal");
     const modalContent = document.getElementById("mm-content");
     const modalCloseBtn = modalEl.querySelector(".mm-close");
@@ -848,14 +936,9 @@
 
     function openMobileModal(html, productLink) {
       modalContent.innerHTML = html;
-      // re-bind copy button inside modal
+      // re-bind copy button inside modal — SweetAlert2 version (ADDED)
       modalContent.querySelector("#copyLinkBtn")?.addEventListener("click", async () => {
-        try {
-          await navigator.clipboard.writeText(productLink);
-          alert("Product link copied!");
-        } catch {
-          prompt("Copy this link:", productLink);
-        }
+        await copyToClipboardOrPrompt(productLink);
       });
       modalEl.classList.add("open");
       modalEl.setAttribute("aria-hidden", "false");

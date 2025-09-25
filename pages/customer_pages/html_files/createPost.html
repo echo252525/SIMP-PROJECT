@@ -319,11 +319,19 @@
       border: 1px solid var(--line);
     }
 
+    /* Keep the action buttons visible while scrolling */
     .actions {
+      position: sticky;
+      bottom: 0;
       display: flex;
       gap: 12px;
       justify-content: flex-end;
       margin-top: 10px;
+      padding-top: 10px;
+      padding-bottom: 10px;
+      background: linear-gradient(180deg, rgba(255,255,255,0) 0%, #ffffff 30%);
+      border-top: 1px solid #eef2f7;
+      z-index: 3;
     }
 
     .btn {
@@ -409,6 +417,36 @@
       border-radius: 1px;
       opacity: .7;
     }
+
+    /* --- Compact SweetAlert (added) --- */
+    .swal2-compact-popup {
+      padding: 14px 16px !important;
+      border-radius: 14px !important;
+      max-width: min(92vw, 420px) !important;
+    }
+    .swal2-compact-title {
+      font-size: 18px !important;
+      margin: 2px 0 6px !important;
+      line-height: 1.2 !important;
+      font-weight: 800 !important;
+      color: #0f172a !important;
+    }
+    .swal2-compact-html {
+      font-size: 14px !important;
+      line-height: 1.45 !important;
+      color: #334155 !important;
+    }
+    .swal2-compact-confirm, .swal2-compact-cancel {
+      background: #20a44c; color: #fff; border: 0; border-radius: 999px;
+      padding: 9px 16px; font-weight: 800; margin: 6px 4px;
+    }
+    .swal2-compact-cancel { background: #e5e7eb; color: #111827; }
+    .swal2-icon { margin: 8px auto !important; }
+    .swal2-actions { margin-top: 8px !important; }
+    .swal2-timer-progress-bar { background: rgba(32,100,124,.25) !important; }
+
+    /* Prevent layout jump when modal opens by keeping scrollbar space */
+    html { overflow-y: scroll; }
   </style>
 </head>
 
@@ -658,11 +696,125 @@
   <script src="../../general_files/index.js"></script>
   <script type="module" src="../../general_files/session.js"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <!-- SweetAlert2 (added) -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <script type="module">
     import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
     import { SUPABASE_URL, SUPABASE_ANON_KEY } from "../../../supabase.js";
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    /* ---------- Scroll freeze helpers to prevent page jump on modal (with scrollbar compensation) ---------- */
+    let __scrollY = 0;
+    let __bodyPadRight = "";
+    function getScrollbarWidth() {
+      const d = document.createElement('div');
+      d.style.width = '100px';
+      d.style.height = '100px';
+      d.style.overflow = 'scroll';
+      d.style.position = 'absolute';
+      d.style.top = '-9999px';
+      document.body.appendChild(d);
+      const w = d.offsetWidth - d.clientWidth;
+      document.body.removeChild(d);
+      return w;
+    }
+    function lockBodyScroll() {
+      __scrollY = window.scrollY || window.pageYOffset || 0;
+      const pad = getScrollbarWidth();
+      __bodyPadRight = document.body.style.paddingRight || "";
+      if (pad > 0) document.body.style.paddingRight = pad + "px";
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${__scrollY}px`;
+      document.body.style.left = '0';
+      document.body.style.right = '0';
+      document.body.style.width = '100%';
+    }
+    function unlockBodyScroll() {
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
+      document.body.style.right = '';
+      document.body.style.width = '';
+      document.body.style.paddingRight = __bodyPadRight;
+      window.scrollTo(0, __scrollY);
+    }
+
+    /* ---------- SweetAlert base + toast (compact) ---------- */
+    const swalBase = Swal.mixin({
+      customClass: {
+        popup: 'swal2-compact-popup',
+        confirmButton: 'swal2-compact-confirm',
+        cancelButton: 'swal2-compact-cancel',
+        title: 'swal2-compact-title',
+        htmlContainer: 'swal2-compact-html'
+      },
+      buttonsStyling: false,
+      allowOutsideClick: false,
+      allowEscapeKey: true,
+      backdrop: true,
+      heightAuto: false,
+      returnFocus: false,
+      willOpen: lockBodyScroll,
+      didClose: unlockBodyScroll
+    });
+
+    const toast = Swal.mixin({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 2200,
+      timerProgressBar: true,
+      customClass: { popup: 'swal2-compact-popup' },
+      returnFocus: false
+    });
+
+    /* ---------- Friendly error mapping (non-technical) ---------- */
+    function prettyError(err) {
+      const message = (err?.message || String(err || ''));
+      const raw = message.toLowerCase();
+
+      if (raw.includes('unauthorized') || raw.includes('not logged')) {
+        return 'Please sign in to continue.';
+      }
+      if (raw.includes('user already') || raw.includes('duplicate') || raw.includes('exists')) {
+        return 'This looks like a duplicate. Try changing the title or try again.';
+      }
+      if (raw.includes('bucket') || raw.includes('storage') || raw.includes('not found')) {
+        return 'We couldn’t save your photo right now. Please try again in a moment.';
+      }
+      if (raw.includes('file too large') || raw.includes('payload too large') || raw.includes('limit')) {
+        return 'That image is a bit too large. Choose a smaller file.';
+      }
+      if (raw.includes('network') || raw.includes('fetch') || raw.includes('timeout')) {
+        return 'We couldn’t connect. Please check your internet and try again.';
+      }
+      if (raw.includes('permission') || raw.includes('forbidden')) {
+        return 'You don’t have access to do that.';
+      }
+      if (!message) {
+        return 'Something went wrong. Please try again.';
+      }
+      // Default: show a softened version of the original, without tech jargon
+      return 'Something went wrong. Please try again.';
+    }
+
+    /* ---------- Unified notice wrapper (modals for primary feedback) ---------- */
+    async function showNotice(msg, type = "info", opts = {}) {
+      const common = { html: msg, ...opts };
+      if (type === "success") {
+        return swalBase.fire({ icon: 'success', title: 'Success', ...common, confirmButtonText: 'OK' });
+      } else if (type === "error") {
+        return swalBase.fire({ icon: 'error', title: 'There was a problem', ...common, confirmButtonText: 'OK' });
+      } else if (type === "warning") {
+        return swalBase.fire({ icon: 'warning', title: 'Please check', ...common, confirmButtonText: 'OK' });
+      } else if (type === "info-modal") {
+        return swalBase.fire({ icon: 'info', title: 'Heads up', ...common, confirmButtonText: 'OK' });
+      } else {
+        // Lightweight info remains a toast
+        return toast.fire({ icon: 'info', title: msg });
+      }
+    }
 
     // === Private storage bucket for job pictures (must exist & be "private") ===
     const JOB_PICS_BUCKET = "jobs"; // change if your bucket name is different
@@ -840,13 +992,17 @@
       await setFromCoords(lat, lng, map.getZoom());
     });
     btnLocate.addEventListener("click", () => {
-      if (!navigator.geolocation) { alert("Geolocation not supported by your browser."); return; }
+      if (!navigator.geolocation) {
+        showNotice("Your browser can’t find your location.", "warning");
+        return;
+      }
       navigator.geolocation.getCurrentPosition(
         async (pos) => {
           const { latitude: lat, longitude: lng, accuracy } = pos.coords;
           await setFromCoords(lat, lng, accuracy && accuracy < 60 ? 17 : 16);
+          toast.fire({ icon: "success", title: "Location set" });
         },
-        (err) => alert(`Unable to get your location. (${err?.message || "Unknown error"})`),
+        (err) => showNotice(`We couldn’t get your location. ${err?.message || ""}`.trim(), "error"),
         { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
       );
     });
@@ -891,7 +1047,7 @@
           .eq("job_id", jobId)
           .maybeSingle();
         if (error) {
-          alert("Unable to load job for editing.");
+          showNotice("We couldn’t load this post for editing. Please refresh and try again.", "error");
           editLoaded = true;
           tryFinishLoading();
           return;
@@ -939,6 +1095,7 @@
       diffHidden.value = "3";
       inputDate.setAttribute("min", TODAY_STR);
       setFromCoords(DEFAULT_CENTER[0], DEFAULT_CENTER[1], DEFAULT_ZOOM);
+      toast.fire({ icon: "info", title: "Form cleared" });
     });
 
     // ========= Submit (create or update) =========
@@ -946,10 +1103,16 @@
       e.preventDefault();
 
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { alert("You must be logged in."); return; }
+      if (!user) {
+        showNotice("Please sign in to post a job.", "warning");
+        return;
+      }
 
       const picked = inputDate.value;
-      if (!picked || picked < TODAY_STR) { alert("Please select today or a future date for the job."); return; }
+      if (!picked || picked < TODAY_STR) {
+        showNotice("Please choose today or a future date.", "warning");
+        return;
+      }
 
       let pictureRef = ORIGINAL_JOB?.job_picture_url || null;
 
@@ -959,7 +1122,10 @@
         const safeName = file.name.replace(/[^\w.\-]/g, "_");
         const filePath = `${user.id}/${Date.now()}_${safeName}.${ext}`;
         const { error: upErr } = await supabase.storage.from(JOB_PICS_BUCKET).upload(filePath, file, { upsert: true });
-        if (upErr) { alert("Error uploading picture: " + upErr.message); return; }
+        if (upErr) {
+          showNotice(`We couldn’t upload your photo. ${prettyError(upErr)}`, "error");
+          return;
+        }
         pictureRef = filePath;
 
         try {
@@ -983,6 +1149,11 @@
         job_picture_url: pictureRef,
       };
 
+      if (!payload.job_title || !payload.job_location || !payload.job_date || !payload.job_time || !payload.job_pay) {
+        showNotice("Please complete the required fields.", "warning");
+        return;
+      }
+
       if (!EDIT_MODE) {
         function genCode() {
           const L = Array.from({ length: 4 }, () => String.fromCharCode(65 + Math.floor(Math.random() * 26))).join("");
@@ -991,9 +1162,15 @@
         }
         const job_code = genCode();
         const insertPayload = { ...payload, job_code, posted_by: user.id };
-        const { error } = await supabase.schema("jobs").from("job").insert([insertPayload]);
-        if (error) { alert("Error posting job: " + error.message); return; }
-        alert("Job posted successfully!");
+        const { error } = await supabase
+          .schema("jobs")
+          .from("job")
+          .insert([insertPayload]);
+        if (error) {
+          showNotice(prettyError(error), "error");
+          return;
+        }
+        await showNotice("Your job has been posted.", "success");
         form.reset();
         dzThumb.style.display = "none";
         dzImg.src = "";
@@ -1009,8 +1186,11 @@
           .update({ ...payload, updated_at: new Date().toISOString() })
           .eq("job_id", jobId)
           .eq("posted_by", user.id);
-        if (error) { alert("Error saving changes: " + error.message); return; }
-        alert("Changes saved!");
+        if (error) {
+          showNotice(prettyError(error), "error");
+          return;
+        }
+        await showNotice("Your changes have been saved.", "success");
         window.location.href = "myJobPosts.html";
       }
     });
@@ -1038,7 +1218,11 @@
         sectionCreate.classList.add("hidden");
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return;
-        const { data } = await supabase.schema("jobs").from("job").select("job_title, job_date, job_pay, job_difficulty").eq("posted_by", user.id);
+        const { data } = await supabase
+          .schema("jobs")
+          .from("job")
+          .select("job_title, job_date, job_pay, job_difficulty")
+          .eq("posted_by", user.id);
         postsTable.innerHTML = "";
         (data || []).forEach(job => {
           postsTable.innerHTML += `<tr>

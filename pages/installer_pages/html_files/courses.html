@@ -13,6 +13,41 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet" />
   <link rel="stylesheet" href="../css_files/sideBar.css" />
   <title>Courses</title>
+
+  <!-- ✅ SweetAlert2 (Compact) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" />
+  <style>
+    /* Keep SweetAlert popups short & neat so the page doesn't jump */
+    .swal2-popup.swal2-compact {
+      padding: 0.9rem 1rem !important;
+      border-radius: 14px !important;
+    }
+    .swal2-title {
+      font-size: 1.05rem !important;
+      font-weight: 700 !important;
+    }
+    .swal2-html-container {
+      font-size: 0.95rem !important;
+      line-height: 1.35 !important;
+      margin-top: 0.35rem !important;
+    }
+    .swal2-actions .swal2-confirm,
+    .swal2-actions .swal2-cancel {
+      border-radius: 999px !important;
+      padding: 0.5rem 1rem !important;
+      font-weight: 700 !important;
+    }
+    .swal2-icon {
+      transform: scale(0.9);
+      margin: 0.2rem auto 0.4rem !important;
+    }
+    @media (max-width: 640px) {
+      .swal2-popup.swal2-compact {
+        width: min(90vw, 22rem) !important;
+      }
+    }
+  </style>
+
   <style>
     /* ====== DO NOT CHANGE ANYTHING ====== */
     /* ===== Status pill (MAIN ONLY) ===== */
@@ -696,6 +731,9 @@
   <script src="../../general_files/index.js"></script>
   <script type="module" src="../../general_files/session.js"></script>
 
+  <!-- SweetAlert2 JS -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
   <!-- Supabase client -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -724,6 +762,53 @@
 
     // Track current user level for gating
     let CURRENT_USER_LEVEL = 0;
+
+    // ✅ SweetAlert2 helpers (friendly, compact, no layout jump)
+    const toast = Swal.mixin({
+      toast: true,
+      position: "top-end",
+      showConfirmButton: false,
+      timer: 2400,
+      timerProgressBar: true
+    });
+
+    function notify(type = "info", title = "", text = "") {
+      // Errors & warnings = modal (compact); info/success = toast
+      if (type === "error" || type === "warning") {
+        Swal.fire({
+          icon: type,
+          title: title || (type === "error" ? "Something went wrong" : "Heads up"),
+          text: text || "",
+          width: "28rem",
+          customClass: { popup: "swal2-compact" },
+          confirmButtonText: "OK"
+        });
+      } else {
+        toast.fire({
+          icon: type,
+          title: title || text || ""
+        });
+      }
+    }
+
+    let loadingSwal = null;
+    function notifyLoading(title = "Loading...", text = "Please wait a moment") {
+      loadingSwal = Swal.fire({
+        icon: "info",
+        title,
+        text,
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        didOpen: () => Swal.showLoading(),
+        width: "26rem",
+        customClass: { popup: "swal2-compact" }
+      });
+    }
+
+    function closeLoading() {
+      if (Swal.isVisible()) Swal.close();
+      loadingSwal = null;
+    }
 
     // —————————————————————————————————————————————
     // Installer level badge (optional, uses your public.installer)
@@ -819,8 +904,8 @@
 
       return `
         <div class="course-card" data-id="${escapeHtml(
-        course.id
-      )}" data-slug="${escapeHtml(course.slug)}" data-level="${level}">
+          course.id
+        )}" data-slug="${escapeHtml(course.slug)}" data-level="${level}">
           <div class="course-image">
             <img src="${img}" alt="${title}"/>
           </div>
@@ -837,8 +922,8 @@
           <div class="course-actions">
             <span class="duration">Self-paced</span>
             <button class="enroll-btn" data-course="${escapeHtml(
-        course.slug
-      )}">take</button>
+              course.slug
+            )}">take</button>
           </div>
         </div>
       `;
@@ -850,10 +935,12 @@
           <div class="course-card" style="justify-content:center; text-align:center;">
             <div>
               <h3 style="margin:0 0 6px;">No courses found</h3>
-              <p style="margin:0; color:#6b7280;">Try adjusting your search or filters.</p>
+              <p style="margin:0; color:#6b7280;">Try a different keyword or skill filter.</p>
             </div>
           </div>
         `;
+        // Friendly toast (short, non-intrusive)
+        notify("info", "No courses matched your filters.");
         return;
       }
       coursesListEl.innerHTML = courses.map(courseCardHTML).join("");
@@ -872,7 +959,12 @@
           // rule: you can take courses up to (your level + 1)
           if (courseLevel > CURRENT_USER_LEVEL + 1) {
             const mustTake = CURRENT_USER_LEVEL + 1;
-            alert(`Please take Level ${mustTake} first.`);
+            // 🔁 Replaced alert(...) with a compact SweetAlert2 warning
+            notify(
+              "warning",
+              "Course locked",
+              `Please complete a Level ${mustTake} course first to unlock this level.`
+            );
             return;
           }
 
@@ -989,6 +1081,7 @@
         e.preventDefault();
         currentTag = a.getAttribute("data-filter-skill") || "";
         await reloadCourses();
+        notify("success", `Filtered by: ${currentTag}`);
       });
     });
 
@@ -998,6 +1091,7 @@
         e.preventDefault();
         currentTag = "";
         await reloadCourses();
+        notify("success", "Showing all courses");
       });
 
     async function reloadCourses() {
@@ -1005,7 +1099,11 @@
         skeletonsEl.classList.remove("hidden");
         coursesListEl.innerHTML = "";
         const q = searchInput.value.trim();
+
+        // Optional: brief loading (non-blocking)
+        // notifyLoading("Loading courses", "Fetching the latest list for you...");
         const courses = await fetchCourses({ q, tag: currentTag });
+        // closeLoading();
 
         // Pre-load completion map & total points BEFORE rendering decorations
         const courseIds = courses.map((c) => c.id);
@@ -1024,11 +1122,17 @@
             <div>
               <h3 style="margin:0 0 6px; color:#b91c1c;">Failed to load courses</h3>
               <p style="margin:0; color:#6b7280;">${escapeHtml(
-          err.message || "Unknown error"
-        )}</p>
+                err.message || "An unexpected error occurred while fetching courses."
+              )}</p>
             </div>
           </div>
         `;
+        // ✅ Friendly, compact error modal
+        notify(
+          "error",
+          "We couldn’t load courses",
+          "Please check your connection and try again."
+        );
       } finally {
         skeletonsEl.classList.add("hidden");
       }

@@ -9,6 +9,41 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="../css_files/sideBar.css" />
+
+    <!-- ✅ SweetAlert2 (compact) -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
+    />
+    <style>
+      /* Keep SweetAlert popups short so the page never "jumps" */
+      .swal2-popup.swal2-compact {
+        padding: 0.9rem 1rem !important;
+        border-radius: 14px !important;
+        width: min(28rem, 92vw) !important;
+      }
+      .swal2-title {
+        font-size: 1.05rem !important;
+        font-weight: 700 !important;
+        margin-bottom: 0.2rem !important;
+      }
+      .swal2-html-container {
+        font-size: 0.95rem !important;
+        line-height: 1.35 !important;
+        margin-top: 0.25rem !important;
+      }
+      .swal2-icon {
+        transform: scale(0.9);
+        margin: 0.15rem auto 0.35rem !important;
+      }
+      .swal2-actions .swal2-confirm,
+      .swal2-actions .swal2-cancel {
+        border-radius: 999px !important;
+        padding: 0.5rem 1rem !important;
+        font-weight: 700 !important;
+      }
+    </style>
+
     <style>
       :root {
         --ink: #1c2430;
@@ -236,12 +271,49 @@
     <script src="../../general_files/index.js"></script>
     <script type="module" src="../../general_files/session.js"></script>
 
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script type="module">
       import { SUPABASE_URL, SUPABASE_ANON_KEY } from "../../../supabase.js";
       const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       const sbCourses = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { db: { schema: "courses" } });
+
+      // ✅ SweetAlert2 helpers (compact + friendly)
+      const toast = Swal.mixin({
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 2400,
+        timerProgressBar: true
+      });
+
+      function notify(type = "info", title = "", text = "") {
+        if (type === "error" || type === "warning") {
+          return Swal.fire({
+            icon: type,
+            title: title || (type === "error" ? "Something went wrong" : "Heads up"),
+            text: text || "",
+            customClass: { popup: "swal2-compact" },
+            confirmButtonText: "OK"
+          });
+        }
+        return toast.fire({ icon: type, title: title || text || "" });
+      }
+
+      function confirmModal(title, text) {
+        return Swal.fire({
+          icon: "question",
+          title,
+          text,
+          showCancelButton: true,
+          confirmButtonText: "Continue",
+          cancelButtonText: "Cancel",
+          customClass: { popup: "swal2-compact" }
+        });
+      }
 
       // UI elements
       const courseTitle = document.getElementById("courseTitle");
@@ -317,7 +389,13 @@
       async function requireUser() {
         const { data: { user } } = await sb.auth.getUser();
         if (!user) {
-          alert("Please sign in to take the course.");
+          await Swal.fire({
+            icon: "warning",
+            title: "Sign in required",
+            text: "Please sign in to take this course.",
+            confirmButtonText: "Go to Login",
+            customClass: { popup: "swal2-compact" }
+          });
           window.location.href = "../auth/login.html";
           return null;
         }
@@ -332,7 +410,7 @@
           .eq("is_published", true)
           .maybeSingle();
 
-        if (error || !data) throw new Error("Course not found or not published.");
+        if (error || !data) throw new Error("This course was not found or isn’t published yet.");
         return data;
       }
 
@@ -481,12 +559,12 @@
 
             const header = el("div", { class: "row", style: "justify-content:space-between; align-items:center;" }, [
               el("div", {}, [
-                el("div", { class: "quiz-title", html: esc(qz?.title || "Quiz") }),
+                el("div", { class: "quiz-title", html: esc(qz?.title || "Quiz") } ),
                 /* Per-quiz passing score shown */
-                el("div", { class: "tiny", html: `Passing: ${qz?.passing_score ?? 70}% • ${qs.length} question(s)` }),
+                el("div", { class: "tiny", html: `Passing: ${qz?.passing_score ?? 70}% • ${qs.length} question(s)` } ),
               ]),
               el("div", { class: "tiny" }, [
-                el("span", { class: "badge", id: `timer_label_${qzId}` , html: `Timer: —` }),
+                el("span", { class: "badge", id: `timer_label_${qzId}` , html: `Timer: —` } ),
               ])
             ]);
             block.appendChild(header);
@@ -647,6 +725,12 @@
 
         startBtn.disabled = true;
         finishBtn.disabled = true;
+
+        if (auto) {
+          notify("warning", "Time's up", "Your answers for this quiz have been recorded.");
+        } else {
+          notify("success", "Quiz finished");
+        }
       }
 
       // SCORING ------------------------------------------------------
@@ -693,7 +777,7 @@
         if (pct < combinedPassing) return { saved: false, leveled: false };
 
         const { data: { user } } = await sb.auth.getUser();
-        if (!user) throw new Error("Not signed in.");
+        if (!user) throw new Error("You must be signed in.");
 
         // Check if a completion row already exists (to know if this is an insert)
         const { data: existingRow, error: existErr } = await sbCourses
@@ -704,7 +788,6 @@
           .maybeSingle();
 
         if (existErr) {
-          // If PostgREST returns an error that isn't "no rows", surface it.
           console.warn("Existence check error:", existErr);
         }
 
@@ -717,7 +800,7 @@
             { course_id: courseId, score: pct },
             { onConflict: "installer_id,course_id" }
           )
-          .select("course_id"); // forces mutation to return; not used further
+          .select("course_id");
 
         if (upErr) throw upErr;
 
@@ -778,11 +861,15 @@
             const { saved, leveled } = await saveCompletionIfPass(course.id, pct, quiz.passing_score ?? 70, course.level);
             quizResult.classList.add("pass");
             quizResult.innerHTML += `<div class="muted">✅ Passed. ${saved ? "Your completion was recorded." : ""}${leveled ? " • Level +1" : ""}</div>`;
+            notify("success", "Nice work!", "You passed this quiz.");
           } else {
             quizResult.classList.add("fail");
-            quizResult.innerHTML += `<div class="muted">❌ Better luck next time. Your result was not recorded.</div>`;
+            quizResult.innerHTML += `<div class="muted">❌ Almost there—review and try again when ready.</div>`;
+            notify("warning", "Not quite passed", "Give it another try after a quick review.");
           }
-        } catch(e){ alert(e.message || "Failed to submit quiz."); }
+        } catch(e){
+          notify("error", "Submission failed", e.message || "We couldn’t save your quiz result.");
+        }
       }
       submitBtn?.addEventListener("click", () => gradeAndSubmit(false));
 
@@ -824,6 +911,7 @@
         currentIdx = 0;
         syncPager();
         window.scrollTo({ top: 0, behavior: "smooth" });
+        notify("info", "Course reset", "You can retake the quizzes anytime.");
       }
 
       // Final submit (last section)
@@ -848,9 +936,10 @@
             const { saved, leveled } = await saveCompletionIfPass(course.id, pct, combinedPassing, course.level);
             quizResult.classList.add("pass");
             quizResult.innerHTML += `<div class="muted">✅ Passed. ${saved ? "Your completion was recorded." : ""}${leveled ? " • Level +1" : ""}</div>`;
+            notify("success", "Congratulations!", "You passed the course.");
           } else {
             quizResult.classList.add("fail");
-            quizResult.innerHTML += `<div class="muted">❌ Better luck next time. Your result was not recorded.</div>`;
+            quizResult.innerHTML += `<div class="muted">❌ Not yet passed. Review the sections and try again.</div>`;
             // NEW: Retake button on fail
             quizResult.innerHTML += `
               <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;">
@@ -859,6 +948,7 @@
               </div>
             `;
             quizResult.scrollIntoView({ behavior: "smooth", block: "center" });
+            notify("warning", "Keep going!", "You’re close—give it another shot.");
             return; // keep early return so success branch below doesn't duplicate links
           }
 
@@ -871,7 +961,7 @@
 
           quizResult.scrollIntoView({ behavior: "smooth", block: "center" });
         } catch (e) {
-          alert(e.message || "Failed to save completion.");
+          notify("error", "Save failed", e.message || "We couldn’t record your completion.");
         }
       });
 
@@ -893,7 +983,17 @@
         await loadInstallerLevel();
 
         const slug = qs("course");
-        if (!slug) { alert("Missing course slug."); return; }
+        if (!slug) {
+          await Swal.fire({
+            icon: "warning",
+            title: "Missing course link",
+            text: "We couldn’t find which course to open.",
+            confirmButtonText: "Back to Courses",
+            customClass: { popup: "swal2-compact" }
+          });
+          window.location.href = "courses.html";
+          return;
+        }
 
         try {
           course = await loadCourse(slug);
@@ -944,11 +1044,20 @@
 
             sectionsCard.style.display = "";
             renderAllSectionPages();
+            notify("success", "Course loaded");
+          } else {
+            notify("info", "No sections yet", "This course has no content to display.");
           }
 
           // Legacy single-quiz block remains hidden by default.
         } catch (e) {
-          alert(e.message || "Failed to load course.");
+          await Swal.fire({
+            icon: "error",
+            title: "Unable to open course",
+            text: e.message || "Please try again later.",
+            confirmButtonText: "Back to Courses",
+            customClass: { popup: "swal2-compact" }
+          });
           window.location.href = "courses.html";
         }
       })();

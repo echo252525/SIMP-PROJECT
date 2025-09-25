@@ -20,14 +20,12 @@
       --grad: linear-gradient(135deg, #20a44c, #20647c);
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
-    html,
-    body {
-      height: 100%;
-    }
+    /* Keep scrollbar space to prevent layout shift when modals open */
+    html { height: 100%; overflow-y: scroll; }
+
+    html, body { height: 100%; }
 
     body {
       margin: 0;
@@ -66,11 +64,7 @@
       background: #fff;
     }
 
-    .auth-inner {
-      position: relative;
-      height: 100%;
-      width: 100%;
-    }
+    .auth-inner { position: relative; height: 100%; width: 100%; }
 
     .columns {
       position: absolute;
@@ -101,23 +95,10 @@
       text-align: center;
     }
 
-    .row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px
-    }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px }
+    .row-1 { display: grid; grid-template-columns: 1fr; gap: 12px }
 
-    .row-1 {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 12px
-    }
-
-    label {
-      font-size: 13px;
-      color: #374151;
-      display: block
-    }
+    label { font-size: 13px; color: #374151; display: block }
 
     input {
       width: 100%;
@@ -126,354 +107,110 @@
       border: 1px solid #d7dee7;
       border-radius: 10px;
       outline: none;
-      transition: border-color .2s, box-shadow .2s;
+      transition: border-color .2s, box-shadow .2s, background .2s;
       background: #f1f3f6;
     }
-
     input:focus {
       border-color: #9ac7d7;
       box-shadow: 0 0 0 3px rgba(32, 100, 124, .12);
       background: #fff
     }
 
-    .actions {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin-top: 14px
-    }
+    .actions { display: flex; justify-content: center; gap: 10px; margin-top: 14px }
 
-    .btn {
-      border: 0;
-      border-radius: 999px;
-      cursor: pointer;
-      padding: 12px 26px;
-      font-weight: 800
-    }
+    .btn { border: 0; border-radius: 999px; cursor: pointer; padding: 12px 26px; font-weight: 800 }
+    .btn-primary { background: #20a44c; color: #fff }
+    .btn-primary:hover { filter: brightness(.96) }
 
-    .btn-primary {
-      background: #20a44c;
-      color: #fff
-    }
+    .hint { font-size: 12px; color: var(--muted); text-align: center; margin-top: 10px }
 
-    .btn-primary:hover {
-      filter: brightness(.96)
-    }
+    /* old notice kept for fallback but visually hidden now */
+    .notice { display: none; }
 
-    .hint {
-      font-size: 12px;
-      color: var(--muted);
-      text-align: center;
-      margin-top: 10px
-    }
-
-    .notice {
-      background: #fef3c7;
-      border: 1px solid #f59e0b;
-      color: #92400e;
-      padding: 10px 12px;
-      border-radius: 10px;
-      margin: 12px 0
-    }
-
-    .success {
-      background: #ecfdf5;
-      border: 1px solid #10b981;
-      color: #065f46
-    }
-
-    .error {
-      background: #fee2e2;
-      border: 1px solid #ef4444;
-      color: #991b1b
-    }
-
-    .hidden {
-      display: none
-    }
-
-    #emailConfirmModal {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, .5);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 50
-    }
-
-    #emailConfirmModal .modal-content {
-      background: #fff;
-      padding: 24px;
-      border-radius: 12px;
-      text-align: center;
-      max-width: 400px
-    }
-
-    /* ===== Overlay panel that SWAPS sides (desktop) ===== */
+    /* ===== Overlay (desktop) ===== */
     .overlay {
       position: absolute;
-      top: 0;
-      left: 50%;
-      width: 50%;
-      height: 100%;
+      top: 0; left: 50%;
+      width: 50%; height: 100%;
       pointer-events: none;
       transition: transform .6s cubic-bezier(.22, .61, .36, 1);
       z-index: 2;
     }
-
     .overlay .block {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--grad);
-      color: #fff;
-      text-align: center;
-      padding: 34px;
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--grad); color: #fff; text-align: center; padding: 34px;
     }
-
-    .overlay .content {
-      max-width: 420px
-    }
-
-    .overlay h2 {
-      font-size: 40px;
-      line-height: 1.05;
-      margin: 0 0 12px;
-      font-weight: 900
-    }
-
-    .overlay p {
-      opacity: .95;
-      margin: 0 0 28px;
-      font-size: 16px;
-      line-height: 1.5
-    }
+    .overlay .content { max-width: 420px }
+    .overlay h2 { font-size: 40px; line-height: 1.05; margin: 0 0 12px; font-weight: 900 }
+    .overlay p { opacity: .95; margin: 0 0 28px; font-size: 16px; line-height: 1.5 }
 
     .btn-ghost {
       border: 2px solid rgba(255, 255, 255, .9);
-      background: transparent;
-      color: #fff;
-      border-radius: 999px;
-      padding: 12px 28px;
-      font-weight: 800;
-      pointer-events: auto;
+      background: transparent; color: #fff;
+      border-radius: 999px; padding: 12px 28px; font-weight: 800; pointer-events: auto;
     }
+    .btn-ghost:hover { background: rgba(255, 255, 255, .12) }
 
-    .btn-ghost:hover {
-      background: rgba(255, 255, 255, .12)
-    }
+    .adminLoginDiv:not(.mode-signup) .overlay { transform: translateX(0%); }
+    .adminLoginDiv.mode-signup .overlay { transform: translateX(-100%); }
 
-    /* Default: LOGIN view — overlay sits on RIGHT half */
-    .adminLoginDiv:not(.mode-signup) .overlay {
-      transform: translateX(0%);
-    }
+    .welcome, .hello { display: none }
+    .adminLoginDiv.mode-signup .welcome { display: block }
+    .adminLoginDiv:not(.mode-signup) .hello { display: block }
 
-    /* SIGNUP view — overlay slides LEFT to cover the left half */
-    .adminLoginDiv.mode-signup .overlay {
-      transform: translateX(-100%);
-    }
+    .form-login, .form-signup { transition: opacity .45s ease, transform .45s ease; }
+    .form-login { opacity: 1; transform: translateX(0px); }
+    .form-signup { opacity: 0; transform: translateX(20px); pointer-events: none; }
+    .mode-signup .form-login { opacity: 0; transform: translateX(-20px); pointer-events: none; }
+    .mode-signup .form-signup { opacity: 1; transform: translateX(0px); pointer-events: auto; }
 
-    /* Swap overlay texts depending on mode */
-    .welcome,
-    .hello {
-      display: none
-    }
-
-    .adminLoginDiv.mode-signup .welcome {
-      display: block
-    }
-
-    .adminLoginDiv:not(.mode-signup) .hello {
-      display: block
-    }
-
-    /* Form visibility transitions (desktop fade) */
-    .form-login,
-    .form-signup {
-      transition: opacity .45s ease, transform .45s ease;
-    }
-
-    .form-login {
-      opacity: 1;
-      transform: translateX(0px);
-    }
-
-    .form-signup {
-      opacity: 0;
-      transform: translateX(20px);
-      pointer-events: none;
-    }
-
-    .mode-signup .form-login {
-      opacity: 0;
-      transform: translateX(-20px);
-      pointer-events: none;
-    }
-
-    .mode-signup .form-signup {
-      opacity: 1;
-      transform: translateX(0px);
-      pointer-events: auto;
-    }
-
-    /* Keep original tabs (hidden visually) for compatibility */
-    .tabs {
-      display: none
-    }
-
-    /* ---------- MOBILE / SMALL SCREENS ---------- */
-    /* Hidden by default on desktop */
-    .mobile-tabs {
-      display: none;
-    }
+    .tabs { display: none }
+    .mobile-tabs { display: none; }
 
     @media (max-width: 900px) {
-      .auth-inner {
-        position: relative;
-        display: grid;
-        grid-template-rows: auto 1fr;
-      }
+      .auth-inner { position: relative; display: grid; grid-template-rows: auto 1fr; }
+      .adminLoginDiv { width: min(560px, 100vw); height: 450px; margin: 50px; }
+      .adminLoginDiv .backBtn { top: -30px; left: 0%; z-index: 5; }
 
-      .adminLoginDiv {
-        width: min(560px, 100vw);
-        height: 450px;
-        margin: 50px;
-        /* taller for stacked UI */
-      }
-
-      .adminLoginDiv .backBtn {
-        top: -30px;
-        left: 0%;
-        z-index: 5;
-      }
-
-      /* Show compact top tabs for mobile */
       .mobile-tabs {
-        position: static;
-        margin: 12px;
-        z-index: 0;
-        display: none;
-        /* becomes visible only on mobile */
-        grid-template-columns: 1fr 1fr;
-        gap: 8px;
-        padding: 6px;
-        border-radius: 999px;
-        background-color: #f5f7fb;
-        border: 1px solid #e6e8ee;
-        box-shadow: 0 8px 20px rgba(17, 24, 39, .08);
+        position: static; margin: 12px; z-index: 0; display: none;
+        grid-template-columns: 1fr 1fr; gap: 8px; padding: 6px; border-radius: 999px;
+        background-color: #f5f7fb; border: 1px solid #e6e8ee; box-shadow: 0 8px 20px rgba(17, 24, 39, .08);
       }
-
       .seg {
-        font-weight: 800;
-        font-size: 13px;
-        padding: 10px 0;
-        border-radius: 999px;
-        border: none;
-        color: #334155;
-        background-color: #f5f7fb;
-        cursor: pointer;
+        font-weight: 800; font-size: 13px; padding: 10px 0; border-radius: 999px;
+        border: none; color: #334155; background-color: #f5f7fb; cursor: pointer;
       }
+      .seg.active { color: #fff; border-color: transparent; background: linear-gradient(135deg, #20a44c, #20647c); }
 
-      .seg.active {
-        color: #fff;
-        border-color: transparent;
-        background: linear-gradient(135deg, #20a44c, #20647c);
-      }
+      .overlay { display: none }
 
-      /* Hide overlay on mobile (we’ll slide the forms themselves) */
-      .overlay {
-        display: none
-      }
-
-      /* Make the two panels sit side-by-side horizontally and slide */
       .columns {
-        position: relative;
-        /* <-- was absolute */
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: auto;
-        height: auto;
-        /* let grid control height */
-        min-height: 0;
-        /* allow child overflow-y to size correctly */
-        display: flex;
-        width: 200%;
-        transition: transform .45s ease;
-        /* no calc(100% - 56px) needed anymore */
+        position: relative; top: 0; left: 0; right: 0; bottom: auto; height: auto; min-height: 0;
+        display: flex; width: 200%; transition: transform .45s ease;
       }
-
       .form-side {
-        overflow-y: auto;
-        /* <-- was overflow-y: auto; remove inner scroller */
-        align-items: flex-start;
-        padding: 20px 18px 22px;
-        width: 50%;
-        margin-top: 20px;
+        overflow-y: auto; align-items: flex-start; padding: 20px 18px 22px;
+        width: 50%; margin-top: 20px;
       }
+      .panel-shell { max-width: 520px; margin: 8px auto 0px; }
+      .panel-shell h3 { margin-top: 0; }
 
-      .panel-shell {
-        max-width: 520px;
-        margin: 8px auto 0px;
-      }
+      .row { grid-template-columns: 1fr; gap: 10px }
+      input { padding: 11px 12px; border-radius: 12px; }
 
-      /* 5) Remove heading bump that was compensating for the old overlay */
-      .panel-shell h3 {
-        margin-top: 0;
-        /* was 90px */
-      }
+      .adminLoginDiv:not(.mode-signup) .columns { transform: translateX(0%); }
+      .adminLoginDiv.mode-signup .columns { transform: translateX(-50%); }
 
-      .row {
-        grid-template-columns: 1fr;
-        gap: 10px
-      }
-
-      /* stack inputs on mobile */
-      input {
-        padding: 11px 12px;
-        border-radius: 12px;
-      }
-
-      /* Slide the whole strip left/right to reveal one panel */
-      .adminLoginDiv:not(.mode-signup) .columns {
-        transform: translateX(0%);
-      }
-
-      .adminLoginDiv.mode-signup .columns {
-        transform: translateX(-50%);
-      }
-
-      /* Don’t fade forms on mobile; keep full opacity for clarity while sliding */
-      .form-login,
-      .form-signup {
-        opacity: 1 !important;
-        transform: none !important;
-        pointer-events: auto !important;
-      }
-
-      /* Softer card radius on mobile */
-      .auth-card {
-        border-radius: 16px;
-      }
+      .form-login, .form-signup { opacity: 1 !important; transform: none !important; pointer-events: auto !important; }
+      .auth-card { border-radius: 16px; }
     }
 
-    /* Extra tiny phones */
     @media (max-width: 420px) {
-      .adminLoginDiv {
-        height: 500px;
-      }
-
-      .panel-shell h3 {
-        font-size: 24px;
-      }
-
-      .seg {
-        font-size: 12px;
-        padding: 9px 0;
-      }
+      .adminLoginDiv { height: 500px; }
+      .panel-shell h3 { font-size: 24px; }
+      .seg { font-size: 12px; padding: 9px 0; }
     }
   </style>
 </head>
@@ -483,7 +220,7 @@
     <div class="auth-card">
       <div class="auth-inner">
 
-        <!-- MOBILE segmented control (auto-hidden on desktop, visible under 900px) -->
+        <!-- MOBILE segmented control (auto-hidden on desktop) -->
         <div class="mobile-tabs">
           <button id="mobSignIn" class="seg active" type="button">Sign in</button>
           <button id="mobSignUp" class="seg" type="button">Sign up</button>
@@ -494,12 +231,11 @@
           <div class="form-side">
             <div class="panel-shell form-login">
               <div>
-                <button class="backBtn" onclick="history.back()"><span
-                    class="material-icons-sharp">arrow_back</span></button>
+                <button class="backBtn" onclick="history.back()"><span class="material-icons-sharp">arrow_back</span></button>
               </div>
               <h3>Sign in</h3>
 
-              <div id="notice" class="notice hidden"></div>
+              <div id="notice" class="notice"></div>
 
               <div class="row-1">
                 <label>Email
@@ -519,8 +255,7 @@
           <!-- RIGHT: Sign up form -->
           <div class="form-side">
             <div class="panel-shell form-signup">
-              <button class="backBtn" onclick="history.back()"><span
-                  class="material-icons-sharp">arrow_back</span></button>
+              <button class="backBtn" onclick="history.back()"><span class="material-icons-sharp">arrow_back</span></button>
               <h3>Create Account</h3>
 
               <div class="row">
@@ -583,8 +318,8 @@
       </div>
     </div>
 
-    <!-- Modal (kept) -->
-    <div id="emailConfirmModal">
+    <!-- Kept (unused now; SweetAlert handles email confirm) -->
+    <div id="emailConfirmModal" style="display:none">
       <div class="modal-content">
         <h3>Confirm Your Email</h3>
         <p>We’ve sent a confirmation link to your email. Please check your inbox and click the link to activate your
@@ -594,17 +329,166 @@
     </div>
   </div>
 
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
   <script type="module">
     import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
     import { SUPABASE_URL, SUPABASE_ANON_KEY } from "/supabase.js";
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // Notices
-    const noticeEl = document.getElementById("notice");
-    function showNotice(msg, type = "") { noticeEl.textContent = msg; noticeEl.classList.remove("hidden", "success", "error"); if (type === "success") noticeEl.classList.add("success"); if (type === "error") noticeEl.classList.add("error"); }
-    function hideNotice() { noticeEl.classList.add("hidden"); noticeEl.classList.remove("success", "error"); noticeEl.textContent = ""; }
+    // ---------- Scroll freeze helpers to prevent page jump ----------
+    let __scrollY = 0;
+    function lockBodyScroll() {
+      __scrollY = window.scrollY || window.pageYOffset || 0;
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${__scrollY}px`;
+      document.body.style.left = '0';
+      document.body.style.right = '0';
+      document.body.style.width = '100%';
+    }
+    function unlockBodyScroll() {
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
+      document.body.style.right = '';
+      document.body.style.width = '';
+      window.scrollTo(0, __scrollY);
+    }
 
-    // Mode toggle
+    // ---------- SweetAlert compact styling (shorter popups) ----------
+    const swalBase = Swal.mixin({
+      customClass: {
+        popup: 'swal2-compact-popup',
+        confirmButton: 'swal2-compact-confirm',
+        cancelButton: 'swal2-compact-cancel',
+        title: 'swal2-compact-title',
+        htmlContainer: 'swal2-compact-html'
+      },
+      buttonsStyling: false,
+      allowOutsideClick: false,
+      allowEscapeKey: true,
+      backdrop: true,
+      heightAuto: false, // prevent layout jump on some browsers
+      returnFocus: false,
+      willOpen: lockBodyScroll,
+      didClose: unlockBodyScroll
+    });
+
+    const toast = Swal.mixin({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 2400,
+      timerProgressBar: true,
+      customClass: { popup: 'swal2-compact-popup' },
+      returnFocus: false
+    });
+
+    // Inject minimal compact CSS for the modals (shorter + stable)
+    (function injectSwalCompactCSS() {
+      const css = `
+        .swal2-compact-popup {
+          padding: 14px 16px !important;
+          border-radius: 14px !important;
+          max-width: min(92vw, 420px) !important;
+        }
+        .swal2-compact-title {
+          font-size: 18px !important;
+          margin: 2px 0 6px !important;
+          line-height: 1.2 !important;
+          font-weight: 800 !important;
+          color: #0f172a !important;
+        }
+        .swal2-compact-html {
+          font-size: 14px !important;
+          line-height: 1.45 !important;
+          color: #334155 !important;
+        }
+        .swal2-compact-confirm, .swal2-compact-cancel {
+          background: #20a44c; color: #fff; border: 0; border-radius: 999px;
+          padding: 9px 16px; font-weight: 800; margin: 6px 4px;
+        }
+        .swal2-compact-cancel { background: #e5e7eb; color: #111827; }
+        .swal2-icon { margin: 8px auto !important; }
+        .swal2-actions { margin-top: 8px !important; }
+        .swal2-timer-progress-bar { background: rgba(32,100,124,.25) !important; }
+      `;
+      const el = document.createElement('style');
+      el.innerHTML = css;
+      document.head.appendChild(el);
+    })();
+
+    // ---------- Friendly error mapping (expanded) ----------
+    function prettyError(err) {
+      const message = (err?.message || String(err || 'Unknown error'));
+      const raw = message.toLowerCase();
+
+      if (raw.includes('invalid login') || raw.includes('invalid credentials')) {
+        return 'Email or password is incorrect.';
+      }
+      if (raw.includes('email not confirmed') || raw.includes('confirm')) {
+        return 'Please confirm your email before signing in.';
+      }
+      if (raw.includes('over_email_send_rate_limit')) {
+        return 'We’ve sent too many emails recently. Please try again in a few minutes.';
+      }
+      if (raw.includes('user already registered') || raw.includes('already exists')) {
+        return 'There’s already an account with this email.';
+      }
+      if (raw.includes('password')) {
+        return 'Password does not meet the requirements. Please try a stronger one.';
+      }
+      if (raw.includes('network') || raw.includes('fetch') || raw.includes('failed to fetch')) {
+        return 'We couldn’t reach the server. Please check your connection and try again.';
+      }
+      if (raw.includes('rate limit')) {
+        return 'Too many attempts. Please wait a moment and try again.';
+      }
+      return message || 'Something went wrong. Please try again.';
+    }
+
+    // ---------- Old notice fallback (kept) + SweetAlert wrappers ----------
+    const noticeEl = document.getElementById("notice");
+
+    async function showNotice(msg, type = "") {
+      // Keep fallback content for legacy (hidden in UI)
+      noticeEl.textContent = msg;
+
+      // Unify sweetalert popups (short, friendly)
+      const common = { customClass: { popup: 'swal2-compact-popup' } };
+
+      if (type === "success") {
+        await swalBase.fire({
+          icon: 'success',
+          title: 'Success',
+          html: msg,
+          confirmButtonText: 'OK',
+          ...common
+        });
+      } else if (type === "error") {
+        await swalBase.fire({
+          icon: 'error',
+          title: 'Something went wrong',
+          html: msg,
+          confirmButtonText: 'OK',
+          ...common
+        });
+      } else if (type === "warning") {
+        await swalBase.fire({
+          icon: 'warning',
+          title: 'Please check',
+          html: msg,
+          confirmButtonText: 'OK',
+          ...common
+        });
+      } else {
+        toast.fire({ icon: 'info', title: msg, ...common });
+      }
+    }
+    function hideNotice() { noticeEl.textContent = ""; }
+
+    // ---------- Mode toggle ----------
     const container = document.querySelector(".adminLoginDiv");
     const tabs = document.querySelectorAll(".tab");
     function switchTab(key) {
@@ -628,13 +512,9 @@
     // Mobile segmented buttons
     const mobTabs = document.querySelector(".mobile-tabs");
     const mql = window.matchMedia("(max-width: 900px)");
-    const applyMobTabsVisibility = () => {
-      // Keep CSS as the source of truth; this only avoids stale inline styles on resize.
-      mobTabs.style.display = mql.matches ? "grid" : "none";
-    };
+    const applyMobTabsVisibility = () => { mobTabs.style.display = mql.matches ? "grid" : "none"; };
     applyMobTabsVisibility();
     mql.addEventListener?.("change", applyMobTabsVisibility);
-
     document.getElementById("mobSignIn")?.addEventListener("click", () => switchTab("login"));
     document.getElementById("mobSignUp")?.addEventListener("click", () => switchTab("signup"));
 
@@ -653,17 +533,26 @@
       const { error } = await supabase.from("admin").insert([payload]);
       if (error) throw error;
     }
-    function openEmailProvider(email) {
+
+    // Email provider prompt via SweetAlert (replaces old modal)
+    async function openEmailProvider(email) {
       const emailProvider = email.split("@")[1]?.toLowerCase() || "";
       let providerUrl = "https://mail.google.com";
       if (emailProvider.includes("yahoo")) providerUrl = "https://mail.yahoo.com";
       else if (emailProvider.includes("outlook") || emailProvider.includes("hotmail") || emailProvider.includes("live")) providerUrl = "https://outlook.live.com/mail";
       else if (emailProvider.includes("icloud")) providerUrl = "https://www.icloud.com/mail";
-      document.getElementById("goToEmailBtn").onclick = () => window.open(providerUrl, "_blank");
-      document.getElementById("emailConfirmModal").style.display = "flex";
+
+      await swalBase.fire({
+        icon: 'info',
+        title: 'Confirm your email',
+        html: `We sent a confirmation link to <b>${email}</b>.<br/>Open your inbox and click the link to activate your account.`,
+        showCancelButton: true,
+        confirmButtonText: 'Open Email',
+        cancelButtonText: 'OK'
+      }).then(res => { if (res.isConfirmed) window.open(providerUrl, "_blank"); });
     }
 
-    // ===== SIGN UP (kept) =====
+    // ===== SIGN UP (kept; messages refined) =====
     document.getElementById("signUpBtn").addEventListener("click", async () => {
       hideNotice();
       const name = document.getElementById("suName").value.trim();
@@ -672,30 +561,37 @@
       const password = document.getElementById("suPassword").value;
 
       if (!name || !email || !password || password.length < 6) {
-        showNotice("Please fill all required fields (password min 6 chars).", "error"); return;
+        showNotice("Please complete all required fields. Password must be at least 6 characters.", "warning");
+        return;
       }
       try {
-        const { data: authData, error: authError } = await supabase.auth.signUp({
-          email, password, options: { data: { name, phone, role: "admin" } },
-        });
+        const { data: authData, error: authError } =
+          await supabase.auth.signUp({
+            email,
+            password,
+            options: {
+              data: { name, phone, role: "admin" },
+              emailRedirectTo: "https://simp-project-tan.vercel.app/adminLogin.html",
+            },
+          });
         if (authError) throw authError;
 
         if (authData.session && authData.user) {
           await ensureAdminRowNow(authData.user, { name, phone });
-          showNotice("Sign up successful. Your admin profile is now pending approval.", "success");
+          await showNotice("Account created! Your admin profile is now set to <b>Pending</b> for approval.", "success");
           switchTab("login");
         } else {
-          openEmailProvider(email);
-          showNotice("Sign up successful. Please confirm your email. After confirming, log in — your admin profile will be set to pending automatically.", "success");
+          await openEmailProvider(email);
+          await showNotice("Sign up successful. Please verify your email, then sign in. Your admin profile will be set to <b>Pending</b> automatically.", "success");
           switchTab("login");
         }
       } catch (err) {
         console.error(err);
-        showNotice("Sign up error: " + (err.message || "Unknown error"), "error");
+        showNotice("Sign up failed. " + prettyError(err), "error");
       }
     });
 
-    // ===== LOGIN (kept) =====
+    // ===== LOGIN (kept; messages refined) =====
     const loginBtn = document.getElementById("loginBtn");
     async function refreshLoginState() {
       const { data: { user } } = await supabase.auth.getUser();
@@ -705,30 +601,38 @@
         if (!row) { await ensureAdminRowNow(user); row = await getAdminRow(user.id); }
 
         if (row.role === "pending") {
-          window.location.href = "pages/admin_pages/html_files/waiting.html"; return;
+          await swalBase.fire({
+            icon: 'info',
+            title: 'Approval in progress',
+            html: 'Your account is currently <b>Pending</b> approval. We’ll notify you once it’s activated.',
+            confirmButtonText: 'Continue'
+          });
+          window.location.href = "pages/admin_pages/html_files/waiting.html";
+          return;
         }
         if (row.role === "admin" || row.role === "superadmin") {
+          await toast.fire({ icon: 'success', title: 'Welcome back!' });
           window.location.href = "pages/admin_pages/html_files/dashboard.html";
         } else {
-          showNotice("Unknown role status.", "error");
+          showNotice("We couldn’t determine your role. Please contact support.", "error");
         }
       } catch (e) {
         console.error(e);
-        showNotice("Failed to fetch admin status: " + (e.message || "Unknown error"), "error");
+        showNotice("Could not load your admin status. " + prettyError(e), "error");
       }
     }
     loginBtn.addEventListener("click", async () => {
       hideNotice();
       const email = document.getElementById("loginEmail").value.trim();
       const password = document.getElementById("loginPassword").value;
-      if (!email || !password) { showNotice("Please enter email and password.", "error"); return; }
+      if (!email || !password) { showNotice("Please enter both your email and password.", "warning"); return; }
       try {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         await refreshLoginState();
       } catch (err) {
         console.error(err);
-        showNotice("Login error: " + (err.message || "Unknown error"), "error");
+        showNotice("Sign in failed. " + prettyError(err), "error");
       }
     });
 

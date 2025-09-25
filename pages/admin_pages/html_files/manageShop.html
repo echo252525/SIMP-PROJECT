@@ -872,7 +872,7 @@
         </div>
 
         <!-- Upload-only; URL auto from bucket -->
-        <div class="full">
+        <div id="imageFileGroup" class="full">
           <label for="prodImageFile">Upload Image (to bucket)</label>
           <input id="prodImageFile" type="file" accept="image/*" />
           <div class="hint">For new products, the image URL is set automatically after upload.</div>
@@ -936,6 +936,7 @@
     const addModal = $("#addModal"), openAddModalBtn = $("#open-add-modal"), closeAddModalBtn = $("#close-add-modal"), cancelAddBtn = $("#cancelAdd"), saveProductBtn = $("#saveProduct");
     const prodName = $("#prodName"), prodPrice = $("#prodPrice"), prodPlatform = $("#prodPlatform"), prodLink = $("#prodLink"), prodImage = $("#prodImage"), prodFeatures = $("#prodFeatures");
     const prodImageFile = $("#prodImageFile"), imageUrlGroup = $("#imageUrlGroup"), prodDesc = $("#prodDescription");
+    const imageFileGroup = $("#imageFileGroup"); /* <-- wrapper added for easier show/hide */
 
     const qvBackdrop = $("#qvBackdrop"), qvBody = $("#qvBody"), qvTitle = $("#qvTitle"), qvActions = $("#qvActions"), qvCloseTop = $("#qvCloseTop");
 
@@ -1000,14 +1001,11 @@
       }
     }
     async function db_updateProduct(id, p) {
-      let imgVal = (typeof p.image === "string") ? p.image : null;
-      if (p.file) {
-        const up = await uploadImageToBucket(p.file, id); imgVal = up.path;
-        if (currentEditingImageUrl) { try { await removeImageFromBucket(currentEditingImageUrl); } catch { } }
-      } else if (editingProductId) { imgVal = currentEditingImageUrl; }
+      /* Do NOT touch image on edit (no file allowed for edit) */
+      const imgVal = currentEditingImageUrl || null;
       const upd = await supabase.from("products").update({
         product_name: p.name, price: p.price, platform: p.platform, product_link: p.link || null,
-        image_url: imgVal || null, features: p.features || [], description: p.description || null
+        image_url: imgVal, features: p.features || [], description: p.description || null
       }).eq("id", id).select().single();
       if (upd.error) throw upd.error; return mapRowToUI(upd.data);
     }
@@ -1120,6 +1118,14 @@
                 <a class="btn" href="${viewUrl}" target="_blank" rel="noopener" aria-label="Open in new tab">
                   <span class="material-icons-sharp">open_in_new</span> <span class="btn-label">View</span>
                 </a>
+                ${!p.published ? `
+                  <button class="btn" data-action="edit" data-id="${p.id}">
+                    <span class="material-icons-sharp">edit</span><span class="btn-label">Edit</span>
+                  </button>
+                  <button class="btn danger" data-action="delete" data-id="${p.id}">
+                    <span class="material-icons-sharp">delete</span><span class="btn-label">Delete</span>
+                  </button>
+                ` : ``}
                 <div class="publish-row">
                   <span class="status-pill ${p.published ? "ok" : "draft"}">${p.published ? "Published" : "Draft"}</span>
                   <label class="switch" title="${p.published ? "Unpublish" : "Publish"}">
@@ -1144,29 +1150,37 @@
     /* ===== Add/Edit Modal helpers ===== */
     function openAddModal(product = null) {
       addModal.classList.add("show"); addModal.setAttribute("aria-hidden", "false");
-      prodImageFile.value = "";
 
       if (product) {
+        // Edit mode — DO NOT allow picture change
         editingProductId = product.id;
         currentEditingImageUrl = product.image || null;
         $("#addModalTitle").textContent = "Edit Product";
         prodName.value = product.name; prodPrice.value = product.price; prodPlatform.value = product.platform;
         prodLink.value = product.link || "";
+
+        // Hide image upload group entirely; keep URL disabled
+        if (imageFileGroup) imageFileGroup.style.display = "none";
         prodImage.value = "";
         prodImage.disabled = true;
-        prodImage.placeholder = "Image managed via bucket. Choose a file to replace.";
+        prodImage.placeholder = "Image managed via bucket (unchangeable here).";
         imageUrlGroup.style.display = "";
+
         prodFeatures.value = (product.features || []).join(", ");
         prodDesc.value = product.description || "";
       } else {
+        // Add mode — allow picture upload which goes to private bucket
         editingProductId = null; currentEditingImageUrl = null;
         $("#addModalTitle").textContent = "Add Product";
         prodName.value = ""; prodPrice.value = ""; prodPlatform.value = "Shopee"; prodLink.value = "";
-        imageUrlGroup.style.display = "none";
+        if (imageFileGroup) imageFileGroup.style.display = "";
         prodImage.value = ""; prodImage.disabled = true;
+        imageUrlGroup.style.display = "none";
         prodFeatures.value = "";
         prodDesc.value = "";
       }
+      // Reset file input safely
+      if (prodImageFile) prodImageFile.value = "";
       setTimeout(() => prodName.focus(), 0);
     }
     function closeAddModal() { addModal.classList.remove("show"); addModal.setAttribute("aria-hidden", "true"); }
@@ -1218,13 +1232,13 @@
     qvBackdrop.addEventListener("click", (e) => { if (e.target === qvBackdrop) closeQuickView(); });
     qvCloseTop.addEventListener("click", (e) => { e.preventDefault(); closeQuickView(); });
 
-    // Optional: light validation for file input (won't block UI if absent in Edit)
+    // Optional: light validation for file input (Add mode only)
     prodImageFile.addEventListener("change", () => {
       const f = prodImageFile.files?.[0]; if (!f) return;
       const okType = /^image\/(png|jpe?g|webp|gif|bmp)$/i.test(f.type);
       const tooBig = f.size > 5 * 1024 * 1024; // 5MB
       if (!okType) { alert("Please choose an image file (png, jpg, webp, gif, bmp)."); prodImageFile.value = ""; }
-      else if (tooBig) { alert("Image is larger than 5MB. Please choose a smaller one."); /* let them keep if they want; remove the next line to allow */ prodImageFile.value = ""; }
+      else if (tooBig) { alert("Image is larger than 5MB. Please choose a smaller one."); prodImageFile.value = ""; }
     });
 
     document.getElementById("saveProduct").addEventListener("click", async (e) => {
@@ -1236,16 +1250,18 @@
       const image = prodImage.value.trim();
       const features = prodFeatures.value.split(",").map(s => s.trim()).filter(Boolean);
       const description = prodDesc.value.trim();
-      const file = prodImageFile.files && prodImageFile.files[0] ? prodImageFile.files[0] : null;
+
+      // Enforce: no image editing when editing existing product
+      let file = (!editingProductId && prodImageFile.files && prodImageFile.files[0]) ? prodImageFile.files[0] : null;
 
       if (!name || !(price >= 0) || !platform) { alert("Please provide a valid name, price, and platform."); return; }
       if (!editingProductId && !file) { alert("Please upload an image. The URL will be set automatically after upload."); return; }
 
-      const effectiveImage = editingProductId ? (file ? "" : (currentEditingImageUrl || "")) : "";
+      const effectiveImage = editingProductId ? (currentEditingImageUrl || "") : "";
 
       try {
         if (editingProductId) {
-          await db_updateProduct(editingProductId, { name, price, platform, link, image: effectiveImage, features, description, file });
+          await db_updateProduct(editingProductId, { name, price, platform, link, image: effectiveImage, features, description, file: null });
         } else {
           await db_insertProduct({ name, price, platform, link, image: effectiveImage, features, description, file });
         }
@@ -1269,7 +1285,13 @@
       if (action === "fav") {
         const favs = loadFavs(); favs.has(id) ? favs.delete(id) : favs.add(id); saveFavs(favs); render(); return;
       }
+      if (action === "edit") {
+        const p = cache.find(x => x.id === id); if (!p || p.published) return;
+        openAddModal(p); return;
+      }
       if (action === "delete") {
+        const p = cache.find(x => x.id === id); if (!p) return;
+        if (p.published) { alert("Published products cannot be deleted. Unpublish first."); return; }
         if (!confirm("Delete this product (and its image)?")) return;
         try { await db_deleteProduct(id); render(); } catch (err) { alert("Delete failed: " + err.message); }
         return;
@@ -1296,6 +1318,8 @@
         return;
       }
       if (action === "delete") {
+        const p = cache.find(x => x.id === id); if (!p) return;
+        if (p.published) { alert("Published products cannot be deleted. Unpublish first."); return; }
         if (!confirm("Delete this product (and its image)?")) return;
         try { await db_deleteProduct(id); await render(); closeQuickView(); } catch (err) { alert("Delete failed: " + err.message); }
         return;
