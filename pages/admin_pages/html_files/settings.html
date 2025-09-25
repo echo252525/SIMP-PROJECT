@@ -564,6 +564,39 @@
 
       /* icon-only feel on small screens */
     }
+
+    /* ===== SweetAlert2 compact look (ADDED) ===== */
+    .swal2-popup {
+      border-radius: 12px !important;
+      padding: 16px 18px !important;
+      width: min(380px, 90vw) !important; /* keep it short to avoid layout shift */
+      font-family: "Raleway", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
+    .swal2-title {
+      font-size: 1.05rem !important;
+      font-weight: 800 !important;
+      margin: 0 0 .25rem 0 !important;
+    }
+    .swal2-html-container {
+      font-size: .92rem !important;
+      margin: 0 !important;
+    }
+    .swal2-actions {
+      margin-top: .75rem !important;
+      gap: .5rem !important;
+    }
+    .swal2-styled.swal2-confirm {
+      border-radius: 10px !important;
+      background: #1c2430 !important;
+    }
+    .swal2-styled.swal2-cancel {
+      border-radius: 10px !important;
+      background: #e7edf3 !important;
+      color: #1c2430 !important;
+    }
+    .swal2-toast {
+      border-radius: 12px !important;
+    }
   </style>
 </head>
 <!-- Start in loading state so the skeleton shows first -->
@@ -765,6 +798,9 @@
     </main>
   </div>
 
+  <!-- SweetAlert2 (ADDED) -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
   <!-- Your global scripts -->
   <script src="../../general_files/index.js"></script>
   <script type="module" src="../../general_files/session.js"></script>
@@ -803,6 +839,71 @@
     let currentAvatarPath = null; // storage path like "<uid>/avatar.jpg"
 
     /* ========================= */
+    /*  SweetAlert helpers (ADDED)
+    /* ========================= */
+    const Toast = Swal.mixin({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 2200,
+      timerProgressBar: true,
+      showCloseButton: true
+    });
+
+    function alertInfo(title = "Heads up", text = "") {
+      return Swal.fire({
+        icon: 'info',
+        title,
+        text,
+        confirmButtonText: 'Okay',
+        allowOutsideClick: true,
+        allowEscapeKey: true
+      });
+    }
+
+    function alertSuccess(title = "Saved", text = "") {
+      return Swal.fire({
+        icon: 'success',
+        title,
+        text,
+        confirmButtonText: 'Great!',
+        allowOutsideClick: true,
+        allowEscapeKey: true
+      });
+    }
+
+    function alertError(title = "Something went wrong", text = "") {
+      return Swal.fire({
+        icon: 'error',
+        title,
+        text,
+        confirmButtonText: 'Got it',
+        allowOutsideClick: true,
+        allowEscapeKey: true
+      });
+    }
+
+    async function confirmAction({ title = "Are you sure?", text = "", confirmText = "Yes", cancelText = "Cancel", icon = "warning" } = {}) {
+      const res = await Swal.fire({
+        icon,
+        title,
+        text,
+        showCancelButton: true,
+        confirmButtonText: confirmText,
+        cancelButtonText: cancelText,
+        reverseButtons: true,
+        allowOutsideClick: true,
+        allowEscapeKey: true
+      });
+      return res.isConfirmed;
+    }
+
+    function toast(kind = "info", message = "") {
+      const icon = (kind === "success" || kind === "error" || kind === "warning") ? kind : "info";
+      Toast.fire({ icon, title: message });
+    }
+
+    /* ========================= */
     /*  Loading state (ADDED)    */
     /* ========================= */
     function startLoading() {
@@ -822,9 +923,14 @@
       cancelBtn.style.display = on ? "inline-flex" : "none";
     }
 
+    // ADDED: keep inline status AND show a compact toast
     function setStatus(msg, cls) {
       statusMsg.textContent = msg || "";
       statusMsg.className = "help" + (cls ? " " + cls : "");
+      if (!msg) return;
+      if (cls === "success") toast("success", msg);
+      else if (cls === "error") toast("error", msg);
+      else toast("info", msg);
     }
 
     function fmt(dt) {
@@ -919,11 +1025,12 @@
     async function load() {
       // ADDED: show skeleton while loading
       startLoading();
-      setStatus("Loading...");
+      setStatus("Loading your profile…");
       try {
         const authRes = await supa.auth.getUser();
         if (authRes.error || !authRes.data.user) {
           setStatus("Not authenticated. Please log in.", "error");
+          await alertError("Not signed in", "Please log in to manage your admin profile.");
           return;
         }
         currentUser = authRes.data.user;
@@ -937,17 +1044,19 @@
         if (error) {
           console.error(error);
           setStatus("Failed to load admin profile.", "error");
+          await alertError("Couldn’t load profile", "Please refresh the page or try again in a moment.");
           return;
         }
         if (!row) {
           setStatus("Admin record not found.", "error");
+          await alertError("Profile not found", "Your admin record doesn’t exist. Contact a superadmin.");
           return;
         }
 
         adminRowInitial = JSON.parse(JSON.stringify(row));
         fillForm(row, currentUser.email || row.email);
         setEdit(false);
-        setStatus("");
+        setStatus(""); // clear
       } finally {
         // ADDED: hide skeleton and reveal real content
         stopLoading();
@@ -959,29 +1068,35 @@
       let newPhone = (phoneEl.value || "").trim();
       if (!newName) {
         setStatus("Name is required.", "error");
+        await alertInfo("Missing name", "Please enter your full name before saving.");
         return;
       }
       if (newPhone.length === 0) newPhone = null;
 
       const saveBtn = document.getElementById("save-btn");
       saveBtn.disabled = true;
+
       const { data, error } = await supa
         .from("admin")
         .update({ name: newName, phone: newPhone })
         .eq("id", currentUser.id)
         .select("id,email,name,phone,role,created_at,updated_at,admin_profile_url")
         .maybeSingle();
+
       saveBtn.disabled = false;
 
       if (error) {
         console.error(error);
-        setStatus(error.message || "Failed to update.", "error");
+        const msg = error.message || "Failed to update.";
+        setStatus(msg, "error");
+        await alertError("Update failed", msg);
         return;
       }
       adminRowInitial = JSON.parse(JSON.stringify(data));
       fillForm(data, currentUser.email || data.email);
       setEdit(false);
       setStatus("Profile updated successfully.", "success");
+      await alertSuccess("Saved", "Your profile changes have been applied.");
     }
 
     function cancelEdit() {
@@ -991,17 +1106,31 @@
         currentUser ? currentUser.email : adminRowInitial.email
       );
       setEdit(false);
-      setStatus("Reverted changes.");
+      setStatus("Changes discarded.");
+      toast("info", "No changes saved.");
     }
 
     async function deleteAccount() {
-      if (!confirm("This will permanently delete your account and sign you out. Continue?"))
-        return;
+      const proceed = await confirmAction({
+        title: "Delete your account?",
+        text: "This action is permanent and will sign you out.",
+        confirmText: "Delete",
+        cancelText: "Keep account",
+        icon: "warning"
+      });
+      if (!proceed) return;
 
       const deleteBtn = document.getElementById("delete-btn");
       deleteBtn.disabled = true;
-      setStatus("Deleting…");
 
+      const loading = Swal.fire({
+        title: "Deleting account…",
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        didOpen: () => Swal.showLoading()
+      });
+
+      setStatus("Deleting…");
       try {
         const invokeRes = await supa.functions.invoke("delete-admin", {
           body: { user_id: currentUser.id },
@@ -1029,20 +1158,28 @@
           }
         } catch (e2) {
           console.error("Edge Function error:", e1, e2);
-          setStatus(
-            "Delete failed: " +
+          const msg =
             (e2?.message || e1?.message || "Edge Function unreachable.") +
-            " — Ensure 'delete-admin' is deployed and CORS allows this origin.",
-            "error"
-          );
+            " — Ensure 'delete-admin' is deployed and CORS allows this origin.";
+          setStatus("Delete failed: " + msg, "error");
+          (await loading).close();
+          await alertError("Delete failed", msg);
           deleteBtn.disabled = false;
           return;
         }
       }
 
       try { await supa.auth.signOut(); } catch (_) { }
+      (await loading).close();
       setStatus("Account deleted. Redirecting…", "success");
-      setTimeout(() => { window.location.href = "../../../index.html"; }, 800);
+      await Swal.fire({
+        icon: 'success',
+        title: 'Account deleted',
+        text: 'You will be redirected to the homepage.',
+        timer: 1400,
+        showConfirmButton: false
+      });
+      setTimeout(() => { window.location.href = "../../../index.html"; }, 200);
     }
 
     // === Avatar upload/change ===
@@ -1066,7 +1203,7 @@
 
     async function uploadAvatar(file) {
       const err = validImage(file);
-      if (err) { setStatus(err, "error"); return; }
+      if (err) { setStatus(err, "error"); await alertInfo("Invalid image", err); return; }
 
       try {
         const blobUrl = URL.createObjectURL(file);
@@ -1075,7 +1212,13 @@
       } catch { }
 
       avatarBtn.disabled = true;
-      setStatus("Uploading photo…");
+
+      const loading = Swal.fire({
+        title: "Uploading photo…",
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        didOpen: () => Swal.showLoading()
+      });
 
       const ext = chooseExt(file);
       const newPath = `${currentUser.id}/avatar.${ext}`;
@@ -1091,7 +1234,10 @@
 
       if (upErr) {
         console.error(upErr);
-        setStatus(upErr.message || "Upload failed.", "error");
+        const msg = upErr.message || "Upload failed.";
+        setStatus(msg, "error");
+        (await loading).close();
+        await alertError("Upload failed", msg);
         avatarBtn.disabled = false;
         await refreshAvatarDisplay(currentAvatarPath, nameEl.value, emailEl.value);
         return;
@@ -1108,9 +1254,13 @@
         .select("id,email,name,phone,role,created_at,updated_at,admin_profile_url")
         .maybeSingle();
 
+      (await loading).close();
+
       if (updErr) {
         console.error(updErr);
-        setStatus(updErr.message || "Saved, but failed to update profile path.", "error");
+        const msg = updErr.message || "Saved, but failed to update profile path.";
+        setStatus(msg, "error");
+        await alertError("Partial save", msg);
         avatarBtn.disabled = false;
         await refreshAvatarDisplay(newPath, nameEl.value, emailEl.value);
         return;
@@ -1122,6 +1272,7 @@
 
       avatarBtn.disabled = false;
       setStatus("Profile photo updated.", "success");
+      await alertSuccess("Photo updated", "Your profile picture has been saved.");
     }
 
     // Wire up

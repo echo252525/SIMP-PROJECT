@@ -657,7 +657,6 @@
       <div class="form-scroll">
         <!-- STEP 1: Personal Info -->
         <section class="form-step active" data-step="1" id="personalStep">
-          <h3>Personal Info</h3>
           <div class="row">
             <div>
               <label>Full Name <input id="name" type="text" required /></label>
@@ -760,7 +759,7 @@
         Already have an account? <a href="login.html">Log in here</a>
       </div>
 
-      <!-- Email Confirmation Modal -->
+      <!-- Email Confirmation Modal (kept; unused) -->
       <div id="emailConfirmModal">
         <div class="modal-content">
           <h3>Confirm Your Email</h3>
@@ -776,10 +775,70 @@
     </div>
   </div>
 
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
   <script type="module">
     import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
     import { SUPABASE_URL, SUPABASE_ANON_KEY } from "/supabase.js";
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // --- SweetAlert helpers ---
+    const notify = {
+      toast: (title = "", icon = "info", timer = 2200) =>
+        Swal.fire({
+          toast: true,
+          icon,
+          title,
+          position: "top-end",
+          showConfirmButton: false,
+          timer,
+          timerProgressBar: true,
+        }),
+      hint: (title, text, icon = "warning") =>
+        Swal.fire({
+          icon,
+          title,
+          text,
+          confirmButtonText: "Got it",
+          confirmButtonColor: "#20a44c",
+          heightAuto: false,
+          width: 420,
+        }),
+      ok: (title, text) =>
+        Swal.fire({
+          icon: "success",
+          title,
+          text,
+          confirmButtonText: "Continue",
+          confirmButtonColor: "#20a44c",
+          heightAuto: false,
+          width: 420,
+        }),
+      err: (title, text) =>
+        Swal.fire({
+          icon: "error",
+          title,
+          text,
+          confirmButtonText: "Close",
+          confirmButtonColor: "#20a44c",
+          heightAuto: false,
+          width: 420,
+        }),
+      confirmEmail: (text, redirectUrl) =>
+        Swal.fire({
+          icon: "info",
+          title: "Confirm your email",
+          text,
+          confirmButtonText: "Proceed to Login",
+          confirmButtonColor: "#20a44c",
+          heightAuto: false,
+          width: 420,
+          allowOutsideClick: false,
+        }).then(() => {
+          window.location.href = redirectUrl;
+        }),
+    };
 
     // ===== State =====
     let selectedRole = null; // "customer" | "installer"
@@ -863,6 +922,10 @@
       const fields = requiredInputsIn(sectionEl);
       for (const el of fields) {
         if (!el.value) {
+          const labelText =
+            el.closest("label")?.textContent?.trim().replace(/\s+/g, " ") ||
+            "Required field";
+          notify.hint("Please complete this", `“${labelText}” can’t be empty.`);
           el.reportValidity?.();
           el.focus();
           return false;
@@ -871,7 +934,12 @@
       if (sectionEl.id === "personalStep") {
         const pw = document.getElementById("password").value.trim();
         if (pw.length < 6) {
-          alert("Password must be at least 6 characters");
+          notify.hint("Password too short", "Use at least 6 characters.", "error");
+          return false;
+        }
+        const email = document.getElementById("email").value.trim();
+        if (!/^\S+@\S+\.\S+$/.test(email)) {
+          notify.hint("Invalid email", "Please enter a valid email address.", "error");
           return false;
         }
       }
@@ -881,11 +949,11 @@
           document.getElementById("employer").value || ""
         ).trim();
         if (!status) {
-          alert("Select employment status");
+          notify.hint("Select your status", "Please choose your employment status.");
           return false;
         }
         if (status === "Employed" && !employer) {
-          alert("Enter company");
+          notify.hint("Company needed", "Please enter your company name.");
           return false;
         }
       }
@@ -925,7 +993,7 @@
             password,
             options: {
               data: { role: selectedRole, name, phone },
-              emailRedirectTo: "https://simp-project-tan.vercel.app/login.html", // ← redirect after confirming email
+              emailRedirectTo: "https://simp-project-tan.vercel.app/login.html",
             },
           });
 
@@ -944,16 +1012,16 @@
         };
         const payload = isInstallerFlow
           ? {
-            ...base,
-            profession,
-            highestQualification,
-            employmentStatus: employment || null,
-            employer: employment === "Employed" ? employer || null : null,
-            mainIncomeSource: mainIncomeSource || null,
-            bankName: bankName || null,
-            accountNumber: accountNumber || null,
-            accountHolder: accountHolder || null,
-          }
+              ...base,
+              profession,
+              highestQualification,
+              employmentStatus: employment || null,
+              employer: employment === "Employed" ? employer || null : null,
+              mainIncomeSource: mainIncomeSource || null,
+              bankName: bankName || null,
+              accountNumber: accountNumber || null,
+              accountHolder: accountHolder || null,
+            }
           : base;
 
         const { error: insertError } = await supabase
@@ -961,20 +1029,17 @@
           .insert([payload]);
         if (insertError) throw insertError;
 
-        // Modal -> proceed to login
-        const modal = document.getElementById("emailConfirmModal");
-        const modalMsg = modal.querySelector("p");
-        const modalBtn = document.getElementById("goToEmailBtn");
-        modalMsg.textContent =
-          "Your account was created. Please check your inbox for the confirmation link. After confirming, you can log in.";
-        modalBtn.textContent = "Proceed to Login";
-        modalBtn.onclick = () => {
-          window.location.href = "login.html";
-        };
-        modal.style.display = "flex";
+        await notify.confirmEmail(
+          "We’ve sent a confirmation link to your email. Confirm first, then log in.",
+          "login.html"
+        );
       } catch (err) {
         console.error(err);
-        alert("Error: " + (err.message || "Failed to sign up"));
+        const msg =
+          (err?.message || "Something went wrong during sign up.")
+            .replace("Database error saving new user", "Couldn’t save your account to the database")
+            .replace("User already registered", "This email is already registered");
+        notify.err("Sign-up failed", msg);
       }
     }
 
@@ -1026,7 +1091,6 @@
         body.classList.remove("mode-installer");
       }
 
-      // Toggle mobile tab active state
       const tabC = document.getElementById("tabCustomer");
       const tabI = document.getElementById("tabInstaller");
       if (tabC && tabI) {
@@ -1057,6 +1121,7 @@
       setModeFromRole(selectedRole);
       applyFlowForRole(selectedRole);
       updateRolePill(selectedRole);
+      // removed any modal/toast here as requested
       showStepByIndex(0);
     };
 
@@ -1065,6 +1130,7 @@
       setModeFromRole(selectedRole);
       applyFlowForRole(selectedRole);
       updateRolePill(selectedRole);
+      // removed any modal/toast here as requested
       showStepByIndex(0);
     };
 

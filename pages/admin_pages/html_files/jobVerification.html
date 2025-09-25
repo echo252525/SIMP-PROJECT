@@ -332,7 +332,8 @@
 
     .job-modal-card {
       width: min(1080px, 96vw);
-      height: min(85vh, 920px);
+      /* shorter to avoid viewport shifts */
+      height: min(75vh, 840px);
       background: var(--modal-bg);
       border-radius: 16px;
       overflow: hidden;
@@ -411,7 +412,7 @@
     @media (max-width: 420px) {
       .job-modal-card {
         width: 94vw;
-        height: 80vh;
+        height: 78vh;
       }
     }
 
@@ -539,6 +540,23 @@
       width: 100px;
       height: 38px;
       border-radius: 10px;
+    }
+
+    /* ===== SweetAlert2 brand tune ===== */
+    .swal2-popup {
+      font-family: "Raleway", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      border-radius: 12px !important;
+    }
+
+    .swal2-styled.swal2-confirm {
+      background: var(--brand) !important;
+      border-radius: 10px !important;
+    }
+
+    .swal2-styled.swal2-cancel {
+      background: #e5e7eb !important;
+      color: var(--ink) !important;
+      border-radius: 10px !important;
     }
   </style>
 </head>
@@ -723,6 +741,8 @@
   <script src="../../general_files/index.js"></script>
   <script type="module" src="../../general_files/session.js"></script>
   <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <!-- SweetAlert2 (added) -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <script type="module">
     // ========= CONFIG =========
@@ -754,12 +774,47 @@
     var ALL_JOBS = [];
     var activeJobId = null;
 
-    // ========= Utils =========
-    function showToast(msg, ms) {
-      if (typeof ms !== "number") ms = 2400;
-      toastEl.textContent = msg;
-      toastEl.classList.add("show");
-      setTimeout(function () { toastEl.classList.remove("show"); }, ms);
+    // ========= SweetAlert helpers (ADDED) =========
+    function humanizeError(raw) {
+      var m = (raw && raw.message) ? raw.message : (typeof raw === 'string' ? raw : '');
+      if (!m) return "Something went wrong. Please try again.";
+      var s = String(m);
+
+      if (/Failed to fetch|TypeError: Failed/.test(s)) return "Network error. Please check your internet connection and try again.";
+      if (/permission|RLS|row level|not allowed|policy/i.test(s)) return "You don’t have permission to perform this action. Check your access or Row Level Security policies.";
+      if (/enum|invalid input value/i.test(s)) return "This status isn’t allowed by the database setting. Please use one of the valid statuses.";
+      if (/timeout/i.test(s)) return "The request timed out. Please try again.";
+      return s.length > 220 ? (s.slice(0, 217) + "...") : s;
+    }
+
+    // Non-blocking toast (top-end)
+    function showToast(msg, type = "info", ms) {
+      Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: type,
+        title: msg,
+        showConfirmButton: false,
+        timer: typeof ms === "number" ? ms : 2200,
+        timerProgressBar: true
+      });
+      // Keep your original DOM toast for compatibility (not shown)
+      if (toastEl) {
+        toastEl.textContent = msg;
+        toastEl.classList.add("show");
+        setTimeout(function () { toastEl.classList.remove("show"); }, typeof ms === "number" ? ms : 2200);
+      }
+    }
+
+    // Blocking modal alert for important messages
+    function showAlert(title, text, icon = "info") {
+      return Swal.fire({
+        title: title,
+        text: text,
+        icon: icon,
+        confirmButtonText: "Got it",
+        confirmButtonColor: getComputedStyle(document.documentElement).getPropertyValue('--brand') || '#20a44c'
+      });
     }
 
     function esc(s) {
@@ -812,7 +867,7 @@
       if (/^https?:\/\//i.test(s)) {
         var parsed = parsePublicBucketAndPath(s);
         return parsed || null;
-      }
+        }
       var bi = s.indexOf('::');
       if (bi > 0) {
         var p1 = s.slice(bi + 2);
@@ -888,11 +943,10 @@
         .order("created_at", { ascending: false });
 
       if (res.error) {
-        // HIDE skeletons even on error so the message shows
         if (jobsRoot) jobsRoot.classList.remove("loading");
         jobDetailsPane.innerHTML = '<div class="empty-state">Failed to load jobs.</div>';
         emptyJobs.style.display = "block";
-        showToast(res.error.message || "Load error");
+        showAlert("Couldn’t load jobs", humanizeError(res.error), "error");
         return;
       }
 
@@ -927,8 +981,10 @@
           var el = document.querySelector('#jobList .item[data-id="' + first.id + '"]');
           if (el) el.classList.add("active", "read");
         }, 0);
+        showToast("Jobs loaded successfully.", "success", 1600);
       } else {
         jobDetailsPane.innerHTML = '<div class="empty-state">No jobs found.</div>';
+        showToast("No jobs to review at the moment.", "info", 1800);
       }
 
       // HIDE skeletons, SHOW real content
@@ -996,6 +1052,7 @@
 
       if (!filtered.length) {
         jobDetailsPane.innerHTML = '<div class="empty-state">Nothing matches your filters.</div>';
+        showToast("No results for the current filters.", "info", 1600);
       }
     }
 
@@ -1127,8 +1184,7 @@
           jobModalBody.innerHTML = buildJobDetailsHTML(job);
           wireActions(job, jobModalBody);
         }
-        var msg = (res.error && res.error.message) ? res.error.message : "Update failed (check RLS/enum)";
-        showToast(msg);
+        showAlert("Couldn’t update status", humanizeError(res.error), "error");
         return;
       }
 
@@ -1137,7 +1193,7 @@
       }
 
       renderJobList(jobSearchInput ? jobSearchInput.value : "");
-      showToast("Status updated to " + nice(job.status));
+      showToast("Status updated to " + nice(job.status) + ".", "success", 1700);
     }
 
     function updateActiveRowBadge(job) {
@@ -1168,6 +1224,7 @@
         if (!res.ok) {
           job.status = prev;
           updateActiveRowBadge(job);
+          showToast("We couldn’t mark this as viewed. " + humanizeError(res.error), "warning", 2600);
         }
       }
     }

@@ -718,6 +718,37 @@
         align-items: stretch;
       }
     }
+
+    /* --- SweetAlert2 minimal, compact, no jump --- */
+    .swal2-popup {
+      border-radius: 14px !important;
+      padding: 1rem !important;
+      width: 420px !important;
+      max-width: 90vw !important;
+    }
+
+    .swal2-title {
+      font-size: 1.1rem !important;
+      color: #1f2937 !important;
+    }
+
+    .swal2-html-container {
+      font-size: 0.95rem !important;
+      color: #4b5563 !important;
+      margin-top: 0.5rem !important;
+    }
+
+    .swal2-styled.swal2-confirm {
+      background: var(--brand) !important;
+      border-radius: 999px !important;
+    }
+
+    .swal2-styled.swal2-cancel {
+      background: #fff !important;
+      color: #1f2937 !important;
+      border: 1px solid #e5e7eb !important;
+      border-radius: 999px !important;
+    }
   </style>
 </head>
 
@@ -930,6 +961,9 @@
     </main>
   </div>
 
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script type="module">
     import { SUPABASE_URL, SUPABASE_ANON_KEY } from "../../../supabase.js";
@@ -944,6 +978,89 @@
       SUPABASE_ANON_KEY,
       { db: { schema: "public" } }
     );
+
+    // -------- SweetAlert defaults (compact, no layout jump) --------
+    Swal.mixin({
+      scrollbarPadding: false
+    });
+
+    const swalDefaults = {
+      width: 420,
+      padding: '1rem',
+      confirmButtonText: 'OK',
+      confirmButtonColor: '#20a44c',
+      showClass: { popup: '', backdrop: '' },
+      hideClass: { popup: '', backdrop: '' }
+    };
+
+    const Toast = Swal.mixin({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      showCloseButton: true,
+      timer: 2400,
+      timerProgressBar: true,
+      width: 380
+    });
+
+    function swalError(title = 'Something went wrong', text = 'Please try again.') {
+      return Swal.fire({
+        ...swalDefaults,
+        icon: 'error',
+        title,
+        text
+      });
+    }
+
+    function swalInfo(title, text) {
+      return Swal.fire({
+        ...swalDefaults,
+        icon: 'info',
+        title,
+        text
+      });
+    }
+
+    function swalSuccess(title, text) {
+      return Swal.fire({
+        ...swalDefaults,
+        icon: 'success',
+        title,
+        text
+      });
+    }
+
+    async function swalConfirmDelete(courseTitle) {
+      return Swal.fire({
+        ...swalDefaults,
+        icon: 'warning',
+        title: 'Delete course?',
+        html: `"<b>${escapeHtml(courseTitle)}</b>" and its sections/quizzes will be removed.`,
+        showCancelButton: true,
+        confirmButtonText: 'Delete',
+        cancelButtonText: 'Cancel',
+        confirmButtonColor: '#e53935',
+        focusCancel: true
+      });
+    }
+
+    function toastOK(message) {
+      return Toast.fire({ icon: 'success', title: message });
+    }
+
+    function toastInfo(message) {
+      return Toast.fire({ icon: 'info', title: message });
+    }
+
+    function toastWarn(message) {
+      return Toast.fire({ icon: 'warning', title: message });
+    }
+
+    function escapeHtml(str = '') {
+      return String(str).replace(/[&<>"']/g, s => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[s]));
+    }
 
     const ADMIN_TABLE = "admin";
     const addBtn = document.getElementById("addCourseBtn");
@@ -963,7 +1080,10 @@
     addBtn.addEventListener("click", () => {
       window.location.href = "courseBuilder.html";
     });
-    refreshBtn.addEventListener("click", loadCourses);
+    refreshBtn.addEventListener("click", () => {
+      toastInfo('Refreshing courses…');
+      loadCourses();
+    });
 
     function el(tag, attrs = {}, children = []) {
       const n = document.createElement(tag);
@@ -979,14 +1099,21 @@
     }
 
     async function deleteCourse(id, title, btnEl) {
-      const ok = confirm(
-        `Delete course "${title}"?\nThis will also remove its sections and quizzes (cascade).`
-      );
-      if (!ok) return;
+      const { isConfirmed } = await swalConfirmDelete(title);
+      if (!isConfirmed) return;
+
       const card = btnEl.closest(".course-card");
-      card.remove();
+      card?.remove();
       checkEmptyState();
-      await supabase.from("course").delete().eq("id", id);
+
+      const { error } = await supabase.from("course").delete().eq("id", id);
+      if (error) {
+        await swalError('Delete failed', error.message || 'Could not delete the course.');
+        // attempt to reload the list to restore state
+        loadCourses();
+        return;
+      }
+      toastOK('Course deleted');
     }
 
     async function togglePublish(courseId, checked, checkboxEl) {
@@ -1025,9 +1152,9 @@
         .eq("id", courseId);
 
       if (error) {
-        alert("Update failed: " + error.message);
+        await swalError('Update failed', error.message || 'Could not change publish status.');
+        // revert UI
         checkboxEl.checked = !checked;
-
         const nowChecked = checkboxEl.checked;
         if (label) label.textContent = nowChecked ? "Published" : "Draft";
         if (pill) {
@@ -1048,6 +1175,8 @@
           }
         }
         if (delBtn) { delBtn.disabled = !!nowChecked; }
+      } else {
+        toastOK(checked ? 'Course published' : 'Course set to draft');
       }
 
       checkboxEl.disabled = false;
@@ -1075,112 +1204,124 @@
     }
 
     async function loadCourses() {
-      // show skeleton, hide content while loading
-      showSkeleton();
-      grid.innerHTML = "";
-      nameNotice.style.display = "none";
+      try {
+        // show skeleton, hide content while loading
+        showSkeleton();
+        grid.innerHTML = "";
+        nameNotice.style.display = "none";
 
-      const { data, error } = await supabase
-        .from("course")
-        .select(
-          "id,title,slug,description,level,tags,thumbnail_url,created_at,updated_at,created_by,last_edited_by,is_published"
-        )
-        .order("created_at", { ascending: false });
+        const { data, error } = await supabase
+          .from("course")
+          .select(
+            "id,title,slug,description,level,tags,thumbnail_url,created_at,updated_at,created_by,last_edited_by,is_published"
+          )
+          .order("created_at", { ascending: false });
 
-      if (error) {
+        if (error) {
+          hideSkeleton();
+          grid.style.display = "";
+          grid.appendChild(el("div", { class: "empty", html: `Error: ${escapeHtml(error.message)}` }));
+          await swalError('Couldn’t load courses', error.message || 'Please check your connection and try again.');
+          return;
+        }
+        if (!data || data.length === 0) {
+          hideSkeleton();
+          grid.style.display = "none";
+          emptyState.style.display = "";
+          toastInfo('No courses yet. Click “+ Add Course” to create one.');
+          return;
+        }
+
+        const ids = [];
+        data.forEach((c) => {
+          if (c.created_by) ids.push(c.created_by);
+          if (c.last_edited_by) ids.push(c.last_edited_by);
+        });
+        const { map: nameMap, unresolved } = await resolveAdminNames(ids);
+        if (unresolved && unresolved.length) {
+          nameNotice.style.display = "";
+          toastWarn('Some admin names could not be loaded (RLS).');
+        }
+
+        data.forEach((c) => {
+          const editLink = el(
+            "a",
+            {
+              class: "btn small secondary" + (c.is_published ? " disabled" : ""),
+              href: c.is_published ? "#" : `courseBuilder.html?course=${encodeURIComponent(c.id)}`,
+              "data-edit-link": "1",
+              "data-id": c.id,
+            },
+            [document.createTextNode("Edit")]
+          );
+
+          const delBtn = el(
+            "button",
+            { class: "btn small danger", type: "button", "data-delete-btn": "1" },
+            [document.createTextNode("Delete")]
+          );
+          if (c.is_published) delBtn.setAttribute("disabled", "true");
+          delBtn.addEventListener("click", () => deleteCourse(c.id, c.title, delBtn));
+
+          const toggleId = `pub_${c.id}`;
+          const checkbox = el("input", {
+            type: "checkbox",
+            id: toggleId,
+            ...(c.is_published ? { checked: "" } : {}),
+            "on:change": (e) => togglePublish(c.id, e.target.checked, e.target),
+          });
+          const slider = el("span", { class: "slider" });
+          const switchLabel = el("label", { class: "switch", for: toggleId }, [checkbox, slider]);
+          const toggleWrap = el("div", { class: "toggle-wrap" }, [
+            switchLabel,
+            el("span", { class: "toggle-hint", html: c.is_published ? "Published" : "Draft" }),
+          ]);
+
+          const createdName = nameMap[c.created_by] || "Unknown";
+          const editedName = c.last_edited_by ? nameMap[c.last_edited_by] || "Unknown" : "—";
+
+          const publishedPill = el("span", {
+            class: "pill" + (c.is_published ? " published" : ""),
+            html: c.is_published ? "Published" : "Draft",
+            "data-published-pill": "1",
+          });
+
+          const card = el("div", { class: "course-card" }, [
+            el("div", { class: "course-image" }, [
+              el("img", { src: c.thumbnail_url || "../images/profile-4.jpg", alt: c.title }),
+            ]),
+            el("div", { class: "course-content" }, [
+              el("h3", { html: escapeHtml(c.title) }),
+              el("p", { html: escapeHtml(c.description || "No description.") }),
+              el("div", { class: "meta" }, [
+                el("span", { class: "pill", html: `Slug: ${escapeHtml(c.slug)}` }),
+                el("span", { class: "pill", html: `Level: ${c.level ?? 0}` }),
+                el("span", { class: "pill", html: `Tags: ${(c.tags || []).join(", ") || "—"}` }),
+                publishedPill,
+              ]),
+              el("div", {
+                class: "course-users",
+                html: `Created by: ${escapeHtml(createdName)}<br>Last edited by: ${escapeHtml(editedName)}`,
+              }),
+            ]),
+            el("div", { class: "right" }, [
+              el("span", { class: "small", html: new Date(c.created_at).toLocaleString() }),
+              el("div", { class: "actions-col" }, [editLink, toggleWrap, delBtn]),
+            ]),
+          ]);
+          grid.appendChild(card);
+        });
+
+        // hide skeleton and show grid when ready
         hideSkeleton();
         grid.style.display = "";
-        grid.appendChild(el("div", { class: "empty", html: `Error: ${error.message}` }));
-        return;
-      }
-      if (!data || data.length === 0) {
+        emptyState.style.display = "none";
+      } catch (e) {
         hideSkeleton();
-        grid.style.display = "none";
-        emptyState.style.display = "";
-        return;
+        grid.style.display = "";
+        grid.appendChild(el("div", { class: "empty", html: `Error: ${escapeHtml(e.message || e)}` }));
+        await swalError('Unexpected error', e?.message || 'Please try again.');
       }
-
-      const ids = [];
-      data.forEach((c) => {
-        if (c.created_by) ids.push(c.created_by);
-        if (c.last_edited_by) ids.push(c.last_edited_by);
-      });
-      const { map: nameMap, unresolved } = await resolveAdminNames(ids);
-      if (unresolved && unresolved.length) nameNotice.style.display = "";
-
-      data.forEach((c) => {
-        const editLink = el(
-          "a",
-          {
-            class: "btn small secondary" + (c.is_published ? " disabled" : ""),
-            href: c.is_published ? "#" : `courseBuilder.html?course=${encodeURIComponent(c.id)}`,
-            "data-edit-link": "1",
-            "data-id": c.id,
-          },
-          [document.createTextNode("Edit")]
-        );
-
-        const delBtn = el(
-          "button",
-          { class: "btn small danger", type: "button", "data-delete-btn": "1" },
-          [document.createTextNode("Delete")]
-        );
-        if (c.is_published) delBtn.setAttribute("disabled", "true");
-        delBtn.addEventListener("click", () => deleteCourse(c.id, c.title, delBtn));
-
-        const toggleId = `pub_${c.id}`;
-        const checkbox = el("input", {
-          type: "checkbox",
-          id: toggleId,
-          ...(c.is_published ? { checked: "" } : {}),
-          "on:change": (e) => togglePublish(c.id, e.target.checked, e.target),
-        });
-        const slider = el("span", { class: "slider" });
-        const switchLabel = el("label", { class: "switch", for: toggleId }, [checkbox, slider]);
-        const toggleWrap = el("div", { class: "toggle-wrap" }, [
-          switchLabel,
-          el("span", { class: "toggle-hint", html: c.is_published ? "Published" : "Draft" }),
-        ]);
-
-        const createdName = nameMap[c.created_by] || "Unknown";
-        const editedName = c.last_edited_by ? nameMap[c.last_edited_by] || "Unknown" : "—";
-
-        const publishedPill = el("span", {
-          class: "pill" + (c.is_published ? " published" : ""),
-          html: c.is_published ? "Published" : "Draft",
-          "data-published-pill": "1",
-        });
-
-        const card = el("div", { class: "course-card" }, [
-          el("div", { class: "course-image" }, [
-            el("img", { src: c.thumbnail_url || "../images/profile-4.jpg", alt: c.title }),
-          ]),
-          el("div", { class: "course-content" }, [
-            el("h3", { html: c.title }),
-            el("p", { html: c.description || "No description." }),
-            el("div", { class: "meta" }, [
-              el("span", { class: "pill", html: `Slug: ${c.slug}` }),
-              el("span", { class: "pill", html: `Level: ${c.level ?? 0}` }),
-              el("span", { class: "pill", html: `Tags: ${(c.tags || []).join(", ") || "—"}` }),
-              publishedPill,
-            ]),
-            el("div", {
-              class: "course-users",
-              html: `Created by: ${createdName}<br>Last edited by: ${editedName}`,
-            }),
-          ]),
-          el("div", { class: "right" }, [
-            el("span", { class: "small", html: new Date(c.created_at).toLocaleString() }),
-            el("div", { class: "actions-col" }, [editLink, toggleWrap, delBtn]),
-          ]),
-        ]);
-        grid.appendChild(card);
-      });
-
-      // hide skeleton and show grid when ready
-      hideSkeleton();
-      grid.style.display = "";
-      emptyState.style.display = "none";
     }
 
     document.addEventListener("DOMContentLoaded", loadCourses);

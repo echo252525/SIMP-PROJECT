@@ -108,6 +108,9 @@
       border: 1px solid #e7edf3;
       padding: 18px 12px 12px;
       border-radius: 14px;
+      border-collapse: separate;
+      border-spacing: 0;
+      overflow: hidden;
     }
 
     main .latestJobApplicantTable table:hover {
@@ -221,6 +224,7 @@
       display: flex;
       gap: 2rem;
       text-align: right;
+      cursor: pointer; /* make it feel clickable */
     }
 
     .right-section .nav .profile .profile-photo {
@@ -798,6 +802,107 @@
       flex-direction: column;
       gap: 8px;
     }
+
+    /* ======================
+       ADDED: Minimalist styling for "New Applications"
+       ====================== */
+    /* table chrome */
+    #apps-table {
+      border: 1px solid #e7edf3;
+      border-radius: 14px;
+      background: #fff;
+      overflow: hidden;
+    }
+
+    #apps-table thead th {
+      font-weight: 700;
+      color: var(--color-dark);
+      background: #f8fbfd;
+      border-bottom: 1px solid #e7edf3;
+      text-align: left;
+      padding: 12px 14px;
+      font-size: .92rem;
+    }
+
+    #apps-table tbody td {
+      padding: 12px 14px;
+      text-align: left;
+      font-size: .92rem;
+      vertical-align: middle;
+    }
+
+    #apps-table tbody tr {
+      transition: background .18s ease, transform .18s ease;
+    }
+
+    #apps-table tbody tr:hover {
+      background: #f9fbff;
+    }
+
+    /* job cell clamp */
+    .cell-job {
+      max-width: 520px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: var(--color-dark);
+      font-weight: 600;
+    }
+
+    /* count pill */
+    .pill-count {
+      display: inline-flex;
+      align-items: center;
+      gap: .35rem;
+      padding: .15rem .55rem;
+      border-radius: 9999px;
+      font-weight: 600;
+      font-size: .86rem;
+      color: #0f5132;
+      background: #e9f7ef;
+      border: 1px solid #cfead9;
+    }
+
+    /* name */
+    .cell-name {
+      color: var(--color-dark);
+      font-weight: 500;
+    }
+
+    /* time (relative) */
+    .cell-time {
+      color: var(--color-dark-variant);
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    /* review link button */
+    .btn-review {
+      display: inline-flex;
+      align-items: center;
+      gap: .35rem;
+      padding: .35rem .7rem;
+      border-radius: 10px;
+      text-decoration: none;
+      border: 1px solid var(--color-light);
+      color: var(--color-primary);
+      background: #fff;
+      font-weight: 600;
+      transition: all .16s ease;
+    }
+
+    .btn-review:hover {
+      color: #fff;
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      transform: translateY(-1px);
+    }
+
+    /* small icon in button */
+    .btn-review .material-icons-sharp {
+      font-size: 18px;
+      line-height: 1;
+    }
   </style>
 </head>
 
@@ -961,10 +1066,6 @@
     <div class="right-section">
       <div class="nav">
 
-        <div class="dark-mode">
-          <span class="material-icons-sharp active">light_mode</span>
-          <span class="material-icons-sharp">dark_mode</span>
-        </div>
         <div class="profile">
           <!-- ADDED spans for dynamic admin name & role -->
           <div class="info">
@@ -1159,6 +1260,20 @@
       doneOneKPI();
     }
 
+    /* ===== ADDED: small util for relative time ===== */
+    function timeAgo(dateObj) {
+      if (!dateObj) return "—";
+      const s = Math.floor((Date.now() - dateObj.getTime()) / 1000);
+      if (s < 45) return "just now";
+      const mins = Math.floor(s / 60);
+      if (mins < 60) return `${mins}m ago`;
+      const hrs = Math.floor(mins / 60);
+      if (hrs < 24) return `${hrs}h ago`;
+      const days = Math.floor(hrs / 24);
+      if (days < 7) return `${days}d ago`;
+      return dateObj.toLocaleDateString();
+    }
+
     // Table of jobs with new applicants (counts pending apps per job + last applicant name)
     async function updateNewApplicationsTable() {
       const client = await ensureSupabaseClient();
@@ -1182,7 +1297,7 @@
       }
 
       if (!apps || apps.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5">No new applications</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5"><span class="material-icons-sharp" style="vertical-align:middle;margin-right:.35rem;">hourglass_empty</span>No new applications</td></tr>`;
         hideEl('apps-skeleton'); showEl('apps-table');
         return;
       }
@@ -1265,14 +1380,17 @@
       }
 
       for (const r of rows) {
+        const exact = r.lastApplied ? r.lastApplied.toLocaleString() : "—";
+        const rel = r.lastApplied ? timeAgo(r.lastApplied) : "—";
+
         tbody.insertAdjacentHTML(
           "beforeend",
           `<tr>
-            <td style="text-align:left">${escapeHtml(r.title)}</td>
-            <td>${r.count}</td>
-            <td>${escapeHtml(r.lastInstallerName)}</td>
-            <td>${r.lastApplied ? r.lastApplied.toLocaleString() : "—"}</td>
-            <td><a href="jobApplicationVerification.html" style="color:var(--color-primary)">Review</a></td>
+            <td><div class="cell-job" title="${escapeHtml(r.title)}">${escapeHtml(r.title)}</div></td>
+            <td><span class="pill-count" title="${r.count} pending applicant${r.count>1?'s':''}"><span class="material-icons-sharp" style="font-size:18px;">group</span>${r.count}</span></td>
+            <td><span class="cell-name">${escapeHtml(r.lastInstallerName)}</span></td>
+            <td><span class="cell-time" title="${escapeHtml(exact)}">${escapeHtml(rel)}</span></td>
+            <td><a class="btn-review" href="jobApplicationVerification.html" aria-label="Review applications for ${escapeHtml(r.title)}"><span class="material-icons-sharp">chevron_right</span>Review</a></td>
           </tr>`
         );
       }
@@ -1580,6 +1698,23 @@
         .replace(/'/g, "&#039;");
     }
 
+    // ===== ADDED: Make profile (top-right) go to settings =====
+    const topRightProfile = document.querySelector('.right-section .nav .profile');
+    if (topRightProfile) {
+      topRightProfile.addEventListener('click', () => {
+        window.location.href = 'settings.html';
+      });
+      topRightProfile.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          window.location.href = 'settings.html';
+        }
+      });
+      topRightProfile.setAttribute('tabindex', '0');
+      topRightProfile.setAttribute('role', 'button');
+      topRightProfile.setAttribute('aria-label', 'Open settings');
+    }
+
     // Kick off KPIs + sections
     // Real content is hidden by default; skeletons are visible.
     // We reveal content exactly when each section is loaded.
@@ -1587,7 +1722,7 @@
     updatePendingJobsKPI();
     updatePendingAdminsKPI();
 
-    updateNewApplicationsTable();    // hides apps skeleton then shows table
+    updateNewApplicationsTable();    // hides apps skeleton then shows table (now minimalist)
     updatePublishedCoursesPanel();   // hides courses skeleton then shows list
     updatePaymentsRequestsPanel();   // hides payments skeleton then shows list
     updateLoggedInAdminInfo();       // profile info (no skeleton needed)

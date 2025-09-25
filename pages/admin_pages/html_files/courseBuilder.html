@@ -13,6 +13,11 @@
 
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet" />
   <link rel="stylesheet" href="../css_files/sideBar.css" />
+
+  <!-- SweetAlert2 (ADDED) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
   <style>
     :root {
       --ink: #1c2430;
@@ -290,6 +295,42 @@
         grid-template-columns: 1fr;
       }
     }
+
+    /* SweetAlert compact styling (ADDED) */
+    .swal2-popup.swal-compact {
+      padding: 1rem 1rem !important;
+      border-radius: 14px !important;
+      font-family: "Raleway", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
+
+    .swal2-title.swal-compact-title {
+      font-size: 1.05rem !important;
+      line-height: 1.2 !important;
+      margin-bottom: .25rem !important;
+      color: var(--ink) !important;
+    }
+
+    .swal2-html-container.swal-compact-body {
+      font-size: .9rem !important;
+      color: var(--muted) !important;
+    }
+
+    .swal2-actions .swal-confirm {
+      background: var(--brand) !important;
+      border-radius: 999px !important;
+      padding: .5rem 1rem !important;
+      border: 0 !important;
+      box-shadow: none !important;
+    }
+
+    .swal2-actions .swal-cancel {
+      background: #fff !important;
+      color: var(--ink) !important;
+      border: 1px solid #d1e7db !important;
+      border-radius: 999px !important;
+      padding: .5rem 1rem !important;
+      box-shadow: none !important;
+    }
   </style>
 </head>
 
@@ -439,6 +480,40 @@
   <script src="../../general_files/index.js"></script>
   <script type="module" src="../../general_files/session.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- SweetAlert helpers (ADDED) -->
+  <script>
+    // Compact, brand-aligned modal
+    function swalCompact({ title = "", text = "", icon = "info", showCancelButton = false, confirmText = "OK" } = {}) {
+      return Swal.fire({
+        title,
+        text,
+        icon,
+        width: 420,            // compact width so viewport doesn't resize
+        heightAuto: false,     // prevent body jump
+        backdrop: true,
+        buttonsStyling: false,
+        showCancelButton,
+        confirmButtonText: confirmText,
+        customClass: {
+          popup: 'swal-compact',
+          title: 'swal-compact-title',
+          htmlContainer: 'swal-compact-body',
+          confirmButton: 'swal-confirm',
+          cancelButton: 'swal-cancel'
+        }
+      });
+    }
+
+    const Notify = {
+      success: (t, m = "") => swalCompact({ title: t || "Success", text: m, icon: "success" }),
+      error: (t, m = "") => swalCompact({ title: t || "Something went wrong", text: m, icon: "error" }),
+      info: (t, m = "") => swalCompact({ title: t || "Heads up", text: m, icon: "info" }),
+      warn: (t, m = "") => swalCompact({ title: t || "Please check", text: m, icon: "warning" }),
+      confirm: (t, m = "", confirmText = "Confirm") => swalCompact({ title: t, text: m, icon: "question", showCancelButton: true, confirmText })
+    };
+  </script>
+
   <script type="module">
     import { SUPABASE_URL, SUPABASE_ANON_KEY } from "../../../supabase.js";
     const supabase = window.supabase.createClient(
@@ -644,11 +719,11 @@
           .eq("id", editingCourseId)
           .maybeSingle();
         if (error) {
-          alert("Error loading course: " + error.message);
+          Notify.error("Unable to load course", `Details: ${error.message}`);
           return;
         }
         if (!course) {
-          alert("Course not found");
+          Notify.warn("Course not found", "The course you're trying to edit doesn't exist.");
           return;
         }
 
@@ -666,7 +741,7 @@
           .eq("course_id", editingCourseId)
           .order("position", { ascending: true });
         if (sErr) {
-          alert("Error loading sections: " + sErr.message);
+          Notify.error("Unable to load sections", `Details: ${sErr.message}`);
           return;
         }
 
@@ -682,7 +757,7 @@
             .eq("section_id", s.id)
             .order("position", { ascending: true });
           if (bErr) {
-            alert("Error loading blocks: " + bErr.message);
+            Notify.error("Unable to load section content", `Details: ${bErr.message}`);
             return;
           }
 
@@ -706,7 +781,7 @@
                 .eq("id", b.quiz_id)
                 .maybeSingle();
               if (qzErr) {
-                alert("Error loading quiz: " + qzErr.message);
+                Notify.error("Unable to load quiz", `Details: ${qzErr.message}`);
                 continue;
               }
 
@@ -717,7 +792,7 @@
                 .eq("quiz_id", qz.id)
                 .order("position", { ascending: true });
               if (qsErr) {
-                alert("Error loading questions: " + qsErr.message);
+                Notify.error("Unable to load quiz questions", `Details: ${qsErr.message}`);
                 continue;
               }
 
@@ -750,7 +825,7 @@
     saveBtn.addEventListener("click", async () => {
       const title = titleEl.value.trim();
       if (!title) {
-        alert("Title is required.");
+        Notify.warn("Title required", "Please enter a course title before saving.");
         return;
       }
 
@@ -771,7 +846,7 @@
           .update({ title, slug, description, level, tags, thumbnail_url })
           .eq("id", courseId);
         if (uErr) {
-          alert("Update failed: " + uErr.message);
+          Notify.error("Update failed", `We couldn't update the course. Details: ${uErr.message}`);
           return;
         }
       } else {
@@ -781,7 +856,7 @@
           .select("id")
           .single();
         if (iErr) {
-          alert("Insert failed: " + iErr.message);
+          Notify.error("Insert failed", `We couldn't create the course. Details: ${iErr.message}`);
           return;
         }
         courseId = inserted.id;
@@ -1097,11 +1172,11 @@
           if (error) throw error;
         }
 
-        alert("Course saved!");
+        await Notify.success("Course saved", "Your changes have been saved successfully.");
         window.location.href = "courses.html";
       } catch (e) {
         console.error(e);
-        alert("Save failed: " + (e?.message || e));
+        Notify.error("Save failed", (e && e.message) ? String(e.message) : "An unexpected error occurred while saving.");
       }
     });
   </script>

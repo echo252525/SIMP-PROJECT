@@ -13,6 +13,9 @@
 
   <link rel="stylesheet" href="../css_files/sideBar.css" />
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet" />
+
+  <!-- SweetAlert2 (compact, non-intrusive modals) -->
+  <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet" />
   <style>
     :root {
       --ink: #1c2430;
@@ -125,7 +128,6 @@
       background-position: center;
       background-repeat: no-repeat;
       color: transparent;
-      /* hide initials when image present */
       text-indent: -9999px;
     }
 
@@ -139,7 +141,6 @@
       white-space: nowrap;
     }
 
-    /* "You" tags */
     .pill.you {
       background: #e8fff4;
       color: #0f5132;
@@ -400,6 +401,8 @@
   <script src="../../general_files/index.js"></script>
   <script type="module" src="../../general_files/session.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
   <script type="module">
     import { SUPABASE_URL, SUPABASE_ANON_KEY } from "../../../supabase.js";
 
@@ -409,6 +412,78 @@
       SUPABASE_ANON_KEY,
       { db: { schema: "public" } }
     );
+
+    // ===== SweetAlert2 helpers (compact & consistent) =====
+    const Modal = Swal.mixin({
+      width: 380,              // shorter and compact
+      heightAuto: false,       // prevent page resize/jump
+      scrollbarPadding: false, // avoid layout shift on open
+      allowOutsideClick: false,
+      backdrop: true,
+      returnFocus: false,
+      confirmButtonColor: '#20a44c',
+      cancelButtonColor: '#6c7a8a',
+      customClass: {
+        popup: 'simp-compact-modal'
+      }
+    });
+
+    const Toast = Swal.mixin({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 2200,
+      timerProgressBar: true,
+      width: 360
+    });
+
+    function showSuccess(message, sub = '') {
+      Modal.fire({
+        icon: 'success',
+        title: message,
+        text: sub || ''
+      });
+    }
+
+    function showInfo(message, sub = '') {
+      Modal.fire({
+        icon: 'info',
+        title: message,
+        text: sub || ''
+      });
+    }
+
+    function showError(message, sub = '') {
+      Modal.fire({
+        icon: 'error',
+        title: message,
+        text: sub || 'If this keeps happening, please try again in a moment.'
+      });
+    }
+
+    async function askConfirm({ title, text, confirmText = 'Confirm', icon = 'question' }) {
+      const res = await Modal.fire({
+        icon,
+        title,
+        text,
+        showCancelButton: true,
+        confirmButtonText: confirmText,
+        cancelButtonText: 'Cancel'
+      });
+      return res.isConfirmed;
+    }
+
+    function toastOk(message) {
+      Toast.fire({ icon: 'success', title: message });
+    }
+
+    function toastWarn(message) {
+      Toast.fire({ icon: 'warning', title: message });
+    }
+
+    function toastError(message) {
+      Toast.fire({ icon: 'error', title: message });
+    }
 
     // Elements
     const contentArea = document.getElementById("contentArea");
@@ -489,6 +564,7 @@
       } = await supabase.auth.getUser();
       if (!user) {
         notAuth.style.display = "block";
+        toastWarn("Please sign in to access Admin Verification.");
         return;
       }
       currentUser = user;
@@ -503,12 +579,14 @@
       if (meErr) {
         console.error(meErr);
         notAuth.style.display = "block";
+        showError("Unable to verify your access.", "Please refresh the page or try again shortly.");
         return;
       }
       currentRole = me?.role || null;
 
       if (!(currentRole === "admin" || currentRole === "superadmin")) {
         notAuth.style.display = "block";
+        toastWarn("Your account doesn’t have access to this section.");
         return;
       }
 
@@ -526,7 +604,6 @@
       const { data, error } = await supabase
         .from("admin")
         .select(
-          // ADDED: admin_profile_url to fetch image path
           "id, email, name, phone, role, created_at, admin_profile_url"
         )
         .order("created_at", { ascending: false });
@@ -537,11 +614,12 @@
         emptyAdmins.style.display = "block";
         emptyAdmins.textContent =
           "Error loading admin profiles: " + error.message;
+        showError("Couldn’t load admin profiles.", error.message || "");
         return;
       }
       admins = data || [];
 
-      // NEW: prefetch signed URLs for avatars
+      // Prefetch signed URLs for avatars
       await hydrateAvatars(admins);
 
       renderAdminList();
@@ -557,6 +635,7 @@
       } else {
         detailsPane.innerHTML =
           '<div class="empty-state">No admin profiles found.</div>';
+        toastWarn("No admin profiles found.");
       }
     }
 
@@ -588,7 +667,6 @@
             ? ' <span class="pill you">You</span>'
             : "";
 
-        // Avatar element with data-id so we can apply image easily
         const avatar = `<div class="avatar" data-avatar-id="${a.id}">${initials(
           a.name || a.email
         )}</div>`;
@@ -596,15 +674,12 @@
         item.innerHTML = `
             ${avatar}
             <div>
-              <div style="font-weight:700">${a.name || "(no name)"
-          }${youBadge}</div>
+              <div style="font-weight:700">${a.name || "(no name)"}${youBadge}</div>
               <div style="font-size:.85rem; color:var(--muted)">${a.email}</div>
             </div>
-            <span class="pill">${roleDot(a.role)} ${a.role ? cap(a.role) : "Pending"
-          }</span>
+            <span class="pill">${roleDot(a.role)} ${a.role ? cap(a.role) : "Pending"}</span>
           `;
 
-        // Apply avatar image if available
         const avatarEl = item.querySelector(
           `[data-avatar-id="${a.id}"]`
         );
@@ -621,6 +696,10 @@
 
         adminList.appendChild(item);
       });
+
+      if (!filtered.length) {
+        toastWarn("No results match your filters.");
+      }
     }
 
     function renderDetails(admin) {
@@ -653,8 +732,7 @@
             <div class="card">
               <h4>Basic Information</h4>
               <div class="info-list">
-                <div><span class="label">Full Name</span>${admin.name || "—"
-        }</div>
+                <div><span class="label">Full Name</span>${admin.name || "—"}</div>
                 <div><span class="label">Email</span>${admin.email || "—"}</div>
                 <div><span class="label">Phone</span>${admin.phone || "—"}</div>
                 <div><span class="label">Role</span>${roleLabel}</div>
@@ -670,11 +748,9 @@
           </div>
         `;
 
-      // Apply detail avatar image if exists
       const detailAvatarEl = detailsPane.querySelector("#detailAvatar");
       applyAvatarToEl(detailAvatarEl, avatarCache[admin.id]);
 
-      // Wire actions
       wireActionsFor(admin);
     }
 
@@ -724,29 +800,37 @@
         approveBtn.addEventListener("click", async () => {
           await setRole(admin.id, "admin");
         });
+
       if (rejectBtn)
         rejectBtn.addEventListener("click", async () => {
-          if (
-            !confirm(
-              `Reject this profile (${admin.email})? This deletes the user from auth and removes their admin row.`
-            )
-          )
-            return;
+          const ok = await askConfirm({
+            title: "Reject this profile?",
+            text: `This will remove ${admin.email} from authentication and delete their admin profile.`,
+            confirmText: "Reject"
+          });
+          if (!ok) return;
           await rejectProfileDeleteAuthUser(admin.id);
         });
+
       if (demoteBtn)
         demoteBtn.addEventListener("click", async () => {
-          if (!confirm(`Demote ${admin.email} to Pending?`)) return;
+          const ok = await askConfirm({
+            title: "Demote to Pending?",
+            text: `This will set ${admin.email} back to Pending.`,
+            confirmText: "Demote"
+          });
+          if (!ok) return;
           await setRole(admin.id, "pending");
         });
+
       if (promoteBtn)
         promoteBtn.addEventListener("click", async () => {
-          if (
-            !confirm(
-              "Transfer SUPERADMIN to this user and become ADMIN yourself?"
-            )
-          )
-            return;
+          const ok = await askConfirm({
+            title: "Transfer Super Admin?",
+            text: "You will become ADMIN and the selected user will become SUPERADMIN.",
+            confirmText: "Transfer"
+          });
+          if (!ok) return;
           await promoteToSuperadminSwapClientSide(admin.id);
         });
     }
@@ -758,7 +842,7 @@
           .update({ role })
           .eq("id", id);
         if (error) {
-          alert("Failed to set role: " + (error.message || "Unknown error"));
+          showError("Failed to update role.", error.message || "");
           return;
         }
         const keepId = activeAdminId;
@@ -768,9 +852,9 @@
           activeAdminId = updated.id;
           renderDetails(updated);
         }
-        alert(`Role updated to ${role.toUpperCase()}.`);
+        toastOk(`Role updated to ${role.toUpperCase()}.`);
       } catch (e) {
-        alert("Unexpected error: " + (e?.message || e));
+        showError("Unexpected error while updating role.", e?.message || String(e));
       }
     }
 
@@ -791,7 +875,7 @@
         .update({ role: "admin" })
         .eq("id", currentUser.id);
       if (e1) {
-        alert("Could not demote yourself: " + e1.message);
+        showError("Could not demote your role.", e1.message || "");
         return;
       }
 
@@ -807,18 +891,14 @@
           .update({ role: "superadmin" })
           .eq("id", currentUser.id);
         if (restoreErr) {
-          alert(
-            "Promotion failed (" +
-            e2.message +
-            ") and restoring your superadmin role also failed (" +
-            restoreErr.message +
-            "). Please check roles manually."
+          showError(
+            "Promotion failed and restoration also failed.",
+            `Promotion: ${e2.message} | Restore: ${restoreErr.message}`
           );
         } else {
-          alert(
-            "Promotion failed: " +
-            e2.message +
-            ". Your superadmin role was restored."
+          showError(
+            "Promotion failed.",
+            `${e2.message}. Your SUPERADMIN role was restored.`
           );
         }
         await reloadMyRole();
@@ -834,7 +914,7 @@
         activeAdminId = selected.id;
         renderDetails(selected);
       }
-      alert("Superadmin role transferred.");
+      showSuccess("Superadmin role transferred.");
     }
 
     /**
@@ -848,10 +928,7 @@
       );
 
       if (error) {
-        alert(
-          "Failed to delete auth user: " +
-          (error.message || JSON.stringify(error))
-        );
+        showError("Failed to remove the user.", error.message || "");
         return;
       }
 
@@ -860,10 +937,10 @@
         await refreshAdmins();
         detailsPane.innerHTML =
           '<div class="empty-state">Select a profile on the left to review full details.</div>';
-        alert("User rejected and removed from authentication.");
+        toastOk("User rejected and removed.");
       } else {
-        alert(
-          "Auth deletion did not report success. Response: " +
+        showError(
+          "Unexpected response while deleting user.",
           JSON.stringify(payload)
         );
       }

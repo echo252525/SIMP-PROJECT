@@ -354,7 +354,8 @@
 
     .modal-card {
       width: min(1080px, 96vw);
-      height: min(80vh, 900px);
+      /* Reduced height so screen won't resize awkwardly */
+      height: min(70vh, 760px);
       background: var(--modal-bg);
       border-radius: 16px;
       overflow: hidden;
@@ -528,7 +529,8 @@
 
       .modal-card {
         width: 94vw;
-        height: 78vh;
+        /* Slightly shorter on very small screens as well */
+        height: 68vh;
       }
     }
 
@@ -1045,11 +1047,26 @@
   <script src="../../general_files/index.js"></script>
   <script type="module" src="../../general_files/session.js"></script>
 
+  <!-- SweetAlert2 (added) -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
   <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script type="module">
     const { createClient } = supabase;
     import { SUPABASE_URL, SUPABASE_ANON_KEY } from "../../../supabase.js";
     const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // === SweetAlert2 helpers (added) ===
+    const swalBtnColor = getComputedStyle(document.documentElement).getPropertyValue('--brand')?.trim() || '#20a44c';
+    function notifySuccess(text = 'Done.') {
+      return Swal.fire({ icon: 'success', title: 'Success', text, confirmButtonColor: swalBtnColor });
+    }
+    function notifyError(text = 'Something went wrong.') {
+      return Swal.fire({ icon: 'error', title: 'Oops', text, confirmButtonColor: swalBtnColor });
+    }
+    function notifyInfo(text = 'Heads up.') {
+      return Swal.fire({ icon: 'info', title: 'Notice', text, confirmButtonColor: swalBtnColor });
+    }
 
     const searchInput = document.getElementById("searchInput");
     const statusFilter = document.getElementById("statusFilter");
@@ -1098,12 +1115,14 @@
           console.error("installer_documents error:", docsErr);
           workerList.innerHTML = ""; emptyWorkers.style.display = "block";
           detailsPane.innerHTML = `<div class="empty-state">Could not load workers: ${docsErr.message}</div>`;
+          notifyError('Unable to load workers right now. Please refresh or try again shortly.');
           return;
         }
 
         if (!docsRows || docsRows.length === 0) {
           WORKERS = []; renderWorkerList();
           detailsPane.innerHTML = `<div class="empty-state">No workers to review.</div>`;
+          notifyInfo('No new worker sign-ups found.');
           return;
         }
 
@@ -1362,7 +1381,10 @@
             DOC_REVIEW.set(worker.id, (DOC_REVIEW.get(worker.id) || []).map((x, i) => i === idx ? item : x));
             if (freshUrl) { openDoc(item.type, freshUrl); btn.disabled = false; return; }
           }
-          if (!item.url) { alert("Preview unavailable. File missing or you lack permission."); return; }
+          if (!item.url) {
+            notifyInfo('Preview is unavailable for this file. It may be missing or access is not allowed.');
+            return;
+          }
           openDoc(item.type, item.url);
         });
       });
@@ -1381,7 +1403,10 @@
       if (approveBtn) {
         approveBtn.disabled = !allPresentDocsApproved(docs);
         approveBtn.addEventListener("click", async () => {
-          if (!allPresentDocsApproved(docs)) { alert("You must Approve all present documents first."); return; }
+          if (!allPresentDocsApproved(docs)) {
+            notifyInfo('Please approve all submitted documents first.');
+            return;
+          }
           await setOverallStatus(worker.id, "approved");
         });
       }
@@ -1419,8 +1444,11 @@
           DOC_REVIEW.set(installerId, freshRows);
           await signAllDocsForInstaller(installerId);
           if (w) { w._rawDocs = data; renderDetails(w); }
+          notifySuccess(`Marked "${item.type}" as ${cap(status)}.`);
         }
-      } catch (e) { alert("Failed to update document status: " + (e.message || e)); }
+      } catch (e) {
+        notifyError(`Could not update document: ${e.message || e}`);
+      }
     }
 
     async function persistDocStatus(installerId, docKey, toStatus) {
@@ -1483,14 +1511,17 @@
           await fetchWorkers();
         }
 
-        alert(`Installer marked as ${cap(toStatus)}.`);
+        notifySuccess(`Installer marked as ${cap(toStatus)}.`);
       } catch (err) {
-        alert(`Failed to set status: ${err.message || err}`);
+        notifyError(`Failed to update installer status: ${err.message || err}`);
       }
     }
 
     function openDoc(title, url) {
-      if (!url) { alert("Preview unavailable."); return; }
+      if (!url) {
+        notifyInfo('Preview is unavailable for this file.');
+        return;
+      }
       docTitle.textContent = title || "Document";
       docBody.innerHTML = "";
       const isImage = /\.(png|jpe?g|gif|webp|bmp|svg)($|\?)/i.test(url);
