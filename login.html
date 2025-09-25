@@ -19,6 +19,7 @@
         --shadow: 0 8px 30px rgba(32, 100, 124, 0.2);
         --brand-grad-a: #20647c;
         --brand-grad-b: #20a44c;
+        --muted: #6b7280;
       }
 
       * {
@@ -105,7 +106,7 @@
         transform: translateY(1px);
       }
 
-      /* Gradient halves (like your screenshots) */
+      /* Gradient halves */
       .left-grad {
         background: linear-gradient(135deg, #20a44c, #20647c);
         color: #fff;
@@ -317,15 +318,12 @@
           border-radius: 20px;
         }
 
-        /* Turn side panels into off-canvas sheets that slide OUT of the screen.
-         This keeps the form compact like the reference. */
+        /* Turn side panels into off-canvas sheets that slide OUT of the screen. */
         .side {
           position: relative;
           height: 0;
-          /* collapse the grid space */
           grid-template-columns: 1fr;
           pointer-events: none;
-          /* taps go to the form */
         }
 
         .side .pane {
@@ -343,7 +341,6 @@
             opacity 0.3s;
         }
 
-        /* Customer mode: push BOTH panels off-screen so the view is clean */
         html.mode-customer .left-grad {
           transform: translate(-130%, 0);
           opacity: 0;
@@ -354,7 +351,6 @@
           opacity: 0;
         }
 
-        /* Installer mode: same—both slide out so only the compact form shows */
         html.mode-installer .left-grad {
           transform: translate(-130%, 0);
           opacity: 0;
@@ -371,7 +367,6 @@
           width: 100%;
           max-width: 680px;
           transform: translateX(0) !important;
-          /* keep centered on mobile */
         }
 
         .loginDiv .backBtn {
@@ -459,7 +454,22 @@
         margin-top: 10px;
         margin-bottom: 20px;
       }
+
+      /* Compact SweetAlert popup (prevents layout shifts / huge modals) */
+      .swal-compact.swal2-popup {
+        width: 360px !important;          /* fixed, compact width */
+        padding: 0.75rem !important;      /* smaller padding */
+        font-size: 0.92rem !important;    /* slightly smaller text */
+      }
+      @media (max-width: 420px) {
+        .swal-compact.swal2-popup {
+          width: 92vw !important;         /* stay within viewport on small screens */
+        }
+      }
     </style>
+
+    <!-- SweetAlert2 (external) -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script type="module">
       import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
@@ -484,6 +494,52 @@
         "../pages/installer_pages/html_files/rejected.html";
       const CUSTOMER_DASH =
         "../pages/customer_pages/html_files/myJobPosts.html";
+
+      // ---------- Compact popup helpers (no layout shift) ----------
+      const basePopup = {
+        confirmButtonColor: "#20a44c",
+        showCancelButton: false,
+        allowOutsideClick: true,
+        backdrop: true,
+        heightAuto: false,           // prevent SweetAlert from adjusting page height
+        customClass: "swal-compact", // compact size + fonts (see CSS)
+      };
+
+      const notifyModal = (opts = {}) =>
+        Swal.fire({
+          ...basePopup,
+          icon: opts.icon || "info",
+          title: opts.title || "",
+          text: opts.text || "",
+          html: opts.html || undefined,
+          confirmButtonText: opts.confirmText || "OK",
+          width: opts.width || undefined, // compact via class already
+        });
+
+      const notifyToast = (opts = {}) =>
+        Swal.fire({
+          toast: true,
+          icon: opts.icon || "info",
+          title: opts.title || "",
+          position: opts.position || "top-end",
+          showConfirmButton: false,
+          timer: opts.timer ?? 2200,
+          timerProgressBar: true,
+          heightAuto: false,
+        });
+
+      const showLoading = (title = "Signing you in…") =>
+        Swal.fire({
+          ...basePopup,
+          title,
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          didOpen: () => {
+            Swal.showLoading();
+          },
+        });
+
+      const closePopup = () => Swal.close();
 
       // Get the latest installer_documents row for this user
       async function getLatestInstallerDoc(userId) {
@@ -510,7 +566,7 @@
         return !!data;
       }
 
-      // ✅ NEW: check if user exists in public.installer table
+      // ✅ Check if user exists in public.installer table
       async function isInstaller(userId) {
         const { data, error } = await supabase
           .from("installer")
@@ -546,13 +602,15 @@
             role === "installer"
               ? "Logging in as Installer"
               : "Logging in as Customer";
+
+        // ❌ Removed the "mode selected" toast/modal as requested.
       }
 
       // Expose for inline buttons
       window.chooseInstaller = () => setRole("installer");
       window.chooseCustomer = () => setRole("customer");
 
-      // Default view (you can change to "installer" if you prefer)
+      // Default view
       setRole("customer");
 
       // --- Your original login() kept intact, only reads role from hidden select ---
@@ -561,7 +619,19 @@
         const password = document.getElementById("password").value;
         const role = document.getElementById("role").value;
 
+        // Basic validation (compact modal)
+        if (!email || !password || !role) {
+          notifyModal({
+            icon: "warning",
+            title: "Almost there",
+            text: "Please enter your email, password, and choose a role.",
+          });
+          return;
+        }
+
         try {
+          showLoading("Checking your account…");
+
           // 1) Auth sign-in
           const { data: signInData, error: signInError } =
             await supabase.auth.signInWithPassword({ email, password });
@@ -570,12 +640,17 @@
           const userId = signInData.user.id;
 
           if (role === "installer") {
-            // ✅ First, ensure this user is actually an installer
             const installerExists = await isInstaller(userId);
             if (!installerExists) {
-              alert(
-                "No installer profile found for this account. Please register as an installer first."
-              );
+              closePopup();
+              await notifyModal({
+                icon: "error",
+                title: "Installer profile not found",
+                html:
+                  "This account isn’t set up as an installer yet.<br/>" +
+                  "<small>Tip: Register an installer profile to continue.</small>",
+                confirmText: "OK",
+              });
               return;
             }
 
@@ -596,15 +671,19 @@
                   console.log("Status updated to:", updated.status);
                 } catch (e) {
                   console.warn(
-                    "Auto-upgrade failed (still going to Approved page):",
+                    "Auto-upgrade failed (still navigating to Approved page):",
                     e
                   );
                 }
+                closePopup();
+                notifyToast({ icon: "success", title: "Welcome back! Redirecting…" });
                 window.location.href = INSTALLER_APPROVED;
                 return;
               }
 
               if (status === "verified") {
+                closePopup();
+                notifyToast({ icon: "success", title: "Welcome back! Redirecting…" });
                 window.location.href = INSTALLER_DASH;
                 return;
               }
@@ -615,21 +694,47 @@
                 status === "submitted" ||
                 status === "under review"
               ) {
+                closePopup();
+                notifyToast({
+                  icon: "info",
+                  title: "Your documents are being reviewed…",
+                });
                 window.location.href = INSTALLER_REVIEW;
                 return;
               }
 
               if (status === "rejected") {
+                closePopup();
+                await notifyModal({
+                  icon: "error",
+                  title: "Application rejected",
+                  text:
+                    "Please check the feedback and resubmit your documents.",
+                  confirmText: "Go to status",
+                });
                 window.location.href = INSTALLER_REJECTED;
                 return;
               }
 
+              // Any other/unset status → ask to upload
+              closePopup();
+              await notifyModal({
+                icon: "info",
+                title: "Action needed",
+                text:
+                  "We couldn’t find a valid document status. Please upload your installer documents.",
+                confirmText: "Upload now",
+              });
               window.location.href = INSTALLER_UPLOAD;
               return;
             } else {
-              alert(
-                "No installer documents found. Please upload your documents."
-              );
+              closePopup();
+              await notifyModal({
+                icon: "info",
+                title: "No documents yet",
+                text: "Please upload your installer documents to proceed.",
+                confirmText: "Upload now",
+              });
               window.location.href = INSTALLER_UPLOAD;
               return;
             }
@@ -637,14 +742,43 @@
 
           if (role === "customer") {
             const customer = await isCustomer(userId);
+            closePopup();
             if (customer) {
+              notifyToast({ icon: "success", title: "Welcome back! Redirecting…" });
               window.location.href = CUSTOMER_DASH;
             } else {
-              alert("No customer profile found. Please register as customer.");
+              await notifyModal({
+                icon: "warning",
+                title: "Customer profile not found",
+                text: "Create a customer profile to continue.",
+              });
             }
           }
         } catch (err) {
-          alert("Error: " + (err.message || "Login failed"));
+          closePopup();
+          // Make auth errors clearer without being long
+          const msg = (() => {
+            const raw = (err?.message || "").toLowerCase();
+            if (raw.includes("invalid login") || raw.includes("invalid credentials")) {
+              return "Your email or password is incorrect.";
+            }
+            if (raw.includes("email not confirmed")) {
+              return "Please confirm your email to sign in.";
+            }
+            if (raw.includes("network")) {
+              return "We couldn’t reach the server. Please check your connection.";
+            }
+            return "Something went wrong while signing in.";
+          })();
+
+          const extra =
+            `<br/><small style="color:#6b7280">Need help? Try resetting your password or checking your email confirmation.</small>`;
+
+          await notifyModal({
+            icon: "error",
+            title: "Login failed",
+            html: `<div style="word-break:break-word">${msg}</div>${extra}`,
+          });
           console.error(err);
         }
       };
@@ -660,6 +794,7 @@
             <img
               src="img/simpHappyMascotLogo.png"
               style="max-width: 100px; width: 95%"
+              alt="SIMP Mascot"
             />
             <h1>Welcome Back, Simpsters!</h1>
             <p>
@@ -676,6 +811,7 @@
             <img
               src="img/simpHappyMascotLogo.png"
               style="max-width: 100px; width: 95%"
+              alt="SIMP Mascot"
             />
             <h1>Hello, Simpsters!</h1>
             <p>
