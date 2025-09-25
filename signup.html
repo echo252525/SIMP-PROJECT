@@ -131,7 +131,7 @@
       width: 100%;
       max-width: 500px;
       display: grid;
-      grid-template-rows: auto auto 1fr auto;
+      grid-template-rows: auto auto minmax(0, 1fr) auto;
       gap: 8px;
       padding: 3rem 2.5rem;
       background-color: white;
@@ -169,10 +169,29 @@
       width: 3.6rem;
     }
 
+    .signupDivHeader {
+      display: grid;
+      place-items: center;
+      gap: 0.5rem;
+      margin-bottom: 4px;
+    }
+
     h2 {
       text-align: center;
       font-weight: 900;
       font-size: 36px;
+    }
+
+    .role-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #eef2f7;
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #111827;
     }
 
     h2,
@@ -274,7 +293,7 @@
 
     /* Scroll area */
     .form-scroll {
-      overflow: auto;
+      min-height: 0;
       padding: 8px 4px 6px;
     }
 
@@ -457,11 +476,7 @@
     }
 
     /* ===== Responsive (Mobile first) ===== */
-    @media (max-width: 820px) {
-      body {
-        overflow: auto;
-      }
-
+    @media only screen and (max-width: 820px) {
       /* Off-canvas the big panels to keep the animation but save space */
       .side {
         transform: translateY(-100%);
@@ -476,13 +491,13 @@
       }
 
       .auth-shell {
-        height: 700px;
-        overflow-y: auto;
+        height: min(92vh, 800px);
       }
 
       .signupDiv {
         position: relative;
         max-width: 640px;
+        width: 100%;
         padding: 60px 0px 18px;
         border-radius: 0;
       }
@@ -547,6 +562,22 @@
         padding-bottom: 10px;
       }
     }
+
+    @media only screen and (max-width: 431px) {
+      .auth-shell {
+        height: min(92vh, 750px);
+        overflow-y: auto;
+      }
+
+      .signupDiv {
+        padding: 60px 20px 18px;
+      }
+
+      .role-pill {
+        font-size: 11px;
+        padding: 5px 10px;
+      }
+    }
   </style>
 </head>
 
@@ -567,10 +598,8 @@
       <div class="pane left-grad">
         <div>
           <img src="img/simpHappyMascotLogo.png" style="max-width: 100px; width: 95%" alt="SIMP Mascot" />
-          <h1>Welcome, Simpsters!</h1>
-          <p>
-            Are you an <strong>Installer</strong>? Create your account and
-            start getting jobs.
+          <h1>Hello, Simpsters!</h1>
+          <p>Click the button below to <strong>sign up as installer.</strong>
           </p>
           <button class="ghost-btn" onclick="window.chooseInstallerSignup()">
             SIGN UP AS INSTALLER
@@ -581,9 +610,7 @@
         <div>
           <img src="img/simpHappyMascotLogo.png" style="max-width: 100px; width: 95%" alt="SIMP Mascot" />
           <h1>Hello, Simpsters!</h1>
-          <p>
-            Signing up as a <strong>Customer</strong>? Post jobs and track
-            your requests.
+          <p>Click the button below to <strong>sign up as customer.</strong>
           </p>
           <button class="ghost-btn" onclick="window.chooseCustomerSignup()">
             SIGN UP AS CUSTOMER
@@ -597,7 +624,14 @@
       <button class="backBtn" onclick="window.location.href='index.html'">
         <span class="material-icons-sharp">arrow_back</span>
       </button>
-      <h2>Sign Up</h2>
+
+      <div class="signupDivHeader">
+        <h2>Sign Up</h2>
+        <div class="role-pill">
+          <span class="material-icons-sharp" style="font-size: 16px">person</span>
+          <span id="activeRoleText"></span>
+        </div>
+      </div>
 
       <!-- Installer-only stepper -->
       <div id="progressWrap" class="progress-wrap hidden">
@@ -772,6 +806,16 @@
     function goBack() {
       const i = currentIndex();
       if (i > 0) showStepByIndex(i - 1);
+    }
+
+    //role pill
+    function updateRolePill(role) {
+      const el = document.getElementById("activeRoleText");
+      if (!el) return;
+      el.textContent =
+        role === "installer"
+          ? "You are now signing up as Installer"
+          : "You are now signing up as Customer";
     }
 
     // Buttons
@@ -1012,6 +1056,7 @@
       selectedRole = "installer";
       setModeFromRole(selectedRole);
       applyFlowForRole(selectedRole);
+      updateRolePill(selectedRole);
       showStepByIndex(0);
     };
 
@@ -1019,6 +1064,7 @@
       selectedRole = "customer";
       setModeFromRole(selectedRole);
       applyFlowForRole(selectedRole);
+      updateRolePill(selectedRole);
       showStepByIndex(0);
     };
 
