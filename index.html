@@ -1,460 +1,444 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <title>SIMP Project</title>
+    <style>
+      /* ---------- FIRST PAGE: hero & CTA ---------- */
+      .section_container button {
+        padding: 1rem 3rem;
+        border-radius: 100px;
+      }
 
-<head>
-	<meta charset="UTF-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet" />
-	<link rel="stylesheet" href="style.css">
-	<title>SIMP Project</title>
-	<style>
-		.container3 {
-			display: grid;
-			grid-template-columns: repeat(3, minmax(0, 1fr));
-			gap: 20px;
-		}
-		@media (max-width: 1024px) { .container3 { grid-template-columns: repeat(2, 1fr); } }
-		@media (max-width: 640px) { .container3 { grid-template-columns: 1fr; } }
+      /* Admin FAB (reuses .socials element) */
+      .socials.admin-fab {
+        position: fixed;
+        right: 20px;
+        bottom: 20px;
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        transition: transform 0.28s ease, opacity 0.28s ease;
+        will-change: transform, opacity;
+      }
 
-		.job-card {
-			position: relative;
-			border-radius: 16px;
-			overflow: hidden;
-			height: 260px;
-			color: #fff;
-			display: flex;
-			align-items: flex-end;
-			padding: 16px;
-			box-shadow: 0 6px 18px rgba(17, 24, 39, 0.15);
-			transition: transform .3s ease, box-shadow .3s ease;
-			background: #1c2430;
-		}
-		.job-card:hover {
-			transform: translateY(-4px) scale(1.02);
-			box-shadow: 0 12px 28px rgba(17, 24, 39, 0.25);
-		}
+      .socials.admin-fab.fab-out {
+        transform: translateX(120%);
+        opacity: 0.2;
+        pointer-events: none;
+      }
 
-		/* Background image with overlay */
-		.job-cover {
-			position: absolute;
-			inset: 0;
-			background-size: cover;
-			background-position: center;
-			filter: brightness(75%); /* 25% dim */
-			z-index: 1;
-		}
-		.job-overlay {
-			position: absolute;
-			inset: 0;
-			background: linear-gradient(to top, rgba(0,0,0,.55), rgba(0,0,0,.15));
-			z-index: 2;
-		}
+      .socials.admin-fab a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 52px;
+        height: 52px;
+        border-radius: 999px;
+        background: #1c2430;
+        color: #fff;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+        transition: transform 0.2s ease, box-shadow 0.2s ease,
+          background 0.2s ease;
+      }
 
-		.job-body {
-			position: relative;
-			z-index: 3;
-			width: 100%;
-			display: flex;
-			flex-direction: column;
-			gap: 8px;
-		}
+      .socials.admin-fab a:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 26px rgba(0, 0, 0, 0.3);
+        background: #111820;
+      }
 
-		.job-body h3 {
-			margin: 0;
-			font-size: 1.15rem;
-			font-weight: 700;
-			line-height: 1.3;
-		}
-		.job-body p {
-			margin: 0;
-			font-size: .95rem;
-			line-height: 1.4;
-			color: #e2e8f0;
-			flex-grow: 1;
-		}
+      .socials.admin-fab i {
+        font-size: 22px;
+        line-height: 1;
+      }
 
-		.job-meta {
-			display: flex;
-			align-items: center;
-			justify-content: space-between;
-			flex-wrap: wrap;
-			gap: 10px;
-		}
-		.job-city {
-			display: flex;
-			align-items: center;
-			gap: 6px;
-			font-size: .9rem;
-			color: #cbd5e1;
-		}
-		.job-city i { font-size: 1.1rem; }
+      /* ---------- RESPONSIVE BREAKPOINTS (match section order) ---------- */
 
-		.price {
-			background: rgba(255, 255, 255, 0.15);
-			padding: 6px 12px;
-			border-radius: 999px;
-			font-weight: 600;
-			font-size: .9rem;
-			backdrop-filter: blur(6px);
-		}
+      /* How It Works: 4 → 2 columns */
+      @media (max-width: 1024px) {
+        .hiw-steps.container2 {
+          grid-template-columns: repeat(2, minmax(220px, 1fr));
+        }
+      }
 
-		/* NEW: posted time pill */
-		.posted-time {
-			display: inline-flex;
-			align-items: center;
-			gap: 6px;
-			font-size: .85rem;
-			background: rgba(0,0,0,.35);
-			padding: 6px 10px;
-			border-radius: 999px;
-			color: #e2e8f0;
-			white-space: nowrap;
-		}
-		.posted-time i { font-size: 1rem; }
+      /* How It Works: 1 column */
+      @media (max-width: 640px) {
+        .hiw-steps.container2 {
+          grid-template-columns: 1fr;
+        }
 
-		.empty-jobs {
-			grid-column: 1 / -1;
-			text-align: center; padding: 24px; border: 1px dashed #e2e8f0; border-radius: 12px; background: #fafcff; color: #425569;
-		}
+        .hiw-step {
+          max-width: 100%;
+        }
+      }
 
-		/* ========== Admin FAB (floating) ========== */
-		/* Reuse your existing .socials container and make it a fixed FAB on bottom-right */
-		.socials.admin-fab {
-			position: fixed;
-			right: 20px;
-			bottom: 20px;
-			z-index: 1000;
-			display: flex;
-			flex-direction: column;
-			gap: 10px;
-			transition: transform .28s ease, opacity .28s ease;
-			will-change: transform, opacity;
-		}
-		/* Slide out to the right when scrolling down */
-		.socials.admin-fab.fab-out {
-			transform: translateX(120%);
-			opacity: .2;
-			pointer-events: none;
-		}
-		/* Style the icon a bit more like a FAB */
-		.socials.admin-fab a {
-			display: inline-flex;
-			align-items: center;
-			justify-content: center;
-			width: 52px;
-			height: 52px;
-			border-radius: 999px;
-			background: #1c2430;
-			color: #fff;
-			box-shadow: 0 8px 20px rgba(0,0,0,.25);
-			transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
-		}
-		.socials.admin-fab a:hover {
-			transform: translateY(-2px);
-			box-shadow: 0 12px 26px rgba(0,0,0,.3);
-			background: #111820;
-		}
-		.socials.admin-fab i {
-			font-size: 22px;
-			line-height: 1;
-		}
-		@media (max-width: 480px) {
-			.socials.admin-fab {
-				right: 14px;
-				bottom: 14px;
-			}
-			.socials.admin-fab a {
-				width: 48px;
-				height: 48px;
-			}
-		}
+      /* FAB safe-area on tiny phones */
+      @media (max-width: 480px) {
+        .socials.admin-fab {
+          right: 14px;
+          bottom: 14px;
+        }
 
-		/* ==========================================================
-		   MOBILE-FRIENDLY & FLUID OVERRIDES (additions only)
-		   ========================================================== */
+        .socials.admin-fab a {
+          width: 48px;
+          height: 48px;
+        }
+      }
 
-		/* Fluid type scale for hero and headings */
-		.section_container h3 { font-size: clamp(1rem, 1.2vw + .8rem, 1.35rem); line-height: 1.3; }
-		.section_container h2 { font-size: clamp(1.25rem, 2.2vw + 1rem, 2rem); line-height: 1.25; }
+      @media (max-width: 420px) {
+        .socials.admin-fab {
+          bottom: max(14px, env(safe-area-inset-bottom));
+          right: 14px;
+        }
+      }
 
-		/* Make the hero CTA easier to tap */
-		.section_container button {
-			font-size: clamp(.9rem, .6vw + .8rem, 1rem);
-			padding: clamp(.65rem, .5vw + .5rem, .9rem) clamp(1rem, 1.2vw + 1rem, 1.4rem);
-			border-radius: 12px;
-		}
+      /* Job meta tighter on very small screens */
+      @media (max-width: 480px) {
+        .job-meta {
+          justify-content: flex-start;
+        }
 
-		/* Navigation: wrap nicely on small screens without changing your HTML */
-		.nav_links {
-			gap: .5rem;
-			row-gap: .35rem;
-			padding: 0 .75rem;
-			flex-wrap: wrap;
-		}
-		.nav_links > li a,
-		.nav_links div li a {
-			padding: .4rem .6rem;
-			border-radius: 8px;
-			display: inline-block;
-		}
-		.nav_links img {
-			max-height: 36px;
-			height: auto;
-			width: auto;
-		}
+        .job-city,
+        .posted-time,
+        .price {
+          margin-right: 8px;
+        }
+      }
 
-		/* “How it Works” steps tighten on mobile */
-		.hiw .container2 {
-			gap: clamp(.6rem, 1.6vw, 1rem);
-		}
-		.hiw-step {
-			padding: clamp(.8rem, 1.2vw + .5rem, 1rem);
-			border-radius: 14px;
-		}
-		.hiw-step h4 { font-size: clamp(1rem, .6vw + .9rem, 1.05rem); }
-		.hiw-step p { font-size: clamp(.9rem, .4vw + .8rem, .95rem); }
+      /* Reduce motion (global) */
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+          scroll-behavior: auto !important;
+        }
+      }
+    </style>
+  </head>
 
-		/* Recent job cards: flexible height, better text clamping */
-		/* Use aspect-ratio where supported for smoother scaling */
-		@supports (aspect-ratio: 16 / 10) {
-			.job-card { height: auto; aspect-ratio: 16 / 10; }
-			@media (max-width: 640px) { .job-card { aspect-ratio: 4 / 3; } }
-		}
-		/* Fallback: ensure reasonable min-height on very narrow screens */
-		@supports not (aspect-ratio: 16 / 10) {
-			@media (max-width: 640px) { .job-card { height: 300px; } }
-		}
-		.job-body h3 { font-size: clamp(1rem, .9vw + .9rem, 1.15rem); }
-		.job-body p {
-			font-size: clamp(.9rem, .4vw + .8rem, .95rem);
-			display: -webkit-box;
-			-webkit-line-clamp: 3;	
-			-webkit-box-orient: vertical;
-			overflow: hidden;
-		}
+  <body>
+    <!-- First Page -->
+    <div class="firstPage">
+      <nav class="navDivFirstPage">
+        <ul class="nav_links">
+          <div>
+            <li><img src="img/logo2.png" alt="simp-logo" /></li>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="#how-it-works">How It Works</a></li>
+            <li><a href="#jobs">Jobs</a></li>
+            <li><a href="#contact">Contact Us</a></li>
+          </div>
+          <div class="navButtons">
+            <li><a href="login.html">Log in</a></li>
+            <li><a href="signup.html">Sign up</a></li>
+          </div>
+        </ul>
+      </nav>
+      <section class="section_container">
+        <h3>Post your project. Get the best people. Done.</h3>
+        <h2>
+          Connect with Expert Technicians & Installers Across the Philippines!
+        </h2>
+        <button
+          onclick="document.getElementById('jobs').scrollIntoView({behavior:'smooth'})"
+        >
+          View Job Postings
+        </button>
+        <div class="scroll_bottom">
+          <a href="#how-it-works">
+            <span><i class="ri-mouse-fill"></i></span>
+            SCROLL
+          </a>
+        </div>
+        <!-- Added 'admin-fab' class to reuse existing element as a floating FAB -->
+        <div class="socials admin-fab">
+          <a href="adminLogin.html" aria-label="Admin"
+            ><i class="ri-user-settings-line"></i
+          ></a>
+        </div>
+      </section>
+    </div>
 
-		/* Meta row stacks neatly on phones */
-		.job-meta {
-			gap: 8px;
-		}
-		@media (max-width: 480px) {
-			.job-meta { justify-content: flex-start; }
-			.job-city, .posted-time, .price { margin-right: 8px; }
-		}
+    <!-- Second Page -->
+    <div class="secondPage hiw" id="how-it-works">
+      <div class="secondPageTitle">
+        <h1>How It Works</h1>
+        <p class="hiw-subtitle">
+          Mobile hiring made simple—post, learn, apply, and get hired with a
+          seamless workflow.
+        </p>
+      </div>
+      <div class="hiw-steps container2">
+        <div class="hiw-step">
+          <h4>Create Your Profile</h4>
+          <p>Sign up and build your professional portfolio.</p>
+        </div>
+        <div class="hiw-step">
+          <h4>Level Up with Courses</h4>
+          <p>Take specialized courses to sharpen your expertise.</p>
+        </div>
+        <div class="hiw-step">
+          <h4>Find &amp; Apply for Jobs</h4>
+          <p>Browse nationwide roles and apply to the ones that fit.</p>
+        </div>
+        <div class="hiw-step">
+          <h4>Get Hired &amp; Succeed</h4>
+          <p>Deliver great work, earn reviews, and grow your reputation.</p>
+        </div>
+      </div>
+    </div>
 
-		/* “Ready to Start” CTA block spacing */
-		.container4 .p1 { font-size: clamp(1.05rem, 1vw + 1rem, 1.3rem); }
-		.container4 .p2 { font-size: clamp(.95rem, .6vw + .85rem, 1.05rem); }
-		.container4 button {
-			font-size: clamp(.95rem, .6vw + .85rem, 1.05rem);
-			padding: clamp(.6rem, .8vw + .5rem, .9rem) clamp(1rem, 1.4vw + .9rem, 1.5rem);
-			border-radius: 12px;
-		}
+    <!-- Third Page -->
+    <div class="thirdPage" id="jobs">
+      <div class="thirdPageTitle">
+        <h1>Recent Job Postings</h1>
+        <p class="thirdpage-subtitle">
+          Discover the latest opportunities waiting for skilled technicians and
+          installers.
+        </p>
+      </div>
+      <div class="container3" id="recentJobs">
+        <div class="empty-jobs" id="jobsEmpty" style="display: none">
+          No recent job postings yet. Please check back soon.
+        </div>
+      </div>
+    </div>
 
-		/* Footer spacing and wrapping */
-		.site-footer .footer-inner {
-			row-gap: .6rem;
-			column-gap: 1rem;
-		}
-		.site-footer a { word-break: break-word; }
+    <!-- Fourth Page -->
+    <div class="fourthPage">
+      <div class="container4">
+        <p class="p1">Ready to Start Your Journey?</p>
+        <p class="p2">
+          Join our community of elite technicians and take control of your
+          career today.
+        </p>
+        <a href="signup.html" class="btn">Sign up now</a>
+      </div>
+    </div>
 
-		/* Third page title spacing */
-		.thirdPageTitle h1 {
-			font-size: clamp(1.2rem, 1.6vw + 1rem, 1.8rem);
-			text-align: center;
-			margin: .25rem 0 1rem;
-		}
+    <!-- Footer -->
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <div><img src="img/logo2.png" class="footerBrandLogo" /></div>
+          <div>
+            <strong>Powered by: </strong>STEQ Technological Solutions and
+            Services Inc.
+          </div>
+          <div class="footer-tagline">
+            Connecting clients with verified installers across the Philippines.
+          </div>
+				  <div class="footer-copy">
+            SIMP (<strong>STSSI Installers Management Platform</strong>)
+					</div>
+					<div>
+						© <span id="year"></span> All rights reserved.
+					</div>
+        </div>
 
-		/* Make the admin FAB avoid the iOS/Android nav bars a bit more */
-		@media (max-width: 420px) {
-			.socials.admin-fab { bottom: max(14px, env(safe-area-inset-bottom)); right: 14px; }
-		}
+        <div class="footer-meta">
+          <nav class="footer-links">
+            <ul>
+              <li><a href="#how-it-works">How It Works</a></li>
+              <li><a href="#jobs">Recent Jobs</a></li>
+              <li><a href="login.html">Log In</a></li>
+              <li><a href="signup.html">Sign Up</a></li>
+            </ul>
+          </nav>
+        </div>
 
-		/* Reduce motion if user prefers */
-		@media (prefers-reduced-motion: reduce) {
-			* { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
-		}
-	</style>
-</head>
+        <address class="footer-contact" id="contact">
+          <span
+            ><i class="ri-map-pin-line"></i> 1103 Don Pedro St.,
+            Valenzuela</span
+          >
+          <a
+            href="mailto:sales@steq.online"
+            aria-label="Email sales@steq.online"
+          >
+            <i class="ri-mail-line"></i> sales@steq.online
+          </a>
+          <a href="tel:+639177812111" aria-label="Call +63 917 781 2111">
+            <i class="ri-phone-line"></i> +63 917 781 2111
+          </a>
+          <a
+            href="https://facebook.com/"
+            target="_blank"
+            rel="noopener"
+            aria-label="Facebook"
+          >
+            <i class="ri-facebook-fill"></i> Facebook
+          </a>
+          <a
+            href="https://www.linkedin.com/"
+            target="_blank"
+            rel="noopener"
+            aria-label="LinkedIn"
+          >
+            <i class="ri-linkedin-fill"></i> LinkedIn
+          </a>
+          <a
+            href="https://youtube.com/"
+            target="_blank"
+            rel="noopener"
+            aria-label="YouTube"
+          >
+            <i class="ri-youtube-fill"></i> YouTube
+          </a>
+        </address>
+      </div>
+    </footer>
 
-<body>
-	<!-- First Page -->
-	<div class="firstPage">
-		<nav>
-			<ul class="nav_links">
-				<div>
-					<li><img src="img/logowhitebold.png" alt="logo" /></li>
-					<li><a href="#">Home</a></li>
-					<li><a href="#how-it-works">About Us</a></li>
-					<li><a href="#how-it-works">How It Works</a></li>
-					<li><a href="#contact">Contact Us</a></li>
-				</div>
-				<li><a href="login.html">Log in</a></li>
-				<li><a href="signup.html">Sign up</a></li>
-			</ul>
-		</nav>
-		<section class="section_container">
-			<h3>Post your project. Get the best people. Done.</h3>
-			<h2>Connect with Expert Technicians & Installers Across the Philippines!</h2>
-			<button onclick="document.getElementById('jobs').scrollIntoView({behavior:'smooth'})">
-				View Job Postings<span><i class="ri-arrow-right-line"></i></span>
-			</button>
-			<div class="scroll_bottom">
-				<a href="#how-it-works">
-					<span><i class="ri-mouse-fill"></i></span>
-					SCROLL
-				</a>
-			</div>
-			<!-- Added 'admin-fab' class to reuse existing element as a floating FAB -->
-			<div class="socials admin-fab">
-				<a href="adminLogin.html" aria-label="Admin"><i class="ri-user-settings-line"></i></a>
-			</div>
-		</section>
-	</div>
+    <!-- ScrollReveal -->
+    <script src="https://unpkg.com/scrollreveal"></script>
+    <script>
+      const scrollRevealOption = {
+        distance: "50px",
+        origin: "bottom",
+        duration: 1000,
+      };
+      ScrollReveal().reveal(
+        ".section_container h3",
+        Object.assign({}, scrollRevealOption)
+      );
+      ScrollReveal().reveal(
+        ".section_container h2",
+        Object.assign({}, scrollRevealOption, { origin: "right", delay: 200 })
+      );
+      ScrollReveal().reveal(
+        ".section_container button",
+        Object.assign({}, scrollRevealOption, { delay: 400 })
+      );
+      ScrollReveal().reveal(
+        ".nav_links li",
+        Object.assign({}, scrollRevealOption, { origin: "top", interval: 100 })
+      );
+      ScrollReveal().reveal(
+        ".container2 > div",
+        Object.assign({}, scrollRevealOption, { interval: 200 })
+      );
+      ScrollReveal().reveal(
+        ".container3 > div",
+        Object.assign({}, scrollRevealOption, { origin: "left", interval: 150 })
+      );
+      ScrollReveal().reveal(
+        ".fourthPage",
+        Object.assign({}, scrollRevealOption, { origin: "bottom" })
+      );
+    </script>
 
-	<!-- Second Page -->
-	<div class="secondPage hiw" id="how-it-works">
-		<div>
-			<h1>How It Works</h1>
-			<p class="hiw-subtitle">Mobile hiring made simple—post, learn, apply, and get hired with a seamless workflow.</p>
-		</div>
-		<div class="hiw-steps container2">
-			<div class="hiw-step"><h4>Create Your Profile</h4><p>Sign up and build your professional portfolio.</p></div>
-			<div class="hiw-step"><h4>Level Up with Courses</h4><p>Take specialized courses to sharpen your expertise.</p></div>
-			<div class="hiw-step"><h4>Find &amp; Apply for Jobs</h4><p>Browse nationwide roles and apply to the ones that fit.</p></div>
-			<div class="hiw-step"><h4>Get Hired &amp; Succeed</h4><p>Deliver great work, earn reviews, and grow your reputation.</p></div>
-		</div>
-	</div>
+    <!-- Fetch jobs -->
+    <script type="module">
+      import { SUPABASE_URL, SUPABASE_ANON_KEY } from "./supabase.js";
 
-	<!-- Third Page -->
-	<div class="thirdPage" id="jobs">
-		<div class="thirdPageTitle"><h1>Recent Job Postings</h1></div>
-		<div class="container3" id="recentJobs">
-			<div class="empty-jobs" id="jobsEmpty" style="display:none;">No recent job postings yet. Please check back soon.</div>
-		</div>
-	</div>
+      const jobsWrap = document.getElementById("recentJobs");
+      const emptyState = document.getElementById("jobsEmpty");
 
-	<!-- Fourth Page -->
-	<div class="fourthPage">
-		<div class="container4">
-			<p class="p1">Ready to Start Your Journey?</p>
-			<p class="p2">Join our community of elite technicians and take control of your career today.</p>
-			<button aria-label="View job postings from CTA" onclick="document.getElementById('jobs').scrollIntoView({behavior:'smooth'})">View Job Postings</button>
-		</div>
-	</div>
+      function peso(n) {
+        return (
+          "₱" +
+          Number(n || 0).toLocaleString("en-PH", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })
+        );
+      }
+      function truncate(text, max = 160) {
+        if (!text) return "";
+        const s = String(text);
+        return s.length > max ? s.slice(0, max - 1) + "…" : s;
+      }
+      function cityOnly(locationValue) {
+        if (!locationValue) return "";
+        const s = String(locationValue);
+        return s.split(",")[0].trim();
+      }
 
-	<!-- Footer -->
-	<footer class="site-footer">
-		<div class="footer-inner">
-			<div class="footer-brand"><strong>Powered by:</strong> STEQ Technological Solutions and Services Inc.</div>
-			<div class="footer-meta">
-				SIMP (<strong>STSSI Installers Management Platform</strong>)<br />
-				Copyright © 2025. All Rights Reserved.
-			</div>
-			<address class="footer-contact" id="contact">
-				<i class="ri-map-pin-line"></i> 1103 Don Pedro St., Valenzuela<br>
-				<a href="mailto:sales@steq.online"><i class="ri-mail-line"></i> sales@steq.online</a><br>
-				<a href="tel:+639177812111"><i class="ri-phone-line"></i> +63 917 781 2111</a>
-			</address>
-		</div>
-	</footer>
+      /* NEW: relative time helper */
+      function timeAgo(iso) {
+        if (!iso) return "";
+        const d = new Date(iso);
+        const now = new Date();
+        const diff = Math.max(0, now - d); // ms
+        const sec = Math.floor(diff / 1000);
+        if (sec < 5) return "just now";
+        if (sec < 60) return `${sec}s ago`;
+        const min = Math.floor(sec / 60);
+        if (min < 60) return `${min}m ago`;
+        const hrs = Math.floor(min / 60);
+        if (hrs < 24) return `${hrs}h ago`;
+        const days = Math.floor(hrs / 24);
+        if (days < 7) return `${days}d ago`;
+        // Fallback to date for older posts
+        return d.toLocaleDateString("en-PH", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        });
+      }
 
-	<!-- ScrollReveal -->
-	<script src="https://unpkg.com/scrollreveal"></script>
-	<script>
-		const scrollRevealOption = { distance: "50px", origin: "bottom", duration: 1000 };
-		ScrollReveal().reveal(".section_container h3", Object.assign({}, scrollRevealOption));
-		ScrollReveal().reveal(".section_container h2", Object.assign({}, scrollRevealOption, { origin: "right", delay: 200 }));
-		ScrollReveal().reveal(".section_container button", Object.assign({}, scrollRevealOption, { delay: 400 }));
-		ScrollReveal().reveal(".nav_links li", Object.assign({}, scrollRevealOption, { origin: "top", interval: 100 }));
-		ScrollReveal().reveal(".container2 > div", Object.assign({}, scrollRevealOption, { interval: 200 }));
-		ScrollReveal().reveal(".container3 > div", Object.assign({}, scrollRevealOption, { origin: "left", interval: 150 }));
-		ScrollReveal().reveal(".fourthPage", Object.assign({}, scrollRevealOption, { origin: "bottom" }));
-	</script>
+      let supa = null;
+      async function getClient() {
+        if (supa) return supa;
+        const { createClient } = await import(
+          "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm"
+        );
+        supa = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        return supa;
+      }
 
-	<!-- Fetch jobs -->
-	<script type="module">
-		import { SUPABASE_URL, SUPABASE_ANON_KEY } from "./supabase.js";
+      async function resolveImageUrl(job_picture_url) {
+        try {
+          if (!job_picture_url) return null;
+          const path = String(job_picture_url).replace(/^\/+/, "");
+          if (/^https?:\/\//i.test(path)) return path;
 
-		const jobsWrap = document.getElementById("recentJobs");
-		const emptyState = document.getElementById("jobsEmpty");
+          const client = await getClient();
+          const { data: signed } = await client.storage
+            .from("jobs")
+            .createSignedUrl(path, 3600);
+          if (signed?.signedUrl) return signed.signedUrl;
 
-		function peso(n) {
-			return "₱" + Number(n || 0).toLocaleString("en-PH", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-		}
-		function truncate(text, max = 160) {
-			if (!text) return "";
-			const s = String(text);
-			return s.length > max ? s.slice(0, max - 1) + "…" : s;
-		}
-		function cityOnly(locationValue) {
-			if (!locationValue) return "";
-			const s = String(locationValue);
-			return s.split(",")[0].trim();
-		}
+          const { data: pub } = client.storage.from("jobs").getPublicUrl(path);
+          return pub?.publicUrl || null;
+        } catch {
+          return null;
+        }
+      }
 
-		/* NEW: relative time helper */
-		function timeAgo(iso) {
-			if (!iso) return "";
-			const d = new Date(iso);
-			const now = new Date();
-			const diff = Math.max(0, now - d); // ms
-			const sec = Math.floor(diff / 1000);
-			if (sec < 5) return "just now";
-			if (sec < 60) return `${sec}s ago`;
-			const min = Math.floor(sec / 60);
-			if (min < 60) return `${min}m ago`;
-			const hrs = Math.floor(min / 60);
-			if (hrs < 24) return `${hrs}h ago`;
-			const days = Math.floor(hrs / 24);
-			if (days < 7) return `${days}d ago`;
-			// Fallback to date for older posts
-			return d.toLocaleDateString("en-PH", { month: "short", day: "numeric", year: "numeric" });
-		}
+      async function jobCard(job) {
+        const title = job.job_title || "Untitled Job";
+        const desc = job.job_description || "";
+        const city = cityOnly(job.job_location);
+        const pay = job.job_pay != null ? peso(job.job_pay) : "—";
+        const posted = timeAgo(job.created_at);
 
-		let supa = null;
-		async function getClient() {
-			if (supa) return supa;
-			const { createClient } = await import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm");
-			supa = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-			return supa;
-		}
-
-		async function resolveImageUrl(job_picture_url) {
-			try {
-				if (!job_picture_url) return null;
-				const path = String(job_picture_url).replace(/^\/+/, "");
-				if (/^https?:\/\//i.test(path)) return path;
-
-				const client = await getClient();
-				const { data: signed } = await client.storage.from("jobs").createSignedUrl(path, 3600);
-				if (signed?.signedUrl) return signed.signedUrl;
-
-				const { data: pub } = client.storage.from("jobs").getPublicUrl(path);
-				return pub?.publicUrl || null;
-			} catch {
-				return null;
-			}
-		}
-
-		async function jobCard(job) {
-			const title = job.job_title || "Untitled Job";
-			const desc = job.job_description || "";
-			const city = cityOnly(job.job_location);
-			const pay = job.job_pay != null ? peso(job.job_pay) : "—";
-			const posted = timeAgo(job.created_at);
-
-			const card = document.createElement("div");
-			card.className = "job-card";
-			card.innerHTML = `
+        const card = document.createElement("div");
+        card.className = "job-card";
+        card.innerHTML = `
 				<div class="job-cover"></div>
 				<div class="job-overlay"></div>
 				<div class="job-body">
 					<h3>${title}</h3>
 					<p>${truncate(desc)}</p>
 					<div class="job-meta">
-						<span class="job-city" title="${job.job_location || ''}"><i class="ri-map-pin-line"></i>${city || "—"}</span>
-						<span class="posted-time" title="${job.created_at ? new Date(job.created_at).toLocaleString('en-PH') : ''}">
+						<span class="job-city" title="${
+              job.job_location || ""
+            }"><i class="ri-map-pin-line"></i>${city || "—"}</span>
+						<span class="posted-time" title="${
+              job.created_at
+                ? new Date(job.created_at).toLocaleString("en-PH")
+                : ""
+            }">
 							<i class="ri-time-line"></i>${posted || ""}
 						</span>
 						<span class="price">${pay}</span>
@@ -462,90 +446,101 @@
 				</div>
 			`;
 
-			const cover = card.querySelector(".job-cover");
-			resolveImageUrl(job.job_picture_url).then(url => {
-				if (url) cover.style.backgroundImage = `url("${url}")`;
-			});
+        const cover = card.querySelector(".job-cover");
+        resolveImageUrl(job.job_picture_url).then((url) => {
+          if (url) cover.style.backgroundImage = `url("${url}")`;
+        });
 
-			return card;
-		}
+        return card;
+      }
 
-		async function loadRecentJobs() {
-			try {
-				/* keeps your existing API usage; already limited to 6 newest */
-				const url = `${SUPABASE_URL}/rest/v1/public_recent_jobs?select=*&order=created_at.desc&limit=6`;
-				const res = await fetch(url, {
-					headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` }
-				});
-				if (!res.ok) throw new Error(await res.text());
-				let rows = await res.json();
+      async function loadRecentJobs() {
+        try {
+          /* keeps your existing API usage; already limited to 6 newest */
+          const url = `${SUPABASE_URL}/rest/v1/public_recent_jobs?select=*&order=created_at.desc&limit=6`;
+          const res = await fetch(url, {
+            headers: {
+              apikey: SUPABASE_ANON_KEY,
+              Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+            },
+          });
+          if (!res.ok) throw new Error(await res.text());
+          let rows = await res.json();
 
-				// Extra safety: in case the view ignores limit, enforce top 6 here.
-				rows = Array.isArray(rows)
-					? rows.sort((a,b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 6)
-					: [];
+          // Extra safety: in case the view ignores limit, enforce top 6 here.
+          rows = Array.isArray(rows)
+            ? rows
+                .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+                .slice(0, 6)
+            : [];
 
-				jobsWrap.innerHTML = "";
-				if (!rows?.length) {
-					emptyState.style.display = "";
-					jobsWrap.appendChild(emptyState);
-					return;
-				}
-				emptyState.style.display = "none";
-				for (const job of rows) jobsWrap.appendChild(await jobCard(job));
+          jobsWrap.innerHTML = "";
+          if (!rows?.length) {
+            emptyState.style.display = "";
+            jobsWrap.appendChild(emptyState);
+            return;
+          }
+          emptyState.style.display = "none";
+          for (const job of rows) jobsWrap.appendChild(await jobCard(job));
 
-				// Optional: keep the "x minutes ago" fresh
-				setInterval(() => {
-					document.querySelectorAll(".posted-time").forEach((el, idx) => {
-						const r = rows[idx];
-						if (!r?.created_at) return;
-						el.innerHTML = `<i class="ri-time-line"></i>${timeAgo(r.created_at)}`;
-						el.title = new Date(r.created_at).toLocaleString('en-PH');
-					});
-				}, 60_000);
-			} catch (e) {
-				console.error(e);
-				emptyState.textContent = "Could not load jobs.";
-				emptyState.style.display = "";
-				jobsWrap.appendChild(emptyState);
-			}
-		}
-		loadRecentJobs();
-	</script>
+          // Optional: keep the "x minutes ago" fresh
+          setInterval(() => {
+            document.querySelectorAll(".posted-time").forEach((el, idx) => {
+              const r = rows[idx];
+              if (!r?.created_at) return;
+              el.innerHTML = `<i class="ri-time-line"></i>${timeAgo(
+                r.created_at
+              )}`;
+              el.title = new Date(r.created_at).toLocaleString("en-PH");
+            });
+          }, 60_000);
+        } catch (e) {
+          console.error(e);
+          emptyState.textContent = "Could not load jobs.";
+          emptyState.style.display = "";
+          jobsWrap.appendChild(emptyState);
+        }
+      }
+      loadRecentJobs();
+    </script>
 
-	<!-- Scroll direction detector for FAB slide (down -> hide, up -> show) -->
-	<script>
-		(function () {
-			const fab = document.querySelector('.socials.admin-fab');
-			if (!fab) return;
+    <!-- Scroll direction detector for FAB slide (down -> hide, up -> show) -->
+    <script>
+      (function () {
+        const fab = document.querySelector(".socials.admin-fab");
+        if (!fab) return;
 
-			let lastY = window.scrollY || window.pageYOffset;
-			let ticking = false;
+        let lastY = window.scrollY || window.pageYOffset;
+        let ticking = false;
 
-			function onScroll() {
-				const y = window.scrollY || window.pageYOffset;
-				const goingDown = y > lastY;
-				lastY = y;
-				if (goingDown) {
-					fab.classList.add('fab-out');
-				} else {
-					fab.classList.remove('fab-out');
-				}
-			}
+        function onScroll() {
+          const y = window.scrollY || window.pageYOffset;
+          const goingDown = y > lastY;
+          lastY = y;
+          if (goingDown) {
+            fab.classList.add("fab-out");
+          } else {
+            fab.classList.remove("fab-out");
+          }
+        }
 
-			window.addEventListener('scroll', () => {
-				if (!ticking) {
-					window.requestAnimationFrame(() => {
-						onScroll();
-						ticking = false;
-					});
-					ticking = true;
-				}
-			}, { passive: true });
+        window.addEventListener(
+          "scroll",
+          () => {
+            if (!ticking) {
+              window.requestAnimationFrame(() => {
+                onScroll();
+                ticking = false;
+              });
+              ticking = true;
+            }
+          },
+          { passive: true }
+        );
 
-			// Ensure visible on load
-			fab.classList.remove('fab-out');
-		})();
-	</script>
-</body>
+        // Ensure visible on load
+        fab.classList.remove("fab-out");
+      })();
+    </script>
+  </body>
 </html>
