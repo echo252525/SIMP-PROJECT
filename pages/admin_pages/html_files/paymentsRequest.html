@@ -1,1658 +1,1847 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap"
-    rel="stylesheet">
-
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet" />
-  <link rel="stylesheet" href="../css_files/sideBar.css" />
-  <title>PaymentsRequest</title>
-  <style>
-    :root {
-      /* adjust if your mobile page padding differs */
-      --page-padding: 12px;
-    }
-
-    main {
-      margin-top: 1.4rem;
-      position: relative;
-      /* enable overlay positioning */
-    }
-
-    /* Header */
-    main .payments-header h1 {
-      margin: 0;
-      color: #1c2430;
-      font-weight: 700;
-    }
-
-    main .payments-header p {
-      margin: 0.2rem 0 1rem;
-      color: #6c7a8a;
-    }
-
-    main .search-filter input {
-      width: 40%;
-    }
-
-    /* Search & Filter */
-    main .search-filter {
-      display: flex;
-      gap: 0.8rem;
-      margin-bottom: 1rem;
-      flex-wrap: wrap;
-    }
-
-    main .search-filter input,
-    main .search-filter select,
-    main .search-filter button {
-      padding: 0.6rem 0.75rem;
-      border: 1px solid #e7edf3;
-      border-radius: 8px;
-      font-size: 0.9rem;
-    }
-
-    main .search-filter button {
-      background: #20a44c;
-      color: #fff;
-      cursor: pointer;
-      border: none;
-    }
-
-    main .search-filter button:hover {
-      background: #188a3e;
-    }
-
-    main .search-filter .clear {
-      background: #e7edf3;
-      color: #1c2430;
-    }
-
-    main .search-filter .clear:hover {
-      background: #d7e6ee;
-    }
-
-    /* Summary Cards */
-    main .summary-cards {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(180px, 1fr));
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
-
-    main .summary-cards .card {
-      background: #fff;
-      padding: 1rem;
-      border-radius: 10px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-      text-align: center;
-    }
-
-    main .summary-cards .card h3 {
-      margin: 0;
-      font-size: 0.9rem;
-      color: #6c7a8a;
-      font-weight: 600;
-    }
-
-    main .summary-cards .card p {
-      margin: 0.4rem 0 1rem 0;
-      font-size: 1.25rem;
-      font-weight: 800;
-      letter-spacing: 0.2px;
-    }
-
-    main .summary-cards .paid p {
-      color: #20a44c;
-    }
-
-    main .summary-cards .unpaid p {
-      color: #e53935;
-    }
-
-    /* Tabs */
-    .payout-tabs {
-      display: flex;
-      gap: 0.4rem;
-      margin: 0.6rem 0 0.6rem;
-      border-bottom: 1px solid #e7edf3;
-      flex-wrap: wrap;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: thin;
-    }
-
-    .payout-tabs button {
-      appearance: none;
-      background: transparent;
-      border: none;
-      padding: 0.65rem 1rem;
-      font-weight: 700;
-      color: #6c7a8a;
-      cursor: pointer;
-      border-bottom: 3px solid transparent;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      white-space: nowrap;
-    }
-
-    .payout-tabs button.active {
-      color: #1c2430;
-      border-color: #20a44c;
-    }
-
-    .payout-tabs .tab-icon {
-      font-size: 1.15rem;
-      display: inline-flex;
-    }
-
-    .payout-tabs .tab-label {
-      display: inline;
-    }
-
-    /* Badge */
-    .badge {
-      display: inline-grid;
-      place-items: center;
-      min-width: 22px;
-      height: 20px;
-      padding: 0 0.4rem;
-      border-radius: 999px;
-      background: #e91e63;
-      color: #fff;
-      font-size: 0.72rem;
-      font-weight: 800;
-      line-height: 1;
-      box-shadow: 0 2px 6px rgba(233, 30, 99, 0.25);
-    }
-
-    .badge[hidden] {
-      display: none !important;
-    }
-
-    /* Table base */
-    main .payments-table table,
-    .requests-table table {
-      width: 100%;
-      border-collapse: collapse;
-      background: #fff;
-      border-radius: 10px;
-      overflow: hidden;
-    }
-
-    main .payments-table th,
-    main .payments-table td,
-    .requests-table th,
-    .requests-table td {
-      padding: 0.9rem;
-      text-align: left;
-      border-bottom: 1px solid #f0f0f0;
-      white-space: nowrap;
-      /* enable ellipsis later */
-    }
-
-    main .payments-table th,
-    .requests-table th {
-      background: #f8fbfd;
-      color: #1c2430;
-      font-weight: 700;
-    }
-
-    main .payments-table .col-select {
-      width: 40px;
-      text-align: center;
-    }
-
-    main .payments-table .col-select input[type="checkbox"] {
-      width: 16px;
-      height: 16px;
-      cursor: pointer;
-    }
-
-    main .status {
-      padding: 0.3rem 0.6rem;
-      border-radius: 12px;
-      font-size: 0.8rem;
-      font-weight: 700;
-    }
-
-    main .status.paid {
-      background: #e6f6ec;
-      color: #1d8e45;
-    }
-
-    main .status.not-paid {
-      background: #fdecea;
-      color: #c62828;
-    }
-
-    main .status.pending {
-      background: #fff7ed;
-      color: #b45309;
-    }
-
-    main .mark-paid,
-    .do-payout,
-    .do-payout-group,
-    .do-payout-batch {
-      background: #20a44c;
-      color: #fff;
-      padding: 0.4rem 0.8rem;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 600;
-    }
-
-    main .mark-paid:hover,
-    .do-payout:hover,
-    .do-payout-group:hover,
-    .do-payout-batch:hover {
-      background: #188a3e;
-    }
-
-    main button[disabled] {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-
-    /* Batch / Bulk bar */
-    main .batch-bar {
-      position: sticky;
-      top: 0;
-      z-index: 5;
-      display: flex;
-      gap: 0.6rem;
-      align-items: center;
-      margin: 0.8rem 0;
-      background: #ffffff;
-      border: 1px solid #e7edf3;
-      border-radius: 10px;
-      padding: 0.7rem 0.9rem;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
-    }
-
-    main .batch-bar .pill {
-      padding: 0.35rem 0.6rem;
-      border-radius: 999px;
-      background: #f8fbfd;
-      border: 1px solid #e7edf3;
-      font-weight: 700;
-      color: #1c2430;
-    }
-
-    main .batch-bar .create {
-      background: #1e7bcb;
-      border: none;
-      color: #fff;
-      padding: 0.55rem 0.85rem;
-      border-radius: 8px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    main .batch-bar .create:hover {
-      background: #1868a9;
-    }
-
-    main .batch-bar .select-all-wrap {
-      display: flex;
-      align-items: center;
-      gap: 0.45rem;
-      margin-right: 0.4rem;
-    }
-
-    /* Keep old button hidden */
-    #createPayoutBtn {
-      display: none !important;
-    }
-
-    /* Bulk mark-as-paid button */
-    #bulkMarkPaidBtn {
-      background: #20a44c;
-      border: none;
-      color: #fff;
-      padding: 0.55rem 0.85rem;
-      border-radius: 8px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    #bulkMarkPaidBtn:hover {
-      background: #188a3e;
-    }
-
-    /* Requests table */
-    .requests-table {
-      display: none;
-      margin-top: 0.6rem;
-    }
-
-    .mono {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-        "Liberation Mono", monospace;
-    }
-
-    .sub {
-      color: #6c7a8a;
-    }
-
-    /* ====== Bank Confirmation Modal ====== */
-    .bank-modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(17, 24, 39, 0.55);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 10050;
-      padding: 12px;
-    }
-
-    .bank-modal-overlay.show {
-      display: flex;
-    }
-
-    .bank-modal {
-      width: min(720px, 96vw);
-      background: #fff;
-      border-radius: 14px;
-      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.35);
-      overflow: hidden;
-    }
-
-    .bank-modal .bm-header {
-      padding: 12px 14px;
-      background: linear-gradient(180deg, #f8fbfd, #eef4f9);
-      border-bottom: 1px solid #e7edf3;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .bank-modal .bm-header h3 {
-      margin: 0;
-      font-size: 1.05rem;
-      color: #1c2430;
-    }
-
-    .bank-modal .bm-body {
-      padding: 12px 14px;
-      max-height: 64vh;
-      overflow: auto;
-    }
-
-    .bank-modal .bm-body table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 0.6rem;
-    }
-
-    .bank-modal .bm-body th,
-    .bank-modal .bm-body td {
-      padding: 0.65rem 0.6rem;
-      border-bottom: 1px solid #eef2f7;
-      text-align: left;
-    }
-
-    .bank-modal .bm-body th {
-      background: #f8fbfd;
-      color: #1c2430;
-      font-weight: 800;
-      position: sticky;
-      top: 0;
-    }
-
-    .bank-modal .bm-ref {
-      display: grid;
-      gap: 0.4rem;
-      padding: 0.2rem 0 0.4rem;
-    }
-
-    .bank-modal .bm-ref label {
-      font-weight: 800;
-      color: #1c2430;
-    }
-
-    .bank-modal .bm-ref input {
-      border: 1px solid #e7edf3;
-      border-radius: 10px;
-      padding: 0.6rem 0.7rem;
-      font: inherit;
-    }
-
-    .bank-modal .bm-ref small {
-      color: #6c7a8a;
-    }
-
-    .bank-modal .bm-footer {
-      display: flex;
-      gap: 0.5rem;
-      justify-content: flex-end;
-      flex-wrap: wrap;
-      padding: 12px 14px;
-      border-top: 1px solid #e7edf3;
-      background: #fff;
-    }
-
-    .bm-btn {
-      border: none;
-      border-radius: 10px;
-      padding: 0.6rem 0.85rem;
-      font-weight: 800;
-      cursor: pointer;
-    }
-
-    .bm-cancel {
-      background: #e7edf3;
-      color: #1c2430;
-    }
-
-    .bm-confirm {
-      background: #20a44c;
-      color: #fff;
-    }
-
-    .bm-cancel:hover {
-      background: #dbe7ef;
-    }
-
-    .bm-confirm:hover {
-      background: #188a3e;
-    }
-
-    .bm-error {
-      color: #c62828;
-      font-size: 0.85rem;
-    }
-
-    /* =========================
-         RESPONSIVE ENHANCEMENTS
-         ========================= */
-    @media (max-width: 980px) {
-      main .search-filter {
-        gap: 0.6rem;
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="icon"
+      type="image/png"
+      href="../../../img/simpHappyMascotLogo.png"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet"
+    />
+
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css_files/sideBar.css" />
+    <title>PaymentsRequest</title>
+
+    <!-- SweetAlert2 (ADDED) -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+      :root {
+        /* adjust if your mobile page padding differs */
+        --page-padding: 12px;
+      }
+
+      main {
+        margin-top: 1.4rem;
+        position: relative;
+        /* enable overlay positioning */
+      }
+
+      /* Header */
+      main .payments-header h1 {
+        margin: 0;
+        color: #1c2430;
+        font-weight: 700;
+      }
+
+      main .payments-header p {
+        margin: 0.2rem 0 1rem;
+        color: #6c7a8a;
       }
 
       main .search-filter input {
-        width: 100%;
-        min-width: 220px;
-        flex: 1 1 100%;
+        width: 40%;
       }
 
+      /* Search & Filter */
+      main .search-filter {
+        display: flex;
+        gap: 0.8rem;
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
+      }
+
+      main .search-filter input,
       main .search-filter select,
       main .search-filter button {
-        flex: 1 1 calc(50% - 0.6rem);
-      }
-
-      main .summary-cards {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 0.8rem;
-      }
-
-      main .batch-bar {
-        flex-wrap: wrap;
-        gap: 0.5rem 0.6rem;
-      }
-
-      main .batch-bar .pill {
-        font-size: 0.85rem;
-      }
-
-      .payout-tabs button {
-        padding: 0.55rem 0.75rem;
-      }
-
-      /* keep desktop overflow behavior if wide */
-      main .payments-table table {
-        display: block;
-        overflow-x: auto;
-      }
-    }
-
-    /* ==== Mobile: responsive table with no horizontal overflow ==== */
-    .view-row-btn {
-      display: none;
-    }
-
-    /* hidden on desktop */
-
-    @media (max-width: 720px) {
-      .payout-tabs .tab-label {
-        display: none;
-      }
-
-      .payout-tabs .tab-icon {
-        display: inline-flex;
-      }
-
-      main .summary-cards {
-        grid-template-columns: 1fr;
-      }
-
-      /* Make wrappers fill viewport width but prevent any overflow */
-      .payments-table,
-      .requests-table {
-        margin-left: calc(-1 * var(--page-padding));
-        margin-right: calc(-1 * var(--page-padding));
-        padding-left: var(--page-padding);
-        padding-right: var(--page-padding);
-        box-sizing: border-box;
-        overflow-x: clip;
-        /* critical: no horizontal scroll/overflow */
-        max-width: 100vw;
-        /* hard stop at viewport */
-      }
-
-      .payments-table table,
-      .requests-table table {
-        width: 100%;
-        table-layout: fixed;
-        /* evenly distribute columns; avoids overflow */
-        border-radius: 12px;
-      }
-
-      /* Hide wide columns to keep single line */
-      .payments-table thead {
-        display: none;
-      }
-
-      .payments-table td[data-col="Job Title"],
-      .payments-table td[data-col="Requested Date"] {
-        display: none;
-      }
-
-      /* Keep rows compact */
-      .payments-table tbody tr {
-        border-bottom: 1px solid #eef2f7;
-      }
-
-      .payments-table td {
-        padding: 10px 8px;
-      }
-
-      /* Ellipsis on possibly long cells */
-      .payments-table td,
-      .requests-table td {
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-
-      /* Safe widths for remaining columns so they fit on one row */
-      .payments-table td[data-col="Select"] {
-        width: 36px;
-      }
-
-      .payments-table td[data-col="Job ID"] {
-        max-width: 18vw;
-      }
-
-      .payments-table td[data-col="Worker"] {
-        max-width: 32vw;
-      }
-
-      .payments-table td[data-col="Amount"] {
-        max-width: 18vw;
-        font-weight: 600;
-      }
-
-      .payments-table td[data-col="Status"] {
-        max-width: 20vw;
-      }
-
-      /* Only show the eye button in Action on mobile */
-      .payments-table td[data-col="Action"] button:not(.view-row-btn) {
-        display: none;
-      }
-
-      .view-row-btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 36px;
-        height: 36px;
+        padding: 0.6rem 0.75rem;
+        border: 1px solid #e7edf3;
         border-radius: 8px;
-        border: 1px solid #e6edf5;
-        background: #fff;
-        cursor: pointer;
+        font-size: 0.9rem;
       }
 
-      .view-row-btn .material-icons-sharp {
-        font-size: 20px;
-        line-height: 1;
+      main .search-filter button {
+        background: #20a44c;
+        color: #fff;
+        cursor: pointer;
+        border: none;
+      }
+
+      main .search-filter button:hover {
+        background: #188a3e;
+      }
+
+      main .search-filter .clear {
+        background: #e7edf3;
         color: #1c2430;
       }
 
-      .payments-table td[data-col="Status"] .status {
+      main .search-filter .clear:hover {
+        background: #d7e6ee;
+      }
+
+      /* Summary Cards */
+      main .summary-cards {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(180px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+
+      main .summary-cards .card {
+        background: #fff;
+        padding: 1rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        text-align: center;
+      }
+
+      main .summary-cards .card h3 {
         margin: 0;
+        font-size: 0.9rem;
+        color: #6c7a8a;
+        font-weight: 600;
       }
 
-      /* Requests table: compact + no overflow */
-      .requests-table thead {
-        display: none;
-      }
-
-      .requests-table td[data-col="Installer"],
-      .requests-table td[data-col="# Payments"],
-      .requests-table td[data-col="Total Amount"],
-      .requests-table td[data-col="Requested Date"] {
-        display: none;
-      }
-
-      .requests-table td {
-        padding: 10px 8px;
-      }
-
-      .requests-table td[data-col="Jobs"] {
-        max-width: 60vw;
-      }
-
-      /* Modal taller on mobile */
-      .bank-modal .bm-body {
-        max-height: 70vh;
-      }
-    }
-
-    @media (max-width: 480px) {
-      main .payments-header h1 {
+      main .summary-cards .card p {
+        margin: 0.4rem 0 1rem 0;
         font-size: 1.25rem;
+        font-weight: 800;
+        letter-spacing: 0.2px;
+      }
+
+      main .summary-cards .paid p {
+        color: #20a44c;
+      }
+
+      main .summary-cards .unpaid p {
+        color: #e53935;
+      }
+
+      /* Tabs */
+      .payout-tabs {
+        display: flex;
+        gap: 0.4rem;
+        margin: 0.6rem 0 0.6rem;
+        border-bottom: 1px solid #e7edf3;
+        flex-wrap: wrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
       }
 
       .payout-tabs button {
-        padding: 0.5rem 0.6rem;
+        appearance: none;
+        background: transparent;
+        border: none;
+        padding: 0.65rem 1rem;
+        font-weight: 700;
+        color: #6c7a8a;
+        cursor: pointer;
+        border-bottom: 3px solid transparent;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        white-space: nowrap;
       }
 
+      .payout-tabs button.active {
+        color: #1c2430;
+        border-color: #20a44c;
+      }
+
+      .payout-tabs .tab-icon {
+        font-size: 1.15rem;
+        display: inline-flex;
+      }
+
+      .payout-tabs .tab-label {
+        display: inline;
+      }
+
+      /* Badge */
       .badge {
-        min-width: 20px;
-        height: 18px;
-        font-size: 0.68rem;
+        display: inline-grid;
+        place-items: center;
+        min-width: 22px;
+        height: 20px;
+        padding: 0 0.4rem;
+        border-radius: 999px;
+        background: #e91e63;
+        color: #fff;
+        font-size: 0.72rem;
+        font-weight: 800;
+        line-height: 1;
+        box-shadow: 0 2px 6px rgba(233, 30, 99, 0.25);
       }
-    }
 
-    /* ===== Row View Modal (mobile eye button) ===== */
-    .rv-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(17, 24, 39, 0.55);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 10060;
-      padding: 12px;
-    }
+      .badge[hidden] {
+        display: none !important;
+      }
 
-    .rv-overlay.show {
-      display: flex;
-    }
+      /* Table base */
+      main .payments-table table,
+      .requests-table table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #fff;
+        border-radius: 10px;
+        overflow: hidden;
+      }
 
-    .rv-modal {
-      width: min(560px, 96vw);
-      background: #fff;
-      border-radius: 14px;
-      box-shadow: 0 24px 64px rgba(0, 0, 0, .35);
-      overflow: hidden;
-    }
+      main .payments-table th,
+      main .payments-table td,
+      .requests-table th,
+      .requests-table td {
+        padding: 0.9rem;
+        text-align: left;
+        border-bottom: 1px solid #f0f0f0;
+        white-space: nowrap;
+        /* enable ellipsis later */
+      }
 
-    .rv-header {
-      padding: 12px 14px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: linear-gradient(180deg, #f8fbfd, #eef4f9);
-      border-bottom: 1px solid #e7edf3;
-    }
+      main .payments-table th,
+      .requests-table th {
+        background: #f8fbfd;
+        color: #1c2430;
+        font-weight: 700;
+      }
 
-    .rv-header h3 {
-      margin: 0;
-      font-size: 1.02rem;
-      color: #1c2430;
-    }
+      main .payments-table .col-select {
+        width: 40px;
+        text-align: center;
+      }
 
-    .rv-body {
-      padding: 12px 14px;
-      max-height: 70vh;
-      overflow: auto;
-    }
+      main .payments-table .col-select input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+      }
 
-    .rv-body .row {
-      display: grid;
-      grid-template-columns: 140px 1fr;
-      gap: 6px 10px;
-      padding: 8px 0;
-      border-bottom: 1px dashed #e9eef5;
-    }
+      main .status {
+        padding: 0.3rem 0.6rem;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: 700;
+      }
 
-    .rv-body .row:last-child {
-      border-bottom: none;
-    }
+      main .status.paid {
+        background: #e6f6ec;
+        color: #1d8e45;
+      }
 
-    .rv-label {
-      font-weight: 800;
-      color: #6c7a8a;
-    }
+      main .status.not-paid {
+        background: #fdecea;
+        color: #c62828;
+      }
 
-    .rv-value {
-      color: #1c2430;
-    }
+      main .status.pending {
+        background: #fff7ed;
+        color: #b45309;
+      }
 
-    .rv-footer {
-      display: flex;
-      gap: 8px;
-      justify-content: flex-end;
-      padding: 12px 14px;
-      border-top: 1px solid #e7edf3;
-      background: #fff;
-    }
+      main .mark-paid,
+      .do-payout,
+      .do-payout-group,
+      .do-payout-batch {
+        background: #20a44c;
+        color: #fff;
+        padding: 0.4rem 0.8rem;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+      }
 
-    .rv-btn {
-      border: none;
-      border-radius: 10px;
-      padding: 0.6rem 0.85rem;
-      font-weight: 800;
-      cursor: pointer;
-    }
+      main .mark-paid:hover,
+      .do-payout:hover,
+      .do-payout-group:hover,
+      .do-payout-batch:hover {
+        background: #188a3e;
+      }
 
-    .rv-close {
-      background: #e7edf3;
-      color: #1c2430;
-    }
+      main button[disabled] {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
 
-    /* =========================
+      /* Batch / Bulk bar */
+      main .batch-bar {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        display: flex;
+        gap: 0.6rem;
+        align-items: center;
+        margin: 0.8rem 0;
+        background: #ffffff;
+        border: 1px solid #e7edf3;
+        border-radius: 10px;
+        padding: 0.7rem 0.9rem;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+      }
+
+      main .batch-bar .pill {
+        padding: 0.35rem 0.6rem;
+        border-radius: 999px;
+        background: #f8fbfd;
+        border: 1px solid #e7edf3;
+        font-weight: 700;
+        color: #1c2430;
+      }
+
+      main .batch-bar .create {
+        background: #1e7bcb;
+        border: none;
+        color: #fff;
+        padding: 0.55rem 0.85rem;
+        border-radius: 8px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      main .batch-bar .create:hover {
+        background: #1868a9;
+      }
+
+      main .batch-bar .select-all-wrap {
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+        margin-right: 0.4rem;
+      }
+
+      /* Keep old button hidden */
+      #createPayoutBtn {
+        display: none !important;
+      }
+
+      /* Bulk mark-as-paid button */
+      #bulkMarkPaidBtn {
+        background: #20a44c;
+        border: none;
+        color: #fff;
+        padding: 0.55rem 0.85rem;
+        border-radius: 8px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      #bulkMarkPaidBtn:hover {
+        background: #188a3e;
+      }
+
+      /* Requests table */
+      .requests-table {
+        display: none;
+        margin-top: 0.6rem;
+      }
+
+      .mono {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+          "Liberation Mono", monospace;
+      }
+
+      .sub {
+        color: #6c7a8a;
+      }
+
+      /* ====== Bank Confirmation Modal ====== */
+      .bank-modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(17, 24, 39, 0.55);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 10050;
+        padding: 12px;
+      }
+
+      .bank-modal-overlay.show {
+        display: flex;
+      }
+
+      .bank-modal {
+        width: min(680px, 94vw); /* slightly narrower (ADJUSTED) */
+        background: #fff;
+        border-radius: 14px;
+        box-shadow: 0 24px 64px rgba(0, 0, 0, 0.35);
+        overflow: hidden;
+      }
+
+      .bank-modal .bm-header {
+        padding: 10px 12px;
+        background: linear-gradient(180deg, #f8fbfd, #eef4f9);
+        border-bottom: 1px solid #e7edf3;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .bank-modal .bm-header h3 {
+        margin: 0;
+        font-size: 1rem;
+        color: #1c2430;
+      }
+
+      .bank-modal .bm-body {
+        padding: 10px 12px;
+        max-height: 56vh; /* shorter to avoid resize (ADJUSTED) */
+        overflow: auto;
+      }
+
+      .bank-modal .bm-body table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 0.6rem;
+      }
+
+      .bank-modal .bm-body th,
+      .bank-modal .bm-body td {
+        padding: 0.55rem 0.55rem;
+        border-bottom: 1px solid #eef2f7;
+        text-align: left;
+      }
+
+      .bank-modal .bm-body th {
+        background: #f8fbfd;
+        color: #1c2430;
+        font-weight: 800;
+        position: sticky;
+        top: 0;
+      }
+
+      .bank-modal .bm-ref {
+        display: grid;
+        gap: 0.35rem;
+        padding: 0.2rem 0 0.2rem;
+      }
+
+      .bank-modal .bm-ref label {
+        font-weight: 800;
+        color: #1c2430;
+      }
+
+      .bank-modal .bm-ref input {
+        border: 1px solid #e7edf3;
+        border-radius: 10px;
+        padding: 0.55rem 0.65rem;
+        font: inherit;
+      }
+
+      .bank-modal .bm-ref small {
+        color: #6c7a8a;
+      }
+
+      .bank-modal .bm-footer {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+        padding: 10px 12px;
+        border-top: 1px solid #e7edf3;
+        background: #fff;
+      }
+
+      .bm-btn {
+        border: none;
+        border-radius: 10px;
+        padding: 0.55rem 0.75rem;
+        font-weight: 800;
+        cursor: pointer;
+      }
+
+      .bm-cancel {
+        background: #e7edf3;
+        color: #1c2430;
+      }
+
+      .bm-confirm {
+        background: #20a44c;
+        color: #fff;
+      }
+
+      .bm-cancel:hover {
+        background: #dbe7ef;
+      }
+
+      .bm-confirm:hover {
+        background: #188a3e;
+      }
+
+      .bm-error {
+        color: #c62828;
+        font-size: 0.85rem;
+      }
+
+      /* =========================
+         RESPONSIVE ENHANCEMENTS
+         ========================= */
+      @media (max-width: 980px) {
+        main .search-filter {
+          gap: 0.6rem;
+        }
+
+        main .search-filter input {
+          width: 100%;
+          min-width: 220px;
+          flex: 1 1 100%;
+        }
+
+        main .search-filter select,
+        main .search-filter button {
+          flex: 1 1 calc(50% - 0.6rem);
+        }
+
+        main .summary-cards {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 0.8rem;
+        }
+
+        main .batch-bar {
+          flex-wrap: wrap;
+          gap: 0.5rem 0.6rem;
+        }
+
+        main .batch-bar .pill {
+          font-size: 0.85rem;
+        }
+
+        .payout-tabs button {
+          padding: 0.55rem 0.75rem;
+        }
+
+        /* keep desktop overflow behavior if wide */
+        main .payments-table table {
+          display: block;
+          overflow-x: auto;
+        }
+      }
+
+      /* ==== Mobile: responsive table with no horizontal overflow ==== */
+      .view-row-btn {
+        display: none;
+      }
+
+      /* hidden on desktop */
+
+      @media (max-width: 720px) {
+        .payout-tabs .tab-label {
+          display: none;
+        }
+
+        .payout-tabs .tab-icon {
+          display: inline-flex;
+        }
+
+        main .summary-cards {
+          grid-template-columns: 1fr;
+        }
+
+        /* Make wrappers fill viewport width but prevent any overflow */
+        .payments-table,
+        .requests-table {
+          margin-left: calc(-1 * var(--page-padding));
+          margin-right: calc(-1 * var(--page-padding));
+          padding-left: var(--page-padding);
+          padding-right: var(--page-padding);
+          box-sizing: border-box;
+          overflow-x: clip;
+          /* critical: no horizontal scroll/overflow */
+          max-width: 100vw;
+          /* hard stop at viewport */
+        }
+
+        .payments-table table,
+        .requests-table table {
+          width: 100%;
+          table-layout: fixed;
+          /* evenly distribute columns; avoids overflow */
+          border-radius: 12px;
+        }
+
+        /* Hide wide columns to keep single line */
+        .payments-table thead {
+          display: none;
+        }
+
+        .payments-table td[data-col="Job Title"],
+        .payments-table td[data-col="Requested Date"] {
+          display: none;
+        }
+
+        /* Keep rows compact */
+        .payments-table tbody tr {
+          border-bottom: 1px solid #eef2f7;
+        }
+
+        .payments-table td {
+          padding: 10px 8px;
+        }
+
+        /* Ellipsis on possibly long cells */
+        .payments-table td,
+        .requests-table td {
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        /* Safe widths for remaining columns so they fit on one row */
+        .payments-table td[data-col="Select"] {
+          width: 36px;
+        }
+
+        .payments-table td[data-col="Job ID"] {
+          max-width: 18vw;
+        }
+
+        .payments-table td[data-col="Worker"] {
+          max-width: 32vw;
+        }
+
+        .payments-table td[data-col="Amount"] {
+          max-width: 18vw;
+          font-weight: 600;
+        }
+
+        .payments-table td[data-col="Status"] {
+          max-width: 20vw;
+        }
+
+        /* Only show the eye button in Action on mobile */
+        .payments-table td[data-col="Action"] button:not(.view-row-btn) {
+          display: none;
+        }
+
+        .view-row-btn {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 36px;
+          height: 36px;
+          border-radius: 8px;
+          border: 1px solid #e6edf5;
+          background: #fff;
+          cursor: pointer;
+        }
+
+        .view-row-btn .material-icons-sharp {
+          font-size: 20px;
+          line-height: 1;
+          color: #1c2430;
+        }
+
+        .payments-table td[data-col="Status"] .status {
+          margin: 0;
+        }
+
+        /* Requests table: compact + no overflow */
+        .requests-table thead {
+          display: none;
+        }
+
+        .requests-table td[data-col="Installer"],
+        .requests-table td[data-col="# Payments"],
+        .requests-table td[data-col="Total Amount"],
+        .requests-table td[data-col="Requested Date"] {
+          display: none;
+        }
+
+        .requests-table td {
+          padding: 10px 8px;
+        }
+
+        .requests-table td[data-col="Jobs"] {
+          max-width: 60vw;
+        }
+
+        /* Modal taller on mobile */
+        .bank-modal .bm-body {
+          max-height: 62vh; /* still shorter than before (ADJUSTED) */
+        }
+      }
+
+      @media (max-width: 480px) {
+        main .payments-header h1 {
+          font-size: 1.25rem;
+        }
+
+        .payout-tabs button {
+          padding: 0.5rem 0.6rem;
+        }
+
+        .badge {
+          min-width: 20px;
+          height: 18px;
+          font-size: 0.68rem;
+        }
+      }
+
+      /* ===== Row View Modal (mobile eye button) ===== */
+      .rv-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(17, 24, 39, 0.55);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 10060;
+        padding: 12px;
+      }
+
+      .rv-overlay.show {
+        display: flex;
+      }
+
+      .rv-modal {
+        width: min(560px, 96vw);
+        background: #fff;
+        border-radius: 14px;
+        box-shadow: 0 24px 64px rgba(0, 0, 0, 0.35);
+        overflow: hidden;
+      }
+
+      .rv-header {
+        padding: 10px 12px; /* slightly tighter */
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: linear-gradient(180deg, #f8fbfd, #eef4f9);
+        border-bottom: 1px solid #e7edf3;
+      }
+
+      .rv-header h3 {
+        margin: 0;
+        font-size: 1.02rem;
+        color: #1c2430;
+      }
+
+      .rv-body {
+        padding: 10px 12px;
+        max-height: 56vh; /* shorter to avoid viewport shift (ADJUSTED) */
+        overflow: auto;
+      }
+
+      .rv-body .row {
+        display: grid;
+        grid-template-columns: 140px 1fr;
+        gap: 6px 10px;
+        padding: 8px 0;
+        border-bottom: 1px dashed #e9eef5;
+      }
+
+      .rv-body .row:last-child {
+        border-bottom: none;
+      }
+
+      .rv-label {
+        font-weight: 800;
+        color: #6c7a8a;
+      }
+
+      .rv-value {
+        color: #1c2430;
+      }
+
+      .rv-footer {
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end;
+        padding: 10px 12px;
+        border-top: 1px solid #e7edf3;
+        background: #fff;
+      }
+
+      .rv-btn {
+        border: none;
+        border-radius: 10px;
+        padding: 0.55rem 0.75rem;
+        font-weight: 800;
+        cursor: pointer;
+      }
+
+      .rv-close {
+        background: #e7edf3;
+        color: #1c2430;
+      }
+
+      /* =========================
          SKELETON (PC + Mobile)
          ========================= */
-    .skeleton-overlay {
-      position: absolute;
-      inset: 0;
-      z-index: 20;
-      padding: var(--page-padding);
-      background: #f8fbfd;
-      overflow: hidden;
-      display: flex;
-      /* visible by default */
-      flex-direction: column;
-      gap: 12px;
-    }
+      .skeleton-overlay {
+        position: absolute;
+        inset: 0;
+        z-index: 20;
+        padding: var(--page-padding);
+        background: #f8fbfd;
+        overflow: hidden;
+        display: flex;
+        /* visible by default */
+        flex-direction: column;
+        gap: 12px;
+      }
 
-    .sk-card,
-    .sk-bar,
-    .sk-chip {
-      border-radius: 10px;
-      background: linear-gradient(90deg,
+      .sk-card,
+      .sk-bar,
+      .sk-chip {
+        border-radius: 10px;
+        background: linear-gradient(
+          90deg,
           #eef2f6 25%,
           #f5f7fa 37%,
-          #eef2f6 63%);
-      background-size: 400% 100%;
-      animation: sk-shimmer 1.2s ease-in-out infinite;
-    }
-
-    .sk-bar {
-      height: 16px;
-    }
-
-    .sk-chip {
-      height: 34px;
-      border-radius: 8px;
-    }
-
-    .sk-row {
-      display: grid;
-      gap: 10px;
-    }
-
-    .sk-row.cols-3 {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-
-    .sk-row.cols-2 {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .sk-row.cols-6 {
-      grid-template-columns: 60px 120px 1fr 120px 140px 100px;
-    }
-
-    .sk-table {
-      background: #fff;
-      border-radius: 10px;
-      padding: 12px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-    }
-
-    .sk-head {
-      display: grid;
-      grid-template-columns: 60px 120px 1fr 120px 140px 100px;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-
-    .sk-body {
-      display: grid;
-      gap: 8px;
-    }
-
-    .sk-row-line {
-      display: grid;
-      grid-template-columns: 60px 120px 1fr 120px 140px 100px;
-      gap: 10px;
-    }
-
-    @keyframes sk-shimmer {
-      0% {
-        background-position: 200% 0;
+          #eef2f6 63%
+        );
+        background-size: 400% 100%;
+        animation: sk-shimmer 1.2s ease-in-out infinite;
       }
 
-      100% {
-        background-position: -200% 0;
+      .sk-bar {
+        height: 16px;
       }
-    }
 
-    @media (max-width: 720px) {
-      .skeleton-overlay {
-        padding: 0 var(--page-padding);
+      .sk-chip {
+        height: 34px;
+        border-radius: 8px;
+      }
+
+      .sk-row {
+        display: grid;
+        gap: 10px;
       }
 
       .sk-row.cols-3 {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
       }
 
-      .sk-head,
+      .sk-row.cols-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .sk-row.cols-6 {
+        grid-template-columns: 60px 120px 1fr 120px 140px 100px;
+      }
+
+      .sk-table {
+        background: #fff;
+        border-radius: 10px;
+        padding: 12px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+      }
+
+      .sk-head {
+        display: grid;
+        grid-template-columns: 60px 120px 1fr 120px 140px 100px;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+
+      .sk-body {
+        display: grid;
+        gap: 8px;
+      }
+
       .sk-row-line {
-        grid-template-columns: 60px 1fr 90px 90px;
+        display: grid;
+        grid-template-columns: 60px 120px 1fr 120px 140px 100px;
+        gap: 10px;
       }
-    }
-  </style>
-</head>
 
-<body>
-  <div class="container">
-    <!-- Sidebar Section -->
-    <aside>
-      <div class="toggle">
-        <div class="logo">
-          <img src="../../../img/simpHappyMascotLogo.png" alt="logo" />
-          <h2>SIMP<span class="danger">Project</span></h2>
+      @keyframes sk-shimmer {
+        0% {
+          background-position: 200% 0;
+        }
+
+        100% {
+          background-position: -200% 0;
+        }
+      }
+
+      @media (max-width: 720px) {
+        .skeleton-overlay {
+          padding: 0 var(--page-padding);
+        }
+
+        .sk-row.cols-3 {
+          grid-template-columns: 1fr;
+        }
+
+        .sk-head,
+        .sk-row-line {
+          grid-template-columns: 60px 1fr 90px 90px;
+        }
+      }
+
+      /* SweetAlert2 minor tweaks for compactness */
+      .swal2-popup {
+        border-radius: 14px !important;
+        font-family: "Raleway", sans-serif !important;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <!-- Sidebar Section -->
+      <aside>
+        <div class="toggle">
+          <div class="logo">
+            <img src="../../../img/simpHappyMascotLogo.png" alt="logo" />
+            <h2>SIMP<span class="danger">Project</span></h2>
+          </div>
+          <div class="close" id="close-btn">
+            <span class="material-icons-sharp">close</span>
+          </div>
         </div>
-        <div class="close" id="close-btn">
-          <span class="material-icons-sharp">close</span>
+
+        <div class="sidebar">
+          <a href="dashboard.html"
+            ><span class="material-icons-sharp">dashboard</span>
+            <h3>Dashboard</h3>
+          </a>
+          <a href="workerVerification.html"
+            ><span class="material-icons-sharp">engineering</span>
+            <h3>Workers<br />Verification</h3>
+          </a>
+          <a href="jobVerification.html"
+            ><span class="material-icons-sharp">work</span>
+            <h3>Jobs<br />Verification</h3>
+          </a>
+          <a href="jobApplicationVerification.html"
+            ><span class="material-icons-sharp">approval</span>
+            <h3>Application<br />Verification</h3>
+          </a>
+          <a href="adminVerification.html"
+            ><span class="material-icons-sharp">shield</span>
+            <h3>Admin<br />Verification</h3>
+          </a>
+          <a href="manageShop.html"
+            ><span class="material-icons-sharp">shop</span>
+            <h3>Manage<br />Shop</h3>
+          </a>
+          <a href="paymentsRequest.html" class="active"
+            ><span class="material-icons-sharp">payments</span>
+            <h3>Payments<br />Request</h3>
+          </a>
+          <a href="courses.html"
+            ><span class="material-icons-sharp">school</span>
+            <h3>Course<br />Publisher</h3>
+          </a>
+          <a href="settings.html"
+            ><span class="material-icons-sharp">settings</span>
+            <h3>Settings</h3>
+          </a>
+          <a href="#" id="logout-btn"
+            ><span class="material-icons-sharp">logout</span>
+            <h3>Logout</h3>
+          </a>
         </div>
-      </div>
+      </aside>
+      <!-- End of Sidebar Section -->
 
-      <div class="sidebar">
-        <a href="dashboard.html"><span class="material-icons-sharp">dashboard</span>
-          <h3>Dashboard</h3>
-        </a>
-        <a href="workerVerification.html"><span class="material-icons-sharp">engineering</span>
-          <h3>Workers<br />Verification</h3>
-        </a>
-        <a href="jobVerification.html"><span class="material-icons-sharp">work</span>
-          <h3>Jobs<br />Verification</h3>
-        </a>
-        <a href="jobApplicationVerification.html"><span class="material-icons-sharp">approval</span>
-          <h3>Application<br />Verification</h3>
-        </a>
-        <a href="adminVerification.html"><span class="material-icons-sharp">shield</span>
-          <h3>Admin<br />Verification</h3>
-        </a>
-        <a href="manageShop.html"><span class="material-icons-sharp">shop</span>
-          <h3>Manage<br />Shop</h3>
-        </a>
-        <a href="paymentsRequest.html" class="active"><span class="material-icons-sharp">payments</span>
-          <h3>Payments<br />Request</h3>
-        </a>
-        <a href="courses.html"><span class="material-icons-sharp">school</span>
-          <h3>Course<br />Publisher</h3>
-        </a>
-        <a href="settings.html"><span class="material-icons-sharp">settings</span>
-          <h3>Settings</h3>
-        </a>
-        <a href="#" id="logout-btn"><span class="material-icons-sharp">logout</span>
-          <h3>Logout</h3>
-        </a>
-      </div>
-    </aside>
-    <!-- End of Sidebar Section -->
-
-    <!-- Main Content -->
-    <main>
-      <!-- =========================
+      <!-- Main Content -->
+      <main>
+        <!-- =========================
              SKELETON OVERLAY (ADDED)
              ========================= -->
-      <div id="paymentsSkeleton" class="skeleton-overlay" aria-hidden="false">
-        <!-- Header -->
-        <div class="sk-bar" style="width: 220px; height: 28px; border-radius:8px;"></div>
-        <div class="sk-bar" style="width: 60%; height: 14px;"></div>
+        <div id="paymentsSkeleton" class="skeleton-overlay" aria-hidden="false">
+          <!-- Header -->
+          <div
+            class="sk-bar"
+            style="width: 220px; height: 28px; border-radius: 8px"
+          ></div>
+          <div class="sk-bar" style="width: 60%; height: 14px"></div>
 
-        <!-- Search/Filter -->
-        <div class="sk-row cols-2">
-          <div class="sk-chip"></div>
-          <div class="sk-chip"></div>
+          <!-- Search/Filter -->
+          <div class="sk-row cols-2">
+            <div class="sk-chip"></div>
+            <div class="sk-chip"></div>
+          </div>
+
+          <!-- Summary cards -->
+          <div class="sk-row cols-3">
+            <div class="sk-card" style="height: 92px"></div>
+            <div class="sk-card" style="height: 92px"></div>
+            <div class="sk-card" style="height: 92px"></div>
+          </div>
+
+          <!-- Tabs -->
+          <div
+            class="sk-row"
+            style="
+              grid-template-columns: repeat(5, minmax(90px, 140px));
+              gap: 8px;
+            "
+          >
+            <div class="sk-chip"></div>
+            <div class="sk-chip"></div>
+            <div class="sk-chip"></div>
+            <div class="sk-chip"></div>
+            <div class="sk-chip"></div>
+          </div>
+
+          <!-- Batch bar -->
+          <div class="sk-card" style="height: 56px"></div>
+
+          <!-- Table skeleton -->
+          <div class="sk-table">
+            <div class="sk-head">
+              <div class="sk-bar"></div>
+              <div class="sk-bar"></div>
+              <div class="sk-bar"></div>
+              <div class="sk-bar"></div>
+              <div class="sk-bar"></div>
+              <div class="sk-bar"></div>
+            </div>
+            <div class="sk-body">
+              <div class="sk-row-line">
+                <div class="sk-bar"></div>
+                <div class="sk-bar"></div>
+                <div class="sk-bar"></div>
+                <div class="sk-bar"></div>
+                <div class="sk-bar"></div>
+                <div class="sk-bar"></div>
+              </div>
+              <div class="sk-row-line">
+                <div class="sk-bar"></div>
+                <div class="sk-bar"></div>
+                <div class="sk-bar"></div>
+                <div class="sk-bar"></div>
+                <div class="sk-bar"></div>
+                <div class="sk-bar"></div>
+              </div>
+              <div class="sk-row-line">
+                <div class="sk-bar"></div>
+                <div class="sk-bar"></div>
+                <div class="sk-bar"></div>
+                <div class="sk-bar"></div>
+                <div class="sk-bar"></div>
+                <div class="sk-bar"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- ====== END SKELETON ====== -->
+
+        <div class="payments-header">
+          <h1>Payments Request</h1>
+          <p>
+            Manage and verify all payment requests from workers after job
+            completion.
+          </p>
         </div>
 
-        <!-- Summary cards -->
-        <div class="sk-row cols-3">
-          <div class="sk-card" style="height: 92px;"></div>
-          <div class="sk-card" style="height: 92px;"></div>
-          <div class="sk-card" style="height: 92px;"></div>
+        <!-- Search & Filter -->
+        <div class="search-filter">
+          <input
+            id="searchInput"
+            type="text"
+            placeholder="Search by Job ID, Worker, or Job Title..."
+          />
+          <select id="statusFilter">
+            <option value="all">All</option>
+            <option value="paid">Paid</option>
+            <option value="not-paid">Not Paid</option>
+          </select>
+          <button id="searchBtn" type="button">Search</button>
+          <button id="clearBtn" class="clear" type="button">Clear</button>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="summary-cards">
+          <div class="card total">
+            <h3>Total (visible)</h3>
+            <p id="totalCount">0</p>
+          </div>
+          <div class="card paid">
+            <h3>Paid (visible)</h3>
+            <p id="paidCount">0</p>
+          </div>
+          <div class="card unpaid">
+            <h3>Not Paid (visible)</h3>
+            <p id="unpaidCount">0</p>
+          </div>
         </div>
 
         <!-- Tabs -->
-        <div class="sk-row" style="grid-template-columns: repeat(5, minmax(90px, 140px)); gap:8px;">
-          <div class="sk-chip"></div>
-          <div class="sk-chip"></div>
-          <div class="sk-chip"></div>
-          <div class="sk-chip"></div>
-          <div class="sk-chip"></div>
+        <div class="payout-tabs">
+          <button
+            id="tabAll"
+            class="active"
+            data-mode="all"
+            type="button"
+            aria-label="All Payments"
+          >
+            <span class="material-icons-sharp tab-icon" aria-hidden="true"
+              >list_alt</span
+            >
+            <span class="tab-label">All Payments</span>
+            <span id="badgeAll" class="badge" hidden>0</span>
+          </button>
+          <button
+            id="tabRequests"
+            data-mode="requests"
+            type="button"
+            aria-label="Payout Requests"
+          >
+            <span class="material-icons-sharp tab-icon" aria-hidden="true"
+              >request_quote</span
+            >
+            <span class="tab-label">Payout Requests</span>
+            <span id="badgeRequests" class="badge" hidden>0</span>
+          </button>
+          <button
+            id="tabUnpaid"
+            data-mode="unpaid"
+            type="button"
+            aria-label="Unpaid"
+          >
+            <span class="material-icons-sharp tab-icon" aria-hidden="true"
+              >hourglass_empty</span
+            >
+            <span class="tab-label">Unpaid</span>
+            <span id="badgeUnpaid" class="badge" hidden>0</span>
+          </button>
+          <button id="tabPaid" data-mode="paid" type="button" aria-label="Paid">
+            <span class="material-icons-sharp tab-icon" aria-hidden="true"
+              >check_circle</span
+            >
+            <span class="tab-label">Paid</span>
+            <span id="badgePaid" class="badge" hidden>0</span>
+          </button>
+          <button
+            id="tabDisbursed"
+            data-mode="disbursed"
+            type="button"
+            aria-label="Disbursed"
+          >
+            <span class="material-icons-sharp tab-icon" aria-hidden="true"
+              >paid</span
+            >
+            <span class="tab-label">Disbursed</span>
+            <span id="badgeDisbursed" class="badge" hidden>0</span>
+          </button>
         </div>
 
-        <!-- Batch bar -->
-        <div class="sk-card" style="height: 56px;"></div>
-
-        <!-- Table skeleton -->
-        <div class="sk-table">
-          <div class="sk-head">
-            <div class="sk-bar"></div>
-            <div class="sk-bar"></div>
-            <div class="sk-bar"></div>
-            <div class="sk-bar"></div>
-            <div class="sk-bar"></div>
-            <div class="sk-bar"></div>
+        <!-- Batch / Bulk Bar -->
+        <div class="batch-bar" id="batchBar">
+          <div class="select-all-wrap">
+            <input type="checkbox" id="selectAllVisible" />
+            <label
+              for="selectAllVisible"
+              style="user-select: none; cursor: pointer"
+              >Select all (visible same status)</label
+            >
           </div>
-          <div class="sk-body">
-            <div class="sk-row-line">
-              <div class="sk-bar"></div>
-              <div class="sk-bar"></div>
-              <div class="sk-bar"></div>
-              <div class="sk-bar"></div>
-              <div class="sk-bar"></div>
-              <div class="sk-bar"></div>
-            </div>
-            <div class="sk-row-line">
-              <div class="sk-bar"></div>
-              <div class="sk-bar"></div>
-              <div class="sk-bar"></div>
-              <div class="sk-bar"></div>
-              <div class="sk-bar"></div>
-              <div class="sk-bar"></div>
-            </div>
-            <div class="sk-row-line">
-              <div class="sk-bar"></div>
-              <div class="sk-bar"></div>
-              <div class="sk-bar"></div>
-              <div class="sk-bar"></div>
-              <div class="sk-bar"></div>
-              <div class="sk-bar"></div>
-            </div>
-          </div>
+          <span class="pill" id="selCount">Selected: 0</span>
+          <span class="pill" id="selTotal">Total: ₱0.00</span>
+          <button
+            id="createPayoutBtn"
+            class="create disabled"
+            type="button"
+            disabled
+          >
+            Create Payout
+          </button>
+          <!-- Added bulk mark-paid -->
+          <button
+            id="bulkMarkPaidBtn"
+            type="button"
+            title="Mark all selected rows as Paid"
+          >
+            Mark Selected as Paid
+          </button>
         </div>
-      </div>
-      <!-- ====== END SKELETON ====== -->
 
-      <div class="payments-header">
-        <h1>Payments Request</h1>
-        <p>
-          Manage and verify all payment requests from workers after job
-          completion.
-        </p>
-      </div>
-
-      <!-- Search & Filter -->
-      <div class="search-filter">
-        <input id="searchInput" type="text" placeholder="Search by Job ID, Worker, or Job Title..." />
-        <select id="statusFilter">
-          <option value="all">All</option>
-          <option value="paid">Paid</option>
-          <option value="not-paid">Not Paid</option>
-        </select>
-        <button id="searchBtn" type="button">Search</button>
-        <button id="clearBtn" class="clear" type="button">Clear</button>
-      </div>
-
-      <!-- Summary Cards -->
-      <div class="summary-cards">
-        <div class="card total">
-          <h3>Total (visible)</h3>
-          <p id="totalCount">0</p>
+        <!-- Payments Table -->
+        <div class="payments-table" id="paymentsTableWrap">
+          <table>
+            <thead>
+              <tr>
+                <th class="col-select">
+                  <span title="Select (same status)">Sel</span>
+                </th>
+                <th>Job ID</th>
+                <th>Worker</th>
+                <th>Job Title</th>
+                <th>Amount</th>
+                <th>Requested Date</th>
+                <th>Status</th>
+                <th style="width: 1%">Action</th>
+              </tr>
+            </thead>
+            <tbody id="paymentsTbody"></tbody>
+          </table>
         </div>
-        <div class="card paid">
-          <h3>Paid (visible)</h3>
-          <p id="paidCount">0</p>
+
+        <!-- Grouped Requests Table (Requests tab) -->
+        <div class="requests-table" id="requestsTableWrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Jobs</th>
+                <th>Installer</th>
+                <th># Payments</th>
+                <th>Total Amount</th>
+                <th>Requested Date</th>
+                <th style="width: 1%">Action</th>
+              </tr>
+            </thead>
+            <tbody id="requestsTbody"></tbody>
+          </table>
         </div>
-        <div class="card unpaid">
-          <h3>Not Paid (visible)</h3>
-          <p id="unpaidCount">0</p>
-        </div>
-      </div>
 
-      <!-- Tabs -->
-      <div class="payout-tabs">
-        <button id="tabAll" class="active" data-mode="all" type="button" aria-label="All Payments">
-          <span class="material-icons-sharp tab-icon" aria-hidden="true">list_alt</span>
-          <span class="tab-label">All Payments</span>
-          <span id="badgeAll" class="badge" hidden>0</span>
-        </button>
-        <button id="tabRequests" data-mode="requests" type="button" aria-label="Payout Requests">
-          <span class="material-icons-sharp tab-icon" aria-hidden="true">request_quote</span>
-          <span class="tab-label">Payout Requests</span>
-          <span id="badgeRequests" class="badge" hidden>0</span>
-        </button>
-        <button id="tabUnpaid" data-mode="unpaid" type="button" aria-label="Unpaid">
-          <span class="material-icons-sharp tab-icon" aria-hidden="true">hourglass_empty</span>
-          <span class="tab-label">Unpaid</span>
-          <span id="badgeUnpaid" class="badge" hidden>0</span>
-        </button>
-        <button id="tabPaid" data-mode="paid" type="button" aria-label="Paid">
-          <span class="material-icons-sharp tab-icon" aria-hidden="true">check_circle</span>
-          <span class="tab-label">Paid</span>
-          <span id="badgePaid" class="badge" hidden>0</span>
-        </button>
-        <button id="tabDisbursed" data-mode="disbursed" type="button" aria-label="Disbursed">
-          <span class="material-icons-sharp tab-icon" aria-hidden="true">paid</span>
-          <span class="tab-label">Disbursed</span>
-          <span id="badgeDisbursed" class="badge" hidden>0</span>
-        </button>
-      </div>
+        <!-- Inline JS: filters, search, selection -->
+        <script src="../../general_files/index.js"></script>
+        <script type="module" src="../../general_files/session.js"></script>
 
-      <!-- Batch / Bulk Bar -->
-      <div class="batch-bar" id="batchBar">
-        <div class="select-all-wrap">
-          <input type="checkbox" id="selectAllVisible" />
-          <label for="selectAllVisible" style="user-select: none; cursor: pointer">Select all (visible same
-            status)</label>
-        </div>
-        <span class="pill" id="selCount">Selected: 0</span>
-        <span class="pill" id="selTotal">Total: ₱0.00</span>
-        <button id="createPayoutBtn" class="create disabled" type="button" disabled>
-          Create Payout
-        </button>
-        <!-- Added bulk mark-paid -->
-        <button id="bulkMarkPaidBtn" type="button" title="Mark all selected rows as Paid">
-          Mark Selected as Paid
-        </button>
-      </div>
-
-      <!-- Payments Table -->
-      <div class="payments-table" id="paymentsTableWrap">
-        <table>
-          <thead>
-            <tr>
-              <th class="col-select">
-                <span title="Select (same status)">Sel</span>
-              </th>
-              <th>Job ID</th>
-              <th>Worker</th>
-              <th>Job Title</th>
-              <th>Amount</th>
-              <th>Requested Date</th>
-              <th>Status</th>
-              <th style="width: 1%">Action</th>
-            </tr>
-          </thead>
-          <tbody id="paymentsTbody"></tbody>
-        </table>
-      </div>
-
-      <!-- Grouped Requests Table (Requests tab) -->
-      <div class="requests-table" id="requestsTableWrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Jobs</th>
-              <th>Installer</th>
-              <th># Payments</th>
-              <th>Total Amount</th>
-              <th>Requested Date</th>
-              <th style="width: 1%">Action</th>
-            </tr>
-          </thead>
-          <tbody id="requestsTbody"></tbody>
-        </table>
-      </div>
-
-      <!-- Inline JS: filters, search, selection -->
-      <script src="../../general_files/index.js"></script>
-      <script type="module" src="../../general_files/session.js"></script>
-      <script>
-        (function () {
-          const searchInput = document.getElementById("searchInput");
-          const statusFilter = document.getElementById("statusFilter");
-          const searchBtn = document.getElementById("searchBtn");
-          const clearBtn = document.getElementById("clearBtn");
-          const tbody = document.getElementById("paymentsTbody");
-
-          const totalCount = document.getElementById("totalCount");
-          const paidCount = document.getElementById("paidCount");
-          const unpaidCount = document.getElementById("unpaidCount");
-
-          const selCountEl = document.getElementById("selCount");
-          const selTotalEl = document.getElementById("selTotal");
-          const selectAllVisibleEl =
-            document.getElementById("selectAllVisible");
-          const createPayoutBtn = document.getElementById("createPayoutBtn");
-
-          function rows() {
-            return Array.from(tbody.querySelectorAll("tr"));
-          }
-          function normalize(s) {
-            return (s || "").toString().trim().toLowerCase();
-          }
-
-          function rowMatchesSearch(row, q) {
-            if (!q) return true;
-            const job = row.querySelector(".col-jobid")?.textContent || "";
-            const worker =
-              row.querySelector(".col-worker")?.textContent || "";
-            const title = row.querySelector(".col-title")?.textContent || "";
-            const haystack = normalize(job + " " + worker + " " + title);
-            return haystack.includes(normalize(q));
-          }
-
-          function rowMatchesStatus(row, status) {
-            if (status === "all") return true;
-            return row.dataset.status === status;
-          }
-
-          function updateSelectionSummary() {
-            let count = 0;
-            let total = 0;
-            rows().forEach((r) => {
-              if (r.style.display === "none") return;
-              if (r.dataset.status !== "not-paid") return;
-              const cb = r.querySelector(".row-select");
-              if (cb && cb.checked) {
-                count++;
-                const amt = Number(r.dataset.amount || 0);
-                total += isNaN(amt) ? 0 : amt;
-              }
-            });
-            const peso = (n) =>
-              "₱" +
-              (Number(n) || 0).toLocaleString("en-PH", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
+        <!-- SweetAlert helpers (ADDED) -->
+        <script>
+          // Centralized, friendly SweetAlert helpers
+          window.__Swal = {
+            toast: (icon, title = "", timer = 1800) =>
+              Swal.fire({
+                toast: true,
+                icon,
+                title,
+                position: "top-end",
+                showConfirmButton: false,
+                timer,
+                timerProgressBar: true,
+              }),
+            info: (title, text = "") =>
+              Swal.fire({
+                icon: "info",
+                title,
+                text,
+                confirmButtonText: "OK",
+                confirmButtonColor: "#20a44c",
+                width: 420,
+              }),
+            success: (title, text = "") =>
+              Swal.fire({
+                icon: "success",
+                title,
+                text,
+                confirmButtonText: "Great",
+                confirmButtonColor: "#20a44c",
+                width: 420,
+              }),
+            error: (title, text = "") =>
+              Swal.fire({
+                icon: "error",
+                title,
+                text,
+                confirmButtonText: "Dismiss",
+                confirmButtonColor: "#e53935",
+                width: 420,
+              }),
+            confirm: async (
+              title,
+              text = "",
+              confirmText = "Yes",
+              cancelText = "Cancel"
+            ) => {
+              const res = await Swal.fire({
+                icon: "question",
+                title,
+                text,
+                showCancelButton: true,
+                confirmButtonText: confirmText,
+                cancelButtonText: cancelText,
+                confirmButtonColor: "#20a44c",
+                cancelButtonColor: "#6c7a8a",
+                reverseButtons: true,
+                width: 420,
               });
-            selCountEl.textContent = "Selected: " + count;
-            selTotalEl.textContent = "Total: " + peso(total);
-
-            if (count > 0) {
-              createPayoutBtn.classList.remove("disabled");
-              createPayoutBtn.disabled = false;
-            } else {
-              createPayoutBtn.classList.add("disabled");
-              createPayoutBtn.disabled = true;
-            }
-          }
-
-          function applyFilters() {
-            const q = searchInput.value;
-            const f = statusFilter.value;
-            let visible = 0,
-              visPaid = 0,
-              visUnpaid = 0;
-
-            rows().forEach((row) => {
-              const show =
-                rowMatchesSearch(row, q) && rowMatchesStatus(row, f);
-              row.style.display = show ? "" : "none";
-              if (show) {
-                visible++;
-                if (row.dataset.status === "paid") visPaid++;
-                if (row.dataset.status === "not-paid") visUnpaid++;
-              }
-            });
-
-            totalCount.textContent = String(visible);
-            paidCount.textContent = String(visPaid);
-            unpaidCount.textContent = String(visUnpaid);
-
-            const mode = window.__tabMode || "all";
-            rows().forEach((row) => {
-              if (row.style.display === "none") return;
-              if (mode === "all") return;
-              if (
-                mode === "requests" &&
-                row.dataset.status !== "pending_payout"
-              ) {
-                row.style.display = "none";
-                return;
-              }
-              if (mode === "unpaid" && row.dataset.status !== "not-paid") {
-                row.style.display = "none";
-                return;
-              }
-              if (mode === "paid" && row.dataset.status !== "paid") {
-                row.style.display = "none";
-                return;
-              }
-              if (
-                mode === "disbursed" &&
-                row.dataset.status !== "disbursed"
-              ) {
-                row.style.display = "none";
-                return;
-              }
-            });
-
-            updateSelectionSummary();
-          }
-
-          function onMarkPaidClick(e) {
-            const btn = e.target.closest(".mark-paid");
-            if (!btn) return;
-            const row = btn.closest("tr");
-            if (!row || row.dataset.status === "paid") return;
-
-            row.dataset.status = "paid";
-            const statusEl = row.querySelector(".status");
-            if (statusEl) {
-              statusEl.textContent = "Paid";
-              statusEl.classList.remove("not-paid", "pending");
-              statusEl.classList.add("paid");
-            }
-            btn.textContent = "Paid";
-            btn.disabled = true;
-
-            const cb = row.querySelector(".row-select");
-            if (cb) cb.checked = false;
-
-            applyFilters();
-          }
-
-          tbody.addEventListener("change", (e) => {
-            const cb = e.target.closest(".row-select");
-            if (!cb) return;
-            const row = cb.closest("tr");
-            if (row && row.dataset.status !== "not-paid") {
-              cb.checked = false;
-            }
-            updateSelectionSummary();
-          });
-
-          selectAllVisibleEl.addEventListener("change", () => {
-            const check = !!selectAllVisibleEl.checked;
-            let targetStatus = null;
-            const statusSel =
-              document.getElementById("statusFilter")?.value || "all";
-            if (statusSel !== "all") {
-              targetStatus = statusSel;
-            } else {
-              const firstSelectable = rows().find(
-                (r) =>
-                  r.style.display !== "none" &&
-                  r.querySelector(".row-select") &&
-                  !r.querySelector(".row-select").disabled
-              );
-              if (firstSelectable)
-                targetStatus = firstSelectable.dataset.status;
-            }
-
-            rows().forEach((r) => {
-              if (r.style.display === "none") return;
-              const cb = r.querySelector(".row-select");
-              if (!cb || cb.disabled) return;
-              if (!targetStatus || r.dataset.status !== targetStatus) return;
-              cb.checked = check;
-            });
-
-            updateSelectionSummary();
-          });
-
-          /* Row details (eye) */
-          tbody.addEventListener("click", (e) => {
-            const eye = e.target.closest(".view-row-btn");
-            if (!eye) return;
-            const tr = eye.closest("tr");
-            if (!tr) return;
-
-            const get = (sel) =>
-              (tr.querySelector(sel)?.textContent || "").trim();
-
-            const data = {
-              jobId: get(".col-jobid"),
-              worker: get(".col-worker"),
-              title: get(".col-title") || "—",
-              amount: get('td[data-col="Amount"]'),
-              requested: get('td[data-col="Requested Date"]') || "—",
-              statusText: tr.querySelector(".status")?.textContent || "",
-              statusClass:
-                tr.querySelector(".status")?.className || "status",
-              actionHtml: (() => {
-                const cell = tr.querySelector('td[data-col="Action"]');
-                if (!cell) return "";
-                const clone = cell.cloneNode(true);
-                const vb = clone.querySelector(".view-row-btn");
-                if (vb) vb.remove();
-                return clone.innerHTML.trim();
-              })(),
-            };
-
-            window.__openRowViewModal(data);
-          });
-
-          tbody.addEventListener("click", onMarkPaidClick);
-          searchInput.addEventListener("input", applyFilters);
-          statusFilter.addEventListener("change", applyFilters);
-          searchBtn.addEventListener("click", applyFilters);
-          clearBtn.addEventListener("click", () => {
-            searchInput.value = "";
-            statusFilter.value = "all";
-            applyFilters();
-          });
-
-          window.__tabMode = "all";
-          applyFilters();
-
-          const paymentsTableWrap =
-            document.getElementById("paymentsTableWrap");
-          const requestsTableWrap =
-            document.getElementById("requestsTableWrap");
-          const setActive = (id) => {
-            document
-              .querySelectorAll(".payout-tabs button")
-              .forEach((b) => b.classList.remove("active"));
-            document.getElementById(id).classList.add("active");
+              return !!res.isConfirmed;
+            },
+            inputRef: async (title, placeholder = "e.g. 9AB12C34") => {
+              const { value: ref } = await Swal.fire({
+                title,
+                input: "text",
+                inputLabel: "GCash Reference Number",
+                inputPlaceholder: placeholder,
+                inputAttributes: { "aria-label": "GCash Reference Number" },
+                confirmButtonText: "Confirm",
+                confirmButtonColor: "#20a44c",
+                showCancelButton: true,
+                cancelButtonText: "Cancel",
+                cancelButtonColor: "#6c7a8a",
+                width: 460,
+                inputValidator: (value) => {
+                  if (!value) return "Please enter the reference number.";
+                  if (!/^[A-Za-z0-9\-_]{6,64}$/.test(value.trim())) {
+                    return "Use 6–64 characters: letters, numbers, dash, underscore.";
+                  }
+                  return undefined;
+                },
+              });
+              return ref ? ref.trim() : null;
+            },
           };
-          const showRequests = (on) => {
-            requestsTableWrap.style.display = on ? "" : "none";
-            paymentsTableWrap.style.display = on ? "none" : "";
-            if (on && window.__buildRequests) window.__buildRequests();
-          };
+        </script>
 
-          document.getElementById("tabAll").addEventListener("click", () => {
+        <script>
+          (function () {
+            const searchInput = document.getElementById("searchInput");
+            const statusFilter = document.getElementById("statusFilter");
+            const searchBtn = document.getElementById("searchBtn");
+            const clearBtn = document.getElementById("clearBtn");
+            const tbody = document.getElementById("paymentsTbody");
+
+            const totalCount = document.getElementById("totalCount");
+            const paidCount = document.getElementById("paidCount");
+            const unpaidCount = document.getElementById("unpaidCount");
+
+            const selCountEl = document.getElementById("selCount");
+            const selTotalEl = document.getElementById("selTotal");
+            const selectAllVisibleEl =
+              document.getElementById("selectAllVisible");
+            const createPayoutBtn = document.getElementById("createPayoutBtn");
+
+            function rows() {
+              return Array.from(tbody.querySelectorAll("tr"));
+            }
+            function normalize(s) {
+              return (s || "").toString().trim().toLowerCase();
+            }
+
+            function rowMatchesSearch(row, q) {
+              if (!q) return true;
+              const job = row.querySelector(".col-jobid")?.textContent || "";
+              const worker =
+                row.querySelector(".col-worker")?.textContent || "";
+              const title = row.querySelector(".col-title")?.textContent || "";
+              const haystack = normalize(job + " " + worker + " " + title);
+              return haystack.includes(normalize(q));
+            }
+
+            function rowMatchesStatus(row, status) {
+              if (status === "all") return true;
+              return row.dataset.status === status;
+            }
+
+            function updateSelectionSummary() {
+              let count = 0;
+              let total = 0;
+              rows().forEach((r) => {
+                if (r.style.display === "none") return;
+                if (r.dataset.status !== "not-paid") return;
+                const cb = r.querySelector(".row-select");
+                if (cb && cb.checked) {
+                  count++;
+                  const amt = Number(r.dataset.amount || 0);
+                  total += isNaN(amt) ? 0 : amt;
+                }
+              });
+              const peso = (n) =>
+                "₱" +
+                (Number(n) || 0).toLocaleString("en-PH", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                });
+              selCountEl.textContent = "Selected: " + count;
+              selTotalEl.textContent = "Total: " + peso(total);
+
+              if (count > 0) {
+                createPayoutBtn.classList.remove("disabled");
+                createPayoutBtn.disabled = false;
+              } else {
+                createPayoutBtn.classList.add("disabled");
+                createPayoutBtn.disabled = true;
+              }
+            }
+
+            function applyFilters() {
+              const q = searchInput.value;
+              const f = statusFilter.value;
+              let visible = 0,
+                visPaid = 0,
+                visUnpaid = 0;
+
+              rows().forEach((row) => {
+                const show =
+                  rowMatchesSearch(row, q) && rowMatchesStatus(row, f);
+                row.style.display = show ? "" : "none";
+                if (show) {
+                  visible++;
+                  if (row.dataset.status === "paid") visPaid++;
+                  if (row.dataset.status === "not-paid") visUnpaid++;
+                }
+              });
+
+              totalCount.textContent = String(visible);
+              paidCount.textContent = String(visPaid);
+              unpaidCount.textContent = String(visUnpaid);
+
+              const mode = window.__tabMode || "all";
+              rows().forEach((row) => {
+                if (row.style.display === "none") return;
+                if (mode === "all") return;
+                if (
+                  mode === "requests" &&
+                  row.dataset.status !== "pending_payout"
+                ) {
+                  row.style.display = "none";
+                  return;
+                }
+                if (mode === "unpaid" && row.dataset.status !== "not-paid") {
+                  row.style.display = "none";
+                  return;
+                }
+                if (mode === "paid" && row.dataset.status !== "paid") {
+                  row.style.display = "none";
+                  return;
+                }
+                if (
+                  mode === "disbursed" &&
+                  row.dataset.status !== "disbursed"
+                ) {
+                  row.style.display = "none";
+                  return;
+                }
+              });
+
+              updateSelectionSummary();
+            }
+
+            function onMarkPaidClick(e) {
+              const btn = e.target.closest(".mark-paid");
+              if (!btn) return;
+              const row = btn.closest("tr");
+              if (!row || row.dataset.status === "paid") return;
+
+              // Optimistic UI (kept)
+              row.dataset.status = "paid";
+              const statusEl = row.querySelector(".status");
+              if (statusEl) {
+                statusEl.textContent = "Paid";
+                statusEl.classList.remove("not-paid", "pending");
+                statusEl.classList.add("paid");
+              }
+              btn.textContent = "Paid";
+              btn.disabled = true;
+
+              const cb = row.querySelector(".row-select");
+              if (cb) cb.checked = false;
+
+              applyFilters();
+              window.__Swal.toast("success", "Marked as paid");
+            }
+
+            tbody.addEventListener("change", (e) => {
+              const cb = e.target.closest(".row-select");
+              if (!cb) return;
+              const row = cb.closest("tr");
+              if (row && row.dataset.status !== "not-paid") {
+                cb.checked = false;
+              }
+              updateSelectionSummary();
+            });
+
+            selectAllVisibleEl.addEventListener("change", () => {
+              const check = !!selectAllVisibleEl.checked;
+              let targetStatus = null;
+              const statusSel =
+                document.getElementById("statusFilter")?.value || "all";
+              if (statusSel !== "all") {
+                targetStatus = statusSel;
+              } else {
+                const firstSelectable = rows().find(
+                  (r) =>
+                    r.style.display !== "none" &&
+                    r.querySelector(".row-select") &&
+                    !r.querySelector(".row-select").disabled
+                );
+                if (firstSelectable)
+                  targetStatus = firstSelectable.dataset.status;
+              }
+
+              rows().forEach((r) => {
+                if (r.style.display === "none") return;
+                const cb = r.querySelector(".row-select");
+                if (!cb || cb.disabled) return;
+                if (!targetStatus || r.dataset.status !== targetStatus) return;
+                cb.checked = check;
+              });
+
+              updateSelectionSummary();
+            });
+
+            /* Row details (eye) */
+            tbody.addEventListener("click", (e) => {
+              const eye = e.target.closest(".view-row-btn");
+              if (!eye) return;
+              const tr = eye.closest("tr");
+              if (!tr) return;
+
+              const get = (sel) =>
+                (tr.querySelector(sel)?.textContent || "").trim();
+
+              const data = {
+                jobId: get(".col-jobid"),
+                worker: get(".col-worker"),
+                title: get(".col-title") || "—",
+                amount: get('td[data-col="Amount"]'),
+                requested: get('td[data-col="Requested Date"]') || "—",
+                statusText: tr.querySelector(".status")?.textContent || "",
+                statusClass: tr.querySelector(".status")?.className || "status",
+                actionHtml: (() => {
+                  const cell = tr.querySelector('td[data-col="Action"]');
+                  if (!cell) return "";
+                  const clone = cell.cloneNode(true);
+                  const vb = clone.querySelector(".view-row-btn");
+                  if (vb) vb.remove();
+                  return clone.innerHTML.trim();
+                })(),
+              };
+
+              window.__openRowViewModal(data);
+            });
+
+            tbody.addEventListener("click", onMarkPaidClick);
+            searchInput.addEventListener("input", applyFilters);
+            statusFilter.addEventListener("change", applyFilters);
+            searchBtn.addEventListener("click", applyFilters);
+            clearBtn.addEventListener("click", () => {
+              searchInput.value = "";
+              statusFilter.value = "all";
+              applyFilters();
+              window.__Swal.toast("info", "Filters cleared");
+            });
+
             window.__tabMode = "all";
-            setActive("tabAll");
             applyFilters();
-            showRequests(false);
-          });
-          document
-            .getElementById("tabRequests")
-            .addEventListener("click", () => {
-              window.__tabMode = "requests";
-              setActive("tabRequests");
-              applyFilters();
-              showRequests(true);
-            });
-          document
-            .getElementById("tabUnpaid")
-            .addEventListener("click", () => {
-              window.__tabMode = "unpaid";
-              setActive("tabUnpaid");
-              applyFilters();
-              showRequests(false);
-            });
-          document.getElementById("tabPaid").addEventListener("click", () => {
-            window.__tabMode = "paid";
-            setActive("tabPaid");
-            applyFilters();
-            showRequests(false);
-          });
-          document
-            .getElementById("tabDisbursed")
-            .addEventListener("click", () => {
-              window.__tabMode = "disbursed";
-              setActive("tabDisbursed");
-              applyFilters();
-              showRequests(false);
-            });
 
-          window.__paymentsUI = {
-            updateSelectionSummary,
-            applyFilters,
+            const paymentsTableWrap =
+              document.getElementById("paymentsTableWrap");
+            const requestsTableWrap =
+              document.getElementById("requestsTableWrap");
+            const setActive = (id) => {
+              document
+                .querySelectorAll(".payout-tabs button")
+                .forEach((b) => b.classList.remove("active"));
+              document.getElementById(id).classList.add("active");
+            };
+            const showRequests = (on) => {
+              requestsTableWrap.style.display = on ? "" : "none";
+              paymentsTableWrap.style.display = on ? "none" : "";
+              if (on && window.__buildRequests) window.__buildRequests();
+            };
+
+            document.getElementById("tabAll").addEventListener("click", () => {
+              window.__tabMode = "all";
+              setActive("tabAll");
+              applyFilters();
+              showRequests(false);
+            });
+            document
+              .getElementById("tabRequests")
+              .addEventListener("click", () => {
+                window.__tabMode = "requests";
+                setActive("tabRequests");
+                applyFilters();
+                showRequests(true);
+              });
+            document
+              .getElementById("tabUnpaid")
+              .addEventListener("click", () => {
+                window.__tabMode = "unpaid";
+                setActive("tabUnpaid");
+                applyFilters();
+                showRequests(false);
+              });
+            document.getElementById("tabPaid").addEventListener("click", () => {
+              window.__tabMode = "paid";
+              setActive("tabPaid");
+              applyFilters();
+              showRequests(false);
+            });
+            document
+              .getElementById("tabDisbursed")
+              .addEventListener("click", () => {
+                window.__tabMode = "disbursed";
+                setActive("tabDisbursed");
+                applyFilters();
+                showRequests(false);
+              });
+
+            window.__paymentsUI = {
+              updateSelectionSummary,
+              applyFilters,
+            };
+          })();
+        </script>
+
+        <!-- Supabase client -->
+        <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+
+        <!-- Data loader -->
+        <script type="module">
+          import {
+            SUPABASE_URL,
+            SUPABASE_ANON_KEY,
+          } from "../../../supabase.js";
+          const sbClient = window.supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_ANON_KEY
+          );
+          window.__sb = sbClient;
+
+          const tbodyPayments = document.getElementById("paymentsTbody");
+          const searchBtnEl = document.getElementById("searchBtn");
+
+          const peso = (n) =>
+            "₱" +
+            (Number(n) || 0).toLocaleString("en-PH", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            });
+          const fmtDate = (iso) => {
+            try {
+              return new Date(iso).toISOString().slice(0, 10);
+            } catch {
+              return "";
+            }
           };
-        })();
-      </script>
+          const shortId = (id) =>
+            id ? String(id).slice(0, 8).toUpperCase() : "";
 
-      <!-- Supabase client -->
-      <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+          let __PAYMENTS = [];
+          let __JOBS_BY_ID = {};
+          let __INSTALLERS_BY_ID = {};
 
-      <!-- Data loader -->
-      <script type="module">
-        import {
-          SUPABASE_URL,
-          SUPABASE_ANON_KEY,
-        } from "../../../supabase.js";
-        const sbClient = window.supabase.createClient(
-          SUPABASE_URL,
-          SUPABASE_ANON_KEY
-        );
-        window.__sb = sbClient;
-
-        const tbodyPayments = document.getElementById("paymentsTbody");
-        const searchBtnEl = document.getElementById("searchBtn");
-
-        const peso = (n) =>
-          "₱" +
-          (Number(n) || 0).toLocaleString("en-PH", {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          });
-        const fmtDate = (iso) => {
-          try {
-            return new Date(iso).toISOString().slice(0, 10);
-          } catch {
-            return "";
-          }
-        };
-        const shortId = (id) =>
-          id ? String(id).slice(0, 8).toUpperCase() : "";
-
-        let __PAYMENTS = [];
-        let __JOBS_BY_ID = {};
-        let __INSTALLERS_BY_ID = {};
-
-        function statusToUi(payment_status) {
-          if (payment_status === "unpaid")
+          function statusToUi(payment_status) {
+            if (payment_status === "unpaid")
+              return {
+                ds: "not-paid",
+                text: "Not Paid",
+                cls: "status not-paid",
+                action: "mark",
+              };
+            if (payment_status === "pending_payout")
+              return {
+                ds: "pending_payout",
+                text: "Pending Payout",
+                cls: "status pending",
+                action: "payout",
+              };
+            if (payment_status === "disbursed")
+              return {
+                ds: "disbursed",
+                text: "Disbursed",
+                cls: "status paid",
+                action: "none",
+              };
             return {
-              ds: "not-paid",
-              text: "Not Paid",
-              cls: "status not-paid",
-              action: "mark",
-            };
-          if (payment_status === "pending_payout")
-            return {
-              ds: "pending_payout",
-              text: "Pending Payout",
-              cls: "status pending",
-              action: "payout",
-            };
-          if (payment_status === "disbursed")
-            return {
-              ds: "disbursed",
-              text: "Disbursed",
+              ds: "paid",
+              text: "Paid",
               cls: "status paid",
               action: "none",
             };
-          return {
-            ds: "paid",
-            text: "Paid",
-            cls: "status paid",
-            action: "none",
-          };
-        }
+          }
 
-        async function loadPayments() {
-          const { data: pays, error: payErr } = await sbClient
-            .schema("earnings")
-            .from("payments")
-            .select(
-              "id, installer_id, job_id, payment_status, payout_batch_no, first_created_at, updated_at"
-            )
-            .order("first_created_at", { ascending: false });
+          async function loadPayments() {
+            const { data: pays, error: payErr } = await sbClient
+              .schema("earnings")
+              .from("payments")
+              .select(
+                "id, installer_id, job_id, payment_status, payout_batch_no, first_created_at, updated_at"
+              )
+              .order("first_created_at", { ascending: false });
 
-          if (payErr) {
-            console.error(payErr);
-            tbodyPayments.innerHTML =
-              '<tr><td colspan="8" data-col="Notice" class="sub">Error loading payments.</td></tr>';
-          } else if (!pays || pays.length === 0) {
-            __PAYMENTS = [];
-            window.__PAYMENTS = __PAYMENTS;
-            tbodyPayments.innerHTML =
-              '<tr><td colspan="8" data-col="Notice" class="sub">No payment requests yet.</td></tr>';
-            if (window.__buildRequests) window.__buildRequests();
-          } else {
-            __PAYMENTS = pays;
-            window.__PAYMENTS = __PAYMENTS;
+            if (payErr) {
+              console.error(payErr);
+              tbodyPayments.innerHTML =
+                '<tr><td colspan="8" data-col="Notice" class="sub">Error loading payments.</td></tr>';
+              window.__Swal.error(
+                "Couldn’t load payments",
+                "Please check your internet connection and try again."
+              );
+            } else if (!pays || pays.length === 0) {
+              __PAYMENTS = [];
+              window.__PAYMENTS = __PAYMENTS;
+              tbodyPayments.innerHTML =
+                '<tr><td colspan="8" data-col="Notice" class="sub">No payment requests yet.</td></tr>';
+              if (window.__buildRequests) window.__buildRequests();
+            } else {
+              __PAYMENTS = pays;
+              window.__PAYMENTS = __PAYMENTS;
 
-            // jobs
-            const jobIds = [
-              ...new Set(pays.map((p) => p.job_id).filter(Boolean)),
-            ];
-            __JOBS_BY_ID = {};
-            if (jobIds.length) {
-              const { data: jobs } = await sbClient
-                .schema("jobs")
-                .from("job")
-                .select("job_id, job_code, job_title, job_pay")
-                .in("job_id", jobIds);
-              if (jobs)
-                __JOBS_BY_ID = Object.fromEntries(
-                  jobs.map((j) => [j.job_id, j])
-                );
-            }
+              // jobs
+              const jobIds = [
+                ...new Set(pays.map((p) => p.job_id).filter(Boolean)),
+              ];
+              __JOBS_BY_ID = {};
+              if (jobIds.length) {
+                const { data: jobs } = await sbClient
+                  .schema("jobs")
+                  .from("job")
+                  .select("job_id, job_code, job_title, job_pay")
+                  .in("job_id", jobIds);
+                if (jobs)
+                  __JOBS_BY_ID = Object.fromEntries(
+                    jobs.map((j) => [j.job_id, j])
+                  );
+              }
 
-            // installers
-            const installerIds = [
-              ...new Set(pays.map((p) => p.installer_id).filter(Boolean)),
-            ];
-            __INSTALLERS_BY_ID = {};
-            if (installerIds.length) {
-              const { data: installers } = await sbClient
-                .from("installer")
-                .select("id, name, email")
-                .in("id", installerIds);
-              if (installers)
-                __INSTALLERS_BY_ID = Object.fromEntries(
-                  installers.map((i) => [i.id, i])
-                );
-            }
+              // installers
+              const installerIds = [
+                ...new Set(pays.map((p) => p.installer_id).filter(Boolean)),
+              ];
+              __INSTALLERS_BY_ID = {};
+              if (installerIds.length) {
+                const { data: installers } = await sbClient
+                  .from("installer")
+                  .select("id, name, email")
+                  .in("id", installerIds);
+                if (installers)
+                  __INSTALLERS_BY_ID = Object.fromEntries(
+                    installers.map((i) => [i.id, i])
+                  );
+              }
 
-            // Group pending & disbursed by batch
-            const pendingGroups = new Map();
-            const disbursedGroups = new Map();
+              // Group pending & disbursed by batch
+              const pendingGroups = new Map();
+              const disbursedGroups = new Map();
 
-            for (const p of pays) {
-              const job = __JOBS_BY_ID[p.job_id] || {};
-              const amount = Number(job.job_pay) || 0;
+              for (const p of pays) {
+                const job = __JOBS_BY_ID[p.job_id] || {};
+                const amount = Number(job.job_pay) || 0;
 
-              if (p.payment_status === "pending_payout" && p.payout_batch_no) {
-                const k = p.payout_batch_no;
-                if (!pendingGroups.has(k)) {
-                  pendingGroups.set(k, {
-                    key: k,
-                    payment_ids: [],
-                    job_labels: new Set(),
-                    installers: new Set(),
-                    installer_display: null,
-                    count: 0,
-                    total: 0,
-                    requested_at: p.updated_at || p.first_created_at || null,
-                  });
+                if (
+                  p.payment_status === "pending_payout" &&
+                  p.payout_batch_no
+                ) {
+                  const k = p.payout_batch_no;
+                  if (!pendingGroups.has(k)) {
+                    pendingGroups.set(k, {
+                      key: k,
+                      payment_ids: [],
+                      job_labels: new Set(),
+                      installers: new Set(),
+                      installer_display: null,
+                      count: 0,
+                      total: 0,
+                      requested_at: p.updated_at || p.first_created_at || null,
+                    });
+                  }
+                  const g = pendingGroups.get(k);
+                  g.payment_ids.push(p.id);
+                  g.installers.add(p.installer_id);
+                  g.count += 1;
+                  g.total += amount;
+                  const jobDisplay = job.job_code
+                    ? job.job_code
+                    : `#${shortId(p.job_id)}`;
+                  g.job_labels.add(jobDisplay);
+                  const ts = (d) => (d ? new Date(d).getTime() : Infinity);
+                  if (
+                    ts(p.updated_at || p.first_created_at) < ts(g.requested_at)
+                  ) {
+                    g.requested_at = p.updated_at || p.first_created_at;
+                  }
                 }
-                const g = pendingGroups.get(k);
-                g.payment_ids.push(p.id);
-                g.installers.add(p.installer_id);
-                g.count += 1;
-                g.total += amount;
+
+                if (p.payment_status === "disbursed" && p.payout_batch_no) {
+                  const k = p.payout_batch_no;
+                  if (!disbursedGroups.has(k)) {
+                    disbursedGroups.set(k, {
+                      key: k,
+                      payment_ids: [],
+                      job_labels: new Set(),
+                      installers: new Set(),
+                      installer_display: null,
+                      count: 0,
+                      total: 0,
+                      requested_at: p.updated_at || p.first_created_at || null,
+                    });
+                  }
+                  const g = disbursedGroups.get(k);
+                  g.payment_ids.push(p.id);
+                  g.installers.add(p.installer_id);
+                  g.count += 1;
+                  g.total += amount;
+                  const jobDisplay = job.job_code
+                    ? job.job_code
+                    : `#${shortId(p.job_id)}`;
+                  g.job_labels.add(jobDisplay);
+                  const ts = (d) => (d ? new Date(d).getTime() : Infinity);
+                  if (
+                    ts(p.updated_at || p.first_created_at) < ts(g.requested_at)
+                  ) {
+                    g.requested_at = p.updated_at || p.first_created_at;
+                  }
+                }
+              }
+
+              const resolveInstallerDisplay = (set) => {
+                if (set.size === 1) {
+                  const only = [...set][0];
+                  const inst = __INSTALLERS_BY_ID[only] || {};
+                  return inst.name || inst.email || shortId(only);
+                }
+                return "Multiple";
+              };
+              for (const g of pendingGroups.values())
+                g.installer_display = resolveInstallerDisplay(g.installers);
+              for (const g of disbursedGroups.values())
+                g.installer_display = resolveInstallerDisplay(g.installers);
+
+              const rowsHtml = [];
+              const pesoFmt = (n) =>
+                "₱" +
+                (Number(n) || 0).toLocaleString("en-PH", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                });
+
+              // Ungrouped rows
+              for (const p of pays) {
+                if (
+                  (p.payment_status === "pending_payout" &&
+                    p.payout_batch_no) ||
+                  (p.payment_status === "disbursed" && p.payout_batch_no)
+                ) {
+                  continue;
+                }
+
+                const job = __JOBS_BY_ID[p.job_id] || {};
+                const inst = __INSTALLERS_BY_ID[p.installer_id] || {};
+                const ui = statusToUi(p.payment_status);
+
                 const jobDisplay = job.job_code
                   ? job.job_code
                   : `#${shortId(p.job_id)}`;
-                g.job_labels.add(jobDisplay);
-                const ts = (d) => (d ? new Date(d).getTime() : Infinity);
-                if (
-                  ts(p.updated_at || p.first_created_at) < ts(g.requested_at)
-                ) {
-                  g.requested_at = p.updated_at || p.first_created_at;
-                }
-              }
+                const workerDisplay =
+                  inst.name || inst.email || shortId(p.installer_id);
+                const titleDisplay = job.job_title || "—";
+                const amountNum = job.job_pay != null ? Number(job.job_pay) : 0;
+                const amount = peso(amountNum);
+                const reqDate = fmtDate(p.first_created_at);
 
-              if (p.payment_status === "disbursed" && p.payout_batch_no) {
-                const k = p.payout_batch_no;
-                if (!disbursedGroups.has(k)) {
-                  disbursedGroups.set(k, {
-                    key: k,
-                    payment_ids: [],
-                    job_labels: new Set(),
-                    installers: new Set(),
-                    installer_display: null,
-                    count: 0,
-                    total: 0,
-                    requested_at: p.updated_at || p.first_created_at || null,
-                  });
-                }
-                const g = disbursedGroups.get(k);
-                g.payment_ids.push(p.id);
-                g.installers.add(p.installer_id);
-                g.count += 1;
-                g.total += amount;
-                const jobDisplay = job.job_code
-                  ? job.job_code
-                  : `#${shortId(p.job_id)}`;
-                g.job_labels.add(jobDisplay);
-                const ts = (d) => (d ? new Date(d).getTime() : Infinity);
-                if (
-                  ts(p.updated_at || p.first_created_at) < ts(g.requested_at)
-                ) {
-                  g.requested_at = p.updated_at || p.first_created_at;
-                }
-              }
-            }
-
-            const resolveInstallerDisplay = (set) => {
-              if (set.size === 1) {
-                const only = [...set][0];
-                const inst = __INSTALLERS_BY_ID[only] || {};
-                return inst.name || inst.email || shortId(only);
-              }
-              return "Multiple";
-            };
-            for (const g of pendingGroups.values())
-              g.installer_display = resolveInstallerDisplay(g.installers);
-            for (const g of disbursedGroups.values())
-              g.installer_display = resolveInstallerDisplay(g.installers);
-
-            const rowsHtml = [];
-            const pesoFmt = (n) =>
-              "₱" +
-              (Number(n) || 0).toLocaleString("en-PH", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              });
-
-            // Ungrouped rows
-            for (const p of pays) {
-              if (
-                (p.payment_status === "pending_payout" && p.payout_batch_no) ||
-                (p.payment_status === "disbursed" && p.payout_batch_no)
-              ) {
-                continue;
-              }
-
-              const job = __JOBS_BY_ID[p.job_id] || {};
-              const inst = __INSTALLERS_BY_ID[p.installer_id] || {};
-              const ui = statusToUi(p.payment_status);
-
-              const jobDisplay = job.job_code
-                ? job.job_code
-                : `#${shortId(p.job_id)}`;
-              const workerDisplay =
-                inst.name || inst.email || shortId(p.installer_id);
-              const titleDisplay = job.job_title || "—";
-              const amountNum = job.job_pay != null ? Number(job.job_pay) : 0;
-              const amount = peso(amountNum);
-              const reqDate = fmtDate(p.first_created_at);
-
-              const selectable = ui.ds === "not-paid";
-              const selectCell = `<input type="checkbox" class="row-select" ${selectable ? "" : "disabled"
+                const selectable = ui.ds === "not-paid";
+                const selectCell = `<input type="checkbox" class="row-select" ${
+                  selectable ? "" : "disabled"
                 } />`;
 
-              rowsHtml.push(
-                `<tr data-status="${ui.ds}"
+                rowsHtml.push(
+                  `<tr data-status="${ui.ds}"
                        data-payment-id="${p.id}"
                        data-installer-id="${p.installer_id}"
                        data-amount="${amountNum}"
@@ -1663,40 +1852,47 @@
                     <td class="col-title" data-col="Job Title">${titleDisplay}</td>
                     <td data-col="Amount">${amount}</td>
                     <td data-col="Requested Date">${reqDate}</td>
-                    <td data-col="Status"><span class="${ui.cls}">${ui.text}</span></td>
+                    <td data-col="Status"><span class="${ui.cls}">${
+                    ui.text
+                  }</span></td>
                     <td data-col="Action">
                       <button type="button" class="view-row-btn" title="View details">
                         <span class="material-icons-sharp" aria-hidden="true">visibility</span>
                       </button>
-                      ${ui.action === "mark"
-                  ? '<button class="mark-paid" type="button">Mark as Paid</button>'
-                  : ui.action === "payout"
-                    ? '<button class="do-payout" type="button">Payout</button>'
-                    : '<button type="button" disabled>Paid</button>'
-                }
+                      ${
+                        ui.action === "mark"
+                          ? '<button class="mark-paid" type="button">Mark as Paid</button>'
+                          : ui.action === "payout"
+                          ? '<button class="do-payout" type="button">Payout</button>'
+                          : '<button type="button" disabled>Paid</button>'
+                      }
                     </td>
                   </tr>`
-              );
-            }
+                );
+              }
 
-            // Grouped pending
-            for (const g of pendingGroups.values()) {
-              const reqDate = fmtDate(g.requested_at);
-              const jobLabels = Array.from(g.job_labels);
-              const jobsTitle =
-                jobLabels.length > 1
-                  ? `JOBS: ${jobLabels.join(", ")}`
-                  : `JOB: ${jobLabels[0] || "—"}`;
-              rowsHtml.push(
-                `<tr data-status="pending_payout"
+              // Grouped pending
+              for (const g of pendingGroups.values()) {
+                const reqDate = fmtDate(g.requested_at);
+                const jobLabels = Array.from(g.job_labels);
+                const jobsTitle =
+                  jobLabels.length > 1
+                    ? `JOBS: ${jobLabels.join(", ")}`
+                    : `JOB: ${jobLabels[0] || "—"}`;
+                rowsHtml.push(
+                  `<tr data-status="pending_payout"
                        data-payment-id=""
                        data-installer-id=""
                        data-amount="${g.total}"
                        data-batch="${g.key}">
                     <td class="col-select" style="text-align:center;" data-col="Select">—</td>
                     <td class="col-jobid mono" data-col="Job ID">${jobsTitle}</td>
-                    <td class="col-worker" data-col="Worker">${g.installer_display}</td>
-                    <td class="col-title" data-col="Job Title">Batch Payout (${g.count} payments)</td>
+                    <td class="col-worker" data-col="Worker">${
+                      g.installer_display
+                    }</td>
+                    <td class="col-title" data-col="Job Title">Batch Payout (${
+                      g.count
+                    } payments)</td>
                     <td class="mono" data-col="Amount">${pesoFmt(g.total)}</td>
                     <td data-col="Requested Date">${reqDate}</td>
                     <td data-col="Status"><span class="status pending">Pending Payout</span></td>
@@ -1707,33 +1903,37 @@
                       <button class="do-payout-batch" type="button"
                               data-batch="${g.key}"
                               data-payment-ids='${JSON.stringify(
-                  g.payment_ids
-                ).replace(/'</g, "&apos;")}'>
+                                g.payment_ids
+                              ).replace(/'</g, "&apos;")}'>
                         Payout Batch
                       </button>
                     </td>
                   </tr>`
-              );
-            }
+                );
+              }
 
-            // Grouped disbursed
-            for (const g of disbursedGroups.values()) {
-              const reqDate = fmtDate(g.requested_at);
-              const jobLabels = Array.from(g.job_labels);
-              const jobsTitle =
-                jobLabels.length > 1
-                  ? `JOBS: ${jobLabels.join(", ")}`
-                  : `JOB: ${jobLabels[0] || "—"}`;
-              rowsHtml.push(
-                `<tr data-status="disbursed"
+              // Grouped disbursed
+              for (const g of disbursedGroups.values()) {
+                const reqDate = fmtDate(g.requested_at);
+                const jobLabels = Array.from(g.job_labels);
+                const jobsTitle =
+                  jobLabels.length > 1
+                    ? `JOBS: ${jobLabels.join(", ")}`
+                    : `JOB: ${jobLabels[0] || "—"}`;
+                rowsHtml.push(
+                  `<tr data-status="disbursed"
                        data-payment-id=""
                        data-installer-id=""
                        data-amount="${g.total}"
                        data-batch="${g.key}">
                     <td class="col-select" style="text-align:center;" data-col="Select">—</td>
                     <td class="col-jobid mono" data-col="Job ID">${jobsTitle}</td>
-                    <td class="col-worker" data-col="Worker">${g.installer_display}</td>
-                    <td class="col-title" data-col="Job Title">Batch Disbursed (${g.count} payments)</td>
+                    <td class="col-worker" data-col="Worker">${
+                      g.installer_display
+                    }</td>
+                    <td class="col-title" data-col="Job Title">Batch Disbursed (${
+                      g.count
+                    } payments)</td>
                     <td class="mono" data-col="Amount">${pesoFmt(g.total)}</td>
                     <td data-col="Requested Date">${reqDate}</td>
                     <td data-col="Status"><span class="status paid">Disbursed</span></td>
@@ -1744,109 +1944,111 @@
                       <button type="button" disabled>Paid</button>
                     </td>
                   </tr>`
-              );
+                );
+              }
+
+              tbodyPayments.innerHTML =
+                rowsHtml.join("") ||
+                '<tr><td colspan="8" data-col="Notice" class="sub">No payment requests yet.</td></tr>';
+
+              // apply current filters/search
+              searchBtnEl.click();
+
+              // refresh grouped view in Requests tab
+              if (window.__buildRequests) window.__buildRequests();
+              if (window.__paymentsUI)
+                window.__paymentsUI.updateSelectionSummary();
             }
 
-            tbodyPayments.innerHTML =
-              rowsHtml.join("") ||
-              '<tr><td colspan="8" data-col="Notice" class="sub">No payment requests yet.</td></tr>';
-
-            // apply current filters/search
-            searchBtnEl.click();
-
-            // refresh grouped view in Requests tab
-            if (window.__buildRequests) window.__buildRequests();
-            if (window.__paymentsUI)
-              window.__paymentsUI.updateSelectionSummary();
-          }
-
-          // === HIDE SKELETON after content is ready ===
-          if (window.requestAnimationFrame) {
-            requestAnimationFrame(() => {
+            // === HIDE SKELETON after content is ready ===
+            if (window.requestAnimationFrame) {
+              requestAnimationFrame(() => {
+                const sk = document.getElementById("paymentsSkeleton");
+                if (sk) sk.style.display = "none";
+              });
+            } else {
               const sk = document.getElementById("paymentsSkeleton");
               if (sk) sk.style.display = "none";
-            });
-          } else {
-            const sk = document.getElementById("paymentsSkeleton");
-            if (sk) sk.style.display = "none";
+            }
           }
-        }
 
-        // Build Requests tab groups (pending only)
-        const requestsTbody = document.getElementById("requestsTbody");
-        window.__buildRequests = function buildRequests() {
-          const pending = __PAYMENTS.filter(
-            (p) => p.payment_status === "pending_payout"
-          );
-          const groups = new Map();
+          // Build Requests tab groups (pending only)
+          const requestsTbody = document.getElementById("requestsTbody");
+          window.__buildRequests = function buildRequests() {
+            const pending = __PAYMENTS.filter(
+              (p) => p.payment_status === "pending_payout"
+            );
+            const groups = new Map();
 
-          for (const p of pending) {
-            const key = p.payout_batch_no || "";
-            if (!key) continue;
-            const job = __JOBS_BY_ID[p.job_id] || {};
-            const amount = Number(job.job_pay) || 0;
+            for (const p of pending) {
+              const key = p.payout_batch_no || "";
+              if (!key) continue;
+              const job = __JOBS_BY_ID[p.job_id] || {};
+              const amount = Number(job.job_pay) || 0;
 
-            if (!groups.has(key)) {
-              groups.set(key, {
-                key,
-                installer_id: p.installer_id,
-                installer_display:
-                  __INSTALLERS_BY_ID[p.installer_id]?.name ||
-                  __INSTALLERS_BY_ID[p.installer_id]?.email ||
-                  shortId(p.installer_id),
-                count: 0,
-                total: 0,
-                requested_at: p.updated_at || p.first_created_at || null,
-                payment_ids: [],
-                job_labels: new Set(),
+              if (!groups.has(key)) {
+                groups.set(key, {
+                  key,
+                  installer_id: p.installer_id,
+                  installer_display:
+                    __INSTALLERS_BY_ID[p.installer_id]?.name ||
+                    __INSTALLERS_BY_ID[p.installer_id]?.email ||
+                    shortId(p.installer_id),
+                  count: 0,
+                  total: 0,
+                  requested_at: p.updated_at || p.first_created_at || null,
+                  payment_ids: [],
+                  job_labels: new Set(),
+                });
+              }
+              const g = groups.get(key);
+              g.count += 1;
+              g.total += amount;
+              g.payment_ids.push(p.id);
+              const jobDisplay = job.job_code
+                ? job.job_code
+                : `#${shortId(p.job_id)}`;
+              g.job_labels.add(jobDisplay);
+
+              const ts = (d) => (d ? new Date(d).getTime() : Infinity);
+              if (ts(p.updated_at || p.first_created_at) < ts(g.requested_at)) {
+                g.requested_at = p.updated_at || p.first_created_at;
+              }
+            }
+
+            if (groups.size === 0) {
+              requestsTbody.innerHTML =
+                '<tr><td colspan="6" data-col="Notice" class="sub" style="padding:1rem;">No payout requests yet.</td></tr>';
+              return;
+            }
+
+            const pesoFmt = (n) =>
+              "₱" +
+              (Number(n) || 0).toLocaleString("en-PH", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
               });
-            }
-            const g = groups.get(key);
-            g.count += 1;
-            g.total += amount;
-            g.payment_ids.push(p.id);
-            const jobDisplay = job.job_code
-              ? job.job_code
-              : `#${shortId(p.job_id)}`;
-            g.job_labels.add(jobDisplay);
+            const fmt = (d) =>
+              d ? new Date(d).toISOString().slice(0, 10) : "—";
 
-            const ts = (d) => (d ? new Date(d).getTime() : Infinity);
-            if (ts(p.updated_at || p.first_created_at) < ts(g.requested_at)) {
-              g.requested_at = p.updated_at || p.first_created_at;
-            }
-          }
-
-          if (groups.size === 0) {
-            requestsTbody.innerHTML =
-              '<tr><td colspan="6" data-col="Notice" class="sub" style="padding:1rem;">No payout requests yet.</td></tr>';
-            return;
-          }
-
-          const pesoFmt = (n) =>
-            "₱" +
-            (Number(n) || 0).toLocaleString("en-PH", {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            });
-          const fmt = (d) =>
-            d ? new Date(d).toISOString().slice(0, 10) : "—";
-
-          const rows = Array.from(groups.values())
-            .map((g) => {
-              const list = Array.from(g.job_labels);
-              const jobsTitle =
-                list.length > 1
-                  ? `JOBS: ${list.join(", ")}`
-                  : `JOB: ${list[0] || "—"}`;
-              return `<tr data-batch-key="${g.key}"
+            const rows = Array.from(groups.values())
+              .map((g) => {
+                const list = Array.from(g.job_labels);
+                const jobsTitle =
+                  list.length > 1
+                    ? `JOBS: ${list.join(", ")}`
+                    : `JOB: ${list[0] || "—"}`;
+                return `<tr data-batch-key="${g.key}"
                      data-payment-ids='${JSON.stringify(g.payment_ids).replace(
-                /'</g,
-                "&apos;"
-              )}'>
+                       /'</g,
+                       "&apos;"
+                     )}'>
                   <td class="mono" data-col="Jobs">${jobsTitle}</td>
                   <td data-col="Installer">${g.installer_display}</td>
                   <td data-col="# Payments">${g.count}</td>
-                  <td class="mono" data-col="Total Amount">${pesoFmt(g.total)}</td>
+                  <td class="mono" data-col="Total Amount">${pesoFmt(
+                    g.total
+                  )}</td>
                   <td data-col="Requested Date">${fmt(g.requested_at)}</td>
                   <td data-col="Action">
                     <button type="button" class="view-row-btn" title="View details">
@@ -1855,157 +2057,169 @@
                     <button class="do-payout-group" type="button">Disburse Group</button>
                   </td>
                 </tr>`;
-            })
-            .join("");
-
-          requestsTbody.innerHTML = rows;
-        };
-
-        await loadPayments();
-        window.__reloadPayments = loadPayments;
-      </script>
-
-      <!-- Persist single actions -->
-      <script type="module">
-        const sbRef = window.__sb;
-        const tableBodyEl = document.getElementById("paymentsTbody");
-        const requestsBodyEl = document.getElementById("requestsTbody");
-
-        // Single mark as paid
-        tableBodyEl.addEventListener("click", async (e) => {
-          const btn = e.target.closest(".mark-paid");
-          if (!btn) return;
-
-          const tr = btn.closest("tr");
-          const paymentId = tr?.dataset?.paymentId;
-          if (!paymentId) return;
-
-          try {
-            const { error } = await sbRef
-              .schema("earnings")
-              .from("payments")
-              .update({ payment_status: "paid" })
-              .eq("id", paymentId);
-
-            if (error) throw error;
-          } catch (err) {
-            console.error("Failed to mark as paid:", err);
-            tr.dataset.status = "not-paid";
-            const statusEl = tr.querySelector(".status");
-            if (statusEl) {
-              statusEl.textContent = "Not Paid";
-              statusEl.classList.remove("paid");
-              statusEl.classList.add("not-paid");
-            }
-            btn.textContent = "Mark as Paid";
-            btn.disabled = false;
-            alert(
-              "Could not mark as paid: " + (err?.message || "Unknown error")
-            );
-          }
-        });
-
-        // Single disburse
-        tableBodyEl.addEventListener("click", async (e) => {
-          const payBtn = e.target.closest(".do-payout");
-          if (!payBtn) return;
-
-          const tr = payBtn.closest("tr");
-          const paymentId = tr?.dataset?.paymentId;
-          if (!paymentId) return;
-
-          const okRef = await window.__confirmWithBankDetails(
-            [paymentId],
-            "single payment"
-          );
-          if (!okRef?.proceed) return;
-
-          try {
-            const { error } = await sbRef
-              .schema("earnings")
-              .from("payments")
-              .update({
-                payment_status: "disbursed",
-                reference_number: okRef.reference,
               })
-              .eq("id", paymentId);
+              .join("");
 
-            if (error) throw error;
+            requestsTbody.innerHTML = rows;
+          };
 
-            tr.dataset.status = "disbursed";
-            const statusEl = tr.querySelector(".status");
-            if (statusEl) {
-              statusEl.textContent = "Disbursed";
-              statusEl.classList.remove("not-paid", "pending");
-              statusEl.classList.add("paid");
-            }
-            payBtn.textContent = "Paid";
-            payBtn.disabled = true;
+          await loadPayments();
+          window.__reloadPayments = loadPayments;
+        </script>
 
-            if (window.__tabMode === "requests") tr.style.display = "none";
-            if (window.__paymentsUI)
-              window.__paymentsUI.updateSelectionSummary();
-            if (window.__buildRequests) window.__buildRequests();
-          } catch (err) {
-            console.error("Failed to disburse:", err);
-            alert(
-              "Could not mark as disbursed: " +
-              (err?.message || "Unknown error")
-            );
-          }
-        });
+        <!-- Persist single actions -->
+        <script type="module">
+          const sbRef = window.__sb;
+          const tableBodyEl = document.getElementById("paymentsTbody");
+          const requestsBodyEl = document.getElementById("requestsTbody");
 
-        /* ====== Batch/Group confirmation (kept) ====== */
+          // Single mark as paid
+          tableBodyEl.addEventListener("click", async (e) => {
+            const btn = e.target.closest(".mark-paid");
+            if (!btn) return;
 
-        async function confirmWithBankDetails(
-          paymentIds,
-          contextLabel = "batch"
-        ) {
-          try {
-            const allPays = Array.isArray(window.__PAYMENTS)
-              ? window.__PAYMENTS
-              : [];
-            const instIds = [
-              ...new Set(
-                allPays
-                  .filter((p) => paymentIds.includes(p.id))
-                  .map((p) => p.installer_id)
-                  .filter(Boolean)
-              ),
-            ];
+            const tr = btn.closest("tr");
+            const paymentId = tr?.dataset?.paymentId;
+            if (!paymentId) return;
 
-            if (!instIds.length) {
-              const ref = prompt(
-                `Enter GCash Reference Number for this ${contextLabel}:`
+            try {
+              const { error } = await sbRef
+                .schema("earnings")
+                .from("payments")
+                .update({ payment_status: "paid" })
+                .eq("id", paymentId);
+
+              if (error) throw error;
+              window.__Swal.toast("success", "Payment marked as paid");
+            } catch (err) {
+              console.error("Failed to mark as paid:", err);
+              tr.dataset.status = "not-paid";
+              const statusEl = tr.querySelector(".status");
+              if (statusEl) {
+                statusEl.textContent = "Not Paid";
+                statusEl.classList.remove("paid");
+                statusEl.classList.add("not-paid");
+              }
+              btn.textContent = "Mark as Paid";
+              btn.disabled = false;
+              window.__Swal.error(
+                "Update failed",
+                err?.message
+                  ? String(err.message)
+                  : "Could not mark as paid. Please try again."
               );
-              if (!ref) return { proceed: false, reference: "" };
-              return { proceed: true, reference: ref.trim() };
             }
+          });
 
-            const { data: installers, error } = await sbRef
-              .from("installer")
-              .select(
-                'id, name, email, "bankName", "accountNumber", "accountHolder"'
-              )
-              .in("id", instIds);
+          // Single disburse
+          tableBodyEl.addEventListener("click", async (e) => {
+            const payBtn = e.target.closest(".do-payout");
+            if (!payBtn) return;
 
-            if (error) {
-              console.warn("Bank details fetch error:", error);
+            const tr = payBtn.closest("tr");
+            const paymentId = tr?.dataset?.paymentId;
+            if (!paymentId) return;
+
+            const okRef = await window.__confirmWithBankDetails(
+              [paymentId],
+              "single payment"
+            );
+            if (!okRef?.proceed) return;
+
+            try {
+              const { error } = await sbRef
+                .schema("earnings")
+                .from("payments")
+                .update({
+                  payment_status: "disbursed",
+                  reference_number: okRef.reference,
+                })
+                .eq("id", paymentId);
+
+              if (error) throw error;
+
+              tr.dataset.status = "disbursed";
+              const statusEl = tr.querySelector(".status");
+              if (statusEl) {
+                statusEl.textContent = "Disbursed";
+                statusEl.classList.remove("not-paid", "pending");
+                statusEl.classList.add("paid");
+              }
+              payBtn.textContent = "Paid";
+              payBtn.disabled = true;
+
+              if (window.__tabMode === "requests") tr.style.display = "none";
+              if (window.__paymentsUI)
+                window.__paymentsUI.updateSelectionSummary();
+              if (window.__buildRequests) window.__buildRequests();
+
+              window.__Swal.success(
+                "Disbursed",
+                "Payment was marked as disbursed."
+              );
+            } catch (err) {
+              console.error("Failed to disburse:", err);
+              window.__Swal.error(
+                "Disbursement failed",
+                err?.message
+                  ? String(err.message)
+                  : "Could not mark as disbursed. Please try again."
+              );
             }
+          });
 
-            const overlay = document.getElementById("bankConfirmModal");
-            const tbody = document.getElementById("bankModalBody");
-            const title = document.getElementById("bankModalTitle");
-            const refInput = document.getElementById("bankRefInput");
-            const refError = document.getElementById("bankRefError");
-            const btnCancel = document.getElementById("bankCancelBtn");
-            const btnOk = document.getElementById("bankConfirmBtn");
+          /* ====== Batch/Group confirmation (kept) ====== */
 
-            title.textContent = `Confirm Disbursement (${contextLabel})`;
-            tbody.innerHTML =
-              (installers || [])
-                .map(
-                  (i) => `
+          async function confirmWithBankDetails(
+            paymentIds,
+            contextLabel = "batch"
+          ) {
+            try {
+              const allPays = Array.isArray(window.__PAYMENTS)
+                ? window.__PAYMENTS
+                : [];
+              const instIds = [
+                ...new Set(
+                  allPays
+                    .filter((p) => paymentIds.includes(p.id))
+                    .map((p) => p.installer_id)
+                    .filter(Boolean)
+                ),
+              ];
+
+              // If no installer IDs (edge case), ask ref via SweetAlert input
+              if (!instIds.length) {
+                const ref = await window.__Swal.inputRef(
+                  `Confirm Disbursement (${contextLabel})`
+                );
+                if (!ref) return { proceed: false, reference: "" };
+                return { proceed: true, reference: ref };
+              }
+
+              const { data: installers, error } = await sbRef
+                .from("installer")
+                .select(
+                  'id, name, email, "bankName", "accountNumber", "accountHolder"'
+                )
+                .in("id", instIds);
+
+              if (error) {
+                console.warn("Bank details fetch error:", error);
+              }
+
+              const overlay = document.getElementById("bankConfirmModal");
+              const tbody = document.getElementById("bankModalBody");
+              const title = document.getElementById("bankModalTitle");
+              const refInput = document.getElementById("bankRefInput");
+              const refError = document.getElementById("bankRefError");
+              const btnCancel = document.getElementById("bankCancelBtn");
+              const btnOk = document.getElementById("bankConfirmBtn");
+
+              title.textContent = `Confirm Disbursement (${contextLabel})`;
+              tbody.innerHTML =
+                (installers || [])
+                  .map(
+                    (i) => `
                 <tr>
                   <td>${i.name || i.email || i.id}</td>
                   <td>${i.bankName || "—"}</td>
@@ -2013,536 +2227,634 @@
                   <td>${i.accountHolder || "—"}</td>
                 </tr>
               `
-                )
-                .join("") ||
-              `<tr><td colspan="4" class="sub">No bank details found.</td></tr>`;
+                  )
+                  .join("") ||
+                `<tr><td colspan="4" class="sub">No bank details found.</td></tr>`;
 
-            refInput.value = "";
-            refError.textContent = "";
+              refInput.value = "";
+              refError.textContent = "";
 
-            return await new Promise((resolve) => {
-              function cleanup(val) {
-                overlay.classList.remove("show");
-                btnCancel.removeEventListener("click", onCancel);
-                btnOk.removeEventListener("click", onOk);
-                overlay.removeEventListener("click", onBackdrop);
-                refInput.removeEventListener("input", onInput);
-                resolve(val);
-              }
-              function onCancel() {
-                cleanup({ proceed: false, reference: "" });
-              }
-              function onBackdrop(e) {
-                if (e.target === overlay)
-                  cleanup({ proceed: false, reference: "" });
-              }
-              function onInput() { refError.textContent = ""; }
-              function onOk() {
-                const ref = refInput.value.trim();
-                const ok = /^[A-Za-z0-9\-_]{6,64}$/.test(ref);
-                if (!ok) {
-                  refError.textContent =
-                    "Please enter a valid reference (6–64 chars, letters/numbers/-/_).";
-                  refInput.focus();
-                  return;
+              return await new Promise((resolve) => {
+                function cleanup(val) {
+                  overlay.classList.remove("show");
+                  btnCancel.removeEventListener("click", onCancel);
+                  btnOk.removeEventListener("click", onOk);
+                  overlay.removeEventListener("click", onBackdrop);
+                  refInput.removeEventListener("input", onInput);
+                  resolve(val);
                 }
-                cleanup({ proceed: true, reference: ref });
-              }
+                function onCancel() {
+                  cleanup({ proceed: false, reference: "" });
+                }
+                function onBackdrop(e) {
+                  if (e.target === overlay)
+                    cleanup({ proceed: false, reference: "" });
+                }
+                function onInput() {
+                  refError.textContent = "";
+                }
+                function onOk() {
+                  const ref = refInput.value.trim();
+                  const ok = /^[A-Za-z0-9\-_]{6,64}$/.test(ref);
+                  if (!ok) {
+                    refError.textContent =
+                      "Please enter a valid reference (6–64 chars, letters/numbers/-/_).";
+                    refInput.focus();
+                    return;
+                  }
+                  cleanup({ proceed: true, reference: ref });
+                }
 
-              btnCancel.addEventListener("click", onCancel);
-              btnOk.addEventListener("click", onOk);
-              overlay.addEventListener("click", onBackdrop);
-              refInput.addEventListener("input", onInput);
+                btnCancel.addEventListener("click", onCancel);
+                btnOk.addEventListener("click", onOk);
+                overlay.addEventListener("click", onBackdrop);
+                refInput.addEventListener("input", onInput);
 
-              overlay.classList.add("show");
-            });
-          } catch (err) {
-            console.error(err);
-            const ref = prompt(
-              `Enter GCash Reference Number for this ${contextLabel}:`
-            );
-            if (!ref) return { proceed: false, reference: "" };
-            return { proceed: true, reference: ref.trim() };
-          }
-        }
-        window.__confirmWithBankDetails = confirmWithBankDetails;
-
-        // Disburse batch from main table
-        tableBodyEl.addEventListener("click", async (e) => {
-          const btn = e.target.closest(".do-payout-batch");
-          if (!btn) return;
-
-          let ids = [];
-          try {
-            ids = JSON.parse(btn.dataset.paymentIds || "[]");
-          } catch {
-            ids = [];
-          }
-          const batchKey = btn.dataset.batch || "";
-          if (!ids.length || !batchKey) return;
-
-          const ok = await confirmWithBankDetails(
-            ids,
-            `batch ${String(batchKey).toUpperCase().slice(0, 64)}`
-          );
-          if (!ok?.proceed) return;
-
-          btn.disabled = true;
-          const prevTxt = btn.textContent;
-          btn.textContent = "Working...";
-
-          try {
-            const { error } = await sbRef
-              .schema("earnings")
-              .from("payments")
-              .update({
-                payment_status: "disbursed",
-                reference_number: ok.reference,
-              })
-              .in("id", ids);
-
-            if (error) throw error;
-
-            if (window.__reloadPayments) window.__reloadPayments();
-            alert("Batch disbursed successfully.");
-          } catch (err) {
-            console.error("Failed to disburse batch:", err);
-            alert(
-              "Could not disburse batch: " + (err?.message || "Unknown error")
-            );
-          } finally {
-            btn.disabled = false;
-            btn.textContent = prevTxt;
-          }
-        });
-
-        // Disburse group from Requests tab
-        requestsBodyEl.addEventListener("click", async (e) => {
-          const btn = e.target.closest(".do-payout-group");
-          if (!btn) return;
-          const tr = btn.closest("tr");
-          const key = tr?.dataset?.batchKey;
-          const idsAttr = tr?.dataset?.paymentIds;
-          if (!key || !idsAttr) return;
-
-          let ids = [];
-          try {
-            ids = JSON.parse(idsAttr);
-          } catch {
-            ids = [];
-          }
-          if (!Array.isArray(ids) || ids.length === 0) return;
-
-          const ok = await confirmWithBankDetails(
-            ids,
-            `group ${String(key).toUpperCase().slice(0, 64)}`
-          );
-          if (!ok?.proceed) return;
-
-          btn.disabled = true;
-          const prev = btn.textContent;
-          btn.textContent = "Working...";
-
-          try {
-            const { error } = await sbRef
-              .schema("earnings")
-              .from("payments")
-              .update({
-                payment_status: "disbursed",
-                reference_number: ok.reference,
-              })
-              .in("id", ids);
-
-            if (error) throw error;
-
-            tr.remove();
-            if (window.__reloadPayments) window.__reloadPayments();
-            alert("Group disbursed successfully.");
-          } catch (err) {
-            console.error("Failed to disburse group:", err);
-            alert(
-              "Could not disburse group: " + (err?.message || "Unknown error")
-            );
-          } finally {
-            btn.disabled = false;
-            btn.textContent = prev;
-          }
-        });
-      </script>
-
-      <!-- Batch payout integration (kept; button hidden) -->
-      <script type="module">
-        const sb = window.__sb;
-        const tbody = document.getElementById("paymentsTbody");
-        const selectAllVisibleEl =
-          document.getElementById("selectAllVisible");
-        const createPayoutBtn = document.getElementById("createPayoutBtn");
-
-        function getVisibleUnpaidSelectedRows() {
-          return Array.from(tbody.querySelectorAll("tr"))
-            .filter(
-              (r) =>
-                r.style.display !== "none" && r.dataset.status === "not-paid"
-            )
-            .filter((r) => r.querySelector(".row-select")?.checked);
-        }
-
-        function validateSameInstaller(rows) {
-          const ids = new Set(rows.map((r) => r.dataset.installerId));
-          if (ids.size <= 1) {
-            return {
-              ok: true,
-              installerId: rows[0]?.dataset?.installerId || null,
-            };
-          }
-          return { ok: false, installerId: null };
-        }
-
-        async function generateBatchNo() {
-          try {
-            const { data, error } = await sb.rpc("next_payout_batch", {
-              prefix: "BATCH",
-            });
-            if (error) throw error;
-            if (data && typeof data === "string" && data.length) return data;
-          } catch (err) {
-            console.warn(
-              "RPC next_payout_batch failed, using client fallback:",
-              err?.message || String(err)
-            );
-          }
-          const d = new Date().toISOString().slice(0, 10).replace(/-/g, "");
-          const rnd = (
-            crypto.randomUUID
-              ? crypto.randomUUID()
-              : Math.random().toString(36).slice(2) +
-              Math.random().toString(36).slice(2)
-          )
-            .slice(0, 8)
-            .toUpperCase();
-          return `BATCH-${d}-${rnd}`;
-        }
-
-        async function createBatchPayout() {
-          const selectedRows = getVisibleUnpaidSelectedRows();
-          if (selectedRows.length === 0) return;
-
-          const { ok } = validateSameInstaller(selectedRows);
-          if (!ok) {
-            alert("Selected rows must all belong to the same installer.");
-            return;
-          }
-
-          const batchNo = await generateBatchNo();
-          const paymentIds = selectedRows
-            .map((r) => r.dataset.paymentId)
-            .filter(Boolean);
-
-          try {
-            const { error } = await sb
-              .schema("earnings")
-              .from("payments")
-              .update({
-                payout_batch_no: batchNo,
-                payment_status: "pending_payout",
-              })
-              .in("id", paymentIds);
-
-            if (error) throw error;
-          } catch (err) {
-            console.error("Failed to update payments with batch:", err);
-            alert(
-              "Could not attach payments to batch: " +
-              (err?.message || "Unknown error")
-            );
-            return;
-          }
-
-          selectedRows.forEach((tr) => {
-            tr.dataset.status = "pending_payout";
-            tr.dataset.batch = batchNo;
-            const statusEl = tr.querySelector(".status");
-            if (statusEl) {
-              statusEl.textContent = "Pending Payout";
-              statusEl.classList.remove("not-paid", "paid");
-              statusEl.classList.add("pending");
+                overlay.classList.add("show");
+              });
+            } catch (err) {
+              console.error(err);
+              const ref = await window.__Swal.inputRef(
+                `Confirm Disbursement (${contextLabel})`
+              );
+              if (!ref) return { proceed: false, reference: "" };
+              return { proceed: true, reference: ref };
             }
-            const actionCellBtn = tr.querySelector(".mark-paid");
-            if (actionCellBtn) {
-              actionCellBtn.classList.remove("mark-paid");
-              actionCellBtn.classList.add("do-payout");
-              actionCellBtn.textContent = "Payout";
-              actionCellBtn.disabled = false;
+          }
+          window.__confirmWithBankDetails = confirmWithBankDetails;
+
+          // Disburse batch from main table
+          tableBodyEl.addEventListener("click", async (e) => {
+            const btn = e.target.closest(".do-payout-batch");
+            if (!btn) return;
+
+            let ids = [];
+            try {
+              ids = JSON.parse(btn.dataset.paymentIds || "[]");
+            } catch {
+              ids = [];
             }
-            const cb = tr.querySelector(".row-select");
-            if (cb) cb.checked = false;
+            const batchKey = btn.dataset.batch || "";
+            if (!ids.length || !batchKey) return;
+
+            const ok = await window.__confirmWithBankDetails(
+              ids,
+              `batch ${String(batchKey).toUpperCase().slice(0, 64)}`
+            );
+            if (!ok?.proceed) return;
+
+            btn.disabled = true;
+            const prevTxt = btn.textContent;
+            btn.textContent = "Working...";
+
+            try {
+              const { error } = await sbRef
+                .schema("earnings")
+                .from("payments")
+                .update({
+                  payment_status: "disbursed",
+                  reference_number: ok.reference,
+                })
+                .in("id", ids);
+
+              if (error) throw error;
+
+              if (window.__reloadPayments) window.__reloadPayments();
+              window.__Swal.success(
+                "Batch disbursed",
+                `Batch ${String(
+                  batchKey
+                ).toUpperCase()} was disbursed successfully.`
+              );
+            } catch (err) {
+              console.error("Failed to disburse batch:", err);
+              window.__Swal.error(
+                "Batch disbursement failed",
+                err?.message ? String(err.message) : "Please try again."
+              );
+            } finally {
+              btn.disabled = false;
+              btn.textContent = prevTxt;
+            }
           });
 
-          selectAllVisibleEl.checked = false;
+          // Disburse group from Requests tab
+          requestsBodyEl.addEventListener("click", async (e) => {
+            const btn = e.target.closest(".do-payout-group");
+            if (!btn) return;
+            const tr = btn.closest("tr");
+            const key = tr?.dataset?.batchKey;
+            const idsAttr = tr?.dataset?.paymentIds;
+            if (!key || !idsAttr) return;
 
-          if (window.__reloadPayments) window.__reloadPayments();
-          alert(`Payout created.\nBatch: ${batchNo}`);
-        }
+            let ids = [];
+            try {
+              ids = JSON.parse(idsAttr);
+            } catch {
+              ids = [];
+            }
+            if (!Array.isArray(ids) || ids.length === 0) return;
 
-        createPayoutBtn.addEventListener("click", async () => {
-          if (createPayoutBtn.disabled) return;
-          await createBatchPayout();
-        });
-      </script>
+            const ok = await window.__confirmWithBankDetails(
+              ids,
+              `group ${String(key).toUpperCase().slice(0, 64)}`
+            );
+            if (!ok?.proceed) return;
 
-      <!-- Bulk "Mark as Paid" -->
-      <script type="module">
-        const sbulk = window.__sb;
-        const tbodyBulk = document.getElementById("paymentsTbody");
-        const bulkBtn = document.getElementById("bulkMarkPaidBtn");
-        const selectAllVisible = document.getElementById("selectAllVisible");
+            btn.disabled = true;
+            const prev = btn.textContent;
+            btn.textContent = "Working...";
 
-        function getSelectedUnpaidRows() {
-          return Array.from(tbodyBulk.querySelectorAll("tr"))
-            .filter(
-              (r) =>
-                r.style.display !== "none" && r.dataset.status === "not-paid"
-            )
-            .filter((r) => r.querySelector(".row-select")?.checked);
-        }
+            try {
+              const { error } = await sbRef
+                .schema("earnings")
+                .from("payments")
+                .update({
+                  payment_status: "disbursed",
+                  reference_number: ok.reference,
+                })
+                .in("id", ids);
 
-        bulkBtn.addEventListener("click", async () => {
-          const rows = getSelectedUnpaidRows();
-          if (rows.length === 0) {
-            alert('Select at least one "Not Paid" row first.');
-            return;
+              if (error) throw error;
+
+              tr.remove();
+              if (window.__reloadPayments) window.__reloadPayments();
+              window.__Swal.success(
+                "Group disbursed",
+                `Payments for ${String(key).toUpperCase()} were disbursed.`
+              );
+            } catch (err) {
+              console.error("Failed to disburse group:", err);
+              window.__Swal.error(
+                "Group disbursement failed",
+                err?.message ? String(err.message) : "Please try again."
+              );
+            } finally {
+              btn.disabled = false;
+              btn.textContent = prev;
+            }
+          });
+        </script>
+
+        <!-- Batch payout integration (kept; button hidden) -->
+        <script type="module">
+          const sb = window.__sb;
+          const tbody = document.getElementById("paymentsTbody");
+          const selectAllVisibleEl =
+            document.getElementById("selectAllVisible");
+          const createPayoutBtn = document.getElementById("createPayoutBtn");
+
+          function getVisibleUnpaidSelectedRows() {
+            return Array.from(tbody.querySelectorAll("tr"))
+              .filter(
+                (r) =>
+                  r.style.display !== "none" && r.dataset.status === "not-paid"
+              )
+              .filter((r) => r.querySelector(".row-select")?.checked);
           }
 
-          const ids = rows.map((r) => r.dataset.paymentId).filter(Boolean);
-          if (!ids.length) return;
+          function validateSameInstaller(rows) {
+            const ids = new Set(rows.map((r) => r.dataset.installerId));
+            if (ids.size <= 1) {
+              return {
+                ok: true,
+                installerId: rows[0]?.dataset?.installerId || null,
+              };
+            }
+            return { ok: false, installerId: null };
+          }
 
-          const ok = confirm(
-            `Mark ${ids.length} selected payment(s) as PAID?`
-          );
-          if (!ok) return;
+          async function generateBatchNo() {
+            try {
+              const { data, error } = await sb.rpc("next_payout_batch", {
+                prefix: "BATCH",
+              });
+              if (error) throw error;
+              if (data && typeof data === "string" && data.length) return data;
+            } catch (err) {
+              console.warn(
+                "RPC next_payout_batch failed, using client fallback:",
+                err?.message || String(err)
+              );
+            }
+            const d = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+            const rnd = (
+              crypto.randomUUID
+                ? crypto.randomUUID()
+                : Math.random().toString(36).slice(2) +
+                  Math.random().toString(36).slice(2)
+            )
+              .slice(0, 8)
+              .toUpperCase();
+            return `BATCH-${d}-${rnd}`;
+          }
 
-          bulkBtn.disabled = true;
-          const prevText = bulkBtn.textContent;
-          bulkBtn.textContent = "Working...";
+          async function createBatchPayout() {
+            const selectedRows = getVisibleUnpaidSelectedRows();
+            if (selectedRows.length === 0) return;
 
-          try {
-            const { error } = await sbulk
-              .schema("earnings")
-              .from("payments")
-              .update({ payment_status: "paid" })
-              .in("id", ids);
+            const { ok } = validateSameInstaller(selectedRows);
+            if (!ok) {
+              window.__Swal.info(
+                "Can’t create payout",
+                "All selected rows must belong to the same installer."
+              );
+              return;
+            }
 
-            if (error) throw error;
+            const batchNo = await generateBatchNo();
+            const paymentIds = selectedRows
+              .map((r) => r.dataset.paymentId)
+              .filter(Boolean);
 
-            rows.forEach((tr) => {
-              tr.dataset.status = "paid";
-              const chip = tr.querySelector(".status");
-              if (chip) {
-                chip.textContent = "Paid";
-                chip.classList.remove("not-paid", "pending");
-                chip.classList.add("paid");
+            try {
+              const { error } = await sb
+                .schema("earnings")
+                .from("payments")
+                .update({
+                  payout_batch_no: batchNo,
+                  payment_status: "pending_payout",
+                })
+                .in("id", paymentIds);
+
+              if (error) throw error;
+            } catch (err) {
+              console.error("Failed to update payments with batch:", err);
+              window.__Swal.error(
+                "Couldn’t create payout",
+                err?.message ? String(err.message) : "Please try again."
+              );
+              return;
+            }
+
+            selectedRows.forEach((tr) => {
+              tr.dataset.status = "pending_payout";
+              tr.dataset.batch = batchNo;
+              const statusEl = tr.querySelector(".status");
+              if (statusEl) {
+                statusEl.textContent = "Pending Payout";
+                statusEl.classList.remove("not-paid", "paid");
+                statusEl.classList.add("pending");
               }
-              const btn = tr.querySelector(".mark-paid");
-              if (btn) {
-                btn.textContent = "Paid";
-                btn.disabled = true;
+              const actionCellBtn = tr.querySelector(".mark-paid");
+              if (actionCellBtn) {
+                actionCellBtn.classList.remove("mark-paid");
+                actionCellBtn.classList.add("do-payout");
+                actionCellBtn.textContent = "Payout";
+                actionCellBtn.disabled = false;
               }
               const cb = tr.querySelector(".row-select");
               if (cb) cb.checked = false;
             });
 
-            if (selectAllVisible) selectAllVisible.checked = false;
+            selectAllVisibleEl.checked = false;
 
-            if (window.__paymentsUI) {
-              window.__paymentsUI.applyFilters();
-              window.__paymentsUI.updateSelectionSummary();
-            }
-
-            alert("Selected payments marked as PAID.");
-          } catch (err) {
-            console.error("Bulk mark-as-paid failed:", err);
-            alert(
-              "Could not update selected payments: " +
-              (err?.message || "Unknown error")
+            if (window.__reloadPayments) window.__reloadPayments();
+            window.__Swal.success(
+              "Payout created",
+              `Batch ${batchNo} is ready for disbursement.`
             );
-          } finally {
-            bulkBtn.disabled = false;
-            bulkBtn.textContent = prevText;
           }
-        });
-      </script>
 
-      <!-- Realtime badges -->
-      <script type="module">
-        const supa = window.__sb;
+          createPayoutBtn.addEventListener("click", async () => {
+            if (createPayoutBtn.disabled) return;
+            await createBatchPayout();
+          });
+        </script>
 
-        const bAll = document.getElementById("badgeAll");
-        const bReq = document.getElementById("badgeRequests");
-        const bUnp = document.getElementById("badgeUnpaid");
-        const bPaid = document.getElementById("badgePaid");
-        const bDis = document.getElementById("badgeDisbursed");
+        <!-- Bulk "Mark as Paid" -->
+        <script type="module">
+          const sbulk = window.__sb;
+          const tbodyBulk = document.getElementById("paymentsTbody");
+          const bulkBtn = document.getElementById("bulkMarkPaidBtn");
+          const selectAllVisible = document.getElementById("selectAllVisible");
 
-        const counts = { all: 0, requests: 0, unpaid: 0, paid: 0, disbursed: 0 };
-
-        function cap(n) { return n > 99 ? "99+" : String(n); }
-        function renderBadges() {
-          bAll.hidden = counts.all <= 0; if (!bAll.hidden) bAll.textContent = cap(counts.all);
-          bReq.hidden = counts.requests <= 0; if (!bReq.hidden) bReq.textContent = cap(counts.requests);
-          bUnp.hidden = counts.unpaid <= 0; if (!bUnp.hidden) bUnp.textContent = cap(counts.unpaid);
-          bPaid.hidden = counts.paid <= 0; if (!bPaid.hidden) bPaid.textContent = cap(counts.paid);
-          bDis.hidden = counts.disbursed <= 0; if (!bDis.hidden) bDis.textContent = cap(counts.disbursed);
-        }
-
-        document.getElementById("tabAll").addEventListener("click", () => { counts.all = 0; renderBadges(); });
-        document.getElementById("tabRequests").addEventListener("click", () => { counts.requests = 0; renderBadges(); });
-        document.getElementById("tabUnpaid").addEventListener("click", () => { counts.unpaid = 0; renderBadges(); });
-        document.getElementById("tabPaid").addEventListener("click", () => { counts.paid = 0; renderBadges(); });
-        document.getElementById("tabDisbursed").addEventListener("click", () => { counts.disbursed = 0; renderBadges(); });
-
-        function bucketForStatus(status) {
-          switch (status) {
-            case "pending_payout": return "requests";
-            case "unpaid": return "unpaid";
-            case "paid": return "paid";
-            case "disbursed": return "disbursed";
-            default: return null;
+          function getSelectedUnpaidRows() {
+            return Array.from(tbodyBulk.querySelectorAll("tr"))
+              .filter(
+                (r) =>
+                  r.style.display !== "none" && r.dataset.status === "not-paid"
+              )
+              .filter((r) => r.querySelector(".row-select")?.checked);
           }
-        }
 
-        let reloadTimer = null;
-        function scheduleReload() {
-          if (reloadTimer) return;
-          reloadTimer = setTimeout(async () => {
-            reloadTimer = null;
-            try { if (window.__reloadPayments) await window.__reloadPayments(); }
-            catch (e) { console.error("reload failed", e); }
-          }, 400);
-        }
-
-        const channel = supa
-          .channel("payments_request_live")
-          .on("postgres_changes",
-            { event: "*", schema: "earnings", table: "payments" },
-            (payload) => {
-              counts.all += 1;
-              const st =
-                (payload.new && payload.new.payment_status) ||
-                (payload.old && payload.old.payment_status) || "";
-              const bucket = bucketForStatus(st);
-              if (bucket && counts[bucket] != null) counts[bucket] += 1;
-              renderBadges();
-              scheduleReload();
+          bulkBtn.addEventListener("click", async () => {
+            const rows = getSelectedUnpaidRows();
+            if (rows.length === 0) {
+              window.__Swal.info(
+                "Nothing selected",
+                'Select at least one "Not Paid" row first.'
+              );
+              return;
             }
-          ).subscribe();
 
-        window.addEventListener("beforeunload", () => {
-          if (channel) supa.removeChannel(channel);
-        });
-      </script>
-    </main>
-  </div>
+            const ids = rows.map((r) => r.dataset.paymentId).filter(Boolean);
+            if (!ids.length) return;
 
-  <!-- Bank Confirmation Modal -->
-  <div id="bankConfirmModal" class="bank-modal-overlay" aria-hidden="true">
-    <div class="bank-modal" role="dialog" aria-modal="true" aria-labelledby="bankModalTitle">
-      <div class="bm-header">
-        <h3 id="bankModalTitle">Confirm Disbursement</h3>
-        <button id="bankCancelBtn" class="bm-btn bm-cancel" type="button" title="Close">Close</button>
-      </div>
-      <div class="bm-body">
-        <table>
-          <thead>
-            <tr>
-              <th>Installer</th>
-              <th>Bank Name</th>
-              <th>Account Number</th>
-              <th>Account Holder</th>
-            </tr>
-          </thead>
-          <tbody id="bankModalBody">
-            <tr>
-              <td colspan="4" class="sub">Loading…</td>
-            </tr>
-          </tbody>
-        </table>
+            const confirmed = await window.__Swal.confirm(
+              "Mark selected as PAID?",
+              `This will mark ${ids.length} payment(s) as paid.`,
+              "Yes, mark as paid"
+            );
+            if (!confirmed) return;
 
-        <div class="bm-ref">
-          <label for="bankRefInput">GCash Reference Number</label>
-          <input id="bankRefInput" type="text" placeholder="e.g. 9AB12C34" />
-          <small>Enter the GCash transaction reference you received. Allowed:
-            letters, numbers, dash and underscore (6–64 chars).</small>
-          <div id="bankRefError" class="bm-error"></div>
+            bulkBtn.disabled = true;
+            const prevText = bulkBtn.textContent;
+            bulkBtn.textContent = "Working...";
+
+            try {
+              const { error } = await sbulk
+                .schema("earnings")
+                .from("payments")
+                .update({ payment_status: "paid" })
+                .in("id", ids);
+
+              if (error) throw error;
+
+              rows.forEach((tr) => {
+                tr.dataset.status = "paid";
+                const chip = tr.querySelector(".status");
+                if (chip) {
+                  chip.textContent = "Paid";
+                  chip.classList.remove("not-paid", "pending");
+                  chip.classList.add("paid");
+                }
+                const btn = tr.querySelector(".mark-paid");
+                if (btn) {
+                  btn.textContent = "Paid";
+                  btn.disabled = true;
+                }
+                const cb = tr.querySelector(".row-select");
+                if (cb) cb.checked = false;
+              });
+
+              if (selectAllVisible) selectAllVisible.checked = false;
+
+              if (window.__paymentsUI) {
+                window.__paymentsUI.applyFilters();
+                window.__paymentsUI.updateSelectionSummary();
+              }
+
+              window.__Swal.toast("success", "Selected payments updated");
+            } catch (err) {
+              console.error("Bulk mark-as-paid failed:", err);
+              window.__Swal.error(
+                "Update failed",
+                err?.message
+                  ? String(err.message)
+                  : "Could not update selected payments."
+              );
+            } finally {
+              bulkBtn.disabled = false;
+              bulkBtn.textContent = prevText;
+            }
+          });
+        </script>
+
+        <!-- Realtime badges -->
+        <script type="module">
+          const supa = window.__sb;
+
+          const bAll = document.getElementById("badgeAll");
+          const bReq = document.getElementById("badgeRequests");
+          const bUnp = document.getElementById("badgeUnpaid");
+          const bPaid = document.getElementById("badgePaid");
+          const bDis = document.getElementById("badgeDisbursed");
+
+          const counts = {
+            all: 0,
+            requests: 0,
+            unpaid: 0,
+            paid: 0,
+            disbursed: 0,
+          };
+
+          function cap(n) {
+            return n > 99 ? "99+" : String(n);
+          }
+          function renderBadges() {
+            bAll.hidden = counts.all <= 0;
+            if (!bAll.hidden) bAll.textContent = cap(counts.all);
+            bReq.hidden = counts.requests <= 0;
+            if (!bReq.hidden) bReq.textContent = cap(counts.requests);
+            bUnp.hidden = counts.unpaid <= 0;
+            if (!bUnp.hidden) bUnp.textContent = cap(counts.unpaid);
+            bPaid.hidden = counts.paid <= 0;
+            if (!bPaid.hidden) bPaid.textContent = cap(counts.paid);
+            bDis.hidden = counts.disbursed <= 0;
+            if (!bDis.hidden) bDis.textContent = cap(counts.disbursed);
+          }
+
+          document.getElementById("tabAll").addEventListener("click", () => {
+            counts.all = 0;
+            renderBadges();
+          });
+          document
+            .getElementById("tabRequests")
+            .addEventListener("click", () => {
+              counts.requests = 0;
+              renderBadges();
+            });
+          document.getElementById("tabUnpaid").addEventListener("click", () => {
+            counts.unpaid = 0;
+            renderBadges();
+          });
+          document.getElementById("tabPaid").addEventListener("click", () => {
+            counts.paid = 0;
+            renderBadges();
+          });
+          document
+            .getElementById("tabDisbursed")
+            .addEventListener("click", () => {
+              counts.disbursed = 0;
+              renderBadges();
+            });
+
+          function bucketForStatus(status) {
+            switch (status) {
+              case "pending_payout":
+                return "requests";
+              case "unpaid":
+                return "unpaid";
+              case "paid":
+                return "paid";
+              case "disbursed":
+                return "disbursed";
+              default:
+                return null;
+            }
+          }
+
+          let reloadTimer = null;
+          function scheduleReload() {
+            if (reloadTimer) return;
+            reloadTimer = setTimeout(async () => {
+              reloadTimer = null;
+              try {
+                if (window.__reloadPayments) await window.__reloadPayments();
+              } catch (e) {
+                console.error("reload failed", e);
+              }
+            }, 400);
+          }
+
+          const channel = supa
+            .channel("payments_request_live")
+            .on(
+              "postgres_changes",
+              { event: "*", schema: "earnings", table: "payments" },
+              (payload) => {
+                counts.all += 1;
+                const st =
+                  (payload.new && payload.new.payment_status) ||
+                  (payload.old && payload.old.payment_status) ||
+                  "";
+                const bucket = bucketForStatus(st);
+                if (bucket && counts[bucket] != null) counts[bucket] += 1;
+                renderBadges();
+                scheduleReload();
+              }
+            )
+            .subscribe();
+
+          window.addEventListener("beforeunload", () => {
+            if (channel) supa.removeChannel(channel);
+          });
+        </script>
+      </main>
+    </div>
+
+    <!-- Bank Confirmation Modal -->
+    <div id="bankConfirmModal" class="bank-modal-overlay" aria-hidden="true">
+      <div
+        class="bank-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="bankModalTitle"
+      >
+        <div class="bm-header">
+          <h3 id="bankModalTitle">Confirm Disbursement</h3>
+          <button
+            id="bankCancelBtn"
+            class="bm-btn bm-cancel"
+            type="button"
+            title="Close"
+          >
+            Close
+          </button>
+        </div>
+        <div class="bm-body">
+          <table>
+            <thead>
+              <tr>
+                <th>Installer</th>
+                <th>Bank Name</th>
+                <th>Account Number</th>
+                <th>Account Holder</th>
+              </tr>
+            </thead>
+            <tbody id="bankModalBody">
+              <tr>
+                <td colspan="4" class="sub">Loading…</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="bm-ref">
+            <label for="bankRefInput">GCash Reference Number</label>
+            <input id="bankRefInput" type="text" placeholder="e.g. 9AB12C34" />
+            <small
+              >Enter the GCash transaction reference you received. Allowed:
+              letters, numbers, dash and underscore (6–64 chars).</small
+            >
+            <div id="bankRefError" class="bm-error"></div>
+          </div>
+        </div>
+        <div class="bm-footer">
+          <button id="bankConfirmBtn" class="bm-btn bm-confirm" type="button">
+            Confirm Disbursement
+          </button>
         </div>
       </div>
-      <div class="bm-footer">
-        <button id="bankConfirmBtn" class="bm-btn bm-confirm" type="button">Confirm Disbursement</button>
+    </div>
+
+    <!-- Row View Modal -->
+    <div id="rowViewOverlay" class="rv-overlay" aria-hidden="true">
+      <div
+        class="rv-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="rvTitle"
+      >
+        <div class="rv-header">
+          <h3 id="rvTitle">Payment Details</h3>
+          <button type="button" class="rv-btn rv-close" id="rvCloseTop">
+            Close
+          </button>
+        </div>
+        <div class="rv-body" id="rvBody"></div>
+        <div class="rv-footer">
+          <button type="button" class="rv-btn rv-close" id="rvCloseBottom">
+            Close
+          </button>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- Row View Modal -->
-  <div id="rowViewOverlay" class="rv-overlay" aria-hidden="true">
-    <div class="rv-modal" role="dialog" aria-modal="true" aria-labelledby="rvTitle">
-      <div class="rv-header">
-        <h3 id="rvTitle">Payment Details</h3>
-        <button type="button" class="rv-btn rv-close" id="rvCloseTop">Close</button>
-      </div>
-      <div class="rv-body" id="rvBody"></div>
-      <div class="rv-footer">
-        <button type="button" class="rv-btn rv-close" id="rvCloseBottom">Close</button>
-      </div>
-    </div>
-  </div>
+    <!-- Modal wiring -->
+    <script>
+      (function () {
+        const overlay = document.getElementById("rowViewOverlay");
+        const bodyEl = document.getElementById("rvBody");
+        const closeTop = document.getElementById("rvCloseTop");
+        const closeBottom = document.getElementById("rvCloseBottom");
 
-  <!-- Modal wiring -->
-  <script>
-    (function () {
-      const overlay = document.getElementById('rowViewOverlay');
-      const bodyEl = document.getElementById('rvBody');
-      const closeTop = document.getElementById('rvCloseTop');
-      const closeBottom = document.getElementById('rvCloseBottom');
-
-      function close() {
-        overlay.classList.remove('show');
-        overlay.setAttribute('aria-hidden', 'true');
-        bodyEl.innerHTML = '';
-      }
-      function openWith(data) {
-        const rows = [
-          ['Job ID', data.jobId],
-          ['Worker', data.worker],
-          ['Job Title', data.title],
-          ['Amount', data.amount],
-          ['Requested Date', data.requested],
-          ['Status', `<span class="${data.statusClass}">${data.statusText}</span>`],
-        ].map(([label, value]) => {
-          return `<div class="row">
+        function close() {
+          overlay.classList.remove("show");
+          overlay.setAttribute("aria-hidden", "true");
+          bodyEl.innerHTML = "";
+        }
+        function openWith(data) {
+          const rows = [
+            ["Job ID", data.jobId],
+            ["Worker", data.worker],
+            ["Job Title", data.title],
+            ["Amount", data.amount],
+            ["Requested Date", data.requested],
+            [
+              "Status",
+              `<span class="${data.statusClass}">${data.statusText}</span>`,
+            ],
+          ]
+            .map(([label, value]) => {
+              return `<div class="row">
                       <div class="rv-label">${label}</div>
-                      <div class="rv-value">${value || '—'}</div>
+                      <div class="rv-value">${value || "—"}</div>
                     </div>`;
-        }).join('');
+            })
+            .join("");
 
-        const actions = data.actionHtml
-          ? `<div class="row">
+          const actions = data.actionHtml
+            ? `<div class="row">
                  <div class="rv-label">Actions</div>
                  <div class="rv-value">${data.actionHtml}</div>
-               </div>` : '';
+               </div>`
+            : "";
 
-        bodyEl.innerHTML = rows + actions;
+          bodyEl.innerHTML = rows + actions;
 
-        overlay.classList.add('show');
-        overlay.setAttribute('aria-hidden', 'false');
-      }
+          overlay.classList.add("show");
+          overlay.setAttribute("aria-hidden", "false");
+        }
 
-      overlay.addEventListener('click', (e) => {
-        if (e.target === overlay) close();
-      });
-      closeTop.addEventListener('click', close);
-      closeBottom.addEventListener('click', close);
+        overlay.addEventListener("click", (e) => {
+          if (e.target === overlay) close();
+        });
+        closeTop.addEventListener("click", close);
+        closeBottom.addEventListener("click", close);
 
-      window.__openRowViewModal = openWith;
-    })();
-  </script>
-</body>
-
+        window.__openRowViewModal = openWith;
+      })();
+    </script>
+  </body>
 </html>

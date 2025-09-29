@@ -1,908 +1,982 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="icon"
+      type="image/png"
+      href="../../../img/simpHappyMascotLogo.png"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet"
+    />
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css_files/sideBar.css" />
+    <title>Courses</title>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap"
-    rel="stylesheet">
-
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet" />
-  <link rel="stylesheet" href="../css_files/sideBar.css" />
-  <title>Courses</title>
-
-  <!-- ✅ SweetAlert2 (Compact) -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" />
-  <style>
-    /* Keep SweetAlert popups short & neat so the page doesn't jump */
-    .swal2-popup.swal2-compact {
-      padding: 0.9rem 1rem !important;
-      border-radius: 14px !important;
-    }
-    .swal2-title {
-      font-size: 1.05rem !important;
-      font-weight: 700 !important;
-    }
-    .swal2-html-container {
-      font-size: 0.95rem !important;
-      line-height: 1.35 !important;
-      margin-top: 0.35rem !important;
-    }
-    .swal2-actions .swal2-confirm,
-    .swal2-actions .swal2-cancel {
-      border-radius: 999px !important;
-      padding: 0.5rem 1rem !important;
-      font-weight: 700 !important;
-    }
-    .swal2-icon {
-      transform: scale(0.9);
-      margin: 0.2rem auto 0.4rem !important;
-    }
-    @media (max-width: 640px) {
+    <!-- ✅ SweetAlert2 (Compact) -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
+    />
+    <style>
+      /* Keep SweetAlert popups short & neat so the page doesn't jump */
       .swal2-popup.swal2-compact {
-        width: min(90vw, 22rem) !important;
+        padding: 0.9rem 1rem !important;
+        border-radius: 14px !important;
       }
-    }
-  </style>
+      .swal2-title {
+        font-size: 1.05rem !important;
+        font-weight: 700 !important;
+      }
+      .swal2-html-container {
+        font-size: 0.95rem !important;
+        line-height: 1.35 !important;
+        margin-top: 0.35rem !important;
+      }
+      .swal2-actions .swal2-confirm,
+      .swal2-actions .swal2-cancel {
+        border-radius: 999px !important;
+        padding: 0.5rem 1rem !important;
+        font-weight: 700 !important;
+      }
+      .swal2-icon {
+        transform: scale(0.9);
+        margin: 0.2rem auto 0.4rem !important;
+      }
+      @media (max-width: 640px) {
+        .swal2-popup.swal2-compact {
+          width: min(90vw, 22rem) !important;
+        }
+      }
+    </style>
 
-  <style>
-    /* ====== DO NOT CHANGE ANYTHING ====== */
-    /* ===== Status pill (MAIN ONLY) ===== */
-    main .statusDiv {
-      --brand: #20a44c;
-      --accent: #20647c;
-      --pct: 0%;
-      display: inline-grid;
-      grid-auto-flow: column;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.6rem 0.9rem 0.9rem;
-      border: 1px solid #cfe4ea;
-      border-radius: 14px;
-      background: radial-gradient(140% 140% at -10% -10%,
+    <style>
+      /* ====== DO NOT CHANGE ANYTHING ====== */
+      /* ===== Status pill (MAIN ONLY) ===== */
+      main .statusDiv {
+        --brand: #20a44c;
+        --accent: #20647c;
+        --pct: 0%;
+        display: inline-grid;
+        grid-auto-flow: column;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.6rem 0.9rem 0.9rem;
+        border: 1px solid #cfe4ea;
+        border-radius: 14px;
+        background: radial-gradient(
+          140% 140% at -10% -10%,
           #eefaf2 0%,
-          #ffffff 55%);
-      color: #0f172a;
-      font-weight: 700;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
-      position: relative;
-      max-width: 100%;
-      transition: transform 0.12s, box-shadow 0.22s, border-color 0.2s;
-    }
-
-    main .statusDiv .material-icons-sharp {
-      font-size: 22px;
-      color: var(--accent);
-      filter: drop-shadow(0 1px 1px rgba(32, 100, 124, 0.15));
-    }
-
-    main .statusDiv .label {
-      color: #374151;
-    }
-
-    .value {
-      color: var(--brand);
-    }
-
-    @keyframes badgePop {
-      0% {
-        transform: scale(0.96);
+          #ffffff 55%
+        );
+        color: #0f172a;
+        font-weight: 700;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+        position: relative;
+        max-width: 100%;
+        transition: transform 0.12s, box-shadow 0.22s, border-color 0.2s;
       }
 
-      60% {
-        transform: scale(1.04);
+      main .statusDiv .material-icons-sharp {
+        font-size: 22px;
+        color: var(--accent);
+        filter: drop-shadow(0 1px 1px rgba(32, 100, 124, 0.15));
       }
 
-      100% {
-        transform: scale(1);
+      main .statusDiv .label {
+        color: #374151;
       }
-    }
 
-    main .statusDiv:hover {
-      transform: translateY(-1px);
-      border-color: #b7e3c7;
-      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
-    }
-
-    main .statusDiv:hover .material-icons-sharp {
-      animation: badgePop 0.24s ease;
-    }
-
-    /* ROOT FOR COURSE CARD */
-    :root {
-      --card-bg: #fff;
-      --text: #2b2b2b;
-      --muted: #6b7280;
-      --pill: #f0f2f5;
-      --green: #22c55e;
-      --green-600: #16a34a;
-      --border: #e5e7eb;
-      --shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
-      --radius: 16px;
-    }
-
-    .course-card {
-      align-items: center;
-      background: white;
-      color: var(--text);
-      border: 1px solid #e5e7eb;
-      border-radius: var(--radius);
-      padding: 14px 18px;
-      animation: cardIn 0.34s ease both;
-      transition: transform 0.12s, box-shadow 0.22s, border-color 0.2s;
-    }
-
-    .course-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 14px 32px rgba(0, 0, 0, 0.08);
-      border-color: #d1d5db;
-    }
-
-    .course-image {
-      flex: 0 0 220px;
-      height: 120px;
-      border-radius: 12px;
-      overflow: hidden;
-      position: relative;
-      margin-bottom: 1rem;
-    }
-
-    .course-image img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-      transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
-    }
-
-    .course-card:hover .course-image img {
-      transform: scale(1.04);
-    }
-
-    @keyframes shine {
-      to {
-        transform: translateX(250%) rotate(25deg);
+      .value {
+        color: var(--brand);
       }
-    }
 
-    .course-image::after {
-      content: "";
-      position: absolute;
-      top: -50%;
-      left: -60%;
-      width: 60%;
-      height: 200%;
-      background: linear-gradient(120deg,
-          rgba(255, 255, 255, 0) 0,
-          rgba(255, 255, 255, 0.45) 50%,
-          rgba(255, 255, 255, 0) 100%);
-      transform: translateX(-150%) rotate(25deg);
-      pointer-events: none;
-    }
+      @keyframes badgePop {
+        0% {
+          transform: scale(0.96);
+        }
 
-    .course-card:hover .course-image::after {
-      animation: shine 0.9s ease;
-    }
+        60% {
+          transform: scale(1.04);
+        }
 
-    .course-content {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      min-width: 0;
-      flex: 1 1 auto;
-    }
+        100% {
+          transform: scale(1);
+        }
+      }
 
-    .course-text h3 {
-      margin: 0;
-      font-size: 18px;
-      font-weight: 700;
-    }
+      main .statusDiv:hover {
+        transform: translateY(-1px);
+        border-color: #b7e3c7;
+        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+      }
 
-    .course-text p {
-      margin: 6px 0 0;
-      font-size: 13px;
-      line-height: 1.4;
-      color: var(--muted);
-      text-align: justify;
-    }
+      main .statusDiv:hover .material-icons-sharp {
+        animation: badgePop 0.24s ease;
+      }
 
-    .course-tags {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
+      /* ROOT FOR COURSE CARD */
+      :root {
+        --card-bg: #fff;
+        --text: #2b2b2b;
+        --muted: #6b7280;
+        --pill: #f0f2f5;
+        --green: #22c55e;
+        --green-600: #16a34a;
+        --border: #e5e7eb;
+        --shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+        --radius: 16px;
+      }
 
-    .tag {
-      display: inline-flex;
-      align-items: center;
-      padding: 6px 12px;
-      font-size: 12px;
-      border-radius: 999px;
-      background: var(--pill);
-      color: #555;
-      white-space: nowrap;
-    }
-
-    .tag.level {
-      border: 1px solid var(--green);
-      background: #ecfdf5;
-      color: var(--green-600);
-    }
-
-    .course-actions {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 10px;
-      margin-left: auto;
-      min-width: 120px;
-    }
-
-    .duration {
-      font-size: 12px;
-      color: #7a7a7a;
-    }
-
-    .enroll-btn {
-      padding: 10px 18px;
-      font-size: 14px;
-      border-radius: 999px;
-      border: none;
-      background: #20a44c;
-      color: #fff;
-      cursor: pointer;
-    }
-
-    .enroll-btn:hover {
-      background: var(--green-600);
-    }
-
-    @media (max-width: 760px) {
       .course-card {
-        flex-wrap: wrap;
-        gap: 14px;
+        align-items: center;
+        background: white;
+        color: var(--text);
+        border: 1px solid #e5e7eb;
+        border-radius: var(--radius);
+        padding: 14px 18px;
+        animation: cardIn 0.34s ease both;
+        transition: transform 0.12s, box-shadow 0.22s, border-color 0.2s;
+      }
+
+      .course-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 14px 32px rgba(0, 0, 0, 0.08);
+        border-color: #d1d5db;
       }
 
       .course-image {
-        flex: 1 1 100%;
-        height: 160px;
+        flex: 0 0 220px;
+        height: 120px;
         border-radius: 12px;
+        overflow: hidden;
+        position: relative;
+        margin-bottom: 1rem;
+      }
+
+      .course-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+      }
+
+      .course-card:hover .course-image img {
+        transform: scale(1.04);
+      }
+
+      @keyframes shine {
+        to {
+          transform: translateX(250%) rotate(25deg);
+        }
+      }
+
+      .course-image::after {
+        content: "";
+        position: absolute;
+        top: -50%;
+        left: -60%;
+        width: 60%;
+        height: 200%;
+        background: linear-gradient(
+          120deg,
+          rgba(255, 255, 255, 0) 0,
+          rgba(255, 255, 255, 0.45) 50%,
+          rgba(255, 255, 255, 0) 100%
+        );
+        transform: translateX(-150%) rotate(25deg);
+        pointer-events: none;
+      }
+
+      .course-card:hover .course-image::after {
+        animation: shine 0.9s ease;
+      }
+
+      .course-content {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        min-width: 0;
+        flex: 1 1 auto;
+      }
+
+      .course-text h3 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 700;
+      }
+
+      .course-text p {
+        margin: 6px 0 0;
+        font-size: 13px;
+        line-height: 1.4;
+        color: var(--muted);
+        text-align: justify;
+      }
+
+      .course-tags {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        padding: 6px 12px;
+        font-size: 12px;
+        border-radius: 999px;
+        background: var(--pill);
+        color: #555;
+        white-space: nowrap;
+      }
+
+      .tag.level {
+        border: 1px solid var(--green);
+        background: #ecfdf5;
+        color: var(--green-600);
       }
 
       .course-actions {
-        width: 100%;
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-        margin-left: 0;
-      }
-    }
-
-    @keyframes cardIn {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 10px;
+        margin-left: auto;
+        min-width: 120px;
       }
 
-      to {
-        opacity: 1;
-        transform: none;
+      .duration {
+        font-size: 12px;
+        color: #7a7a7a;
       }
-    }
 
-    /* Skeletons */
-    .skeleton {
-      background: linear-gradient(90deg,
+      .enroll-btn {
+        padding: 10px 18px;
+        font-size: 14px;
+        border-radius: 999px;
+        border: none;
+        background: #20a44c;
+        color: #fff;
+        cursor: pointer;
+      }
+
+      .enroll-btn:hover {
+        background: var(--green-600);
+      }
+
+      @media (max-width: 760px) {
+        .course-card {
+          flex-wrap: wrap;
+          gap: 14px;
+        }
+
+        .course-image {
+          flex: 1 1 100%;
+          height: 160px;
+          border-radius: 12px;
+        }
+
+        .course-actions {
+          width: 100%;
+          flex-direction: row;
+          justify-content: space-between;
+          align-items: center;
+          margin-left: 0;
+        }
+      }
+
+      @keyframes cardIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+
+      /* Skeletons */
+      .skeleton {
+        background: linear-gradient(
+          90deg,
           #f2f4f7 25%,
           #e9edf2 37%,
-          #f2f4f7 63%);
-      background-size: 400% 100%;
-      animation: shimmer 1.2s infinite;
-    }
-
-    @keyframes shimmer {
-      0% {
-        background-position: 100% 0;
+          #f2f4f7 63%
+        );
+        background-size: 400% 100%;
+        animation: shimmer 1.2s infinite;
       }
 
-      100% {
-        background-position: -100% 0;
-      }
-    }
+      @keyframes shimmer {
+        0% {
+          background-position: 100% 0;
+        }
 
-    .skeleton.card {
-      height: 120px;
-      border-radius: 12px;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    /* Top search/filters layout borrowed from your page */
-    .titlePageDiv h1 {
-      animation: fadeUp 0.28s ease both;
-    }
-
-    .titlePageDiv p {
-      animation: fadeUp 0.28s ease 0.06s both;
-    }
-
-    @keyframes fadeUp {
-      from {
-        opacity: 0;
-        transform: translateY(6px);
+        100% {
+          background-position: -100% 0;
+        }
       }
 
-      to {
-        opacity: 1;
-        transform: none;
+      .skeleton.card {
+        height: 120px;
+        border-radius: 12px;
       }
-    }
 
-    .searchBarDiv {
-      display: grid;
-      grid-template-columns: 1fr auto auto auto;
-      gap: 0.6rem;
-      margin: 1rem 0;
-      align-items: center;
-    }
+      .hidden {
+        display: none !important;
+      }
 
-    .searchDiv {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      border: 1px solid #e5e7eb;
-      border-radius: 12px;
-      padding: 8px 12px;
-    }
+      /* Top search/filters layout borrowed from your page */
+      .titlePageDiv h1 {
+        animation: fadeUp 0.28s ease both;
+      }
 
-    .searchDiv input {
-      border: none;
-      outline: none;
-      width: 100%;
-      font-size: 14px;
-    }
+      .titlePageDiv p {
+        animation: fadeUp 0.28s ease 0.06s both;
+      }
 
-    .dropdown {
-      position: relative;
-    }
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(6px);
+        }
 
-    .dropbtn {
-      border: 1px solid #e5e7eb;
-      background: #fff;
-      border-radius: 10px;
-      padding: 8px 12px;
-      cursor: pointer;
-    }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
 
-    .dropdown-content {
-      display: none;
-      position: absolute;
-      background: #fff;
-      border: 1px solid #e5e7eb;
-      border-radius: 10px;
-      min-width: 180px;
-      padding: 6px;
-      top: 110%;
-      z-index: 5;
-    }
+      .searchBarDiv {
+        display: grid;
+        grid-template-columns: 1fr auto auto auto;
+        gap: 0.6rem;
+        margin: 1rem 0;
+        align-items: center;
+      }
 
-    .dropdown:hover .dropdown-content {
-      display: block;
-    }
+      .searchDiv {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 8px 12px;
+      }
 
-    .courses-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 14px;
-    }
+      .searchDiv input {
+        border: none;
+        outline: none;
+        width: 100%;
+        font-size: 14px;
+      }
 
-    /* ================================
+      .dropdown {
+        position: relative;
+      }
+
+      .dropbtn {
+        border: 1px solid #e5e7eb;
+        background: #fff;
+        border-radius: 10px;
+        padding: 8px 12px;
+        cursor: pointer;
+      }
+
+      .dropdown-content {
+        display: none;
+        position: absolute;
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        min-width: 180px;
+        padding: 6px;
+        top: 110%;
+        z-index: 5;
+      }
+
+      .dropdown:hover .dropdown-content {
+        display: block;
+      }
+
+      .courses-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 14px;
+      }
+
+      /* ================================
          EXTRA RESPONSIVE ENHANCEMENTS
          (Only additions; nothing removed)
       =================================*/
 
-    /* Tablets: give filters breathing room and scale images a bit */
-    @media (max-width: 1024px) {
-      .searchBarDiv {
-        grid-template-columns: 1fr auto auto;
-        grid-auto-rows: minmax(40px, auto);
+      /* Tablets: give filters breathing room and scale images a bit */
+      @media (max-width: 1024px) {
+        .searchBarDiv {
+          grid-template-columns: 1fr auto auto;
+          grid-auto-rows: minmax(40px, auto);
+        }
+
+        .statusDiv {
+          justify-self: end;
+        }
+
+        .course-image {
+          flex-basis: 200px;
+          height: 116px;
+        }
       }
 
-      .statusDiv {
-        justify-self: end;
+      /* Narrow tablets/large phones: two-row filter bar, bigger tap targets */
+      @media (max-width: 860px) {
+        .searchBarDiv {
+          grid-template-columns: 1fr 1fr;
+          grid-template-areas:
+            "q q"
+            "skills completed"
+            "status status";
+          gap: 0.7rem;
+        }
+
+        .searchDiv {
+          grid-area: q;
+        }
+
+        .searchDiv input {
+          font-size: 16px;
+        }
+
+        /* easier tapping */
+        .searchBarDiv .dropdown:nth-of-type(1) {
+          grid-area: skills;
+        }
+
+        .searchBarDiv .dropdown:nth-of-type(2) {
+          grid-area: completed;
+        }
+
+        main .statusDiv {
+          grid-area: status;
+          width: 100%;
+          justify-content: center;
+        }
+
+        .course-card {
+          padding: 12px 14px;
+        }
+
+        .course-text h3 {
+          font-size: 17px;
+        }
+
+        .course-text p {
+          font-size: 13px;
+          line-height: 1.45;
+        }
+
+        .enroll-btn {
+          padding: 10px 16px;
+        }
       }
 
-      .course-image {
-        flex-basis: 200px;
-        height: 116px;
-      }
-    }
+      /* Phones: 1-column filter stack, full-width controls, friendlier cards */
+      @media (max-width: 640px) {
+        .titlePageDiv h1 {
+          font-size: 1.4rem;
+        }
 
-    /* Narrow tablets/large phones: two-row filter bar, bigger tap targets */
-    @media (max-width: 860px) {
-      .searchBarDiv {
-        grid-template-columns: 1fr 1fr;
-        grid-template-areas:
-          "q q"
-          "skills completed"
-          "status status";
-        gap: 0.7rem;
-      }
+        .titlePageDiv p {
+          font-size: 0.95rem;
+        }
 
-      .searchDiv {
-        grid-area: q;
-      }
+        .searchBarDiv {
+          grid-template-columns: 1fr;
+          grid-auto-rows: auto;
+        }
 
-      .searchDiv input {
-        font-size: 16px;
-      }
+        .dropbtn,
+        .searchDiv {
+          width: 100%;
+        }
 
-      /* easier tapping */
-      .searchBarDiv .dropdown:nth-of-type(1) {
-        grid-area: skills;
-      }
+        .dropdown {
+          width: 100%;
+        }
 
-      .searchBarDiv .dropdown:nth-of-type(2) {
-        grid-area: completed;
-      }
+        .dropdown-content {
+          width: 100%;
+          min-width: unset;
+        }
 
-      main .statusDiv {
-        grid-area: status;
-        width: 100%;
-        justify-content: center;
-      }
+        .course-card {
+          gap: 12px;
+          border-radius: 14px;
+        }
 
-      .course-card {
-        padding: 12px 14px;
-      }
+        .course-image {
+          height: auto;
+          aspect-ratio: 16 / 9;
+          /* consistent, pleasant preview on phones */
+        }
 
-      .course-text h3 {
-        font-size: 17px;
-      }
+        .course-text h3 {
+          font-size: 16px;
+          line-height: 1.25;
+        }
 
-      .course-text p {
-        font-size: 13px;
-        line-height: 1.45;
-      }
+        .course-text p {
+          font-size: 13px;
+          display: -webkit-box;
+          -webkit-line-clamp: 3;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
 
-      .enroll-btn {
-        padding: 10px 16px;
-      }
-    }
+        .course-actions {
+          gap: 8px;
+        }
 
-    /* Phones: 1-column filter stack, full-width controls, friendlier cards */
-    @media (max-width: 640px) {
-      .titlePageDiv h1 {
-        font-size: 1.4rem;
+        .enroll-btn {
+          width: 100%;
+        }
       }
 
-      .titlePageDiv p {
-        font-size: 0.95rem;
+      /* Very small phones */
+      @media (max-width: 420px) {
+        .course-tags {
+          gap: 6px;
+        }
+
+        .tag {
+          padding: 5px 10px;
+          font-size: 11px;
+        }
+
+        .duration {
+          font-size: 11px;
+        }
       }
 
-      .searchBarDiv {
-        grid-template-columns: 1fr;
-        grid-auto-rows: auto;
+      /* Multi-column courses on roomy screens */
+      @media (min-width: 1100px) {
+        .courses-grid {
+          grid-template-columns: 1fr 1fr;
+          gap: 16px;
+        }
       }
 
-      .dropbtn,
-      .searchDiv {
-        width: 100%;
+      @media (min-width: 1500px) {
+        .courses-grid {
+          grid-template-columns: 1fr 1fr 1fr;
+        }
       }
 
-      .dropdown {
-        width: 100%;
+      /* Motion accessibility */
+      @media (prefers-reduced-motion: reduce) {
+        .course-card,
+        .titlePageDiv h1,
+        .titlePageDiv p,
+        .course-image img,
+        .course-image::after,
+        .statusDiv {
+          animation: none !important;
+          transition: none !important;
+        }
       }
+    </style>
+  </head>
 
-      .dropdown-content {
-        width: 100%;
-        min-width: unset;
-      }
-
-      .course-card {
-        gap: 12px;
-        border-radius: 14px;
-      }
-
-      .course-image {
-        height: auto;
-        aspect-ratio: 16 / 9;
-        /* consistent, pleasant preview on phones */
-      }
-
-      .course-text h3 {
-        font-size: 16px;
-        line-height: 1.25;
-      }
-
-      .course-text p {
-        font-size: 13px;
-        display: -webkit-box;
-        -webkit-line-clamp: 3;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-      }
-
-      .course-actions {
-        gap: 8px;
-      }
-
-      .enroll-btn {
-        width: 100%;
-      }
-    }
-
-    /* Very small phones */
-    @media (max-width: 420px) {
-      .course-tags {
-        gap: 6px;
-      }
-
-      .tag {
-        padding: 5px 10px;
-        font-size: 11px;
-      }
-
-      .duration {
-        font-size: 11px;
-      }
-    }
-
-    /* Multi-column courses on roomy screens */
-    @media (min-width: 1100px) {
-      .courses-grid {
-        grid-template-columns: 1fr 1fr;
-        gap: 16px;
-      }
-    }
-
-    @media (min-width: 1500px) {
-      .courses-grid {
-        grid-template-columns: 1fr 1fr 1fr;
-      }
-    }
-
-    /* Motion accessibility */
-    @media (prefers-reduced-motion: reduce) {
-
-      .course-card,
-      .titlePageDiv h1,
-      .titlePageDiv p,
-      .course-image img,
-      .course-image::after,
-      .statusDiv {
-        animation: none !important;
-        transition: none !important;
-      }
-    }
-  </style>
-</head>
-
-<body>
-  <div class="container">
-    <!-- Sidebar Section -->
-    <aside>
-      <div class="toggle">
-        <div class="logo">
-          <img src="../../../img/simpHappyMascotLogo.png" alt="logo" />
-          <h2>SIMP<span class="danger">Project</span></h2>
-        </div>
-        <div class="close" id="close-btn">
-          <span class="material-icons-sharp">close</span>
-        </div>
-      </div>
-
-      <div class="sidebar">
-        <a href="dashboard.html"><span class="material-icons-sharp">dashboard</span>
-          <h3>Dashboard</h3>
-        </a>
-        <a href="job.html"><span class="material-icons-sharp">work</span>
-          <h3>Jobs</h3>
-        </a>
-        <a href="myApplication.html"><span class="material-icons-sharp">receipt</span>
-          <h3>My Application</h3>
-        </a>
-        <a href="courses.html" class="active"><span class="material-icons-sharp">school</span>
-          <h3>Courses</h3>
-        </a>
-        <a href="shop.html"><span class="material-icons-sharp">shopping_cart</span>
-          <h3>Shop</h3>
-        </a>
-        <a href="earnings.html"><span class="material-icons-sharp">account_balance</span>
-          <h3>Earnings</h3>
-        </a>
-        <a href="documents.html"><span class="material-icons-sharp">file_copy</span>
-          <h3>Documents</h3>
-        </a>
-        <a href="settings.html"><span class="material-icons-sharp">settings</span>
-          <h3>Settings</h3>
-        </a>
-        <a href="#" id="logout-btn"><span class="material-icons-sharp">logout</span>
-          <h3>Logout</h3>
-        </a>
-      </div>
-    </aside>
-    <!-- End of Sidebar Section -->
-
-    <!-- MAIN CONTENT -->
-    <main>
-      <div class="titlePageDiv">
-        <h1>Available courses</h1>
-        <p>Level up your skills and qualify for more job opportunities.</p>
-      </div>
-
-      <div class="searchBarDiv">
-        <div class="searchDiv">
-          <span class="material-icons-sharp">search</span>
-          <input id="searchInput" type="text" placeholder="Search courses (title/description/tags)" />
-        </div>
-
-        <div class="dropdown">
-          <button class="dropbtn">Skills</button>
-          <div class="dropdown-content">
-            <a href="#" data-filter-skill="Networking">Networking</a>
-            <a href="#" data-filter-skill="Security">Security</a>
-            <a href="#" data-filter-skill="Automation">Automation</a>
+  <body>
+    <div class="container">
+      <!-- Sidebar Section -->
+      <aside>
+        <div class="toggle">
+          <div class="logo">
+            <img src="../../../img/simpHappyMascotLogo.png" alt="logo" />
+            <h2>SIMP<span class="danger">Project</span></h2>
+          </div>
+          <div class="close" id="close-btn">
+            <span class="material-icons-sharp">close</span>
           </div>
         </div>
 
-        <div class="dropdown">
-          <button class="dropbtn">Completed Courses</button>
-          <div class="dropdown-content">
-            <a href="#" id="filterAll">All</a>
-            <a href="#" id="filterToContinue">To Continue</a>
+        <div class="sidebar">
+          <a href="dashboard.html"
+            ><span class="material-icons-sharp">dashboard</span>
+            <h3>Dashboard</h3>
+          </a>
+          <a href="job.html"
+            ><span class="material-icons-sharp">work</span>
+            <h3>Jobs</h3>
+          </a>
+          <a href="myApplication.html"
+            ><span class="material-icons-sharp">receipt</span>
+            <h3>My Application</h3>
+          </a>
+          <a href="courses.html" class="active"
+            ><span class="material-icons-sharp">school</span>
+            <h3>Courses</h3>
+          </a>
+          <a href="shop.html"
+            ><span class="material-icons-sharp">shopping_cart</span>
+            <h3>Shop</h3>
+          </a>
+          <a href="earnings.html"
+            ><span class="material-icons-sharp">account_balance</span>
+            <h3>Earnings</h3>
+          </a>
+          <a href="documents.html"
+            ><span class="material-icons-sharp">file_copy</span>
+            <h3>Documents</h3>
+          </a>
+          <a href="settings.html"
+            ><span class="material-icons-sharp">settings</span>
+            <h3>Settings</h3>
+          </a>
+          <a href="#" id="logout-btn"
+            ><span class="material-icons-sharp">logout</span>
+            <h3>Logout</h3>
+          </a>
+        </div>
+      </aside>
+      <!-- End of Sidebar Section -->
+
+      <!-- MAIN CONTENT -->
+      <main>
+        <div class="titlePageDiv">
+          <h1>Available courses</h1>
+          <p>Level up your skills and qualify for more job opportunities.</p>
+        </div>
+
+        <div class="searchBarDiv">
+          <div class="searchDiv">
+            <span class="material-icons-sharp">search</span>
+            <input
+              id="searchInput"
+              type="text"
+              placeholder="Search courses (title/description/tags)"
+            />
+          </div>
+
+          <div class="dropdown">
+            <button class="dropbtn">Skills</button>
+            <div class="dropdown-content">
+              <a href="#" data-filter-skill="Networking">Networking</a>
+              <a href="#" data-filter-skill="Security">Security</a>
+              <a href="#" data-filter-skill="Automation">Automation</a>
+            </div>
+          </div>
+
+          <div class="dropdown">
+            <button class="dropbtn">Completed Courses</button>
+            <div class="dropdown-content">
+              <a href="#" id="filterAll">All</a>
+              <a href="#" id="filterToContinue">To Continue</a>
+            </div>
+          </div>
+
+          <div class="statusDiv" role="status" aria-label="Current skill level">
+            <span class="material-icons-sharp" aria-hidden="true"
+              >workspace_premium</span
+            >
+            <span class="label">Status:</span>
+            <strong class="value" id="levelBadge">Level 0</strong>
           </div>
         </div>
 
-        <div class="statusDiv" role="status" aria-label="Current skill level">
-          <span class="material-icons-sharp" aria-hidden="true">workspace_premium</span>
-          <span class="label">Status:</span>
-          <strong class="value" id="levelBadge">Level 0</strong>
-        </div>
-      </div>
+        <!-- Courses list -->
+        <div id="coursesList" class="courses-grid"></div>
 
-      <!-- Courses list -->
-      <div id="coursesList" class="courses-grid"></div>
-
-      <!-- Skeletons shown while loading -->
-      <div id="skeletons">
-        <div class="course-card">
-          <div class="course-image skeleton card"></div>
-          <div class="course-content" style="flex: 1">
-            <div class="skeleton" style="height: 18px; width: 40%; border-radius: 8px"></div>
-            <div class="skeleton" style="
+        <!-- Skeletons shown while loading -->
+        <div id="skeletons">
+          <div class="course-card">
+            <div class="course-image skeleton card"></div>
+            <div class="course-content" style="flex: 1">
+              <div
+                class="skeleton"
+                style="height: 18px; width: 40%; border-radius: 8px"
+              ></div>
+              <div
+                class="skeleton"
+                style="
                   height: 12px;
                   width: 90%;
                   margin-top: 10px;
                   border-radius: 8px;
-                "></div>
-            <div class="skeleton" style="
+                "
+              ></div>
+              <div
+                class="skeleton"
+                style="
                   height: 12px;
                   width: 70%;
                   margin-top: 8px;
                   border-radius: 8px;
-                "></div>
-            <div class="course-tags" style="margin-top: 12px">
-              <div class="skeleton" style="height: 26px; width: 90px; border-radius: 999px"></div>
-              <div class="skeleton" style="height: 26px; width: 70px; border-radius: 999px"></div>
+                "
+              ></div>
+              <div class="course-tags" style="margin-top: 12px">
+                <div
+                  class="skeleton"
+                  style="height: 26px; width: 90px; border-radius: 999px"
+                ></div>
+                <div
+                  class="skeleton"
+                  style="height: 26px; width: 70px; border-radius: 999px"
+                ></div>
+              </div>
+            </div>
+            <div class="course-actions" style="min-width: 120px">
+              <div
+                class="skeleton"
+                style="height: 14px; width: 80px; border-radius: 6px"
+              ></div>
+              <div
+                class="skeleton"
+                style="height: 38px; width: 100px; border-radius: 999px"
+              ></div>
             </div>
           </div>
-          <div class="course-actions" style="min-width: 120px">
-            <div class="skeleton" style="height: 14px; width: 80px; border-radius: 6px"></div>
-            <div class="skeleton" style="height: 38px; width: 100px; border-radius: 999px"></div>
-          </div>
-        </div>
-        <div class="course-card">
-          <div class="course-image skeleton card"></div>
-          <div class="course-content" style="flex: 1">
-            <div class="skeleton" style="height: 18px; width: 35%; border-radius: 8px"></div>
-            <div class="skeleton" style="
+          <div class="course-card">
+            <div class="course-image skeleton card"></div>
+            <div class="course-content" style="flex: 1">
+              <div
+                class="skeleton"
+                style="height: 18px; width: 35%; border-radius: 8px"
+              ></div>
+              <div
+                class="skeleton"
+                style="
                   height: 12px;
                   width: 85%;
                   margin-top: 10px;
                   border-radius: 8px;
-                "></div>
-            <div class="skeleton" style="
+                "
+              ></div>
+              <div
+                class="skeleton"
+                style="
                   height: 12px;
                   width: 65%;
                   margin-top: 8px;
                   border-radius: 8px;
-                "></div>
-            <div class="course-tags" style="margin-top: 12px">
-              <div class="skeleton" style="height: 26px; width: 100px; border-radius: 999px"></div>
+                "
+              ></div>
+              <div class="course-tags" style="margin-top: 12px">
+                <div
+                  class="skeleton"
+                  style="height: 26px; width: 100px; border-radius: 999px"
+                ></div>
+              </div>
+            </div>
+            <div class="course-actions" style="min-width: 120px">
+              <div
+                class="skeleton"
+                style="height: 14px; width: 80px; border-radius: 6px"
+              ></div>
+              <div
+                class="skeleton"
+                style="height: 38px; width: 100px; border-radius: 999px"
+              ></div>
             </div>
           </div>
-          <div class="course-actions" style="min-width: 120px">
-            <div class="skeleton" style="height: 14px; width: 80px; border-radius: 6px"></div>
-            <div class="skeleton" style="height: 38px; width: 100px; border-radius: 999px"></div>
-          </div>
         </div>
-      </div>
-    </main>
-    <!-- END MAIN CONTENT -->
-  </div>
+      </main>
+      <!-- END MAIN CONTENT -->
+    </div>
 
-  <!-- Your existing scripts -->
-  <script src="../../general_files/index.js"></script>
-  <script type="module" src="../../general_files/session.js"></script>
+    <!-- Your existing scripts -->
+    <script src="../../general_files/index.js"></script>
+    <script type="module" src="../../general_files/session.js"></script>
 
-  <!-- SweetAlert2 JS -->
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-  <!-- Supabase client -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Supabase client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <script type="module">
-    // —————————————————————————————————————————————
-    // Supabase bootstrap (auto-uses globals from session.js if present)
-    // —————————————————————————————————————————————
-    import { SUPABASE_URL, SUPABASE_ANON_KEY } from "../../../supabase.js";
-    const supabase = window.supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_ANON_KEY
-    );
-    const sbCourses = window.supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_ANON_KEY,
-      { db: { schema: "courses" } }
-    );
-
-    const coursesListEl = document.getElementById("coursesList");
-    const skeletonsEl = document.getElementById("skeletons");
-    const searchInput = document.getElementById("searchInput");
-    const levelBadge = document.getElementById("levelBadge");
-
-    const FALLBACK_IMG = "../images/profile-4.jpg"; // fallback if thumbnail_url is null
-    const PAGE_SIZE = 50;
-
-    // Track current user level for gating
-    let CURRENT_USER_LEVEL = 0;
-
-    // ✅ SweetAlert2 helpers (friendly, compact, no layout jump)
-    const toast = Swal.mixin({
-      toast: true,
-      position: "top-end",
-      showConfirmButton: false,
-      timer: 2400,
-      timerProgressBar: true
-    });
-
-    function notify(type = "info", title = "", text = "") {
-      // Errors & warnings = modal (compact); info/success = toast
-      if (type === "error" || type === "warning") {
-        Swal.fire({
-          icon: type,
-          title: title || (type === "error" ? "Something went wrong" : "Heads up"),
-          text: text || "",
-          width: "28rem",
-          customClass: { popup: "swal2-compact" },
-          confirmButtonText: "OK"
-        });
-      } else {
-        toast.fire({
-          icon: type,
-          title: title || text || ""
-        });
-      }
-    }
-
-    let loadingSwal = null;
-    function notifyLoading(title = "Loading...", text = "Please wait a moment") {
-      loadingSwal = Swal.fire({
-        icon: "info",
-        title,
-        text,
-        allowOutsideClick: false,
-        allowEscapeKey: false,
-        didOpen: () => Swal.showLoading(),
-        width: "26rem",
-        customClass: { popup: "swal2-compact" }
-      });
-    }
-
-    function closeLoading() {
-      if (Swal.isVisible()) Swal.close();
-      loadingSwal = null;
-    }
-
-    // —————————————————————————————————————————————
-    // Installer level badge (optional, uses your public.installer)
-    // —————————————————————————————————————————————
-    async function loadInstallerLevel() {
-      try {
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-        if (!user) return; // not signed in, keep default
-
-        const { data, error } = await supabase
-          .from("installer") // public.installer
-          .select("levelstatus")
-          .eq("id", user.id)
-          .single();
-
-        if (!error && data && typeof data.levelstatus === "number") {
-          CURRENT_USER_LEVEL = Number(data.levelstatus) || 0;
-          levelBadge.textContent = `Level ${data.levelstatus}`;
-          levelBadge.setAttribute(
-            "aria-label",
-            `Current skill level ${data.levelstatus}`
-          );
-        }
-      } catch (e) {
-        // silent fail; keep default Level 0
-      }
-    }
-
-    // —————————————————————————————————————————————
-    // Fetch courses from courses.course (title, slug, etc.)
-    // —————————————————————————————————————————————
-    async function fetchCourses({ q = "", tag = "" } = {}) {
-      let query = supabase
-        .schema("courses")
-        .from("course")
-        .select(
-          "id, title, slug, description, level, tags, thumbnail_url, created_at"
-        )
-        // NEW: only show published courses
-        .eq("is_published", true)
-        .order("created_at", { ascending: false })
-        .limit(PAGE_SIZE);
-
-      if (q) {
-        // search in title or description (case-insensitive)
-        query = query.or(`title.ilike.%${q}%,description.ilike.%${q}%`);
-      }
-
-      if (tag) {
-        // filter if tag is inside tags array
-        query = query.contains("tags", [tag]);
-      }
-
-      const { data, error } = await query;
-
-      if (error) throw error;
-      return data || [];
-    }
-
-    // —————————————————————————————————————————————
-    // Render helpers
-    // —————————————————————————————————————————————
-    function formatTags(tags) {
-      if (!Array.isArray(tags) || tags.length === 0) return "";
-      return tags
-        .slice(0, 4)
-        .map((t) => `<span class="tag">${escapeHtml(String(t))}</span>`)
-        .join("");
-    }
-
-    function escapeHtml(s) {
-      return s.replace(
-        /[&<>'"]/g,
-        (c) =>
-        ({
-          "&": "&amp;",
-          "<": "&lt;",
-          ">": "&gt;",
-          "'": "&#39;",
-          '"': "&quot;",
-        }[c])
+    <script type="module">
+      // —————————————————————————————————————————————
+      // Supabase bootstrap (auto-uses globals from session.js if present)
+      // —————————————————————————————————————————————
+      import { SUPABASE_URL, SUPABASE_ANON_KEY } from "../../../supabase.js";
+      const supabase = window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY
       );
-    }
+      const sbCourses = window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY,
+        { db: { schema: "courses" } }
+      );
 
-    function courseCardHTML(course) {
-      const img = course.thumbnail_url || FALLBACK_IMG;
-      const title = escapeHtml(course.title || "Untitled Course");
-      const desc = escapeHtml(course.description || "No description yet.");
-      const level = Number.isFinite(course.level) ? course.level : 0;
-      const tagsHtml = formatTags(course.tags);
+      const coursesListEl = document.getElementById("coursesList");
+      const skeletonsEl = document.getElementById("skeletons");
+      const searchInput = document.getElementById("searchInput");
+      const levelBadge = document.getElementById("levelBadge");
 
-      return `
+      const FALLBACK_IMG = "../images/profile-4.jpg"; // fallback if thumbnail_url is null
+      const PAGE_SIZE = 50;
+
+      // Track current user level for gating
+      let CURRENT_USER_LEVEL = 0;
+
+      // ✅ SweetAlert2 helpers (friendly, compact, no layout jump)
+      const toast = Swal.mixin({
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 2400,
+        timerProgressBar: true,
+      });
+
+      function notify(type = "info", title = "", text = "") {
+        // Errors & warnings = modal (compact); info/success = toast
+        if (type === "error" || type === "warning") {
+          Swal.fire({
+            icon: type,
+            title:
+              title || (type === "error" ? "Something went wrong" : "Heads up"),
+            text: text || "",
+            width: "28rem",
+            customClass: { popup: "swal2-compact" },
+            confirmButtonText: "OK",
+          });
+        } else {
+          toast.fire({
+            icon: type,
+            title: title || text || "",
+          });
+        }
+      }
+
+      let loadingSwal = null;
+      function notifyLoading(
+        title = "Loading...",
+        text = "Please wait a moment"
+      ) {
+        loadingSwal = Swal.fire({
+          icon: "info",
+          title,
+          text,
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          didOpen: () => Swal.showLoading(),
+          width: "26rem",
+          customClass: { popup: "swal2-compact" },
+        });
+      }
+
+      function closeLoading() {
+        if (Swal.isVisible()) Swal.close();
+        loadingSwal = null;
+      }
+
+      // —————————————————————————————————————————————
+      // Installer level badge (optional, uses your public.installer)
+      // —————————————————————————————————————————————
+      async function loadInstallerLevel() {
+        try {
+          const {
+            data: { user },
+          } = await supabase.auth.getUser();
+          if (!user) return; // not signed in, keep default
+
+          const { data, error } = await supabase
+            .from("installer") // public.installer
+            .select("levelstatus")
+            .eq("id", user.id)
+            .single();
+
+          if (!error && data && typeof data.levelstatus === "number") {
+            CURRENT_USER_LEVEL = Number(data.levelstatus) || 0;
+            levelBadge.textContent = `Level ${data.levelstatus}`;
+            levelBadge.setAttribute(
+              "aria-label",
+              `Current skill level ${data.levelstatus}`
+            );
+          }
+        } catch (e) {
+          // silent fail; keep default Level 0
+        }
+      }
+
+      // —————————————————————————————————————————————
+      // Fetch courses from courses.course (title, slug, etc.)
+      // —————————————————————————————————————————————
+      async function fetchCourses({ q = "", tag = "" } = {}) {
+        let query = supabase
+          .schema("courses")
+          .from("course")
+          .select(
+            "id, title, slug, description, level, tags, thumbnail_url, created_at"
+          )
+          // NEW: only show published courses
+          .eq("is_published", true)
+          .order("created_at", { ascending: false })
+          .limit(PAGE_SIZE);
+
+        if (q) {
+          // search in title or description (case-insensitive)
+          query = query.or(`title.ilike.%${q}%,description.ilike.%${q}%`);
+        }
+
+        if (tag) {
+          // filter if tag is inside tags array
+          query = query.contains("tags", [tag]);
+        }
+
+        const { data, error } = await query;
+
+        if (error) throw error;
+        return data || [];
+      }
+
+      // —————————————————————————————————————————————
+      // Render helpers
+      // —————————————————————————————————————————————
+      function formatTags(tags) {
+        if (!Array.isArray(tags) || tags.length === 0) return "";
+        return tags
+          .slice(0, 4)
+          .map((t) => `<span class="tag">${escapeHtml(String(t))}</span>`)
+          .join("");
+      }
+
+      function escapeHtml(s) {
+        return s.replace(
+          /[&<>'"]/g,
+          (c) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              "'": "&#39;",
+              '"': "&quot;",
+            }[c])
+        );
+      }
+
+      function courseCardHTML(course) {
+        const img = course.thumbnail_url || FALLBACK_IMG;
+        const title = escapeHtml(course.title || "Untitled Course");
+        const desc = escapeHtml(course.description || "No description yet.");
+        const level = Number.isFinite(course.level) ? course.level : 0;
+        const tagsHtml = formatTags(course.tags);
+
+        return `
         <div class="course-card" data-id="${escapeHtml(
           course.id
         )}" data-slug="${escapeHtml(course.slug)}" data-level="${level}">
@@ -927,11 +1001,11 @@
           </div>
         </div>
       `;
-    }
+      }
 
-    function renderCourses(courses) {
-      if (!courses || courses.length === 0) {
-        coursesListEl.innerHTML = `
+      function renderCourses(courses) {
+        if (!courses || courses.length === 0) {
+          coursesListEl.innerHTML = `
           <div class="course-card" style="justify-content:center; text-align:center;">
             <div>
               <h3 style="margin:0 0 6px;">No courses found</h3>
@@ -939,213 +1013,215 @@
             </div>
           </div>
         `;
-        // Friendly toast (short, non-intrusive)
-        notify("info", "No courses matched your filters.");
-        return;
+          // Friendly toast (short, non-intrusive)
+          notify("info", "No courses matched your filters.");
+          return;
+        }
+        coursesListEl.innerHTML = courses.map(courseCardHTML).join("");
+        attachEnrollHandlers();
       }
-      coursesListEl.innerHTML = courses.map(courseCardHTML).join("");
-      attachEnrollHandlers();
-    }
 
-    function attachEnrollHandlers() {
-      document.querySelectorAll(".enroll-btn").forEach((btn) => {
-        btn.addEventListener("click", async () => {
-          const card = btn.closest(".course-card");
-          const slug = btn.getAttribute("data-course");
-          if (!slug || !card) return;
+      function attachEnrollHandlers() {
+        document.querySelectorAll(".enroll-btn").forEach((btn) => {
+          btn.addEventListener("click", async () => {
+            const card = btn.closest(".course-card");
+            const slug = btn.getAttribute("data-course");
+            if (!slug || !card) return;
 
-          // NEW: Level-gate check before navigation
-          const courseLevel = Number(card.getAttribute("data-level") || 0);
-          // rule: you can take courses up to (your level + 1)
-          if (courseLevel > CURRENT_USER_LEVEL + 1) {
-            const mustTake = CURRENT_USER_LEVEL + 1;
-            // 🔁 Replaced alert(...) with a compact SweetAlert2 warning
-            notify(
-              "warning",
-              "Course locked",
-              `Please complete a Level ${mustTake} course first to unlock this level.`
-            );
-            return;
+            // NEW: Level-gate check before navigation
+            const courseLevel = Number(card.getAttribute("data-level") || 0);
+            // rule: you can take courses up to (your level + 1)
+            if (courseLevel > CURRENT_USER_LEVEL + 1) {
+              const mustTake = CURRENT_USER_LEVEL + 1;
+              // 🔁 Replaced alert(...) with a compact SweetAlert2 warning
+              notify(
+                "warning",
+                "Course locked",
+                `Please complete a Level ${mustTake} course first to unlock this level.`
+              );
+              return;
+            }
+
+            window.location.href = `courseMaterial.html?course=${encodeURIComponent(
+              slug
+            )}`;
+          });
+        });
+      }
+
+      // —————————————————————————————————————————————
+      // NEW: load completions for current user + total points per course
+      // —————————————————————————————————————————————
+      async function loadUserCompletions(courseIds) {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        if (!user || !courseIds.length) return new Map();
+
+        const { data, error } = await sbCourses
+          .from("completed_courses")
+          .select("course_id, score")
+          .eq("installer_id", user.id)
+          .in("course_id", courseIds);
+
+        if (error || !data) return new Map();
+        const map = new Map();
+        data.forEach((r) => map.set(r.course_id, Number(r.score) || 0));
+        return map;
+      }
+
+      async function loadTotalPointsPerCourse(courseIds) {
+        if (!courseIds.length) return new Map();
+
+        // 1) fetch quizzes for these courses
+        const { data: quizzes, error: qErr } = await sbCourses
+          .from("quiz")
+          .select("id, course_id")
+          .in("course_id", courseIds);
+
+        if (qErr || !quizzes || quizzes.length === 0) return new Map();
+
+        const quizIds = quizzes.map((q) => q.id);
+        const courseIdByQuiz = new Map(quizzes.map((q) => [q.id, q.course_id]));
+
+        // 2) fetch quiz questions and sum points
+        const { data: questions, error: qqErr } = await sbCourses
+          .from("quiz_question")
+          .select("quiz_id, points")
+          .in("quiz_id", quizIds);
+
+        if (qqErr || !questions) return new Map();
+
+        const totals = new Map(); // course_id -> totalPoints
+        questions.forEach((row) => {
+          const courseId = courseIdByQuiz.get(row.quiz_id);
+          const pts = Number(row.points || 1);
+          totals.set(courseId, (totals.get(courseId) || 0) + pts);
+        });
+
+        return totals;
+      }
+
+      function decorateCompletions(courses, completionMap, totalPointsMap) {
+        courses.forEach((c) => {
+          const card = coursesListEl.querySelector(
+            `.course-card[data-id="${c.id}"]`
+          );
+          if (!card) return;
+          const btn = card.querySelector(".enroll-btn");
+          const actions = card.querySelector(".course-actions");
+
+          const userPct = completionMap.get(c.id);
+          if (userPct == null) return; // not completed
+
+          // Compute points earned based on percentage * total points
+          const totalPts = Number(totalPointsMap.get(c.id) || 0);
+          let scoreText;
+          if (totalPts > 0) {
+            const earned = Math.round((userPct / 100) * totalPts);
+            scoreText = `Your score: ${earned} / ${totalPts} pts (${userPct}%)`;
+          } else {
+            // No quiz points in course
+            scoreText = `Completed • Score: ${userPct}%`;
           }
 
-          window.location.href = `courseMaterial.html?course=${encodeURIComponent(
-            slug
-          )}`;
+          // Hide take button, show score
+          if (btn) btn.style.display = "none";
+
+          // Add/replace a score label (idempotent)
+          let scoreEl = actions.querySelector(".my-score");
+          if (!scoreEl) {
+            scoreEl = document.createElement("span");
+            scoreEl.className = "duration my-score";
+            actions.appendChild(scoreEl);
+          }
+          scoreEl.textContent = scoreText;
+        });
+      }
+
+      // —————————————————————————————————————————————
+      // UI wiring
+      // —————————————————————————————————————————————
+      let currentTag = "";
+      let searchDebounce;
+
+      searchInput.addEventListener("input", () => {
+        clearTimeout(searchDebounce);
+        searchDebounce = setTimeout(async () => {
+          await reloadCourses();
+        }, 250);
+      });
+
+      document.querySelectorAll("[data-filter-skill]").forEach((a) => {
+        a.addEventListener("click", async (e) => {
+          e.preventDefault();
+          currentTag = a.getAttribute("data-filter-skill") || "";
+          await reloadCourses();
+          notify("success", `Filtered by: ${currentTag}`);
         });
       });
-    }
 
-    // —————————————————————————————————————————————
-    // NEW: load completions for current user + total points per course
-    // —————————————————————————————————————————————
-    async function loadUserCompletions(courseIds) {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user || !courseIds.length) return new Map();
+      document
+        .getElementById("filterAll")
+        ?.addEventListener("click", async (e) => {
+          e.preventDefault();
+          currentTag = "";
+          await reloadCourses();
+          notify("success", "Showing all courses");
+        });
 
-      const { data, error } = await sbCourses
-        .from("completed_courses")
-        .select("course_id, score")
-        .eq("installer_id", user.id)
-        .in("course_id", courseIds);
+      async function reloadCourses() {
+        try {
+          skeletonsEl.classList.remove("hidden");
+          coursesListEl.innerHTML = "";
+          const q = searchInput.value.trim();
 
-      if (error || !data) return new Map();
-      const map = new Map();
-      data.forEach((r) => map.set(r.course_id, Number(r.score) || 0));
-      return map;
-    }
+          // Optional: brief loading (non-blocking)
+          // notifyLoading("Loading courses", "Fetching the latest list for you...");
+          const courses = await fetchCourses({ q, tag: currentTag });
+          // closeLoading();
 
-    async function loadTotalPointsPerCourse(courseIds) {
-      if (!courseIds.length) return new Map();
+          // Pre-load completion map & total points BEFORE rendering decorations
+          const courseIds = courses.map((c) => c.id);
+          const [completionMap, totalPointsMap] = await Promise.all([
+            loadUserCompletions(courseIds),
+            loadTotalPointsPerCourse(courseIds),
+          ]);
 
-      // 1) fetch quizzes for these courses
-      const { data: quizzes, error: qErr } = await sbCourses
-        .from("quiz")
-        .select("id, course_id")
-        .in("course_id", courseIds);
+          renderCourses(courses);
 
-      if (qErr || !quizzes || quizzes.length === 0) return new Map();
-
-      const quizIds = quizzes.map((q) => q.id);
-      const courseIdByQuiz = new Map(quizzes.map((q) => [q.id, q.course_id]));
-
-      // 2) fetch quiz questions and sum points
-      const { data: questions, error: qqErr } = await sbCourses
-        .from("quiz_question")
-        .select("quiz_id, points")
-        .in("quiz_id", quizIds);
-
-      if (qqErr || !questions) return new Map();
-
-      const totals = new Map(); // course_id -> totalPoints
-      questions.forEach((row) => {
-        const courseId = courseIdByQuiz.get(row.quiz_id);
-        const pts = Number(row.points || 1);
-        totals.set(courseId, (totals.get(courseId) || 0) + pts);
-      });
-
-      return totals;
-    }
-
-    function decorateCompletions(courses, completionMap, totalPointsMap) {
-      courses.forEach((c) => {
-        const card = coursesListEl.querySelector(`.course-card[data-id="${c.id}"]`);
-        if (!card) return;
-        const btn = card.querySelector(".enroll-btn");
-        const actions = card.querySelector(".course-actions");
-
-        const userPct = completionMap.get(c.id);
-        if (userPct == null) return; // not completed
-
-        // Compute points earned based on percentage * total points
-        const totalPts = Number(totalPointsMap.get(c.id) || 0);
-        let scoreText;
-        if (totalPts > 0) {
-          const earned = Math.round((userPct / 100) * totalPts);
-          scoreText = `Your score: ${earned} / ${totalPts} pts (${userPct}%)`;
-        } else {
-          // No quiz points in course
-          scoreText = `Completed • Score: ${userPct}%`;
-        }
-
-        // Hide take button, show score
-        if (btn) btn.style.display = "none";
-
-        // Add/replace a score label (idempotent)
-        let scoreEl = actions.querySelector(".my-score");
-        if (!scoreEl) {
-          scoreEl = document.createElement("span");
-          scoreEl.className = "duration my-score";
-          actions.appendChild(scoreEl);
-        }
-        scoreEl.textContent = scoreText;
-      });
-    }
-
-    // —————————————————————————————————————————————
-    // UI wiring
-    // —————————————————————————————————————————————
-    let currentTag = "";
-    let searchDebounce;
-
-    searchInput.addEventListener("input", () => {
-      clearTimeout(searchDebounce);
-      searchDebounce = setTimeout(async () => {
-        await reloadCourses();
-      }, 250);
-    });
-
-    document.querySelectorAll("[data-filter-skill]").forEach((a) => {
-      a.addEventListener("click", async (e) => {
-        e.preventDefault();
-        currentTag = a.getAttribute("data-filter-skill") || "";
-        await reloadCourses();
-        notify("success", `Filtered by: ${currentTag}`);
-      });
-    });
-
-    document
-      .getElementById("filterAll")
-      ?.addEventListener("click", async (e) => {
-        e.preventDefault();
-        currentTag = "";
-        await reloadCourses();
-        notify("success", "Showing all courses");
-      });
-
-    async function reloadCourses() {
-      try {
-        skeletonsEl.classList.remove("hidden");
-        coursesListEl.innerHTML = "";
-        const q = searchInput.value.trim();
-
-        // Optional: brief loading (non-blocking)
-        // notifyLoading("Loading courses", "Fetching the latest list for you...");
-        const courses = await fetchCourses({ q, tag: currentTag });
-        // closeLoading();
-
-        // Pre-load completion map & total points BEFORE rendering decorations
-        const courseIds = courses.map((c) => c.id);
-        const [completionMap, totalPointsMap] = await Promise.all([
-          loadUserCompletions(courseIds),
-          loadTotalPointsPerCourse(courseIds),
-        ]);
-
-        renderCourses(courses);
-
-        // After render, decorate cards (hide take + show score for completed)
-        decorateCompletions(courses, completionMap, totalPointsMap);
-      } catch (err) {
-        coursesListEl.innerHTML = `
+          // After render, decorate cards (hide take + show score for completed)
+          decorateCompletions(courses, completionMap, totalPointsMap);
+        } catch (err) {
+          coursesListEl.innerHTML = `
           <div class="course-card" style="justify-content:center; text-align:center;">
             <div>
               <h3 style="margin:0 0 6px; color:#b91c1c;">Failed to load courses</h3>
               <p style="margin:0; color:#6b7280;">${escapeHtml(
-                err.message || "An unexpected error occurred while fetching courses."
+                err.message ||
+                  "An unexpected error occurred while fetching courses."
               )}</p>
             </div>
           </div>
         `;
-        // ✅ Friendly, compact error modal
-        notify(
-          "error",
-          "We couldn’t load courses",
-          "Please check your connection and try again."
-        );
-      } finally {
-        skeletonsEl.classList.add("hidden");
+          // ✅ Friendly, compact error modal
+          notify(
+            "error",
+            "We couldn’t load courses",
+            "Please check your connection and try again."
+          );
+        } finally {
+          skeletonsEl.classList.add("hidden");
+        }
       }
-    }
 
-    // —————————————————————————————————————————————
-    // Initial load
-    // —————————————————————————————————————————————
-    document.addEventListener("DOMContentLoaded", async () => {
-      skeletonsEl.classList.remove("hidden");
-      await Promise.all([loadInstallerLevel(), reloadCourses()]);
-    });
-  </script>
-</body>
-
+      // —————————————————————————————————————————————
+      // Initial load
+      // —————————————————————————————————————————————
+      document.addEventListener("DOMContentLoaded", async () => {
+        skeletonsEl.classList.remove("hidden");
+        await Promise.all([loadInstallerLevel(), reloadCourses()]);
+      });
+    </script>
+  </body>
 </html>

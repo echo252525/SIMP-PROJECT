@@ -1,1466 +1,1656 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="icon"
+      type="image/png"
+      href="../../../img/simpHappyMascotLogo.png"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet"
+    />
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css_files/sideBar.css" />
+    <title>Admin Dashboard</title>
+    <style>
+      /*DO NOT REMOVE THESE CSS!!!*/
+      /*for this file only*/
+      /*==START==*/
+      img {
+        display: block;
+        width: 100%;
+        object-fit: cover;
+      }
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap"
-    rel="stylesheet">
-
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet" />
-  <link rel="stylesheet" href="../css_files/sideBar.css" />
-  <title>Admin Dashboard</title>
-  <style>
-    /*DO NOT REMOVE THESE CSS!!!*/
-    /*for this file only*/
-    /*==START==*/
-    img {
-      display: block;
-      width: 100%;
-      object-fit: cover;
-    }
-
-    .container {
-      display: grid;
-      width: 96%;
-      margin: 0 auto;
-      gap: 1.8rem;
-      grid-template-columns: 12rem auto 23rem;
-    }
-
-    main .pendingDivs {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1.6rem;
-    }
-
-    main .pendingDivs>div {
-      background: #fff;
-      margin-top: 1rem;
-      cursor: pointer;
-      transition: .3s;
-      text-align: center;
-      border: 1px solid #e7edf3;
-      padding: 12px;
-      border-radius: 14px;
-    }
-
-    main .pendingDivs>div:hover {
-      transform: translateY(-0.5rem);
-    }
-
-    main .pendingDivs h3 {
-      font-size: 1rem;
-    }
-
-    main .pendingDivs svg {
-      width: 7rem;
-      height: 7rem;
-    }
-
-    main .pendingDivs svg circle {
-      fill: none;
-      stroke-width: 10;
-      stroke-linecap: round;
-      transform: translate(5px, 5px);
-    }
-
-    main .pendingDivs .pendingWorkerAccDiv svg circle {
-      stroke: var(--color-success);
-      stroke-dashoffset: -30;
-      stroke-dasharray: 200;
-    }
-
-    main .pendingDivs .pendingAdminAccessDiv svg circle {
-      stroke: var(--color-danger);
-      stroke-dashoffset: -30;
-      stroke-dasharray: 200;
-    }
-
-    main .pendingDivs .pendingJobAppDiv svg circle {
-      stroke: var(--color-primary);
-      stroke-dashoffset: -30;
-      stroke-dasharray: 200;
-    }
-
-    main .latestJobApplicantTable {
-      margin-top: 1.3rem;
-    }
-
-    main .latestJobApplicantTable h2 {
-      margin-bottom: .8rem;
-    }
-
-    main .latestJobApplicantTable {
-      background: transparent;
-      position: relative;
-      /* allow top-right arrow positioning */
-    }
-
-    main .latestJobApplicantTable table {
-      background: #fff;
-      width: 100%;
-      text-align: center;
-      transition: .3s;
-      border: 1px solid #e7edf3;
-      padding: 18px 12px 12px;
-      border-radius: 14px;
-      border-collapse: separate;
-      border-spacing: 0;
-      overflow: hidden;
-    }
-
-    main .latestJobApplicantTable table:hover {
-      transform: translateY(-0.5rem);
-    }
-
-    main table tbody td {
-      height: 2rem;
-      border-bottom: 1px solid var(--color-light);
-      color: var(--color-dark-variant);
-    }
-
-    main table tbody tr:last-child td {
-      border: none;
-    }
-
-    main .latestJobApplicantTable a {
-      text-align: center;
-      display: block;
-      margin: 1rem auto;
-      color: var(--color-primary);
-    }
-
-    /* minimalist header and arrow */
-    .latestJobApplicantTable .section-header {
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      gap: .75rem;
-      margin-bottom: .6rem;
-      padding-right: 3rem;
-      /* space so header text doesn't clash with arrow */
-      position: relative;
-    }
-
-    .section-header h2 {
-      margin: 0;
-    }
-
-    .section-header .arrow-link {
-      position: absolute;
-      top: 0;
-      right: 0;
-      /* top-right most */
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 2.1rem;
-      height: 2.1rem;
-      border-radius: 9999px;
-      border: 1px solid var(--color-light);
-      color: var(--color-primary);
-      background: var(--color-white);
-      text-decoration: none;
-      font-weight: 700;
-      line-height: 1;
-      font-size: 1.15rem;
-      transition: all .2s ease;
-      user-select: none;
-      box-shadow: var(--box-shadow);
-    }
-
-    .section-header .arrow-link:hover {
-      background: var(--color-primary);
-      color: #fff;
-      box-shadow: none;
-      transform: translateY(-1px);
-    }
-
-    .right-section {
-      margin-top: 1.4rem;
-    }
-
-    .right-section .nav {
-      display: flex;
-      justify-content: end;
-      gap: 2rem;
-    }
-
-    .right-section .nav button {
-      display: none;
-    }
-
-    .right-section .dark-mode {
-      background: var(--color-light);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      height: 1.6rem;
-      width: 4.2rem;
-      cursor: pointer;
-      border-radius: var(--border-radius-1);
-    }
-
-    .right-section .dark-mode span {
-      font-size: 1.2rem;
-      width: 50%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .right-section .dark-mode span.active {
-      background: var(--color-primary);
-      color: #fff;
-      border-radius: var(--border-radius-1);
-    }
-
-    .right-section .nav .profile {
-      display: flex;
-      gap: 2rem;
-      text-align: right;
-      cursor: pointer; /* make it feel clickable */
-    }
-
-    .right-section .nav .profile .profile-photo {
-      width: 2.8rem;
-      height: 2.8rem;
-      border-radius: 50%;
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .profile-photo img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .right-section .user-profile {
-      display: flex;
-      justify-content: center;
-      text-align: center;
-      margin-top: 1rem;
-      background: #fff;
-      padding: var(--card-padding);
-      border-radius: var(--card-border-radius);
-      box-shadow: var(--box-shadow);
-      cursor: pointer;
-      transition: .3s;
-      border: 2px dashed #20a44c;
-    }
-
-    .right-section .user-profile:hover {
-      box-shadow: none;
-    }
-
-    .right-section .user-profile img {
-      width: 11rem;
-      height: auto;
-      margin-bottom: .8rem;
-      border-radius: 50%;
-    }
-
-    .right-section .user-profile h2 {
-      margin-bottom: .2rem;
-    }
-
-    /* --- Published Courses panel (replaces Quick Links) --- */
-    .right-section .coursesDiv {
-      margin-top: 2rem;
-    }
-
-    .right-section .coursesDiv .header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: .8rem;
-    }
-
-    .right-section .coursesDiv .header h2 {
-      margin: 0;
-      display: flex;
-      align-items: center;
-      gap: .5rem;
-    }
-
-    .course-list {
-      display: flex;
-      flex-direction: column;
-      gap: .7rem;
-    }
-
-    .course-card {
-      background: #fff;
-      border: 1px solid #e7edf3;
-      padding: 12px 14px;
-      border-radius: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      transition: .3s;
-      cursor: default;
-    }
-
-    .course-card:hover {
-      transform: translateY(-0.5rem);
-    }
-
-    /* make only the 'clickable' variation show pointer without removing original rule */
-    .course-card.clickable {
-      cursor: pointer;
-    }
-
-    .course-left {
-      display: flex;
-      align-items: center;
-      gap: .9rem;
-      min-width: 0;
-    }
-
-    .course-icon {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: .55rem;
-      border-radius: 20%;
-      background: var(--color-primary);
-      color: #fff;
-      flex: 0 0 auto;
-    }
-
-    .course-title {
-      font-weight: 600;
-      color: var(--color-dark);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 11rem;
-    }
-
-    .course-meta {
-      display: flex;
-      align-items: center;
-      gap: .6rem;
-      flex-wrap: wrap;
-    }
-
-    .level-pill {
-      border: 1px solid var(--color-light);
-      border-radius: 9999px;
-      padding: .2rem .55rem;
-      font-size: .78rem;
-      color: var(--color-dark-variant);
-      background: #fff;
-    }
-
-    .completed-count {
-      display: inline-flex;
-      align-items: center;
-      gap: .25rem;
-      font-size: .86rem;
-      color: #fff;
-      background: var(--color-primary);
-      padding: .2rem .5rem;
-      border-radius: 9999px;
-    }
-
-    .empty-state {
-      background: #fff;
-      border: 2px dashed var(--color-primary);
-      color: var(--color-primary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 14px;
-      padding: 18px;
-      text-align: center;
-    }
-
-    .empty-state .material-icons-sharp {
-      margin-right: .4rem;
-    }
-
-    /* section total badge (NEW) */
-    .total-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: .35rem;
-      padding: .25rem .6rem;
-      border-radius: 9999px;
-      border: 1px solid var(--color-light);
-      background: #fff;
-      font-size: .82rem;
-      color: var(--color-dark-variant);
-      box-shadow: var(--box-shadow);
-    }
-
-    .jobsTodayDoneButton {
-      padding: .5rem 1rem;
-      border-radius: 30px;
-      background: #20a44c;
-      color: #fff;
-    }
-
-    @media (max-width:1200px) {
       .container {
-        width: 95%;
-        grid-template-columns: 7rem auto 23rem;
+        display: grid;
+        width: 96%;
+        margin: 0 auto;
+        gap: 1.8rem;
+        grid-template-columns: 12rem auto 23rem;
       }
 
       main .pendingDivs {
-        grid-template-columns: 1fr;
-        gap: 0;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.6rem;
+      }
+
+      main .pendingDivs > div {
+        background: #fff;
+        margin-top: 1rem;
+        cursor: pointer;
+        transition: 0.3s;
+        text-align: center;
+        border: 1px solid #e7edf3;
+        padding: 12px;
+        border-radius: 14px;
+      }
+
+      main .pendingDivs > div:hover {
+        transform: translateY(-0.5rem);
+      }
+
+      main .pendingDivs h3 {
+        font-size: 1rem;
+      }
+
+      main .pendingDivs svg {
+        width: 7rem;
+        height: 7rem;
+      }
+
+      main .pendingDivs svg circle {
+        fill: none;
+        stroke-width: 10;
+        stroke-linecap: round;
+        transform: translate(5px, 5px);
+      }
+
+      main .pendingDivs .pendingWorkerAccDiv svg circle {
+        stroke: var(--color-success);
+        stroke-dashoffset: -30;
+        stroke-dasharray: 200;
+      }
+
+      main .pendingDivs .pendingAdminAccessDiv svg circle {
+        stroke: var(--color-danger);
+        stroke-dashoffset: -30;
+        stroke-dasharray: 200;
+      }
+
+      main .pendingDivs .pendingJobAppDiv svg circle {
+        stroke: var(--color-primary);
+        stroke-dashoffset: -30;
+        stroke-dasharray: 200;
       }
 
       main .latestJobApplicantTable {
-        width: 94%;
-        position: absolute;
-        left: 50%;
-        transform: translateX(-50%);
-        margin: 2rem 0 0 .8rem;
+        margin-top: 1.3rem;
+      }
+
+      main .latestJobApplicantTable h2 {
+        margin-bottom: 0.8rem;
+      }
+
+      main .latestJobApplicantTable {
+        background: transparent;
+        position: relative;
+        /* allow top-right arrow positioning */
       }
 
       main .latestJobApplicantTable table {
-        width: 83vw;
-      }
-
-      main table thead tr th:last-child,
-      main table thead tr th:first-child {
-        display: none;
-      }
-
-      main table tbody tr td:last-child,
-      main table tbody tr td:first-child {
-        display: none;
-      }
-
-      .section-header .arrow-link {
-        right: .4rem;
-        top: .2rem;
-      }
-
-      .course-title {
-        max-width: 8rem;
-      }
-    }
-
-    @media (max-width:768px) {
-      .container {
-        width: 100%;
-        grid-template-columns: 1fr;
-        padding: 0 var(--padding-1);
-      }
-
-      @keyframes showMenu {
-        to {
-          left: 0;
-        }
-      }
-
-      main {
-        margin-top: 8rem;
-        padding: 0 1rem;
-      }
-
-      main .latestJobApplicantTable {
-        position: relative;
-        margin: 3rem 0 0 0;
-        width: 100%;
-      }
-
-      .right-section {
-        width: 94%;
-        margin: 0 auto 4rem;
-      }
-
-      .right-section .nav {
-        position: fixed;
-        top: 0;
-        left: 0;
-        align-items: center;
         background: #fff;
-        padding: 0 var(--padding-1);
-        height: 4.6rem;
         width: 100%;
-        z-index: 2;
-        box-shadow: 0 1rem 1rem var(--color-light);
+        text-align: center;
+        transition: 0.3s;
+        border: 1px solid #e7edf3;
+        padding: 18px 12px 12px;
+        border-radius: 14px;
+        border-collapse: separate;
+        border-spacing: 0;
+        overflow: hidden;
+      }
+
+      main .latestJobApplicantTable table:hover {
+        transform: translateY(-0.5rem);
+      }
+
+      main table tbody td {
+        height: 2rem;
+        border-bottom: 1px solid var(--color-light);
+        color: var(--color-dark-variant);
+      }
+
+      main table tbody tr:last-child td {
+        border: none;
+      }
+
+      main .latestJobApplicantTable a {
+        text-align: center;
+        display: block;
+        margin: 1rem auto;
+        color: var(--color-primary);
+      }
+
+      /* minimalist header and arrow */
+      .latestJobApplicantTable .section-header {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 0.75rem;
+        margin-bottom: 0.6rem;
+        padding-right: 3rem;
+        /* space so header text doesn't clash with arrow */
+        position: relative;
+      }
+
+      .section-header h2 {
         margin: 0;
       }
 
-      .right-section .nav .dark-mode {
-        width: 4.4rem;
+      .section-header .arrow-link {
         position: absolute;
-        left: 66%;
+        top: 0;
+        right: 0;
+        /* top-right most */
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.1rem;
+        height: 2.1rem;
+        border-radius: 9999px;
+        border: 1px solid var(--color-light);
+        color: var(--color-primary);
+        background: var(--color-white);
+        text-decoration: none;
+        font-weight: 700;
+        line-height: 1;
+        font-size: 1.15rem;
+        transition: all 0.2s ease;
+        user-select: none;
+        box-shadow: var(--box-shadow);
       }
 
-      .right-section .profile .info {
-        display: none;
+      .section-header .arrow-link:hover {
+        background: var(--color-primary);
+        color: #fff;
+        box-shadow: none;
+        transform: translateY(-1px);
+      }
+
+      .right-section {
+        margin-top: 1.4rem;
+      }
+
+      .right-section .nav {
+        display: flex;
+        justify-content: end;
+        gap: 2rem;
       }
 
       .right-section .nav button {
-        display: inline-block;
-        background: transparent;
+        display: none;
+      }
+
+      .right-section .dark-mode {
+        background: var(--color-light);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 1.6rem;
+        width: 4.2rem;
         cursor: pointer;
+        border-radius: var(--border-radius-1);
+      }
+
+      .right-section .dark-mode span {
+        font-size: 1.2rem;
+        width: 50%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .right-section .dark-mode span.active {
+        background: var(--color-primary);
+        color: #fff;
+        border-radius: var(--border-radius-1);
+      }
+
+      .right-section .nav .profile {
+        display: flex;
+        gap: 2rem;
+        text-align: right;
+        cursor: pointer; /* make it feel clickable */
+      }
+
+      .right-section .nav .profile .profile-photo {
+        width: 2.8rem;
+        height: 2.8rem;
+        border-radius: 50%;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .profile-photo img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .right-section .user-profile {
+        display: flex;
+        justify-content: center;
+        text-align: center;
+        margin-top: 1rem;
+        background: #fff;
+        padding: var(--card-padding);
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--box-shadow);
+        cursor: pointer;
+        transition: 0.3s;
+        border: 2px dashed #20a44c;
+      }
+
+      .right-section .user-profile:hover {
+        box-shadow: none;
+      }
+
+      .right-section .user-profile img {
+        width: 11rem;
+        height: auto;
+        margin-bottom: 0.8rem;
+        border-radius: 50%;
+      }
+
+      .right-section .user-profile h2 {
+        margin-bottom: 0.2rem;
+      }
+
+      /* --- Published Courses panel (replaces Quick Links) --- */
+      .right-section .coursesDiv {
+        margin-top: 2rem;
+      }
+
+      .right-section .coursesDiv .header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.8rem;
+      }
+
+      .right-section .coursesDiv .header h2 {
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .course-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.7rem;
+      }
+
+      .course-card {
+        background: #fff;
+        border: 1px solid #e7edf3;
+        padding: 12px 14px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        transition: 0.3s;
+        cursor: default;
+      }
+
+      .course-card:hover {
+        transform: translateY(-0.5rem);
+      }
+
+      /* make only the 'clickable' variation show pointer without removing original rule */
+      .course-card.clickable {
+        cursor: pointer;
+      }
+
+      .course-left {
+        display: flex;
+        align-items: center;
+        gap: 0.9rem;
+        min-width: 0;
+      }
+
+      .course-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.55rem;
+        border-radius: 20%;
+        background: var(--color-primary);
+        color: #fff;
+        flex: 0 0 auto;
+      }
+
+      .course-title {
+        font-weight: 600;
         color: var(--color-dark);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 11rem;
+      }
+
+      .course-meta {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+      }
+
+      .level-pill {
+        border: 1px solid var(--color-light);
+        border-radius: 9999px;
+        padding: 0.2rem 0.55rem;
+        font-size: 0.78rem;
+        color: var(--color-dark-variant);
+        background: #fff;
+      }
+
+      .completed-count {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        font-size: 0.86rem;
+        color: #fff;
+        background: var(--color-primary);
+        padding: 0.2rem 0.5rem;
+        border-radius: 9999px;
+      }
+
+      .empty-state {
+        background: #fff;
+        border: 2px dashed var(--color-primary);
+        color: var(--color-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 14px;
+        padding: 18px;
+        text-align: center;
+      }
+
+      .empty-state .material-icons-sharp {
+        margin-right: 0.4rem;
+      }
+
+      /* section total badge (NEW) */
+      .total-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.25rem 0.6rem;
+        border-radius: 9999px;
+        border: 1px solid var(--color-light);
+        background: #fff;
+        font-size: 0.82rem;
+        color: var(--color-dark-variant);
+        box-shadow: var(--box-shadow);
+      }
+
+      .jobsTodayDoneButton {
+        padding: 0.5rem 1rem;
+        border-radius: 30px;
+        background: #20a44c;
+        color: #fff;
+      }
+
+      @media (max-width: 1200px) {
+        .container {
+          width: 95%;
+          grid-template-columns: 7rem auto 23rem;
+        }
+
+        main .pendingDivs {
+          grid-template-columns: 1fr;
+          gap: 0;
+        }
+
+        main .latestJobApplicantTable {
+          width: 94%;
+          position: absolute;
+          left: 50%;
+          transform: translateX(-50%);
+          margin: 2rem 0 0 0.8rem;
+        }
+
+        main .latestJobApplicantTable table {
+          width: 83vw;
+        }
+
+        main table thead tr th:last-child,
+        main table thead tr th:first-child {
+          display: none;
+        }
+
+        main table tbody tr td:last-child,
+        main table tbody tr td:first-child {
+          display: none;
+        }
+
+        .section-header .arrow-link {
+          right: 0.4rem;
+          top: 0.2rem;
+        }
+
+        .course-title {
+          max-width: 8rem;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          width: 100%;
+          grid-template-columns: 1fr;
+          padding: 0 var(--padding-1);
+        }
+
+        @keyframes showMenu {
+          to {
+            left: 0;
+          }
+        }
+
+        main {
+          margin-top: 8rem;
+          padding: 0 1rem;
+        }
+
+        main .latestJobApplicantTable {
+          position: relative;
+          margin: 3rem 0 0 0;
+          width: 100%;
+        }
+
+        .right-section {
+          width: 94%;
+          margin: 0 auto 4rem;
+        }
+
+        .right-section .nav {
+          position: fixed;
+          top: 0;
+          left: 0;
+          align-items: center;
+          background: #fff;
+          padding: 0 var(--padding-1);
+          height: 4.6rem;
+          width: 100%;
+          z-index: 2;
+          box-shadow: 0 1rem 1rem var(--color-light);
+          margin: 0;
+        }
+
+        .right-section .nav .dark-mode {
+          width: 4.4rem;
+          position: absolute;
+          left: 66%;
+        }
+
+        .right-section .profile .info {
+          display: none;
+        }
+
+        .right-section .nav button {
+          display: inline-block;
+          background: transparent;
+          cursor: pointer;
+          color: var(--color-dark);
+          position: absolute;
+          left: 1rem;
+        }
+
+        .right-section .nav button span {
+          font-size: 2rem;
+        }
+      }
+
+      .newJobPostedPay {
+        color: #20a44c;
+        font-weight: bold;
+      }
+
+      .material-icons-sharp {
+        display: flex;
+        align-items: center;
+      }
+
+      /*==END==*/
+
+      /* ====== ADDED: Payments Requests styles ====== */
+      .right-section .paymentsDiv {
+        margin-top: 2rem;
+      }
+
+      .right-section .paymentsDiv .header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.8rem;
+      }
+
+      .right-section .paymentsDiv .header h2 {
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .payment-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.7rem;
+      }
+
+      .payment-card {
+        background: #fff;
+        border: 1px solid #e7edf3;
+        padding: 12px 14px;
+        border-radius: 14px;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        transition: 0.3s;
+      }
+
+      .payment-card:hover {
+        transform: translateY(-0.5rem);
+      }
+
+      .payment-left {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.8rem;
+      }
+
+      .payment-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.55rem;
+        border-radius: 20%;
+        background: var(--color-primary);
+        color: #fff;
+        flex: 0 0 auto;
+      }
+
+      .payment-text {
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+      }
+
+      .payment-line {
+        font-size: 0.94rem;
+        color: var(--color-dark);
+      }
+
+      .payment-meta {
+        font-size: 0.8rem;
+        color: var(--color-dark-variant);
+      }
+
+      .payment-muted {
+        opacity: 0.7;
+      }
+
+      .payments-empty {
+        background: #fff;
+        border: 2px dashed var(--color-primary);
+        color: var(--color-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 14px;
+        padding: 18px;
+        text-align: center;
+      }
+
+      .payments-empty .material-icons-sharp {
+        margin-right: 0.4rem;
+      }
+
+      /* ====== ADDED: Skeleton (shimmer) system ====== */
+      .hidden {
+        display: none !important;
+      }
+
+      .skel {
+        position: relative;
+        overflow: hidden;
+        background: #eef2f7;
+        border-radius: 12px;
+      }
+
+      .skel.sharp {
+        border-radius: 6px;
+      }
+
+      .skel-line {
+        height: 14px;
+        width: 100%;
+        border-radius: 8px;
+        background: #eef2f7;
+      }
+
+      .skel.w-30 {
+        width: 30%;
+      }
+
+      .skel.w-40 {
+        width: 40%;
+      }
+
+      .skel.w-50 {
+        width: 50%;
+      }
+
+      .skel.w-60 {
+        width: 60%;
+      }
+
+      .skel.w-70 {
+        width: 70%;
+      }
+
+      .skel.w-80 {
+        width: 80%;
+      }
+
+      .skel.w-90 {
+        width: 90%;
+      }
+
+      .skel-shimmer::after {
+        content: "";
         position: absolute;
-        left: 1rem;
-      }
-
-      .right-section .nav button span {
-        font-size: 2rem;
-      }
-    }
-
-    .newJobPostedPay {
-      color: #20a44c;
-      font-weight: bold;
-    }
-
-    .material-icons-sharp {
-      display: flex;
-      align-items: center;
-    }
-
-    /*==END==*/
-
-    /* ====== ADDED: Payments Requests styles ====== */
-    .right-section .paymentsDiv {
-      margin-top: 2rem;
-    }
-
-    .right-section .paymentsDiv .header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: .8rem;
-    }
-
-    .right-section .paymentsDiv .header h2 {
-      margin: 0;
-      display: flex;
-      align-items: center;
-      gap: .5rem;
-    }
-
-    .payment-list {
-      display: flex;
-      flex-direction: column;
-      gap: .7rem;
-    }
-
-    .payment-card {
-      background: #fff;
-      border: 1px solid #e7edf3;
-      padding: 12px 14px;
-      border-radius: 14px;
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      transition: .3s;
-    }
-
-    .payment-card:hover {
-      transform: translateY(-0.5rem);
-    }
-
-    .payment-left {
-      display: flex;
-      align-items: flex-start;
-      gap: .8rem;
-    }
-
-    .payment-icon {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: .55rem;
-      border-radius: 20%;
-      background: var(--color-primary);
-      color: #fff;
-      flex: 0 0 auto;
-    }
-
-    .payment-text {
-      display: flex;
-      flex-direction: column;
-      gap: .2rem;
-    }
-
-    .payment-line {
-      font-size: .94rem;
-      color: var(--color-dark);
-    }
-
-    .payment-meta {
-      font-size: .8rem;
-      color: var(--color-dark-variant);
-    }
-
-    .payment-muted {
-      opacity: .7;
-    }
-
-    .payments-empty {
-      background: #fff;
-      border: 2px dashed var(--color-primary);
-      color: var(--color-primary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 14px;
-      padding: 18px;
-      text-align: center;
-    }
-
-    .payments-empty .material-icons-sharp {
-      margin-right: .4rem;
-    }
-
-    /* ====== ADDED: Skeleton (shimmer) system ====== */
-    .hidden {
-      display: none !important;
-    }
-
-    .skel {
-      position: relative;
-      overflow: hidden;
-      background: #eef2f7;
-      border-radius: 12px;
-    }
-
-    .skel.sharp {
-      border-radius: 6px;
-    }
-
-    .skel-line {
-      height: 14px;
-      width: 100%;
-      border-radius: 8px;
-      background: #eef2f7;
-    }
-
-    .skel.w-30 {
-      width: 30%;
-    }
-
-    .skel.w-40 {
-      width: 40%;
-    }
-
-    .skel.w-50 {
-      width: 50%;
-    }
-
-    .skel.w-60 {
-      width: 60%;
-    }
-
-    .skel.w-70 {
-      width: 70%;
-    }
-
-    .skel.w-80 {
-      width: 80%;
-    }
-
-    .skel.w-90 {
-      width: 90%;
-    }
-
-    .skel-shimmer::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      transform: translateX(-100%);
-      background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, .55) 50%, rgba(255, 255, 255, 0) 100%);
-      animation: sksh 1.15s infinite;
-    }
-
-    @keyframes sksh {
-      0% {
+        inset: 0;
         transform: translateX(-100%);
+        background: linear-gradient(
+          90deg,
+          rgba(255, 255, 255, 0) 0%,
+          rgba(255, 255, 255, 0.55) 50%,
+          rgba(255, 255, 255, 0) 100%
+        );
+        animation: sksh 1.15s infinite;
       }
 
-      100% {
-        transform: translateX(100%);
+      @keyframes sksh {
+        0% {
+          transform: translateX(-100%);
+        }
+
+        100% {
+          transform: translateX(100%);
+        }
       }
-    }
 
-    /* KPI skeleton grid */
-    #kpi-skeleton {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1.6rem;
-      margin-top: 1rem;
-    }
-
-    .kpi-skel-card {
-      border: 1px solid #e7edf3;
-      border-radius: 14px;
-      padding: 12px;
-      background: #fff;
-      box-shadow: var(--box-shadow);
-    }
-
-    .kpi-skel-circle {
-      width: 88px;
-      height: 88px;
-      border-radius: 50%;
-      margin: 8px auto;
-    }
-
-    .kpi-skel-title {
-      height: 16px;
-      margin: 6px auto 10px;
-    }
-
-    .kpi-skel-number {
-      height: 22px;
-      margin: 0 auto;
-    }
-
-    @media (max-width:1200px) {
+      /* KPI skeleton grid */
       #kpi-skeleton {
-        grid-template-columns: 1fr;
-        gap: 0;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.6rem;
+        margin-top: 1rem;
       }
-    }
 
-    /* Table skeleton */
-    #apps-skeleton .card {
-      background: #fff;
-      border: 1px solid #e7edf3;
-      border-radius: 14px;
-      box-shadow: var(--box-shadow);
-      padding: 12px;
-    }
+      .kpi-skel-card {
+        border: 1px solid #e7edf3;
+        border-radius: 14px;
+        padding: 12px;
+        background: #fff;
+        box-shadow: var(--box-shadow);
+      }
 
-    .apps-skel-row {
-      display: grid;
-      grid-template-columns: 2fr 1fr 1fr 1.2fr .6fr;
-      gap: 12px;
-      align-items: center;
-      padding: 8px 0;
-      border-bottom: 1px solid var(--color-light);
-    }
+      .kpi-skel-circle {
+        width: 88px;
+        height: 88px;
+        border-radius: 50%;
+        margin: 8px auto;
+      }
 
-    .apps-skel-row:last-child {
-      border-bottom: none;
-    }
+      .kpi-skel-title {
+        height: 16px;
+        margin: 6px auto 10px;
+      }
 
-    @media (max-width:1200px) {
+      .kpi-skel-number {
+        height: 22px;
+        margin: 0 auto;
+      }
+
+      @media (max-width: 1200px) {
+        #kpi-skeleton {
+          grid-template-columns: 1fr;
+          gap: 0;
+        }
+      }
+
+      /* Table skeleton */
+      #apps-skeleton .card {
+        background: #fff;
+        border: 1px solid #e7edf3;
+        border-radius: 14px;
+        box-shadow: var(--box-shadow);
+        padding: 12px;
+      }
+
       .apps-skel-row {
-        grid-template-columns: 2fr 1fr 1fr 1.2fr;
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1.2fr 0.6fr;
+        gap: 12px;
+        align-items: center;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--color-light);
       }
 
-      .apps-skel-row .skel:last-child {
-        display: none;
-      }
-    }
-
-    @media (max-width:768px) {
-      .apps-skel-row {
-        grid-template-columns: 2fr 1fr;
+      .apps-skel-row:last-child {
+        border-bottom: none;
       }
 
-      .apps-skel-row .skel:nth-child(n+3) {
-        display: none;
+      @media (max-width: 1200px) {
+        .apps-skel-row {
+          grid-template-columns: 2fr 1fr 1fr 1.2fr;
+        }
+
+        .apps-skel-row .skel:last-child {
+          display: none;
+        }
       }
-    }
 
-    /* Right panel skeletons */
-    #courses-skeleton .course-skel,
-    #payments-skeleton .pay-skel {
-      background: #fff;
-      border: 1px solid #e7edf3;
-      padding: 12px 14px;
-      box-shadow: var(--box-shadow);
-      border-radius: 14px;
-      display: flex;
-      gap: .9rem;
-      align-items: center;
-      margin-bottom: .7rem;
-    }
+      @media (max-width: 768px) {
+        .apps-skel-row {
+          grid-template-columns: 2fr 1fr;
+        }
 
-    .skel-avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 10px;
-    }
+        .apps-skel-row .skel:nth-child(n + 3) {
+          display: none;
+        }
+      }
 
-    .skel-lines {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
+      /* Right panel skeletons */
+      #courses-skeleton .course-skel,
+      #payments-skeleton .pay-skel {
+        background: #fff;
+        border: 1px solid #e7edf3;
+        padding: 12px 14px;
+        box-shadow: var(--box-shadow);
+        border-radius: 14px;
+        display: flex;
+        gap: 0.9rem;
+        align-items: center;
+        margin-bottom: 0.7rem;
+      }
 
-    /* ======================
+      .skel-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+      }
+
+      .skel-lines {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      /* ======================
        ADDED: Minimalist styling for "New Applications"
        ====================== */
-    /* table chrome */
-    #apps-table {
-      border: 1px solid #e7edf3;
-      border-radius: 14px;
-      background: #fff;
-      overflow: hidden;
-    }
+      /* table chrome */
+      #apps-table {
+        border: 1px solid #e7edf3;
+        border-radius: 14px;
+        background: #fff;
+        overflow: hidden;
+      }
 
-    #apps-table thead th {
-      font-weight: 700;
-      color: var(--color-dark);
-      background: #f8fbfd;
-      border-bottom: 1px solid #e7edf3;
-      text-align: left;
-      padding: 12px 14px;
-      font-size: .92rem;
-    }
+      #apps-table thead th {
+        font-weight: 700;
+        color: var(--color-dark);
+        background: #f8fbfd;
+        border-bottom: 1px solid #e7edf3;
+        text-align: left;
+        padding: 12px 14px;
+        font-size: 0.92rem;
+      }
 
-    #apps-table tbody td {
-      padding: 12px 14px;
-      text-align: left;
-      font-size: .92rem;
-      vertical-align: middle;
-    }
+      #apps-table tbody td {
+        padding: 12px 14px;
+        text-align: left;
+        font-size: 0.92rem;
+        vertical-align: middle;
+      }
 
-    #apps-table tbody tr {
-      transition: background .18s ease, transform .18s ease;
-    }
+      #apps-table tbody tr {
+        transition: background 0.18s ease, transform 0.18s ease;
+      }
 
-    #apps-table tbody tr:hover {
-      background: #f9fbff;
-    }
+      #apps-table tbody tr:hover {
+        background: #f9fbff;
+      }
 
-    /* job cell clamp */
-    .cell-job {
-      max-width: 520px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      color: var(--color-dark);
-      font-weight: 600;
-    }
+      /* job cell clamp */
+      .cell-job {
+        max-width: 520px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: var(--color-dark);
+        font-weight: 600;
+      }
 
-    /* count pill */
-    .pill-count {
-      display: inline-flex;
-      align-items: center;
-      gap: .35rem;
-      padding: .15rem .55rem;
-      border-radius: 9999px;
-      font-weight: 600;
-      font-size: .86rem;
-      color: #0f5132;
-      background: #e9f7ef;
-      border: 1px solid #cfead9;
-    }
+      /* count pill */
+      .pill-count {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.15rem 0.55rem;
+        border-radius: 9999px;
+        font-weight: 600;
+        font-size: 0.86rem;
+        color: #0f5132;
+        background: #e9f7ef;
+        border: 1px solid #cfead9;
+      }
 
-    /* name */
-    .cell-name {
-      color: var(--color-dark);
-      font-weight: 500;
-    }
+      /* name */
+      .cell-name {
+        color: var(--color-dark);
+        font-weight: 500;
+      }
 
-    /* time (relative) */
-    .cell-time {
-      color: var(--color-dark-variant);
-      font-variant-numeric: tabular-nums;
-      white-space: nowrap;
-    }
+      /* time (relative) */
+      .cell-time {
+        color: var(--color-dark-variant);
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+      }
 
-    /* review link button */
-    .btn-review {
-      display: inline-flex;
-      align-items: center;
-      gap: .35rem;
-      padding: .35rem .7rem;
-      border-radius: 10px;
-      text-decoration: none;
-      border: 1px solid var(--color-light);
-      color: var(--color-primary);
-      background: #fff;
-      font-weight: 600;
-      transition: all .16s ease;
-    }
+      /* review link button */
+      .btn-review {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.35rem 0.7rem;
+        border-radius: 10px;
+        text-decoration: none;
+        border: 1px solid var(--color-light);
+        color: var(--color-primary);
+        background: #fff;
+        font-weight: 600;
+        transition: all 0.16s ease;
+      }
 
-    .btn-review:hover {
-      color: #fff;
-      background: var(--color-primary);
-      border-color: var(--color-primary);
-      transform: translateY(-1px);
-    }
+      .btn-review:hover {
+        color: #fff;
+        background: var(--color-primary);
+        border-color: var(--color-primary);
+        transform: translateY(-1px);
+      }
 
-    /* small icon in button */
-    .btn-review .material-icons-sharp {
-      font-size: 18px;
-      line-height: 1;
-    }
-  </style>
-</head>
+      /* small icon in button */
+      .btn-review .material-icons-sharp {
+        font-size: 18px;
+        line-height: 1;
+      }
+    </style>
+  </head>
 
-<body>
-  <div class="container">
-    <!-- Sidebar Section -->
-    <aside>
-      <div class="toggle">
-        <div class="logo">
-          <img src="../../../img/simpHappyMascotLogo.png" alt="logo" />
-          <h2>SIMP<span class="danger">Project</span></h2>
+  <body>
+    <div class="container">
+      <!-- Sidebar Section -->
+      <aside>
+        <div class="toggle">
+          <div class="logo">
+            <img src="../../../img/simpHappyMascotLogo.png" alt="logo" />
+            <h2>SIMP<span class="danger">Project</span></h2>
+          </div>
+          <div class="close" id="close-btn">
+            <span class="material-icons-sharp">close</span>
+          </div>
         </div>
-        <div class="close" id="close-btn"><span class="material-icons-sharp">close</span></div>
-      </div>
 
-      <div class="sidebar">
-        <a href="dashboard.html" class="active"><span class="material-icons-sharp">dashboard</span>
-          <h3>Dashboard</h3>
-        </a>
-        <a href="workerVerification.html"><span class="material-icons-sharp">engineering</span>
-          <h3>Workers<br>Verification</h3>
-        </a>
-        <a href="jobVerification.html"><span class="material-icons-sharp">work</span>
-          <h3>Jobs<br>Verification</h3>
-        </a>
-        <a href="jobApplicationVerification.html"><span class="material-icons-sharp">approval</span>
-          <h3>Application<br>Verification</h3>
-        </a>
-        <a href="adminVerification.html"><span class="material-icons-sharp">shield</span>
-          <h3>Admin<br>Verification</h3>
-        </a>
-        <a href="manageShop.html"><span class="material-icons-sharp">shop</span>
-          <h3>Manage<br>Shop</h3>
-        </a>
-        <a href="paymentsRequest.html"><span class="material-icons-sharp">payments</span>
-          <h3>Payments<br>Request</h3>
-        </a>
-        <a href="courses.html"><span class="material-icons-sharp">school</span>
-          <h3>Course<br>Publisher</h3>
-        </a>
-        <a href="settings.html"><span class="material-icons-sharp">settings</span>
-          <h3>Settings</h3>
-        </a>
-        <a href="#" id="logout-btn"><span class="material-icons-sharp">logout</span>
-          <h3>Logout</h3>
-        </a>
-      </div>
-    </aside>
-
-    <!-- Main Content -->
-    <main>
-      <h1>Admin Overview</h1>
-
-      <!-- ===== KPI Skeleton (shown first, hidden after all 3 KPI calls finish) ===== -->
-      <div id="kpi-skeleton">
-        <div class="kpi-skel-card">
-          <div class="skel kpi-skel-title w-50 skel-shimmer"></div>
-          <div class="skel kpi-skel-circle skel-shimmer"></div>
-          <div class="skel kpi-skel-number w-30 skel-shimmer"></div>
+        <div class="sidebar">
+          <a href="dashboard.html" class="active"
+            ><span class="material-icons-sharp">dashboard</span>
+            <h3>Dashboard</h3>
+          </a>
+          <a href="workerVerification.html"
+            ><span class="material-icons-sharp">engineering</span>
+            <h3>Workers<br />Verification</h3>
+          </a>
+          <a href="jobVerification.html"
+            ><span class="material-icons-sharp">work</span>
+            <h3>Jobs<br />Verification</h3>
+          </a>
+          <a href="jobApplicationVerification.html"
+            ><span class="material-icons-sharp">approval</span>
+            <h3>Application<br />Verification</h3>
+          </a>
+          <a href="adminVerification.html"
+            ><span class="material-icons-sharp">shield</span>
+            <h3>Admin<br />Verification</h3>
+          </a>
+          <a href="manageShop.html"
+            ><span class="material-icons-sharp">shop</span>
+            <h3>Manage<br />Shop</h3>
+          </a>
+          <a href="paymentsRequest.html"
+            ><span class="material-icons-sharp">payments</span>
+            <h3>Payments<br />Request</h3>
+          </a>
+          <a href="courses.html"
+            ><span class="material-icons-sharp">school</span>
+            <h3>Course<br />Publisher</h3>
+          </a>
+          <a href="settings.html"
+            ><span class="material-icons-sharp">settings</span>
+            <h3>Settings</h3>
+          </a>
+          <a href="#" id="logout-btn"
+            ><span class="material-icons-sharp">logout</span>
+            <h3>Logout</h3>
+          </a>
         </div>
-        <div class="kpi-skel-card">
-          <div class="skel kpi-skel-title w-50 skel-shimmer"></div>
-          <div class="skel kpi-skel-circle skel-shimmer"></div>
-          <div class="skel kpi-skel-number w-30 skel-shimmer"></div>
-        </div>
-        <div class="kpi-skel-card">
-          <div class="skel kpi-skel-title w-50 skel-shimmer"></div>
-          <div class="skel kpi-skel-circle skel-shimmer"></div>
-          <div class="skel kpi-skel-number w-30 skel-shimmer"></div>
-        </div>
-      </div>
+      </aside>
 
-      <!-- KPIs (hidden until loaded) -->
-      <div class="pendingDivs hidden" id="kpi-real">
-        <!-- 1) Pending Installers -->
-        <div class="pendingWorkerAccDiv" onclick="location.href='workerVerification.html'">
-          <div class="status">
+      <!-- Main Content -->
+      <main>
+        <h1>Admin Overview</h1>
+
+        <!-- ===== KPI Skeleton (shown first, hidden after all 3 KPI calls finish) ===== -->
+        <div id="kpi-skeleton">
+          <div class="kpi-skel-card">
+            <div class="skel kpi-skel-title w-50 skel-shimmer"></div>
+            <div class="skel kpi-skel-circle skel-shimmer"></div>
+            <div class="skel kpi-skel-number w-30 skel-shimmer"></div>
+          </div>
+          <div class="kpi-skel-card">
+            <div class="skel kpi-skel-title w-50 skel-shimmer"></div>
+            <div class="skel kpi-skel-circle skel-shimmer"></div>
+            <div class="skel kpi-skel-number w-30 skel-shimmer"></div>
+          </div>
+          <div class="kpi-skel-card">
+            <div class="skel kpi-skel-title w-50 skel-shimmer"></div>
+            <div class="skel kpi-skel-circle skel-shimmer"></div>
+            <div class="skel kpi-skel-number w-30 skel-shimmer"></div>
+          </div>
+        </div>
+
+        <!-- KPIs (hidden until loaded) -->
+        <div class="pendingDivs hidden" id="kpi-real">
+          <!-- 1) Pending Installers -->
+          <div
+            class="pendingWorkerAccDiv"
+            onclick="location.href='workerVerification.html'"
+          >
+            <div class="status">
+              <div class="info">
+                <h3>Pending Installers</h3>
+                <h1 id="kpi-pending-installers">0</h1>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2) Pending or Viewed Jobs -->
+          <div
+            class="pendingJobAppDiv"
+            onclick="location.href='jobVerification.html'"
+          >
+            <div class="status">
+              <div class="info">
+                <h3>Pending / Viewed Jobs</h3>
+                <h1 id="kpi-pending-jobs">0</h1>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3) Admin Access Requests -->
+          <div
+            class="pendingAdminAccessDiv"
+            onclick="location.href='adminVerification.html'"
+          >
+            <div class="status">
+              <div class="info">
+                <h3>Admin Access Requests</h3>
+                <h1 id="kpi-admin-requests">0</h1>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Newly Applications Table (jobs with pending applicants) -->
+        <div class="latestJobApplicantTable">
+          <div class="section-header">
+            <h2>New Applications</h2>
+            <!-- minimalist chevron link pinned top-right, visually above the Action column -->
+            <a
+              class="arrow-link"
+              href="jobApplicationVerification.html"
+              aria-label="Go to Application Verification"
+              >&gt;</a
+            >
+          </div>
+
+          <!-- ===== Table skeleton ===== -->
+          <div id="apps-skeleton">
+            <div class="card">
+              <div class="apps-skel-row">
+                <div class="skel skel-line w-80 skel-shimmer"></div>
+                <div class="skel skel-line w-40 skel-shimmer"></div>
+                <div class="skel skel-line w-50 skel-shimmer"></div>
+                <div class="skel skel-line w-60 skel-shimmer"></div>
+                <div class="skel skel-line w-30 skel-shimmer"></div>
+              </div>
+              <div class="apps-skel-row">
+                <div class="skel skel-line w-70 skel-shimmer"></div>
+                <div class="skel skel-line w-35 skel-shimmer"></div>
+                <div class="skel skel-line w-55 skel-shimmer"></div>
+                <div class="skel skel-line w-65 skel-shimmer"></div>
+                <div class="skel skel-line w-30 skel-shimmer"></div>
+              </div>
+              <div class="apps-skel-row">
+                <div class="skel skel-line w-75 skel-shimmer"></div>
+                <div class="skel skel-line w-45 skel-shimmer"></div>
+                <div class="skel skel-line w-50 skel-shimmer"></div>
+                <div class="skel skel-line w-60 skel-shimmer"></div>
+                <div class="skel skel-line w-30 skel-shimmer"></div>
+              </div>
+            </div>
+          </div>
+
+          <table id="apps-table" class="hidden">
+            <thead>
+              <tr>
+                <th style="text-align: left">Job</th>
+                <th>No. of Applicants</th>
+                <th>Last Applicant</th>
+                <th>Last Applied</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="new-apps-by-job-tbody">
+              <!-- rows injected by JS -->
+            </tbody>
+          </table>
+        </div>
+        <!-- END -->
+      </main>
+
+      <!-- Right Section -->
+      <div class="right-section">
+        <div class="nav">
+          <div class="profile">
+            <!-- ADDED spans for dynamic admin name & role -->
             <div class="info">
-              <h3>Pending Installers</h3>
-              <h1 id="kpi-pending-installers">0</h1>
+              <p>Hey, <b id="admin-name">Admin</b></p>
+              <small class="text-muted"
+                >Role: <span id="admin-role">Admin or Superadmin</span></small
+              >
+            </div>
+            <div class="profile-photo">
+              <img src="../../../img/bgTatay.jpg" alt="admin" />
             </div>
           </div>
         </div>
 
-        <!-- 2) Pending or Viewed Jobs -->
-        <div class="pendingJobAppDiv" onclick="location.href='jobVerification.html'">
-          <div class="status">
-            <div class="info">
-              <h3>Pending / Viewed Jobs</h3>
-              <h1 id="kpi-pending-jobs">0</h1>
-            </div>
+        <!-- Published Courses (replaces Quick Links) -->
+        <div class="coursesDiv">
+          <div class="header">
+            <h2>
+              Published Courses
+              <!-- total completions badge (NEW) -->
+              <span
+                id="courses-total-badge"
+                class="total-badge"
+                title="All completions across visible courses"
+                style="display: none"
+              >
+                <span class="material-icons-sharp" style="font-size: 1rem"
+                  >verified</span
+                >
+                <span id="courses-total-count">0</span>
+              </span>
+            </h2>
+            <span
+              class="material-icons-sharp"
+              style="
+                padding: 10px;
+                box-shadow: var(--box-shadow);
+                background: #fff;
+                border-radius: 50%;
+              "
+              >school</span
+            >
           </div>
-        </div>
 
-        <!-- 3) Admin Access Requests -->
-        <div class="pendingAdminAccessDiv" onclick="location.href='adminVerification.html'">
-          <div class="status">
-            <div class="info">
-              <h3>Admin Access Requests</h3>
-              <h1 id="kpi-admin-requests">0</h1>
+          <!-- ===== Courses skeleton ===== -->
+          <div id="courses-skeleton">
+            <div class="course-skel">
+              <div class="skel skel-avatar skel-shimmer"></div>
+              <div class="skel-lines">
+                <div class="skel skel-line w-80 skel-shimmer"></div>
+                <div class="skel skel-line w-50 skel-shimmer"></div>
+              </div>
+            </div>
+            <div class="course-skel">
+              <div class="skel skel-avatar skel-shimmer"></div>
+              <div class="skel-lines">
+                <div class="skel skel-line w-70 skel-shimmer"></div>
+                <div class="skel skel-line w-40 skel-shimmer"></div>
+              </div>
+            </div>
+            <div class="course-skel">
+              <div class="skel skel-avatar skel-shimmer"></div>
+              <div class="skel-lines">
+                <div class="skel skel-line w-85 skel-shimmer"></div>
+                <div class="skel skel-line w-60 skel-shimmer"></div>
+              </div>
+            </div>
+          </div>
+
+          <div id="courses-list" class="course-list hidden">
+            <!-- Courses will be injected here -->
+            <div class="empty-state" id="courses-empty" style="display: none">
+              <span class="material-icons-sharp">menu_book</span>
+              <span>No published courses yet.</span>
             </div>
           </div>
         </div>
+        <!-- /Published Courses -->
+
+        <!-- ===== ADDED: Payments Requests ===== -->
+        <div class="paymentsDiv">
+          <div class="header">
+            <h2>
+              Payments Requests
+              <span
+                id="payments-total-badge"
+                class="total-badge"
+                title="Visible items count"
+                style="display: none"
+              >
+                <span class="material-icons-sharp" style="font-size: 1rem"
+                  >payments</span
+                >
+                <span id="payments-total-count">0</span>
+              </span>
+            </h2>
+            <span
+              class="material-icons-sharp"
+              style="
+                padding: 10px;
+                box-shadow: var(--box-shadow);
+                background: #fff;
+                border-radius: 50%;
+              "
+              >payments</span
+            >
+          </div>
+
+          <!-- ===== Payments skeleton ===== -->
+          <div id="payments-skeleton">
+            <div class="pay-skel">
+              <div class="skel skel-avatar skel-shimmer"></div>
+              <div class="skel-lines">
+                <div class="skel skel-line w-90 skel-shimmer"></div>
+                <div class="skel skel-line w-60 skel-shimmer"></div>
+              </div>
+            </div>
+            <div class="pay-skel">
+              <div class="skel skel-avatar skel-shimmer"></div>
+              <div class="skel-lines">
+                <div class="skel skel-line w-80 skel-shimmer"></div>
+                <div class="skel skel-line w-50 skel-shimmer"></div>
+              </div>
+            </div>
+            <div class="pay-skel">
+              <div class="skel skel-avatar skel-shimmer"></div>
+              <div class="skel-lines">
+                <div class="skel skel-line w-85 skel-shimmer"></div>
+                <div class="skel skel-line w-55 skel-shimmer"></div>
+              </div>
+            </div>
+          </div>
+
+          <div id="payments-list" class="payment-list hidden">
+            <div
+              class="payments-empty"
+              id="payments-empty"
+              style="display: none"
+            >
+              <span class="material-icons-sharp">hourglass_empty</span>
+              <span>No payment requests to show.</span>
+            </div>
+          </div>
+        </div>
+        <!-- /Payments Requests -->
       </div>
-
-      <!-- Newly Applications Table (jobs with pending applicants) -->
-      <div class="latestJobApplicantTable">
-        <div class="section-header">
-          <h2>New Applications </h2>
-          <!-- minimalist chevron link pinned top-right, visually above the Action column -->
-          <a class="arrow-link" href="jobApplicationVerification.html"
-            aria-label="Go to Application Verification">&gt;</a>
-        </div>
-
-        <!-- ===== Table skeleton ===== -->
-        <div id="apps-skeleton">
-          <div class="card">
-            <div class="apps-skel-row">
-              <div class="skel skel-line w-80 skel-shimmer"></div>
-              <div class="skel skel-line w-40 skel-shimmer"></div>
-              <div class="skel skel-line w-50 skel-shimmer"></div>
-              <div class="skel skel-line w-60 skel-shimmer"></div>
-              <div class="skel skel-line w-30 skel-shimmer"></div>
-            </div>
-            <div class="apps-skel-row">
-              <div class="skel skel-line w-70 skel-shimmer"></div>
-              <div class="skel skel-line w-35 skel-shimmer"></div>
-              <div class="skel skel-line w-55 skel-shimmer"></div>
-              <div class="skel skel-line w-65 skel-shimmer"></div>
-              <div class="skel skel-line w-30 skel-shimmer"></div>
-            </div>
-            <div class="apps-skel-row">
-              <div class="skel skel-line w-75 skel-shimmer"></div>
-              <div class="skel skel-line w-45 skel-shimmer"></div>
-              <div class="skel skel-line w-50 skel-shimmer"></div>
-              <div class="skel skel-line w-60 skel-shimmer"></div>
-              <div class="skel skel-line w-30 skel-shimmer"></div>
-            </div>
-          </div>
-        </div>
-
-        <table id="apps-table" class="hidden">
-          <thead>
-            <tr>
-              <th style="text-align:left">Job</th>
-              <th>No. of Applicants</th>
-              <th>Last Applicant</th>
-              <th>Last Applied</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody id="new-apps-by-job-tbody">
-            <!-- rows injected by JS -->
-          </tbody>
-        </table>
-      </div>
-      <!-- END -->
-    </main>
-
-    <!-- Right Section -->
-    <div class="right-section">
-      <div class="nav">
-
-        <div class="profile">
-          <!-- ADDED spans for dynamic admin name & role -->
-          <div class="info">
-            <p>Hey, <b id="admin-name">Admin</b></p><small class="text-muted">Role: <span id="admin-role">Admin or
-                Superadmin</span></small>
-          </div>
-          <div class="profile-photo"><img src="../../../img/bgTatay.jpg" alt="admin" /></div>
-        </div>
-      </div>
-
-      <!-- Published Courses (replaces Quick Links) -->
-      <div class="coursesDiv">
-        <div class="header">
-          <h2>
-            Published Courses
-            <!-- total completions badge (NEW) -->
-            <span id="courses-total-badge" class="total-badge" title="All completions across visible courses"
-              style="display:none;">
-              <span class="material-icons-sharp" style="font-size:1rem;">verified</span>
-              <span id="courses-total-count">0</span>
-            </span>
-          </h2>
-          <span class="material-icons-sharp"
-            style="padding:10px; box-shadow:var(--box-shadow); background:#fff; border-radius:50%;">school</span>
-        </div>
-
-        <!-- ===== Courses skeleton ===== -->
-        <div id="courses-skeleton">
-          <div class="course-skel">
-            <div class="skel skel-avatar skel-shimmer"></div>
-            <div class="skel-lines">
-              <div class="skel skel-line w-80 skel-shimmer"></div>
-              <div class="skel skel-line w-50 skel-shimmer"></div>
-            </div>
-          </div>
-          <div class="course-skel">
-            <div class="skel skel-avatar skel-shimmer"></div>
-            <div class="skel-lines">
-              <div class="skel skel-line w-70 skel-shimmer"></div>
-              <div class="skel skel-line w-40 skel-shimmer"></div>
-            </div>
-          </div>
-          <div class="course-skel">
-            <div class="skel skel-avatar skel-shimmer"></div>
-            <div class="skel-lines">
-              <div class="skel skel-line w-85 skel-shimmer"></div>
-              <div class="skel skel-line w-60 skel-shimmer"></div>
-            </div>
-          </div>
-        </div>
-
-        <div id="courses-list" class="course-list hidden">
-          <!-- Courses will be injected here -->
-          <div class="empty-state" id="courses-empty" style="display:none;">
-            <span class="material-icons-sharp">menu_book</span>
-            <span>No published courses yet.</span>
-          </div>
-        </div>
-      </div>
-      <!-- /Published Courses -->
-
-      <!-- ===== ADDED: Payments Requests ===== -->
-      <div class="paymentsDiv">
-        <div class="header">
-          <h2>
-            Payments Requests
-            <span id="payments-total-badge" class="total-badge" title="Visible items count" style="display:none;">
-              <span class="material-icons-sharp" style="font-size:1rem;">payments</span>
-              <span id="payments-total-count">0</span>
-            </span>
-          </h2>
-          <span class="material-icons-sharp"
-            style="padding:10px; box-shadow:var(--box-shadow); background:#fff; border-radius:50%;">payments</span>
-        </div>
-
-        <!-- ===== Payments skeleton ===== -->
-        <div id="payments-skeleton">
-          <div class="pay-skel">
-            <div class="skel skel-avatar skel-shimmer"></div>
-            <div class="skel-lines">
-              <div class="skel skel-line w-90 skel-shimmer"></div>
-              <div class="skel skel-line w-60 skel-shimmer"></div>
-            </div>
-          </div>
-          <div class="pay-skel">
-            <div class="skel skel-avatar skel-shimmer"></div>
-            <div class="skel-lines">
-              <div class="skel skel-line w-80 skel-shimmer"></div>
-              <div class="skel skel-line w-50 skel-shimmer"></div>
-            </div>
-          </div>
-          <div class="pay-skel">
-            <div class="skel skel-avatar skel-shimmer"></div>
-            <div class="skel-lines">
-              <div class="skel skel-line w-85 skel-shimmer"></div>
-              <div class="skel skel-line w-55 skel-shimmer"></div>
-            </div>
-          </div>
-        </div>
-
-        <div id="payments-list" class="payment-list hidden">
-          <div class="payments-empty" id="payments-empty" style="display:none;">
-            <span class="material-icons-sharp">hourglass_empty</span>
-            <span>No payment requests to show.</span>
-          </div>
-        </div>
-      </div>
-      <!-- /Payments Requests -->
     </div>
-  </div>
 
-  <!-- Supabase CDN (v2) -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Supabase CDN (v2) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <script src="../../general_files/index.js"></script>
-  <script type="module" src="../../general_files/session.js"></script>
+    <script src="../../general_files/index.js"></script>
+    <script type="module" src="../../general_files/session.js"></script>
 
-  <!-- Page logic -->
-  <script type="module">
-    /* ===== Skeleton helpers (non-breaking) ===== */
-    const hideEl = (id) => { const el = document.getElementById(id); if (el) el.classList.add('hidden'); };
-    const showEl = (id) => { const el = document.getElementById(id); if (el) el.classList.remove('hidden'); };
+    <!-- Page logic -->
+    <script type="module">
+      /* ===== Skeleton helpers (non-breaking) ===== */
+      const hideEl = (id) => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add("hidden");
+      };
+      const showEl = (id) => {
+        const el = document.getElementById(id);
+        if (el) el.classList.remove("hidden");
+      };
 
-    // KPI "wait-for-3" counter
-    let __kpiLeft = 3;
-    function doneOneKPI() {
-      __kpiLeft = Math.max(0, __kpiLeft - 1);
-      if (__kpiLeft === 0) {
-        hideEl('kpi-skeleton');
-        showEl('kpi-real');   // show real KPI only when data is ready
-      }
-    }
-
-    async function ensureSupabaseClient() {
-      if (window.supabaseClient && typeof window.supabaseClient.from === "function") return window.supabaseClient;
-      if (window.supabase && typeof window.supabase.from === "function") {
-        window.supabaseClient = window.supabase; return window.supabaseClient;
-      }
-      const ns = window.supabase;
-      if (!ns || typeof ns.createClient !== "function") { console.error("Supabase not loaded"); return null; }
-      let url, key;
-      try {
-        const mod = await import("../../../supabase.js");
-        url = mod.SUPABASE_URL; key = mod.SUPABASE_ANON_KEY;
-      } catch (_) { }
-      if (!url) url = window.SUPABASE_URL;
-      if (!key) key = window.SUPABASE_ANON_KEY;
-      if (!url || !key) { console.error("Missing SUPABASE_URL / SUPABASE ANON KEY."); return null; }
-      window.supabaseClient = ns.createClient(url, key);
-      return window.supabaseClient;
-    }
-
-    function fromInSchema(client, schema, table) {
-      if (client.schema && typeof client.schema === "function") return client.schema(schema).from(table);
-      return client.from(`${schema}.${table}`);
-    }
-
-    async function updatePendingInstallersKPI() {
-      const client = await ensureSupabaseClient();
-      if (!client) { doneOneKPI(); return; }
-      const { count, error } = await fromInSchema(client, "public", "installer_documents")
-        .select("*", { count: "exact", head: true })
-        .eq("status", "pending");
-      if (error) { console.error("Pending installers KPI error:", error); doneOneKPI(); return; }
-      document.getElementById("kpi-pending-installers").textContent =
-        (typeof count === "number" ? count : 0).toLocaleString();
-      doneOneKPI();
-    }
-
-    async function updatePendingJobsKPI() {
-      const client = await ensureSupabaseClient();
-      if (!client) { doneOneKPI(); return; }
-      const { count, error } = await fromInSchema(client, "jobs", "job")
-        .select("*", { count: "exact", head: true })
-        .in("job_status", ["pending", "viewed"]);
-      if (error) { console.error("Pending/viewed jobs KPI error:", error); doneOneKPI(); return; }
-      document.getElementById("kpi-pending-jobs").textContent =
-        (typeof count === "number" ? count : 0).toLocaleString();
-      doneOneKPI();
-    }
-
-    // Admin Access Requests KPI (role = 'pending')
-    async function updatePendingAdminsKPI() {
-      const client = await ensureSupabaseClient();
-      if (!client) { doneOneKPI(); return; }
-      const { count, error } = await fromInSchema(client, "public", "admin")
-        .select("*", { count: "exact", head: true })
-        .eq("role", "pending");
-      if (error) { console.error("Pending admins KPI error:", error); doneOneKPI(); return; }
-      document.getElementById("kpi-admin-requests").textContent =
-        (typeof count === "number" ? count : 0).toLocaleString();
-      doneOneKPI();
-    }
-
-    /* ===== ADDED: small util for relative time ===== */
-    function timeAgo(dateObj) {
-      if (!dateObj) return "—";
-      const s = Math.floor((Date.now() - dateObj.getTime()) / 1000);
-      if (s < 45) return "just now";
-      const mins = Math.floor(s / 60);
-      if (mins < 60) return `${mins}m ago`;
-      const hrs = Math.floor(mins / 60);
-      if (hrs < 24) return `${hrs}h ago`;
-      const days = Math.floor(hrs / 24);
-      if (days < 7) return `${days}d ago`;
-      return dateObj.toLocaleDateString();
-    }
-
-    // Table of jobs with new applicants (counts pending apps per job + last applicant name)
-    async function updateNewApplicationsTable() {
-      const client = await ensureSupabaseClient();
-      if (!client) { hideEl('apps-skeleton'); showEl('apps-table'); return; }
-
-      // 1) Fetch recent pending applications
-      const { data: apps, error: appErr } = await fromInSchema(client, "jobs", "job_application")
-        .select("job_id, installer_id, applied_at, status")
-        .eq("status", "pending")
-        .order("applied_at", { ascending: false })
-        .limit(300);
-
-      const tbody = document.getElementById("new-apps-by-job-tbody");
-      tbody.innerHTML = "";
-
-      if (appErr) {
-        console.error("Fetch applications error:", appErr);
-        tbody.innerHTML = `<tr><td colspan="5">Unable to load applications.</td></tr>`;
-        hideEl('apps-skeleton'); showEl('apps-table');
-        return;
-      }
-
-      if (!apps || apps.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5"><span class="material-icons-sharp" style="vertical-align:middle;margin-right:.35rem;">hourglass_empty</span>No new applications</td></tr>`;
-        hideEl('apps-skeleton'); showEl('apps-table');
-        return;
-      }
-
-      // 2) Group by job_id
-      const byJob = new Map();
-      for (const a of apps) {
-        if (!byJob.has(a.job_id)) {
-          byJob.set(a.job_id, {
-            count: 0,
-            lastApplied: a.applied_at ? new Date(a.applied_at) : null,
-            lastInstallerId: a.installer_id || null
-          });
-        }
-        const entry = byJob.get(a.job_id);
-        entry.count += 1;
-
-        const at = a.applied_at ? new Date(a.applied_at) : null;
-        if (at && (!entry.lastApplied || at > entry.lastApplied)) {
-          entry.lastApplied = at;
-          entry.lastInstallerId = a.installer_id || entry.lastInstallerId;
+      // KPI "wait-for-3" counter
+      let __kpiLeft = 3;
+      function doneOneKPI() {
+        __kpiLeft = Math.max(0, __kpiLeft - 1);
+        if (__kpiLeft === 0) {
+          hideEl("kpi-skeleton");
+          showEl("kpi-real"); // show real KPI only when data is ready
         }
       }
 
-      // 3) Jobs
-      const jobIds = Array.from(byJob.keys());
-      const { data: jobRows, error: jobErr } = await fromInSchema(client, "jobs", "job")
-        .select("job_id, job_title")
-        .in("job_id", jobIds);
-
-      if (jobErr) {
-        console.error("Fetch jobs error:", jobErr);
-      }
-      const jobTitleById = new Map();
-      (jobRows || []).forEach(j => jobTitleById.set(j.job_id, j.job_title));
-
-      // 4) Installers
-      const lastInstallerIds = Array.from(new Set(
-        jobIds.map(id => byJob.get(id).lastInstallerId).filter(Boolean)
-      ));
-      let installers = [];
-      if (lastInstallerIds.length) {
-        const { data: insRows, error: insErr } = await fromInSchema(client, "public", "installer")
-          .select("id, name, full_name, first_name, last_name")
-          .in("id", lastInstallerIds);
-        if (insErr) {
-          console.error("Installers fetch error:", insErr);
-        } else {
-          installers = insRows || [];
+      async function ensureSupabaseClient() {
+        if (
+          window.supabaseClient &&
+          typeof window.supabaseClient.from === "function"
+        )
+          return window.supabaseClient;
+        if (window.supabase && typeof window.supabase.from === "function") {
+          window.supabaseClient = window.supabase;
+          return window.supabaseClient;
         }
-      }
-      const installerNameById = new Map();
-      installers.forEach(i => {
-        const composed =
-          i.full_name ||
-          i.name ||
-          [i.first_name, i.last_name].filter(Boolean).join(" ").trim();
-        installerNameById.set(i.id, composed || i.id);
-      });
-
-      // 5) Build rows
-      const rows = jobIds
-        .map(id => {
-          const entry = byJob.get(id);
-          return {
-            job_id: id,
-            title: jobTitleById.get(id) || id,
-            count: entry.count,
-            lastApplied: entry.lastApplied,
-            lastInstallerName: installerNameById.get(entry.lastInstallerId) || entry.lastInstallerId || "—"
-          };
-        })
-        .sort((a, b) => (b.lastApplied?.getTime() || 0) - (a.lastApplied?.getTime() || 0))
-        .slice(0, 15);
-
-      if (!rows.length) {
-        tbody.innerHTML = `<tr><td colspan="5"><span class="material-icons-sharp" style="vertical-align:middle;margin-right:.35rem;">hourglass_empty</span>No new applications</td></tr>`;
-        hideEl('apps-skeleton'); showEl('apps-table');
-        return;
+        const ns = window.supabase;
+        if (!ns || typeof ns.createClient !== "function") {
+          console.error("Supabase not loaded");
+          return null;
+        }
+        let url, key;
+        try {
+          const mod = await import("../../../supabase.js");
+          url = mod.SUPABASE_URL;
+          key = mod.SUPABASE_ANON_KEY;
+        } catch (_) {}
+        if (!url) url = window.SUPABASE_URL;
+        if (!key) key = window.SUPABASE_ANON_KEY;
+        if (!url || !key) {
+          console.error("Missing SUPABASE_URL / SUPABASE ANON KEY.");
+          return null;
+        }
+        window.supabaseClient = ns.createClient(url, key);
+        return window.supabaseClient;
       }
 
-      for (const r of rows) {
-        const exact = r.lastApplied ? r.lastApplied.toLocaleString() : "—";
-        const rel = r.lastApplied ? timeAgo(r.lastApplied) : "—";
+      function fromInSchema(client, schema, table) {
+        if (client.schema && typeof client.schema === "function")
+          return client.schema(schema).from(table);
+        return client.from(`${schema}.${table}`);
+      }
 
-        tbody.insertAdjacentHTML(
-          "beforeend",
-          `<tr>
-            <td><div class="cell-job" title="${escapeHtml(r.title)}">${escapeHtml(r.title)}</div></td>
-            <td><span class="pill-count" title="${r.count} pending applicant${r.count>1?'s':''}"><span class="material-icons-sharp" style="font-size:18px;">group</span>${r.count}</span></td>
-            <td><span class="cell-name">${escapeHtml(r.lastInstallerName)}</span></td>
-            <td><span class="cell-time" title="${escapeHtml(exact)}">${escapeHtml(rel)}</span></td>
-            <td><a class="btn-review" href="jobApplicationVerification.html" aria-label="Review applications for ${escapeHtml(r.title)}"><span class="material-icons-sharp">chevron_right</span>Review</a></td>
-          </tr>`
+      async function updatePendingInstallersKPI() {
+        const client = await ensureSupabaseClient();
+        if (!client) {
+          doneOneKPI();
+          return;
+        }
+        const { count, error } = await fromInSchema(
+          client,
+          "public",
+          "installer_documents"
+        )
+          .select("*", { count: "exact", head: true })
+          .eq("status", "pending");
+        if (error) {
+          console.error("Pending installers KPI error:", error);
+          doneOneKPI();
+          return;
+        }
+        document.getElementById("kpi-pending-installers").textContent = (
+          typeof count === "number" ? count : 0
+        ).toLocaleString();
+        doneOneKPI();
+      }
+
+      async function updatePendingJobsKPI() {
+        const client = await ensureSupabaseClient();
+        if (!client) {
+          doneOneKPI();
+          return;
+        }
+        const { count, error } = await fromInSchema(client, "jobs", "job")
+          .select("*", { count: "exact", head: true })
+          .in("job_status", ["pending", "viewed"]);
+        if (error) {
+          console.error("Pending/viewed jobs KPI error:", error);
+          doneOneKPI();
+          return;
+        }
+        document.getElementById("kpi-pending-jobs").textContent = (
+          typeof count === "number" ? count : 0
+        ).toLocaleString();
+        doneOneKPI();
+      }
+
+      // Admin Access Requests KPI (role = 'pending')
+      async function updatePendingAdminsKPI() {
+        const client = await ensureSupabaseClient();
+        if (!client) {
+          doneOneKPI();
+          return;
+        }
+        const { count, error } = await fromInSchema(client, "public", "admin")
+          .select("*", { count: "exact", head: true })
+          .eq("role", "pending");
+        if (error) {
+          console.error("Pending admins KPI error:", error);
+          doneOneKPI();
+          return;
+        }
+        document.getElementById("kpi-admin-requests").textContent = (
+          typeof count === "number" ? count : 0
+        ).toLocaleString();
+        doneOneKPI();
+      }
+
+      /* ===== ADDED: small util for relative time ===== */
+      function timeAgo(dateObj) {
+        if (!dateObj) return "—";
+        const s = Math.floor((Date.now() - dateObj.getTime()) / 1000);
+        if (s < 45) return "just now";
+        const mins = Math.floor(s / 60);
+        if (mins < 60) return `${mins}m ago`;
+        const hrs = Math.floor(mins / 60);
+        if (hrs < 24) return `${hrs}h ago`;
+        const days = Math.floor(hrs / 24);
+        if (days < 7) return `${days}d ago`;
+        return dateObj.toLocaleDateString();
+      }
+
+      // Table of jobs with new applicants (counts pending apps per job + last applicant name)
+      async function updateNewApplicationsTable() {
+        const client = await ensureSupabaseClient();
+        if (!client) {
+          hideEl("apps-skeleton");
+          showEl("apps-table");
+          return;
+        }
+
+        // 1) Fetch recent pending applications
+        const { data: apps, error: appErr } = await fromInSchema(
+          client,
+          "jobs",
+          "job_application"
+        )
+          .select("job_id, installer_id, applied_at, status")
+          .eq("status", "pending")
+          .order("applied_at", { ascending: false })
+          .limit(300);
+
+        const tbody = document.getElementById("new-apps-by-job-tbody");
+        tbody.innerHTML = "";
+
+        if (appErr) {
+          console.error("Fetch applications error:", appErr);
+          tbody.innerHTML = `<tr><td colspan="5">Unable to load applications.</td></tr>`;
+          hideEl("apps-skeleton");
+          showEl("apps-table");
+          return;
+        }
+
+        if (!apps || apps.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="5"><span class="material-icons-sharp" style="vertical-align:middle;margin-right:.35rem;">hourglass_empty</span>No new applications</td></tr>`;
+          hideEl("apps-skeleton");
+          showEl("apps-table");
+          return;
+        }
+
+        // 2) Group by job_id
+        const byJob = new Map();
+        for (const a of apps) {
+          if (!byJob.has(a.job_id)) {
+            byJob.set(a.job_id, {
+              count: 0,
+              lastApplied: a.applied_at ? new Date(a.applied_at) : null,
+              lastInstallerId: a.installer_id || null,
+            });
+          }
+          const entry = byJob.get(a.job_id);
+          entry.count += 1;
+
+          const at = a.applied_at ? new Date(a.applied_at) : null;
+          if (at && (!entry.lastApplied || at > entry.lastApplied)) {
+            entry.lastApplied = at;
+            entry.lastInstallerId = a.installer_id || entry.lastInstallerId;
+          }
+        }
+
+        // 3) Jobs
+        const jobIds = Array.from(byJob.keys());
+        const { data: jobRows, error: jobErr } = await fromInSchema(
+          client,
+          "jobs",
+          "job"
+        )
+          .select("job_id, job_title")
+          .in("job_id", jobIds);
+
+        if (jobErr) {
+          console.error("Fetch jobs error:", jobErr);
+        }
+        const jobTitleById = new Map();
+        (jobRows || []).forEach((j) => jobTitleById.set(j.job_id, j.job_title));
+
+        // 4) Installers
+        const lastInstallerIds = Array.from(
+          new Set(
+            jobIds.map((id) => byJob.get(id).lastInstallerId).filter(Boolean)
+          )
         );
+        let installers = [];
+        if (lastInstallerIds.length) {
+          const { data: insRows, error: insErr } = await fromInSchema(
+            client,
+            "public",
+            "installer"
+          )
+            .select("id, name, full_name, first_name, last_name")
+            .in("id", lastInstallerIds);
+          if (insErr) {
+            console.error("Installers fetch error:", insErr);
+          } else {
+            installers = insRows || [];
+          }
+        }
+        const installerNameById = new Map();
+        installers.forEach((i) => {
+          const composed =
+            i.full_name ||
+            i.name ||
+            [i.first_name, i.last_name].filter(Boolean).join(" ").trim();
+          installerNameById.set(i.id, composed || i.id);
+        });
+
+        // 5) Build rows
+        const rows = jobIds
+          .map((id) => {
+            const entry = byJob.get(id);
+            return {
+              job_id: id,
+              title: jobTitleById.get(id) || id,
+              count: entry.count,
+              lastApplied: entry.lastApplied,
+              lastInstallerName:
+                installerNameById.get(entry.lastInstallerId) ||
+                entry.lastInstallerId ||
+                "—",
+            };
+          })
+          .sort(
+            (a, b) =>
+              (b.lastApplied?.getTime() || 0) - (a.lastApplied?.getTime() || 0)
+          )
+          .slice(0, 15);
+
+        if (!rows.length) {
+          tbody.innerHTML = `<tr><td colspan="5"><span class="material-icons-sharp" style="vertical-align:middle;margin-right:.35rem;">hourglass_empty</span>No new applications</td></tr>`;
+          hideEl("apps-skeleton");
+          showEl("apps-table");
+          return;
+        }
+
+        for (const r of rows) {
+          const exact = r.lastApplied ? r.lastApplied.toLocaleString() : "—";
+          const rel = r.lastApplied ? timeAgo(r.lastApplied) : "—";
+
+          tbody.insertAdjacentHTML(
+            "beforeend",
+            `<tr>
+            <td><div class="cell-job" title="${escapeHtml(
+              r.title
+            )}">${escapeHtml(r.title)}</div></td>
+            <td><span class="pill-count" title="${r.count} pending applicant${
+              r.count > 1 ? "s" : ""
+            }"><span class="material-icons-sharp" style="font-size:18px;">group</span>${
+              r.count
+            }</span></td>
+            <td><span class="cell-name">${escapeHtml(
+              r.lastInstallerName
+            )}</span></td>
+            <td><span class="cell-time" title="${escapeHtml(
+              exact
+            )}">${escapeHtml(rel)}</span></td>
+            <td><a class="btn-review" href="jobApplicationVerification.html" aria-label="Review applications for ${escapeHtml(
+              r.title
+            )}"><span class="material-icons-sharp">chevron_right</span>Review</a></td>
+          </tr>`
+          );
+        }
+
+        hideEl("apps-skeleton");
+        showEl("apps-table");
       }
 
-      hideEl('apps-skeleton'); showEl('apps-table');
-    }
+      // -------- Published Courses loader --------
+      async function updatePublishedCoursesPanel() {
+        const client = await ensureSupabaseClient();
+        if (!client) {
+          hideEl("courses-skeleton");
+          showEl("courses-list");
+          return;
+        }
 
-    // -------- Published Courses loader --------
-    async function updatePublishedCoursesPanel() {
-      const client = await ensureSupabaseClient();
-      if (!client) { hideEl('courses-skeleton'); showEl('courses-list'); return; }
+        const listEl = document.getElementById("courses-list");
+        const emptyEl = document.getElementById("courses-empty");
+        if (!listEl) {
+          hideEl("courses-skeleton");
+          return;
+        }
 
-      const listEl = document.getElementById("courses-list");
-      const emptyEl = document.getElementById("courses-empty");
-      if (!listEl) { hideEl('courses-skeleton'); return; }
+        // Fetch published courses
+        const { data: courses, error: cErr } = await fromInSchema(
+          client,
+          "courses",
+          "course"
+        )
+          .select("id, title, level")
+          .eq("is_published", true)
+          .order("created_at", { ascending: false })
+          .limit(30);
 
-      // Fetch published courses
-      const { data: courses, error: cErr } = await fromInSchema(client, "courses", "course")
-        .select("id, title, level")
-        .eq("is_published", true)
-        .order("created_at", { ascending: false })
-        .limit(30);
+        if (cErr) {
+          console.error("Courses fetch error:", cErr);
+          listEl.innerHTML = `<div class="empty-state"><span class="material-icons-sharp">error_outline</span><span>Unable to load courses.</span></div>`;
+          hideEl("courses-skeleton");
+          showEl("courses-list");
+          return;
+        }
 
-      if (cErr) {
-        console.error("Courses fetch error:", cErr);
-        listEl.innerHTML = `<div class="empty-state"><span class="material-icons-sharp">error_outline</span><span>Unable to load courses.</span></div>`;
-        hideEl('courses-skeleton'); showEl('courses-list');
-        return;
-      }
+        if (!courses || courses.length === 0) {
+          emptyEl.style.display = "flex";
+          hideEl("courses-skeleton");
+          showEl("courses-list");
+          return;
+        }
 
-      if (!courses || courses.length === 0) {
-        emptyEl.style.display = "flex";
-        hideEl('courses-skeleton'); showEl('courses-list');
-        return;
-      }
+        // Completions
+        const ids = courses.map((c) => c.id);
+        const { data: completions, error: compErr } = await fromInSchema(
+          client,
+          "courses",
+          "completed_courses"
+        )
+          .select("course_id")
+          .in("course_id", ids)
+          .limit(10000);
 
-      // Completions
-      const ids = courses.map(c => c.id);
-      const { data: completions, error: compErr } = await fromInSchema(client, "courses", "completed_courses")
-        .select("course_id")
-        .in("course_id", ids)
-        .limit(10000);
+        if (compErr) console.error("Completed courses fetch error:", compErr);
 
-      if (compErr) console.error("Completed courses fetch error:", compErr);
+        const countByCourse = new Map();
+        (completions || []).forEach((row) => {
+          countByCourse.set(
+            row.course_id,
+            (countByCourse.get(row.course_id) || 0) + 1
+          );
+        });
 
-      const countByCourse = new Map();
-      (completions || []).forEach(row => {
-        countByCourse.set(row.course_id, (countByCourse.get(row.course_id) || 0) + 1);
-      });
+        // totals
+        const total = Array.from(countByCourse.values()).reduce(
+          (a, b) => a + b,
+          0
+        );
+        const totalBadge = document.getElementById("courses-total-badge");
+        const totalCount = document.getElementById("courses-total-count");
+        if (totalBadge && totalCount) {
+          totalCount.textContent = total.toLocaleString();
+          totalBadge.style.display = "inline-flex";
+        }
 
-      // totals
-      const total = Array.from(countByCourse.values()).reduce((a, b) => a + b, 0);
-      const totalBadge = document.getElementById("courses-total-badge");
-      const totalCount = document.getElementById("courses-total-count");
-      if (totalBadge && totalCount) {
-        totalCount.textContent = total.toLocaleString();
-        totalBadge.style.display = "inline-flex";
-      }
-
-      // Render
-      listEl.innerHTML = "";
-      for (const course of courses) {
-        const completed = countByCourse.get(course.id) || 0;
-        const levelText = Number.isFinite(course.level) ? `Level ${course.level}` : "Level 0";
-        listEl.insertAdjacentHTML(
-          "beforeend",
-          `<div class="course-card clickable" role="button" tabindex="0" data-course-id="${course.id}" aria-label="Open course ${escapeHtml(course.title)}">
+        // Render
+        listEl.innerHTML = "";
+        for (const course of courses) {
+          const completed = countByCourse.get(course.id) || 0;
+          const levelText = Number.isFinite(course.level)
+            ? `Level ${course.level}`
+            : "Level 0";
+          listEl.insertAdjacentHTML(
+            "beforeend",
+            `<div class="course-card clickable" role="button" tabindex="0" data-course-id="${
+              course.id
+            }" aria-label="Open course ${escapeHtml(course.title)}">
             <div class="course-left">
               <div class="course-icon"><span class="material-icons-sharp">menu_book</span></div>
-              <div class="course-title" title="${escapeHtml(course.title)}">${escapeHtml(course.title)}</div>
+              <div class="course-title" title="${escapeHtml(
+                course.title
+              )}">${escapeHtml(course.title)}</div>
             </div>
             <div class="course-meta">
               <span class="level-pill">${escapeHtml(levelText)}</span>
@@ -1469,119 +1659,168 @@
               </span>
             </div>
           </div>`
+          );
+        }
+
+        listEl.addEventListener("click", (e) => {
+          const card = e.target.closest(".course-card.clickable");
+          if (card) {
+            window.location.href = "courses.html";
+          }
+        });
+        listEl.addEventListener("keydown", (e) => {
+          if (
+            (e.key === "Enter" || e.key === " ") &&
+            e.target.classList.contains("course-card")
+          ) {
+            e.preventDefault();
+            window.location.href = "courses.html";
+          }
+        });
+
+        hideEl("courses-skeleton");
+        showEl("courses-list");
+      }
+
+      // -------- Payments Requests loader --------
+      async function updatePaymentsRequestsPanel() {
+        const client = await ensureSupabaseClient();
+        if (!client) {
+          hideEl("payments-skeleton");
+          showEl("payments-list");
+          return;
+        }
+
+        const listEl = document.getElementById("payments-list");
+        const emptyEl = document.getElementById("payments-empty");
+        const totalBadge = document.getElementById("payments-total-badge");
+        const totalCount = document.getElementById("payments-total-count");
+        if (!listEl) {
+          hideEl("payments-skeleton");
+          return;
+        }
+
+        const { data: pays, error: pErr } = await fromInSchema(
+          client,
+          "earnings",
+          "payments"
+        )
+          .select(
+            "id, installer_id, job_id, updated_at, payment_status, payout_batch_no, reference_number"
+          )
+          .order("updated_at", { ascending: false })
+          .limit(10);
+
+        if (pErr) {
+          console.error("Payments fetch error:", pErr);
+          listEl.innerHTML = `<div class="payments-empty"><span class="material-icons-sharp">error_outline</span><span>Unable to load payment requests.</span></div>`;
+          hideEl("payments-skeleton");
+          showEl("payments-list");
+          return;
+        }
+
+        if (!pays || pays.length === 0) {
+          emptyEl.style.display = "flex";
+          if (totalBadge && totalCount) {
+            totalCount.textContent = "0";
+            totalBadge.style.display = "inline-flex";
+          }
+          hideEl("payments-skeleton");
+          showEl("payments-list");
+          return;
+        }
+
+        const installerIds = Array.from(
+          new Set(pays.map((p) => p.installer_id))
         );
-      }
-
-      listEl.addEventListener("click", (e) => {
-        const card = e.target.closest(".course-card.clickable");
-        if (card) {
-          window.location.href = "courses.html";
+        let installers = [];
+        if (installerIds.length) {
+          const { data: insRows, error: insErr } = await fromInSchema(
+            client,
+            "public",
+            "installer"
+          )
+            .select("id, name")
+            .in("id", installerIds);
+          if (insErr) {
+            console.error("Installers fetch error:", insErr);
+          } else {
+            installers = insRows || [];
+          }
         }
-      });
-      listEl.addEventListener("keydown", (e) => {
-        if ((e.key === "Enter" || e.key === " ") && e.target.classList.contains("course-card")) {
-          e.preventDefault();
-          window.location.href = "courses.html";
+        const installerNameById = new Map();
+        installers.forEach((i) => {
+          const composed = (i.name || "").trim();
+          installerNameById.set(i.id, composed || i.id);
+        });
+
+        const jobIds = Array.from(new Set(pays.map((p) => p.job_id)));
+        let jobs = [];
+        if (jobIds.length) {
+          const { data: jobRows, error: jobErr } = await fromInSchema(
+            client,
+            "jobs",
+            "job"
+          )
+            .select("job_id, job_title")
+            .in("job_id", jobIds);
+          if (jobErr) {
+            console.error("Jobs fetch error:", jobErr);
+          } else {
+            jobs = jobRows || [];
+          }
         }
-      });
+        const jobTitleById = new Map();
+        jobs.forEach((j) => jobTitleById.set(j.job_id, j.job_title));
 
-      hideEl('courses-skeleton'); showEl('courses-list');
-    }
+        listEl.innerHTML = "";
+        for (const p of pays) {
+          const name = installerNameById.get(p.installer_id) || p.installer_id;
+          const title = jobTitleById.get(p.job_id) || p.job_id;
+          const updated = p.updated_at
+            ? new Date(p.updated_at).toLocaleString()
+            : "—";
+          const status = (p.payment_status || "").toString();
 
-    // -------- Payments Requests loader --------
-    async function updatePaymentsRequestsPanel() {
-      const client = await ensureSupabaseClient();
-      if (!client) { hideEl('payments-skeleton'); showEl('payments-list'); return; }
+          let line = "";
+          let muted = false;
+          if (status === "unpaid") {
+            line = `${escapeHtml(
+              name
+            )} requested to be paid for <b>${escapeHtml(title)}</b>.`;
+          } else if (status === "pending_payout") {
+            const batchTxt = p.payout_batch_no
+              ? ` (Batch: ${escapeHtml(p.payout_batch_no)})`
+              : "";
+            line = `${escapeHtml(
+              name
+            )} is queued for payout for <b>${escapeHtml(
+              title
+            )}</b>${batchTxt}.`;
+          } else if (status === "disbursed") {
+            const batch = p.payout_batch_no
+              ? `Batch: ${escapeHtml(p.payout_batch_no)}`
+              : "";
+            const ref = p.reference_number
+              ? `Ref: ${escapeHtml(p.reference_number)}`
+              : "";
+            const extra = [batch, ref].filter(Boolean).join(" · ");
+            line = `${escapeHtml(name)} was paid for <b>${escapeHtml(
+              title
+            )}</b>${extra ? ` (${extra})` : ""}.`;
+            muted = true;
+          } else {
+            line = `${escapeHtml(name)} · <b>${escapeHtml(
+              title
+            )}</b> · ${escapeHtml(status)}`;
+            muted = true;
+          }
 
-      const listEl = document.getElementById("payments-list");
-      const emptyEl = document.getElementById("payments-empty");
-      const totalBadge = document.getElementById("payments-total-badge");
-      const totalCount = document.getElementById("payments-total-count");
-      if (!listEl) { hideEl('payments-skeleton'); return; }
-
-      const { data: pays, error: pErr } = await fromInSchema(client, "earnings", "payments")
-        .select("id, installer_id, job_id, updated_at, payment_status, payout_batch_no, reference_number")
-        .order("updated_at", { ascending: false })
-        .limit(10);
-
-      if (pErr) {
-        console.error("Payments fetch error:", pErr);
-        listEl.innerHTML = `<div class="payments-empty"><span class="material-icons-sharp">error_outline</span><span>Unable to load payment requests.</span></div>`;
-        hideEl('payments-skeleton'); showEl('payments-list');
-        return;
-      }
-
-      if (!pays || pays.length === 0) {
-        emptyEl.style.display = "flex";
-        if (totalBadge && totalCount) {
-          totalCount.textContent = "0";
-          totalBadge.style.display = "inline-flex";
-        }
-        hideEl('payments-skeleton'); showEl('payments-list');
-        return;
-      }
-
-      const installerIds = Array.from(new Set(pays.map(p => p.installer_id)));
-      let installers = [];
-      if (installerIds.length) {
-        const { data: insRows, error: insErr } = await fromInSchema(client, "public", "installer")
-          .select("id, name")
-          .in("id", installerIds);
-        if (insErr) {
-          console.error("Installers fetch error:", insErr);
-        } else {
-          installers = insRows || [];
-        }
-      }
-      const installerNameById = new Map();
-      installers.forEach(i => {
-        const composed = (i.name || "").trim();
-        installerNameById.set(i.id, composed || i.id);
-      });
-
-      const jobIds = Array.from(new Set(pays.map(p => p.job_id)));
-      let jobs = [];
-      if (jobIds.length) {
-        const { data: jobRows, error: jobErr } = await fromInSchema(client, "jobs", "job")
-          .select("job_id, job_title")
-          .in("job_id", jobIds);
-        if (jobErr) {
-          console.error("Jobs fetch error:", jobErr);
-        } else {
-          jobs = jobRows || [];
-        }
-      }
-      const jobTitleById = new Map();
-      jobs.forEach(j => jobTitleById.set(j.job_id, j.job_title));
-
-      listEl.innerHTML = "";
-      for (const p of pays) {
-        const name = installerNameById.get(p.installer_id) || p.installer_id;
-        const title = jobTitleById.get(p.job_id) || p.job_id;
-        const updated = p.updated_at ? new Date(p.updated_at).toLocaleString() : "—";
-        const status = (p.payment_status || "").toString();
-
-        let line = "";
-        let muted = false;
-        if (status === "unpaid") {
-          line = `${escapeHtml(name)} requested to be paid for <b>${escapeHtml(title)}</b>.`;
-        } else if (status === "pending_payout") {
-          const batchTxt = p.payout_batch_no ? ` (Batch: ${escapeHtml(p.payout_batch_no)})` : "";
-          line = `${escapeHtml(name)} is queued for payout for <b>${escapeHtml(title)}</b>${batchTxt}.`;
-        } else if (status === "disbursed") {
-          const batch = p.payout_batch_no ? `Batch: ${escapeHtml(p.payout_batch_no)}` : "";
-          const ref = p.reference_number ? `Ref: ${escapeHtml(p.reference_number)}` : "";
-          const extra = [batch, ref].filter(Boolean).join(" · ");
-          line = `${escapeHtml(name)} was paid for <b>${escapeHtml(title)}</b>${extra ? ` (${extra})` : ""}.`;
-          muted = true;
-        } else {
-          line = `${escapeHtml(name)} · <b>${escapeHtml(title)}</b> · ${escapeHtml(status)}`;
-          muted = true;
-        }
-
-        listEl.insertAdjacentHTML(
-          "beforeend",
-          `<a href="paymentsRequest.html"><div class="payment-card${muted ? " payment-muted" : ""}">
+          listEl.insertAdjacentHTML(
+            "beforeend",
+            `<a href="paymentsRequest.html"><div class="payment-card${
+              muted ? " payment-muted" : ""
+            }">
             <div class="payment-left">
               <div class="payment-icon"><span class="material-icons-sharp">payments</span></div>
               <div class="payment-text">
@@ -1590,143 +1829,163 @@
               </div>
             </div>
           </div> </a>`
-        );
+          );
+        }
+
+        if (totalBadge && totalCount) {
+          totalCount.textContent = pays.length.toString();
+          totalBadge.style.display = "inline-flex";
+        }
+
+        hideEl("payments-skeleton");
+        showEl("payments-list");
       }
 
-      if (totalBadge && totalCount) {
-        totalCount.textContent = pays.length.toString();
-        totalBadge.style.display = "inline-flex";
-      }
+      // -------- Logged-in admin name & role --------
+      async function updateLoggedInAdminInfo() {
+        const client = await ensureSupabaseClient();
+        if (!client) return;
 
-      hideEl('payments-skeleton'); showEl('payments-list');
-    }
+        const nameEl = document.getElementById("admin-name");
+        const roleEl = document.getElementById("admin-role");
+        const photoImg = document.querySelector(".profile-photo img");
+        if (!nameEl || !roleEl || !photoImg) return;
 
-    // -------- Logged-in admin name & role --------
-    async function updateLoggedInAdminInfo() {
-      const client = await ensureSupabaseClient();
-      if (!client) return;
+        try {
+          const { data: userRes, error: userErr } = await client.auth.getUser();
+          if (userErr) {
+            console.error("auth.getUser error:", userErr);
+            return;
+          }
+          const user = userRes?.user;
+          if (!user?.id) {
+            return;
+          }
 
-      const nameEl = document.getElementById("admin-name");
-      const roleEl = document.getElementById("admin-role");
-      const photoImg = document.querySelector(".profile-photo img");
-      if (!nameEl || !roleEl || !photoImg) return;
+          const { data: adminRow, error: adminErr } = await fromInSchema(
+            client,
+            "public",
+            "admin"
+          )
+            .select("id, name, role, email, phone, admin_profile_url")
+            .eq("id", user.id)
+            .limit(1)
+            .maybeSingle();
 
-      try {
-        const { data: userRes, error: userErr } = await client.auth.getUser();
-        if (userErr) { console.error("auth.getUser error:", userErr); return; }
-        const user = userRes?.user;
-        if (!user?.id) { return; }
+          if (adminErr) {
+            console.error("admin lookup error:", adminErr);
+            return;
+          }
 
-        const { data: adminRow, error: adminErr } = await fromInSchema(client, "public", "admin")
-          .select("id, name, role, email, phone, admin_profile_url")
-          .eq("id", user.id)
-          .limit(1)
-          .maybeSingle();
+          const composedName =
+            adminRow?.name ||
+            user.user_metadata?.full_name ||
+            user.user_metadata?.name ||
+            user.email ||
+            "Admin";
 
-        if (adminErr) { console.error("admin lookup error:", adminErr); return; }
+          const roleStr = adminRow?.role || "admin";
 
-        const composedName =
-          adminRow?.name ||
-          user.user_metadata?.full_name ||
-          user.user_metadata?.name ||
-          user.email ||
-          "Admin";
+          nameEl.textContent = composedName;
+          roleEl.textContent =
+            (roleStr || "").toString().charAt(0).toUpperCase() +
+            (roleStr || "").toString().slice(1);
 
-        const roleStr = adminRow?.role || "admin";
+          const path = adminRow?.admin_profile_url || null;
 
-        nameEl.textContent = composedName;
-        roleEl.textContent = (roleStr || "").toString().charAt(0).toUpperCase() + (roleStr || "").toString().slice(1);
-
-        const path = adminRow?.admin_profile_url || null;
-
-        async function signAvatar(p) {
-          try {
-            const { data, error } = await client.storage.from("admin_profile").createSignedUrl(p, 3600);
-            if (error) return null;
-            return data?.signedUrl || null;
-          } catch { return null; }
-        }
-        function initialsFrom(nameOrEmail) {
-          const s = String(nameOrEmail || "").trim();
-          if (!s) return "AD";
-          const parts = s.split(/\s+/).filter(Boolean);
-          if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-          if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-          const emailLocal = s.split("@")[0] || "AD";
-          return emailLocal.slice(0, 2).toUpperCase();
-        }
-        function initialsDataUrl(text) {
-          const bg = "#E2E8F0";
-          const fg = "#1C2430";
-          const svg =
-            `<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128">
+          async function signAvatar(p) {
+            try {
+              const { data, error } = await client.storage
+                .from("admin_profile")
+                .createSignedUrl(p, 3600);
+              if (error) return null;
+              return data?.signedUrl || null;
+            } catch {
+              return null;
+            }
+          }
+          function initialsFrom(nameOrEmail) {
+            const s = String(nameOrEmail || "").trim();
+            if (!s) return "AD";
+            const parts = s.split(/\s+/).filter(Boolean);
+            if (parts.length >= 2)
+              return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+            if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+            const emailLocal = s.split("@")[0] || "AD";
+            return emailLocal.slice(0, 2).toUpperCase();
+          }
+          function initialsDataUrl(text) {
+            const bg = "#E2E8F0";
+            const fg = "#1C2430";
+            const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128">
                <rect width="100%" height="100%" fill="${bg}"/>
                <text x="50%" y="52%" dominant-baseline="middle" text-anchor="middle"
                      font-family="system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial"
                      font-weight="700" font-size="48" fill="${fg}">${text}</text>
              </svg>`;
-          return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
-        }
+            return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
+          }
 
-        if (path) {
-          const signed = await signAvatar(path);
-          if (signed) {
-            photoImg.src = signed;
-            photoImg.alt = "Profile photo";
+          if (path) {
+            const signed = await signAvatar(path);
+            if (signed) {
+              photoImg.src = signed;
+              photoImg.alt = "Profile photo";
+            } else {
+              const initials = initialsFrom(composedName || user.email);
+              photoImg.src = initialsDataUrl(initials);
+              photoImg.alt = initials;
+            }
           } else {
             const initials = initialsFrom(composedName || user.email);
             photoImg.src = initialsDataUrl(initials);
             photoImg.alt = initials;
           }
-        } else {
-          const initials = initialsFrom(composedName || user.email);
-          photoImg.src = initialsDataUrl(initials);
-          photoImg.alt = initials;
+        } catch (e) {
+          console.error("updateLoggedInAdminInfo exception:", e);
         }
-      } catch (e) {
-        console.error("updateLoggedInAdminInfo exception:", e);
       }
-    }
 
-    // Simple HTML-escape helper for titles/names
-    function escapeHtml(str) {
-      return String(str ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-    }
+      // Simple HTML-escape helper for titles/names
+      function escapeHtml(str) {
+        return String(str ?? "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
 
-    // ===== ADDED: Make profile (top-right) go to settings =====
-    const topRightProfile = document.querySelector('.right-section .nav .profile');
-    if (topRightProfile) {
-      topRightProfile.addEventListener('click', () => {
-        window.location.href = 'settings.html';
-      });
-      topRightProfile.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          window.location.href = 'settings.html';
-        }
-      });
-      topRightProfile.setAttribute('tabindex', '0');
-      topRightProfile.setAttribute('role', 'button');
-      topRightProfile.setAttribute('aria-label', 'Open settings');
-    }
+      // ===== ADDED: Make profile (top-right) go to settings =====
+      const topRightProfile = document.querySelector(
+        ".right-section .nav .profile"
+      );
+      if (topRightProfile) {
+        topRightProfile.addEventListener("click", () => {
+          window.location.href = "settings.html";
+        });
+        topRightProfile.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            window.location.href = "settings.html";
+          }
+        });
+        topRightProfile.setAttribute("tabindex", "0");
+        topRightProfile.setAttribute("role", "button");
+        topRightProfile.setAttribute("aria-label", "Open settings");
+      }
 
-    // Kick off KPIs + sections
-    // Real content is hidden by default; skeletons are visible.
-    // We reveal content exactly when each section is loaded.
-    updatePendingInstallersKPI();
-    updatePendingJobsKPI();
-    updatePendingAdminsKPI();
+      // Kick off KPIs + sections
+      // Real content is hidden by default; skeletons are visible.
+      // We reveal content exactly when each section is loaded.
+      updatePendingInstallersKPI();
+      updatePendingJobsKPI();
+      updatePendingAdminsKPI();
 
-    updateNewApplicationsTable();    // hides apps skeleton then shows table (now minimalist)
-    updatePublishedCoursesPanel();   // hides courses skeleton then shows list
-    updatePaymentsRequestsPanel();   // hides payments skeleton then shows list
-    updateLoggedInAdminInfo();       // profile info (no skeleton needed)
-  </script>
-</body>
-
+      updateNewApplicationsTable(); // hides apps skeleton then shows table (now minimalist)
+      updatePublishedCoursesPanel(); // hides courses skeleton then shows list
+      updatePaymentsRequestsPanel(); // hides payments skeleton then shows list
+      updateLoggedInAdminInfo(); // profile info (no skeleton needed)
+    </script>
+  </body>
 </html>

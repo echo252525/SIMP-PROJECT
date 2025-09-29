@@ -1,569 +1,626 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Admin – Course Builder</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="icon"
+      type="image/png"
+      href="../../../img/simpHappyMascotLogo.png"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet"
+    />
 
-<head>
-  <meta charset="UTF-8" />
-  <title>Admin – Course Builder</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css_files/sideBar.css" />
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap"
-    rel="stylesheet">
+    <!-- SweetAlert2 (ADDED) -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet" />
-  <link rel="stylesheet" href="../css_files/sideBar.css" />
+    <style>
+      :root {
+        --ink: #1c2430;
+        --muted: #6c7a8a;
+        --line: #e7edf3;
+        --brand: #20a44c;
+        --danger: #e53935;
+        --card: #ffffff;
+        --bg: #f8fbfd;
+        --radius: 14px;
+        --border: #e5e7eb;
 
-  <!-- SweetAlert2 (ADDED) -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-  <style>
-    :root {
-      --ink: #1c2430;
-      --muted: #6c7a8a;
-      --line: #e7edf3;
-      --brand: #20a44c;
-      --danger: #e53935;
-      --card: #ffffff;
-      --bg: #f8fbfd;
-      --radius: 14px;
-      --border: #e5e7eb;
-
-      /* Skeleton */
-      --sk1: #eef2f6;
-      --sk2: #f5f7fa;
-    }
-
-    main {
-      position: relative;
-      /* for skeleton overlay */
-    }
-
-    .page-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 1rem;
-    }
-
-    .btn {
-      border: 1px solid var(--brand);
-      background: var(--brand);
-      color: #fff;
-      padding: 10px 14px;
-      border-radius: 999px;
-      cursor: pointer;
-    }
-
-    .btn.ghost {
-      background: #fff;
-      color: #0f172a;
-      border-color: #d1e7db;
-    }
-
-    .btn.danger {
-      background: #fff;
-      color: var(--danger);
-      border-color: #ffc9c7;
-    }
-
-    .form {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-      background: #fff;
-      padding: 16px;
-      border: 1px solid var(--border);
-      border-radius: 16px;
-    }
-
-    .form label {
-      font-size: 12px;
-      color: #374151;
-    }
-
-    .form input,
-    .form textarea {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #dfe3ea;
-      border-radius: 10px;
-    }
-
-    .form textarea {
-      min-height: 84px;
-    }
-
-    .sections {
-      margin-top: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .section {
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      background: #fff;
-      padding: 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .section-head {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .section-title {
-      flex: 1;
-    }
-
-    .stack {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .block {
-      border: 1px solid #e7edf3;
-      border-radius: 12px;
-      background: #fcfdff;
-      padding: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .block .row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
-    .block .row-1 {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 10px;
-    }
-
-    .muted {
-      color: #6b7280;
-      font-size: 12px;
-    }
-
-    .hr {
-      height: 1px;
-      background: #eef2f7;
-      margin: 6px 0;
-    }
-
-    .quiz-q {
-      border: 1px dashed #cbd5e1;
-      border-radius: 10px;
-      padding: 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      background: #fff;
-    }
-
-    .opt-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-    }
-
-    .inline {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .right {
-      margin-left: auto;
-    }
-
-    @media (max-width: 860px) {
-      .form {
-        grid-template-columns: 1fr;
+        /* Skeleton */
+        --sk1: #eef2f6;
+        --sk2: #f5f7fa;
       }
-    }
 
-    /* =========================
+      main {
+        position: relative;
+        /* for skeleton overlay */
+      }
+
+      .page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+      }
+
+      .btn {
+        border: 1px solid var(--brand);
+        background: var(--brand);
+        color: #fff;
+        padding: 10px 14px;
+        border-radius: 999px;
+        cursor: pointer;
+      }
+
+      .btn.ghost {
+        background: #fff;
+        color: #0f172a;
+        border-color: #d1e7db;
+      }
+
+      .btn.danger {
+        background: #fff;
+        color: var(--danger);
+        border-color: #ffc9c7;
+      }
+
+      .form {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+        background: #fff;
+        padding: 16px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+      }
+
+      .form label {
+        font-size: 12px;
+        color: #374151;
+      }
+
+      .form input,
+      .form textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #dfe3ea;
+        border-radius: 10px;
+      }
+
+      .form textarea {
+        min-height: 84px;
+      }
+
+      .sections {
+        margin-top: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .section {
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: #fff;
+        padding: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .section-head {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .section-title {
+        flex: 1;
+      }
+
+      .stack {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .block {
+        border: 1px solid #e7edf3;
+        border-radius: 12px;
+        background: #fcfdff;
+        padding: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .block .row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .block .row-1 {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
+      .muted {
+        color: #6b7280;
+        font-size: 12px;
+      }
+
+      .hr {
+        height: 1px;
+        background: #eef2f7;
+        margin: 6px 0;
+      }
+
+      .quiz-q {
+        border: 1px dashed #cbd5e1;
+        border-radius: 10px;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        background: #fff;
+      }
+
+      .opt-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+
+      .inline {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .right {
+        margin-left: auto;
+      }
+
+      @media (max-width: 860px) {
+        .form {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* =========================
          SKELETON (Desktop + Mobile)
          ========================= */
-    .sk-overlay {
-      position: absolute;
-      inset: 0;
-      z-index: 20;
-      background: var(--bg);
-      padding: 0 12px 12px 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
+      .sk-overlay {
+        position: absolute;
+        inset: 0;
+        z-index: 20;
+        background: var(--bg);
+        padding: 0 12px 12px 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
 
-    .sk {
-      border-radius: 10px;
-      background: linear-gradient(90deg,
+      .sk {
+        border-radius: 10px;
+        background: linear-gradient(
+          90deg,
           var(--sk1) 25%,
           var(--sk2) 37%,
-          var(--sk1) 63%);
-      background-size: 400% 100%;
-      animation: sk-shimmer 1.1s ease-in-out infinite;
-    }
-
-    .sk-bar {
-      height: 16px;
-    }
-
-    .sk-chip {
-      height: 36px;
-      border-radius: 999px;
-    }
-
-    .sk-card {
-      background: #fff;
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 14px;
-    }
-
-    .sk-grid {
-      display: grid;
-      gap: 10px;
-    }
-
-    .sk-2 {
-      grid-template-columns: 1fr 1fr;
-    }
-
-    .sk-3 {
-      grid-template-columns: 1fr 1fr 1fr;
-    }
-
-    .sk-form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-
-    .sk-line {
-      height: 44px;
-      border-radius: 10px;
-    }
-
-    .sk-line-xl {
-      height: 84px;
-      border-radius: 10px;
-    }
-
-    .sk-sec {
-      height: 110px;
-      border-radius: 16px;
-      border: 1px dashed var(--line);
-      background: transparent;
-    }
-
-    .sk-sec>.sk {
-      height: 100%;
-      border-radius: 16px;
-    }
-
-    @keyframes sk-shimmer {
-      0% {
-        background-position: 200% 0;
+          var(--sk1) 63%
+        );
+        background-size: 400% 100%;
+        animation: sk-shimmer 1.1s ease-in-out infinite;
       }
 
-      100% {
-        background-position: -200% 0;
+      .sk-bar {
+        height: 16px;
       }
-    }
 
-    @media (max-width: 860px) {
+      .sk-chip {
+        height: 36px;
+        border-radius: 999px;
+      }
 
-      .sk-2,
-      .sk-form-row {
-        grid-template-columns: 1fr;
+      .sk-card {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 14px;
+      }
+
+      .sk-grid {
+        display: grid;
+        gap: 10px;
+      }
+
+      .sk-2 {
+        grid-template-columns: 1fr 1fr;
       }
 
       .sk-3 {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr 1fr 1fr;
       }
-    }
 
-    /* SweetAlert compact styling (ADDED) */
-    .swal2-popup.swal-compact {
-      padding: 1rem 1rem !important;
-      border-radius: 14px !important;
-      font-family: "Raleway", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-    }
+      .sk-form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
 
-    .swal2-title.swal-compact-title {
-      font-size: 1.05rem !important;
-      line-height: 1.2 !important;
-      margin-bottom: .25rem !important;
-      color: var(--ink) !important;
-    }
+      .sk-line {
+        height: 44px;
+        border-radius: 10px;
+      }
 
-    .swal2-html-container.swal-compact-body {
-      font-size: .9rem !important;
-      color: var(--muted) !important;
-    }
+      .sk-line-xl {
+        height: 84px;
+        border-radius: 10px;
+      }
 
-    .swal2-actions .swal-confirm {
-      background: var(--brand) !important;
-      border-radius: 999px !important;
-      padding: .5rem 1rem !important;
-      border: 0 !important;
-      box-shadow: none !important;
-    }
+      .sk-sec {
+        height: 110px;
+        border-radius: 16px;
+        border: 1px dashed var(--line);
+        background: transparent;
+      }
 
-    .swal2-actions .swal-cancel {
-      background: #fff !important;
-      color: var(--ink) !important;
-      border: 1px solid #d1e7db !important;
-      border-radius: 999px !important;
-      padding: .5rem 1rem !important;
-      box-shadow: none !important;
-    }
-  </style>
-</head>
+      .sk-sec > .sk {
+        height: 100%;
+        border-radius: 16px;
+      }
 
-<body>
-  <div class="container">
-    <!-- Sidebar -->
-    <aside>
-      <div class="toggle">
-        <div class="logo">
-          <img src="../../../img/simpHappyMascotLogo.png" alt="logo" />
-          <h2>SIMP<span class="danger">Project</span></h2>
+      @keyframes sk-shimmer {
+        0% {
+          background-position: 200% 0;
+        }
+
+        100% {
+          background-position: -200% 0;
+        }
+      }
+
+      @media (max-width: 860px) {
+        .sk-2,
+        .sk-form-row {
+          grid-template-columns: 1fr;
+        }
+
+        .sk-3 {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* SweetAlert compact styling (ADDED) */
+      .swal2-popup.swal-compact {
+        padding: 1rem 1rem !important;
+        border-radius: 14px !important;
+        font-family: "Raleway", system-ui, -apple-system, Segoe UI, Roboto,
+          Arial, sans-serif;
+      }
+
+      .swal2-title.swal-compact-title {
+        font-size: 1.05rem !important;
+        line-height: 1.2 !important;
+        margin-bottom: 0.25rem !important;
+        color: var(--ink) !important;
+      }
+
+      .swal2-html-container.swal-compact-body {
+        font-size: 0.9rem !important;
+        color: var(--muted) !important;
+      }
+
+      .swal2-actions .swal-confirm {
+        background: var(--brand) !important;
+        border-radius: 999px !important;
+        padding: 0.5rem 1rem !important;
+        border: 0 !important;
+        box-shadow: none !important;
+      }
+
+      .swal2-actions .swal-cancel {
+        background: #fff !important;
+        color: var(--ink) !important;
+        border: 1px solid #d1e7db !important;
+        border-radius: 999px !important;
+        padding: 0.5rem 1rem !important;
+        box-shadow: none !important;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <!-- Sidebar -->
+      <aside>
+        <div class="toggle">
+          <div class="logo">
+            <img src="../../../img/simpHappyMascotLogo.png" alt="logo" />
+            <h2>SIMP<span class="danger">Project</span></h2>
+          </div>
+          <div class="close" id="close-btn">
+            <span class="material-icons-sharp">close</span>
+          </div>
         </div>
-        <div class="close" id="close-btn">
-          <span class="material-icons-sharp">close</span>
+
+        <div class="sidebar">
+          <a href="dashboard.html"
+            ><span class="material-icons-sharp">dashboard</span>
+            <h3>Dashboard</h3>
+          </a>
+          <a href="workerVerification.html"
+            ><span class="material-icons-sharp">engineering</span>
+            <h3>Workers<br />Verification</h3>
+          </a>
+          <a href="jobVerification.html"
+            ><span class="material-icons-sharp">work</span>
+            <h3>Jobs<br />Verification</h3>
+          </a>
+          <a href="jobApplicationVerification.html">
+            <span class="material-icons-sharp">approval</span>
+            <h3>Application<br />Verification</h3>
+          </a>
+          <a href="adminVerification.html"
+            ><span class="material-icons-sharp">shield</span>
+            <h3>Admin<br />Verification</h3>
+          </a>
+          <a href="manageShop.html"
+            ><span class="material-icons-sharp">shop</span>
+            <h3>Manage<br />Shop</h3>
+          </a>
+          <a href="paymentsRequest.html">
+            <span class="material-icons-sharp">payments</span>
+            <h3>Payments<br />Request</h3>
+          </a>
+          <a href="courses.html" class="active"
+            ><span class="material-icons-sharp">school</span>
+            <h3>Course<br />Publisher</h3>
+          </a>
+          <a href="settings.html"
+            ><span class="material-icons-sharp">settings</span>
+            <h3>Settings</h3>
+          </a>
+          <a href="#" id="logout-btn"
+            ><span class="material-icons-sharp">logout</span>
+            <h3>Logout</h3>
+          </a>
         </div>
-      </div>
+      </aside>
 
-      <div class="sidebar">
-        <a href="dashboard.html"><span class="material-icons-sharp">dashboard</span>
-          <h3>Dashboard</h3>
-        </a>
-        <a href="workerVerification.html"><span class="material-icons-sharp">engineering</span>
-          <h3>Workers<br />Verification</h3>
-        </a>
-        <a href="jobVerification.html"><span class="material-icons-sharp">work</span>
-          <h3>Jobs<br />Verification</h3>
-        </a>
-        <a href="jobApplicationVerification.html">
-          <span class="material-icons-sharp">approval</span>
-          <h3>Application<br />Verification</h3>
-        </a>
-        <a href="adminVerification.html"><span class="material-icons-sharp">shield</span>
-          <h3>Admin<br />Verification</h3>
-        </a>
-        <a href="manageShop.html"><span class="material-icons-sharp">shop</span>
-          <h3>Manage<br />Shop</h3>
-        </a>
-        <a href="paymentsRequest.html">
-          <span class="material-icons-sharp">payments</span>
-          <h3>Payments<br />Request</h3>
-        </a>
-        <a href="courses.html" class="active"><span class="material-icons-sharp">school</span>
-          <h3>Course<br />Publisher</h3>
-        </a>
-        <a href="settings.html"><span class="material-icons-sharp">settings</span>
-          <h3>Settings</h3>
-        </a>
-        <a href="#" id="logout-btn"><span class="material-icons-sharp">logout</span>
-          <h3>Logout</h3>
-        </a>
-      </div>
-    </aside>
-
-    <!-- Main -->
-    <main>
-      <!-- =========================
+      <!-- Main -->
+      <main>
+        <!-- =========================
              SKELETON OVERLAY (ADDED)
              ========================= -->
-      <div id="courseSkeleton" class="sk-overlay" aria-hidden="false">
-        <!-- Header -->
-        <div class="sk-bar sk" style="width: 220px; height: 28px; border-radius: 8px; margin-top: 2px;"></div>
-        <div class="sk-grid sk-2" style="align-items:center; margin-top: 6px;">
-          <div class="sk-chip sk"></div>
-          <div class="sk-chip sk"></div>
-        </div>
-
-        <!-- Meta form card -->
-        <div class="sk-card">
-          <div class="sk-form-row">
-            <div class="sk sk-line"></div>
-            <div class="sk sk-line"></div>
+        <div id="courseSkeleton" class="sk-overlay" aria-hidden="false">
+          <!-- Header -->
+          <div
+            class="sk-bar sk"
+            style="
+              width: 220px;
+              height: 28px;
+              border-radius: 8px;
+              margin-top: 2px;
+            "
+          ></div>
+          <div
+            class="sk-grid sk-2"
+            style="align-items: center; margin-top: 6px"
+          >
+            <div class="sk-chip sk"></div>
+            <div class="sk-chip sk"></div>
           </div>
-          <div class="sk sk-line-xl" style="margin-top: 10px;"></div>
-          <div class="sk-form-row" style="margin-top: 10px;">
-            <div class="sk sk-line"></div>
-            <div class="sk sk-line"></div>
+
+          <!-- Meta form card -->
+          <div class="sk-card">
+            <div class="sk-form-row">
+              <div class="sk sk-line"></div>
+              <div class="sk sk-line"></div>
+            </div>
+            <div class="sk sk-line-xl" style="margin-top: 10px"></div>
+            <div class="sk-form-row" style="margin-top: 10px">
+              <div class="sk sk-line"></div>
+              <div class="sk sk-line"></div>
+            </div>
+            <div class="sk sk-line" style="margin-top: 10px"></div>
           </div>
-          <div class="sk sk-line" style="margin-top: 10px;"></div>
-        </div>
 
-        <!-- Action buttons -->
-        <div class="sk-grid sk-2">
-          <div class="sk-chip sk"></div>
-          <div class="sk-chip sk"></div>
-        </div>
-
-        <!-- Sections preview -->
-        <div class="sk-grid sk-3">
-          <div class="sk-sec">
-            <div class="sk"></div>
+          <!-- Action buttons -->
+          <div class="sk-grid sk-2">
+            <div class="sk-chip sk"></div>
+            <div class="sk-chip sk"></div>
           </div>
-          <div class="sk-sec">
-            <div class="sk"></div>
+
+          <!-- Sections preview -->
+          <div class="sk-grid sk-3">
+            <div class="sk-sec">
+              <div class="sk"></div>
+            </div>
+            <div class="sk-sec">
+              <div class="sk"></div>
+            </div>
+            <div class="sk-sec">
+              <div class="sk"></div>
+            </div>
           </div>
-          <div class="sk-sec">
-            <div class="sk"></div>
+        </div>
+        <!-- ===== END SKELETON ===== -->
+
+        <div class="page-header">
+          <h1>Course Builder</h1>
+          <div class="stack">
+            <button id="saveBtn" class="btn">Save Course</button>
+            <button id="cancelBtn" class="btn.ghost">Back</button>
           </div>
         </div>
-      </div>
-      <!-- ===== END SKELETON ===== -->
 
-      <div class="page-header">
-        <h1>Course Builder</h1>
-        <div class="stack">
-          <button id="saveBtn" class="btn">Save Course</button>
-          <button id="cancelBtn" class="btn.ghost">Back</button>
+        <!-- Course meta -->
+        <div class="form" id="courseMeta">
+          <div>
+            <label>Course Title</label>
+            <input id="title" placeholder="Networking Fundamentals" />
+          </div>
+          <div>
+            <label>Slug (auto)</label>
+            <input id="slug" placeholder="networking-fundamentals" />
+          </div>
+          <div style="grid-column: 1/-1">
+            <label>Description</label>
+            <textarea
+              id="description"
+              placeholder="What learners will gain..."
+            ></textarea>
+          </div>
+          <div>
+            <label>Level</label>
+            <input id="level" type="number" min="0" max="10" value="0" />
+          </div>
+          <div>
+            <label>Tags (comma separated)</label>
+            <input id="tags" placeholder="Networking, TCP/IP" />
+          </div>
+          <div style="grid-column: 1/-1">
+            <label>Thumbnail URL</label>
+            <input id="thumb" placeholder="../images/profile-4.jpg" />
+          </div>
         </div>
-      </div>
 
-      <!-- Course meta -->
-      <div class="form" id="courseMeta">
-        <div>
-          <label>Course Title</label>
-          <input id="title" placeholder="Networking Fundamentals" />
-        </div>
-        <div>
-          <label>Slug (auto)</label>
-          <input id="slug" placeholder="networking-fundamentals" />
-        </div>
-        <div style="grid-column: 1/-1">
-          <label>Description</label>
-          <textarea id="description" placeholder="What learners will gain..."></textarea>
-        </div>
-        <div>
-          <label>Level</label>
-          <input id="level" type="number" min="0" max="10" value="0" />
-        </div>
-        <div>
-          <label>Tags (comma separated)</label>
-          <input id="tags" placeholder="Networking, TCP/IP" />
-        </div>
-        <div style="grid-column: 1/-1">
-          <label>Thumbnail URL</label>
-          <input id="thumb" placeholder="../images/profile-4.jpg" />
-        </div>
-      </div>
+        <!-- Sections -->
+        <div class="sections" id="sections"></div>
 
-      <!-- Sections -->
-      <div class="sections" id="sections"></div>
+        <div class="stack" style="margin-top: 10px">
+          <button id="addSectionBtn" class="btn ghost">+ Add Section</button>
+        </div>
+      </main>
+    </div>
 
-      <div class="stack" style="margin-top: 10px">
-        <button id="addSectionBtn" class="btn ghost">+ Add Section</button>
-      </div>
-    </main>
-  </div>
+    <script src="../../general_files/index.js"></script>
+    <script type="module" src="../../general_files/session.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <script src="../../general_files/index.js"></script>
-  <script type="module" src="../../general_files/session.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- SweetAlert helpers (ADDED) -->
+    <script>
+      // Compact, brand-aligned modal
+      function swalCompact({
+        title = "",
+        text = "",
+        icon = "info",
+        showCancelButton = false,
+        confirmText = "OK",
+      } = {}) {
+        return Swal.fire({
+          title,
+          text,
+          icon,
+          width: 420, // compact width so viewport doesn't resize
+          heightAuto: false, // prevent body jump
+          backdrop: true,
+          buttonsStyling: false,
+          showCancelButton,
+          confirmButtonText: confirmText,
+          customClass: {
+            popup: "swal-compact",
+            title: "swal-compact-title",
+            htmlContainer: "swal-compact-body",
+            confirmButton: "swal-confirm",
+            cancelButton: "swal-cancel",
+          },
+        });
+      }
 
-  <!-- SweetAlert helpers (ADDED) -->
-  <script>
-    // Compact, brand-aligned modal
-    function swalCompact({ title = "", text = "", icon = "info", showCancelButton = false, confirmText = "OK" } = {}) {
-      return Swal.fire({
-        title,
-        text,
-        icon,
-        width: 420,            // compact width so viewport doesn't resize
-        heightAuto: false,     // prevent body jump
-        backdrop: true,
-        buttonsStyling: false,
-        showCancelButton,
-        confirmButtonText: confirmText,
-        customClass: {
-          popup: 'swal-compact',
-          title: 'swal-compact-title',
-          htmlContainer: 'swal-compact-body',
-          confirmButton: 'swal-confirm',
-          cancelButton: 'swal-cancel'
-        }
+      const Notify = {
+        success: (t, m = "") =>
+          swalCompact({ title: t || "Success", text: m, icon: "success" }),
+        error: (t, m = "") =>
+          swalCompact({
+            title: t || "Something went wrong",
+            text: m,
+            icon: "error",
+          }),
+        info: (t, m = "") =>
+          swalCompact({ title: t || "Heads up", text: m, icon: "info" }),
+        warn: (t, m = "") =>
+          swalCompact({ title: t || "Please check", text: m, icon: "warning" }),
+        confirm: (t, m = "", confirmText = "Confirm") =>
+          swalCompact({
+            title: t,
+            text: m,
+            icon: "question",
+            showCancelButton: true,
+            confirmText,
+          }),
+      };
+    </script>
+
+    <script type="module">
+      import { SUPABASE_URL, SUPABASE_ANON_KEY } from "../../../supabase.js";
+      const supabase = window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY,
+        { db: { schema: "courses" } }
+      );
+
+      const sContainer = document.getElementById("sections");
+      const addSectionBtn = document.getElementById("addSectionBtn");
+      const saveBtn = document.getElementById("saveBtn");
+      const cancelBtn = document.getElementById("cancelBtn");
+
+      const titleEl = document.getElementById("title");
+      const slugEl = document.getElementById("slug");
+      const descEl = document.getElementById("description");
+      const levelEl = document.getElementById("level");
+      const tagsEl = document.getElementById("tags");
+      const thumbEl = document.getElementById("thumb");
+
+      // If editing existing course
+      const params = new URLSearchParams(window.location.search);
+      const editingCourseId = params.get("course") || null;
+
+      // Basic slugify
+      function slugify(s) {
+        return (s || "")
+          .toLowerCase()
+          .trim()
+          .replace(/[^\w\s-]/g, "")
+          .replace(/\s+/g, "-")
+          .replace(/-+/g, "-");
+      }
+      titleEl.addEventListener("input", () => {
+        if (!editingCourseId) slugEl.value = slugify(titleEl.value);
       });
-    }
 
-    const Notify = {
-      success: (t, m = "") => swalCompact({ title: t || "Success", text: m, icon: "success" }),
-      error: (t, m = "") => swalCompact({ title: t || "Something went wrong", text: m, icon: "error" }),
-      info: (t, m = "") => swalCompact({ title: t || "Heads up", text: m, icon: "info" }),
-      warn: (t, m = "") => swalCompact({ title: t || "Please check", text: m, icon: "warning" }),
-      confirm: (t, m = "", confirmText = "Confirm") => swalCompact({ title: t, text: m, icon: "question", showCancelButton: true, confirmText })
-    };
-  </script>
+      // UI builders
+      function addSectionUI(initial = {}) {
+        const idx = sContainer.children.length + 1;
+        const wrapper = document.createElement("div");
+        wrapper.className = "section";
+        wrapper.dataset.position = idx;
+        if (initial.id) wrapper.dataset.sectionId = initial.id; // keep existing id
 
-  <script type="module">
-    import { SUPABASE_URL, SUPABASE_ANON_KEY } from "../../../supabase.js";
-    const supabase = window.supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_ANON_KEY,
-      { db: { schema: "courses" } }
-    );
-
-    const sContainer = document.getElementById("sections");
-    const addSectionBtn = document.getElementById("addSectionBtn");
-    const saveBtn = document.getElementById("saveBtn");
-    const cancelBtn = document.getElementById("cancelBtn");
-
-    const titleEl = document.getElementById("title");
-    const slugEl = document.getElementById("slug");
-    const descEl = document.getElementById("description");
-    const levelEl = document.getElementById("level");
-    const tagsEl = document.getElementById("tags");
-    const thumbEl = document.getElementById("thumb");
-
-    // If editing existing course
-    const params = new URLSearchParams(window.location.search);
-    const editingCourseId = params.get("course") || null;
-
-    // Basic slugify
-    function slugify(s) {
-      return (s || "")
-        .toLowerCase()
-        .trim()
-        .replace(/[^\w\s-]/g, "")
-        .replace(/\s+/g, "-")
-        .replace(/-+/g, "-");
-    }
-    titleEl.addEventListener("input", () => {
-      if (!editingCourseId) slugEl.value = slugify(titleEl.value);
-    });
-
-    // UI builders
-    function addSectionUI(initial = {}) {
-      const idx = sContainer.children.length + 1;
-      const wrapper = document.createElement("div");
-      wrapper.className = "section";
-      wrapper.dataset.position = idx;
-      if (initial.id) wrapper.dataset.sectionId = initial.id; // keep existing id
-
-      wrapper.innerHTML = `
+        wrapper.innerHTML = `
           <div class="section-head">
             <strong>Section</strong>
-            <input class="section-title" placeholder="Section title" value="${initial.title || ""
-        }" />
+            <input class="section-title" placeholder="Section title" value="${
+              initial.title || ""
+            }" />
             <button class="btn danger right remove-section">Remove</button>
           </div>
           <div class="stack">
@@ -573,59 +630,62 @@
           </div>
           <div class="blocks"></div>
         `;
-      sContainer.appendChild(wrapper);
+        sContainer.appendChild(wrapper);
 
-      wrapper
-        .querySelector(".remove-section")
-        .addEventListener("click", () => wrapper.remove());
-      wrapper
-        .querySelector(".add-text")
-        .addEventListener("click", () => addBlock(wrapper, "text"));
-      wrapper
-        .querySelector(".add-video")
-        .addEventListener("click", () => addBlock(wrapper, "video"));
-      wrapper
-        .querySelector(".add-quiz")
-        .addEventListener("click", () => addBlock(wrapper, "quiz"));
-      return wrapper;
-    }
+        wrapper
+          .querySelector(".remove-section")
+          .addEventListener("click", () => wrapper.remove());
+        wrapper
+          .querySelector(".add-text")
+          .addEventListener("click", () => addBlock(wrapper, "text"));
+        wrapper
+          .querySelector(".add-video")
+          .addEventListener("click", () => addBlock(wrapper, "video"));
+        wrapper
+          .querySelector(".add-quiz")
+          .addEventListener("click", () => addBlock(wrapper, "quiz"));
+        return wrapper;
+      }
 
-    function addBlock(sectionEl, type, initial = {}) {
-      const blocks = sectionEl.querySelector(".blocks");
-      const item = document.createElement("div");
-      item.className = "block";
-      item.dataset.type = type;
-      item.dataset.position = blocks.children.length + 1;
+      function addBlock(sectionEl, type, initial = {}) {
+        const blocks = sectionEl.querySelector(".blocks");
+        const item = document.createElement("div");
+        item.className = "block";
+        item.dataset.type = type;
+        item.dataset.position = blocks.children.length + 1;
 
-      if (initial.content_id) item.dataset.contentId = initial.content_id; // keep section_content.id
-      if (type === "text") {
-        item.innerHTML = `
+        if (initial.content_id) item.dataset.contentId = initial.content_id; // keep section_content.id
+        if (type === "text") {
+          item.innerHTML = `
             <div class="inline" style="justify-content:space-between">
               <strong>Text</strong>
               <button class="btn danger remove">Remove</button>
             </div>
             <div class="row-1">
-              <textarea class="text-body" placeholder="Write the lecture text...">${initial.body || ""
-          }</textarea>
+              <textarea class="text-body" placeholder="Write the lecture text...">${
+                initial.body || ""
+              }</textarea>
             </div>
           `;
-      } else if (type === "video") {
-        item.innerHTML = `
+        } else if (type === "video") {
+          item.innerHTML = `
             <div class="inline" style="justify-content:space-between">
               <strong>Video</strong>
               <button class="btn danger remove">Remove</button>
             </div>
             <div class="row">
-              <input class="video-url" placeholder="Video URL (mp4, YouTube, etc.)" value="${initial.video_url || ""
-          }" />
-              <input class="video-duration" type="number" min="0" placeholder="Duration (seconds)" value="${initial.duration_seconds || ""
-          }" />
+              <input class="video-url" placeholder="Video URL (mp4, YouTube, etc.)" value="${
+                initial.video_url || ""
+              }" />
+              <input class="video-duration" type="number" min="0" placeholder="Duration (seconds)" value="${
+                initial.duration_seconds || ""
+              }" />
             </div>
           `;
-      } else {
-        // quiz
-        if (initial.quiz_id) item.dataset.quizId = initial.quiz_id; // keep quiz.id
-        item.innerHTML = `
+        } else {
+          // quiz
+          if (initial.quiz_id) item.dataset.quizId = initial.quiz_id; // keep quiz.id
+          item.innerHTML = `
             <div class="inline" style="justify-content:space-between">
               <strong>Quiz</strong>
               <div class="inline">
@@ -634,56 +694,64 @@
               </div>
             </div>
             <div class="row">
-              <input class="quiz-title" placeholder="Quiz title" value="${initial.title || "Quiz"
-          }" />
-              <input class="quiz-pass" type="number" min="0" max="100" value="${initial.passing_score ?? 70
-          }" />
+              <input class="quiz-title" placeholder="Quiz title" value="${
+                initial.title || "Quiz"
+              }" />
+              <input class="quiz-pass" type="number" min="0" max="100" value="${
+                initial.passing_score ?? 70
+              }" />
             </div>
             <div class="row-1">
-              <input class="quiz-limit" type="number" min="0" placeholder="Time limit (seconds, 0 = no limit)" value="${initial.time_limit_seconds || 0
-          }" />
+              <input class="quiz-limit" type="number" min="0" placeholder="Time limit (seconds, 0 = no limit)" value="${
+                initial.time_limit_seconds || 0
+              }" />
             </div>
             <div class="hr"></div>
             <div class="quiz-qs"></div>
           `;
-      }
+        }
 
-      blocks.appendChild(item);
-      item
-        .querySelector(".remove")
-        .addEventListener("click", () => item.remove());
+        blocks.appendChild(item);
+        item
+          .querySelector(".remove")
+          .addEventListener("click", () => item.remove());
 
-      if (type === "quiz") {
-        const qWrap = item.querySelector(".quiz-qs");
-        const addQ = item.querySelector(".add-q");
-        addQ.addEventListener("click", () => addQuizQuestion(qWrap));
-        // preload questions
-        if (initial.questions && initial.questions.length) {
-          initial.questions.forEach((q) => addQuizQuestion(qWrap, q));
+        if (type === "quiz") {
+          const qWrap = item.querySelector(".quiz-qs");
+          const addQ = item.querySelector(".add-q");
+          addQ.addEventListener("click", () => addQuizQuestion(qWrap));
+          // preload questions
+          if (initial.questions && initial.questions.length) {
+            initial.questions.forEach((q) => addQuizQuestion(qWrap, q));
+          }
         }
       }
-    }
 
-    function addQuizQuestion(qWrap, initial = {}) {
-      const q = document.createElement("div");
-      q.className = "quiz-q";
-      if (initial.id) q.dataset.questionId = initial.id; // keep quiz_question.id
-      q.innerHTML = `
+      function addQuizQuestion(qWrap, initial = {}) {
+        const q = document.createElement("div");
+        q.className = "quiz-q";
+        if (initial.id) q.dataset.questionId = initial.id; // keep quiz_question.id
+        q.innerHTML = `
           <div class="inline" style="justify-content:space-between">
             <strong>Question</strong>
             <button class="btn danger remove-q">Remove</button>
           </div>
-          <textarea class="qq" placeholder="Type the question...">${initial.question || ""
-        }</textarea>
+          <textarea class="qq" placeholder="Type the question...">${
+            initial.question || ""
+          }</textarea>
           <div class="opt-grid">
-            <input class="qa" placeholder="Option A" value="${initial.options?.A || ""
-        }" />
-            <input class="qb" placeholder="Option B" value="${initial.options?.B || ""
-        }" />
-            <input class="qc" placeholder="Option C" value="${initial.options?.C || ""
-        }" />
-            <input class="qd" placeholder="Option D" value="${initial.options?.D || ""
-        }" />
+            <input class="qa" placeholder="Option A" value="${
+              initial.options?.A || ""
+            }" />
+            <input class="qb" placeholder="Option B" value="${
+              initial.options?.B || ""
+            }" />
+            <input class="qc" placeholder="Option C" value="${
+              initial.options?.C || ""
+            }" />
+            <input class="qd" placeholder="Option D" value="${
+              initial.options?.D || ""
+            }" />
           </div>
           <div class="inline">
             <label class="muted">Correct</label>
@@ -691,537 +759,566 @@
               <option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option>
             </select>
             <label class="muted" style="margin-left:12px;">Points</label>
-            <input class="points" type="number" min="1" value="${initial.points || 1
-        }" />
+            <input class="points" type="number" min="1" value="${
+              initial.points || 1
+            }" />
           </div>
         `;
-      if (initial.correct_answer || initial.correct) {
-        q.querySelector(".correct").value =
-          initial.correct_answer || initial.correct;
+        if (initial.correct_answer || initial.correct) {
+          q.querySelector(".correct").value =
+            initial.correct_answer || initial.correct;
+        }
+        q.querySelector(".remove-q").addEventListener("click", () =>
+          q.remove()
+        );
+        qWrap.appendChild(q);
       }
-      q.querySelector(".remove-q").addEventListener("click", () =>
-        q.remove()
-      );
-      qWrap.appendChild(q);
-    }
 
-    addSectionBtn.addEventListener("click", () => addSectionUI());
-    cancelBtn.addEventListener("click", () => {
-      window.location.href = "courses.html";
-    });
+      addSectionBtn.addEventListener("click", () => addSectionUI());
+      cancelBtn.addEventListener("click", () => {
+        window.location.href = "courses.html";
+      });
 
-    // Load if editing
-    document.addEventListener("DOMContentLoaded", async () => {
-      if (editingCourseId) {
-        const { data: course, error } = await supabase
-          .from("course")
-          .select("id,title,slug,description,level,tags,thumbnail_url")
-          .eq("id", editingCourseId)
-          .maybeSingle();
-        if (error) {
-          Notify.error("Unable to load course", `Details: ${error.message}`);
-          return;
-        }
-        if (!course) {
-          Notify.warn("Course not found", "The course you're trying to edit doesn't exist.");
-          return;
-        }
-
-        titleEl.value = course.title || "";
-        slugEl.value = course.slug || "";
-        descEl.value = course.description || "";
-        levelEl.value = course.level ?? 0;
-        tagsEl.value = (course.tags || []).join(", ");
-        thumbEl.value = course.thumbnail_url || "";
-
-        // Load sections
-        const { data: sections, error: sErr } = await supabase
-          .from("section")
-          .select("id,title,position")
-          .eq("course_id", editingCourseId)
-          .order("position", { ascending: true });
-        if (sErr) {
-          Notify.error("Unable to load sections", `Details: ${sErr.message}`);
-          return;
-        }
-
-        for (const s of sections) {
-          const secEl = addSectionUI({ id: s.id, title: s.title });
-
-          // Load blocks for this section (include section_content.id)
-          const { data: blocks, error: bErr } = await supabase
-            .from("section_content")
-            .select(
-              "id,content_type,position,body,video_url,duration_seconds,quiz_id"
-            )
-            .eq("section_id", s.id)
-            .order("position", { ascending: true });
-          if (bErr) {
-            Notify.error("Unable to load section content", `Details: ${bErr.message}`);
+      // Load if editing
+      document.addEventListener("DOMContentLoaded", async () => {
+        if (editingCourseId) {
+          const { data: course, error } = await supabase
+            .from("course")
+            .select("id,title,slug,description,level,tags,thumbnail_url")
+            .eq("id", editingCourseId)
+            .maybeSingle();
+          if (error) {
+            Notify.error("Unable to load course", `Details: ${error.message}`);
+            return;
+          }
+          if (!course) {
+            Notify.warn(
+              "Course not found",
+              "The course you're trying to edit doesn't exist."
+            );
             return;
           }
 
-          for (const b of blocks) {
-            if (b.content_type === "text") {
-              addBlock(secEl, "text", {
-                content_id: b.id,
-                body: b.body || "",
-              });
-            } else if (b.content_type === "video") {
-              addBlock(secEl, "video", {
-                content_id: b.id,
-                video_url: b.video_url || "",
-                duration_seconds: b.duration_seconds || 0,
-              });
-            } else if (b.content_type === "quiz" && b.quiz_id) {
-              // load quiz
-              const { data: qz, error: qzErr } = await supabase
-                .from("quiz")
-                .select("id,title,passing_score,time_limit_seconds")
-                .eq("id", b.quiz_id)
-                .maybeSingle();
-              if (qzErr) {
-                Notify.error("Unable to load quiz", `Details: ${qzErr.message}`);
-                continue;
-              }
+          titleEl.value = course.title || "";
+          slugEl.value = course.slug || "";
+          descEl.value = course.description || "";
+          levelEl.value = course.level ?? 0;
+          tagsEl.value = (course.tags || []).join(", ");
+          thumbEl.value = course.thumbnail_url || "";
 
-              // load questions
-              const { data: qs, error: qsErr } = await supabase
-                .from("quiz_question")
-                .select("id,question,options,correct_answer,points,position")
-                .eq("quiz_id", qz.id)
-                .order("position", { ascending: true });
-              if (qsErr) {
-                Notify.error("Unable to load quiz questions", `Details: ${qsErr.message}`);
-                continue;
-              }
+          // Load sections
+          const { data: sections, error: sErr } = await supabase
+            .from("section")
+            .select("id,title,position")
+            .eq("course_id", editingCourseId)
+            .order("position", { ascending: true });
+          if (sErr) {
+            Notify.error("Unable to load sections", `Details: ${sErr.message}`);
+            return;
+          }
 
-              addBlock(secEl, "quiz", {
-                content_id: b.id,
-                quiz_id: qz.id,
-                title: qz.title,
-                passing_score: qz.passing_score,
-                time_limit_seconds: qz.time_limit_seconds,
-                questions: (qs || []).map((q) => ({
-                  id: q.id,
-                  question: q.question,
-                  options: q.options || {},
-                  correct_answer: q.correct_answer,
-                  points: q.points || 1,
-                })),
-              });
+          for (const s of sections) {
+            const secEl = addSectionUI({ id: s.id, title: s.title });
+
+            // Load blocks for this section (include section_content.id)
+            const { data: blocks, error: bErr } = await supabase
+              .from("section_content")
+              .select(
+                "id,content_type,position,body,video_url,duration_seconds,quiz_id"
+              )
+              .eq("section_id", s.id)
+              .order("position", { ascending: true });
+            if (bErr) {
+              Notify.error(
+                "Unable to load section content",
+                `Details: ${bErr.message}`
+              );
+              return;
+            }
+
+            for (const b of blocks) {
+              if (b.content_type === "text") {
+                addBlock(secEl, "text", {
+                  content_id: b.id,
+                  body: b.body || "",
+                });
+              } else if (b.content_type === "video") {
+                addBlock(secEl, "video", {
+                  content_id: b.id,
+                  video_url: b.video_url || "",
+                  duration_seconds: b.duration_seconds || 0,
+                });
+              } else if (b.content_type === "quiz" && b.quiz_id) {
+                // load quiz
+                const { data: qz, error: qzErr } = await supabase
+                  .from("quiz")
+                  .select("id,title,passing_score,time_limit_seconds")
+                  .eq("id", b.quiz_id)
+                  .maybeSingle();
+                if (qzErr) {
+                  Notify.error(
+                    "Unable to load quiz",
+                    `Details: ${qzErr.message}`
+                  );
+                  continue;
+                }
+
+                // load questions
+                const { data: qs, error: qsErr } = await supabase
+                  .from("quiz_question")
+                  .select("id,question,options,correct_answer,points,position")
+                  .eq("quiz_id", qz.id)
+                  .order("position", { ascending: true });
+                if (qsErr) {
+                  Notify.error(
+                    "Unable to load quiz questions",
+                    `Details: ${qsErr.message}`
+                  );
+                  continue;
+                }
+
+                addBlock(secEl, "quiz", {
+                  content_id: b.id,
+                  quiz_id: qz.id,
+                  title: qz.title,
+                  passing_score: qz.passing_score,
+                  time_limit_seconds: qz.time_limit_seconds,
+                  questions: (qs || []).map((q) => ({
+                    id: q.id,
+                    question: q.question,
+                    options: q.options || {},
+                    correct_answer: q.correct_answer,
+                    points: q.points || 1,
+                  })),
+                });
+              }
             }
           }
+          /* ---- SKELETON HIDE (editing path, done populating) ---- */
+          requestAnimationFrame(() => {
+            const sk = document.getElementById("courseSkeleton");
+            if (sk) sk.style.display = "none";
+          });
         }
-        /* ---- SKELETON HIDE (editing path, done populating) ---- */
-        requestAnimationFrame(() => {
-          const sk = document.getElementById("courseSkeleton");
-          if (sk) sk.style.display = "none";
-        });
-      }
-    });
+      });
 
-    // Save all (true UPDATE-in-place diff)
-    saveBtn.addEventListener("click", async () => {
-      const title = titleEl.value.trim();
-      if (!title) {
-        Notify.warn("Title required", "Please enter a course title before saving.");
-        return;
-      }
-
-      const slug = slugEl.value.trim() || slugify(title);
-      const description = descEl.value.trim();
-      const level = Number(levelEl.value || 0);
-      const tags = tagsEl.value
-        .split(",")
-        .map((s) => s.trim())
-        .filter(Boolean);
-      const thumbnail_url = thumbEl.value.trim() || null;
-
-      // Update or Insert course
-      let courseId = editingCourseId;
-      if (courseId) {
-        const { error: uErr } = await supabase
-          .from("course")
-          .update({ title, slug, description, level, tags, thumbnail_url })
-          .eq("id", courseId);
-        if (uErr) {
-          Notify.error("Update failed", `We couldn't update the course. Details: ${uErr.message}`);
+      // Save all (true UPDATE-in-place diff)
+      saveBtn.addEventListener("click", async () => {
+        const title = titleEl.value.trim();
+        if (!title) {
+          Notify.warn(
+            "Title required",
+            "Please enter a course title before saving."
+          );
           return;
         }
-      } else {
-        const { data: inserted, error: iErr } = await supabase
-          .from("course")
-          .insert({ title, slug, description, level, tags, thumbnail_url })
-          .select("id")
-          .single();
-        if (iErr) {
-          Notify.error("Insert failed", `We couldn't create the course. Details: ${iErr.message}`);
-          return;
-        }
-        courseId = inserted.id;
-      }
 
-      // ----- Diff existing vs UI and update in place -----
-      try {
-        // Get current DB state for this course (for deletes)
-        const { data: dbSections } = await supabase
-          .from("section")
-          .select("id")
-          .eq("course_id", courseId);
+        const slug = slugEl.value.trim() || slugify(title);
+        const description = descEl.value.trim();
+        const level = Number(levelEl.value || 0);
+        const tags = tagsEl.value
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean);
+        const thumbnail_url = thumbEl.value.trim() || null;
 
-        const keepSectionIds = new Set();
-        const keepContentIdsBySection = new Map(); // section_id -> Set(content_id)
-        const keepQuizIds = new Set();
-        const keepQuestionIdsByQuiz = new Map(); // quiz_id -> Set(question_id)
-
-        // Upsert/Update sections
-        const sectionEls = Array.from(
-          sContainer.querySelectorAll(".section")
-        );
-        for (let i = 0; i < sectionEls.length; i++) {
-          const secEl = sectionEls[i];
-          const secTitle =
-            secEl.querySelector(".section-title").value.trim() ||
-            `Section ${i + 1}`;
-          const secPos = i + 1;
-          const existingSecId = secEl.dataset.sectionId;
-
-          let sectionId = existingSecId;
-
-          if (existingSecId) {
-            // update
-            const { error } = await supabase
-              .from("section")
-              .update({ title: secTitle, position: secPos })
-              .eq("id", existingSecId);
-            if (error) throw error;
-          } else {
-            // insert
-            const { data: ins, error } = await supabase
-              .from("section")
-              .insert({
-                course_id: courseId,
-                title: secTitle,
-                position: secPos,
-              })
-              .select("id")
-              .single();
-            if (error) throw error;
-            sectionId = ins.id;
-            secEl.dataset.sectionId = sectionId; // keep for future saves
+        // Update or Insert course
+        let courseId = editingCourseId;
+        if (courseId) {
+          const { error: uErr } = await supabase
+            .from("course")
+            .update({ title, slug, description, level, tags, thumbnail_url })
+            .eq("id", courseId);
+          if (uErr) {
+            Notify.error(
+              "Update failed",
+              `We couldn't update the course. Details: ${uErr.message}`
+            );
+            return;
           }
-          keepSectionIds.add(sectionId);
+        } else {
+          const { data: inserted, error: iErr } = await supabase
+            .from("course")
+            .insert({ title, slug, description, level, tags, thumbnail_url })
+            .select("id")
+            .single();
+          if (iErr) {
+            Notify.error(
+              "Insert failed",
+              `We couldn't create the course. Details: ${iErr.message}`
+            );
+            return;
+          }
+          courseId = inserted.id;
+        }
 
-          // Handle blocks within this section
-          const blocks = Array.from(secEl.querySelector(".blocks").children);
-          const keepContentIds = new Set();
-          keepContentIdsBySection.set(sectionId, keepContentIds);
+        // ----- Diff existing vs UI and update in place -----
+        try {
+          // Get current DB state for this course (for deletes)
+          const { data: dbSections } = await supabase
+            .from("section")
+            .select("id")
+            .eq("course_id", courseId);
 
-          for (let j = 0; j < blocks.length; j++) {
-            const b = blocks[j];
-            const type = b.dataset.type;
-            const pos = j + 1;
-            const contentId = b.dataset.contentId;
+          const keepSectionIds = new Set();
+          const keepContentIdsBySection = new Map(); // section_id -> Set(content_id)
+          const keepQuizIds = new Set();
+          const keepQuestionIdsByQuiz = new Map(); // quiz_id -> Set(question_id)
 
-            if (type === "text") {
-              const body = b.querySelector(".text-body").value.trim();
+          // Upsert/Update sections
+          const sectionEls = Array.from(
+            sContainer.querySelectorAll(".section")
+          );
+          for (let i = 0; i < sectionEls.length; i++) {
+            const secEl = sectionEls[i];
+            const secTitle =
+              secEl.querySelector(".section-title").value.trim() ||
+              `Section ${i + 1}`;
+            const secPos = i + 1;
+            const existingSecId = secEl.dataset.sectionId;
 
-              if (contentId) {
-                // update content row
-                const { error } = await supabase
-                  .from("section_content")
-                  .update({
-                    position: pos,
-                    content_type: "text",
-                    body,
-                    video_url: null,
-                    duration_seconds: null,
-                    quiz_id: null,
-                  })
-                  .eq("id", contentId);
-                if (error) throw error;
-                keepContentIds.add(contentId);
-              } else {
-                // insert
-                const { data: ins, error } = await supabase
-                  .from("section_content")
-                  .insert({
-                    section_id: sectionId,
-                    position: pos,
-                    content_type: "text",
-                    body,
-                  })
-                  .select("id")
-                  .single();
-                if (error) throw error;
-                b.dataset.contentId = ins.id;
-                keepContentIds.add(ins.id);
-              }
-            } else if (type === "video") {
-              const video_url =
-                b.querySelector(".video-url").value.trim() || null;
-              const duration_seconds =
-                Number(b.querySelector(".video-duration").value || 0) || null;
+            let sectionId = existingSecId;
 
-              if (contentId) {
-                const { error } = await supabase
-                  .from("section_content")
-                  .update({
-                    position: pos,
-                    content_type: "video",
-                    body: null,
-                    video_url,
-                    duration_seconds,
-                    quiz_id: null,
-                  })
-                  .eq("id", contentId);
-                if (error) throw error;
-                keepContentIds.add(contentId);
-              } else {
-                const { data: ins, error } = await supabase
-                  .from("section_content")
-                  .insert({
-                    section_id: sectionId,
-                    position: pos,
-                    content_type: "video",
-                    video_url,
-                    duration_seconds,
-                  })
-                  .select("id")
-                  .single();
-                if (error) throw error;
-                b.dataset.contentId = ins.id;
-                keepContentIds.add(ins.id);
-              }
-            } else if (type === "quiz") {
-              // quiz block: update/insert quiz and link row (section_content)
-              const quiz_title =
-                b.querySelector(".quiz-title").value.trim() || "Quiz";
-              const passing_score = Number(
-                b.querySelector(".quiz-pass").value || 70
-              );
-              const time_limit_seconds = Number(
-                b.querySelector(".quiz-limit").value || 0
-              );
-
-              let quizId = b.dataset.quizId;
-
-              if (quizId) {
-                const { error } = await supabase
-                  .from("quiz")
-                  .update({
-                    title: quiz_title,
-                    passing_score,
-                    time_limit_seconds,
-                  })
-                  .eq("id", quizId);
-                if (error) throw error;
-              } else {
-                const { data: insQ, error } = await supabase
-                  .from("quiz")
-                  .insert({
-                    course_id: courseId,
-                    title: quiz_title,
-                    passing_score,
-                    time_limit_seconds,
-                  })
-                  .select("id")
-                  .single();
-                if (error) throw error;
-                quizId = insQ.id;
-                b.dataset.quizId = quizId;
-              }
-              keepQuizIds.add(quizId);
-
-              // ensure/maintain section_content row that links the quiz
-              if (contentId) {
-                const { error } = await supabase
-                  .from("section_content")
-                  .update({
-                    position: pos,
-                    content_type: "quiz",
-                    body: null,
-                    video_url: null,
-                    duration_seconds: null,
-                    quiz_id: quizId,
-                  })
-                  .eq("id", contentId);
-                if (error) throw error;
-                keepContentIds.add(contentId);
-              } else {
-                const { data: insSC, error } = await supabase
-                  .from("section_content")
-                  .insert({
-                    section_id: sectionId,
-                    position: pos,
-                    content_type: "quiz",
-                    quiz_id: quizId,
-                  })
-                  .select("id")
-                  .single();
-                if (error) throw error;
-                b.dataset.contentId = insSC.id;
-                keepContentIds.add(insSC.id);
-              }
-
-              // Questions diff
-              // Fetch current DB questions (by quiz) to know deletes later (cheap per quiz)
-              const { data: dbQs, error: dbQsErr } = await supabase
-                .from("quiz_question")
+            if (existingSecId) {
+              // update
+              const { error } = await supabase
+                .from("section")
+                .update({ title: secTitle, position: secPos })
+                .eq("id", existingSecId);
+              if (error) throw error;
+            } else {
+              // insert
+              const { data: ins, error } = await supabase
+                .from("section")
+                .insert({
+                  course_id: courseId,
+                  title: secTitle,
+                  position: secPos,
+                })
                 .select("id")
-                .eq("quiz_id", quizId);
-              if (dbQsErr) throw dbQsErr;
-              const keepQIds = new Set();
-              keepQuestionIdsByQuiz.set(quizId, keepQIds);
+                .single();
+              if (error) throw error;
+              sectionId = ins.id;
+              secEl.dataset.sectionId = sectionId; // keep for future saves
+            }
+            keepSectionIds.add(sectionId);
 
-              const qWrap = b.querySelector(".quiz-qs");
-              const qEls = Array.from(qWrap.querySelectorAll(".quiz-q"));
-              for (let qIdx = 0; qIdx < qEls.length; qIdx++) {
-                const qEl = qEls[qIdx];
-                const qId = qEl.dataset.questionId || null;
-                const question = qEl.querySelector(".qq").value.trim();
-                const options = {
-                  A: qEl.querySelector(".qa").value.trim(),
-                  B: qEl.querySelector(".qb").value.trim(),
-                  C: qEl.querySelector(".qc").value.trim(),
-                  D: qEl.querySelector(".qd").value.trim(),
-                };
-                const correct_answer = qEl.querySelector(".correct").value;
-                const points = Number(
-                  qEl.querySelector(".points").value || 1
-                );
+            // Handle blocks within this section
+            const blocks = Array.from(secEl.querySelector(".blocks").children);
+            const keepContentIds = new Set();
+            keepContentIdsBySection.set(sectionId, keepContentIds);
 
-                if (qId) {
+            for (let j = 0; j < blocks.length; j++) {
+              const b = blocks[j];
+              const type = b.dataset.type;
+              const pos = j + 1;
+              const contentId = b.dataset.contentId;
+
+              if (type === "text") {
+                const body = b.querySelector(".text-body").value.trim();
+
+                if (contentId) {
+                  // update content row
                   const { error } = await supabase
-                    .from("quiz_question")
+                    .from("section_content")
                     .update({
-                      question,
-                      options,
-                      correct_answer,
-                      points,
-                      position: qIdx + 1,
+                      position: pos,
+                      content_type: "text",
+                      body,
+                      video_url: null,
+                      duration_seconds: null,
+                      quiz_id: null,
                     })
-                    .eq("id", qId);
+                    .eq("id", contentId);
                   if (error) throw error;
-                  keepQIds.add(qId);
+                  keepContentIds.add(contentId);
                 } else {
+                  // insert
                   const { data: ins, error } = await supabase
-                    .from("quiz_question")
+                    .from("section_content")
                     .insert({
-                      quiz_id: quizId,
-                      question,
-                      options,
-                      correct_answer,
-                      points,
-                      position: qIdx + 1,
+                      section_id: sectionId,
+                      position: pos,
+                      content_type: "text",
+                      body,
                     })
                     .select("id")
                     .single();
                   if (error) throw error;
-                  qEl.dataset.questionId = ins.id;
-                  keepQIds.add(ins.id);
+                  b.dataset.contentId = ins.id;
+                  keepContentIds.add(ins.id);
+                }
+              } else if (type === "video") {
+                const video_url =
+                  b.querySelector(".video-url").value.trim() || null;
+                const duration_seconds =
+                  Number(b.querySelector(".video-duration").value || 0) || null;
+
+                if (contentId) {
+                  const { error } = await supabase
+                    .from("section_content")
+                    .update({
+                      position: pos,
+                      content_type: "video",
+                      body: null,
+                      video_url,
+                      duration_seconds,
+                      quiz_id: null,
+                    })
+                    .eq("id", contentId);
+                  if (error) throw error;
+                  keepContentIds.add(contentId);
+                } else {
+                  const { data: ins, error } = await supabase
+                    .from("section_content")
+                    .insert({
+                      section_id: sectionId,
+                      position: pos,
+                      content_type: "video",
+                      video_url,
+                      duration_seconds,
+                    })
+                    .select("id")
+                    .single();
+                  if (error) throw error;
+                  b.dataset.contentId = ins.id;
+                  keepContentIds.add(ins.id);
+                }
+              } else if (type === "quiz") {
+                // quiz block: update/insert quiz and link row (section_content)
+                const quiz_title =
+                  b.querySelector(".quiz-title").value.trim() || "Quiz";
+                const passing_score = Number(
+                  b.querySelector(".quiz-pass").value || 70
+                );
+                const time_limit_seconds = Number(
+                  b.querySelector(".quiz-limit").value || 0
+                );
+
+                let quizId = b.dataset.quizId;
+
+                if (quizId) {
+                  const { error } = await supabase
+                    .from("quiz")
+                    .update({
+                      title: quiz_title,
+                      passing_score,
+                      time_limit_seconds,
+                    })
+                    .eq("id", quizId);
+                  if (error) throw error;
+                } else {
+                  const { data: insQ, error } = await supabase
+                    .from("quiz")
+                    .insert({
+                      course_id: courseId,
+                      title: quiz_title,
+                      passing_score,
+                      time_limit_seconds,
+                    })
+                    .select("id")
+                    .single();
+                  if (error) throw error;
+                  quizId = insQ.id;
+                  b.dataset.quizId = quizId;
+                }
+                keepQuizIds.add(quizId);
+
+                // ensure/maintain section_content row that links the quiz
+                if (contentId) {
+                  const { error } = await supabase
+                    .from("section_content")
+                    .update({
+                      position: pos,
+                      content_type: "quiz",
+                      body: null,
+                      video_url: null,
+                      duration_seconds: null,
+                      quiz_id: quizId,
+                    })
+                    .eq("id", contentId);
+                  if (error) throw error;
+                  keepContentIds.add(contentId);
+                } else {
+                  const { data: insSC, error } = await supabase
+                    .from("section_content")
+                    .insert({
+                      section_id: sectionId,
+                      position: pos,
+                      content_type: "quiz",
+                      quiz_id: quizId,
+                    })
+                    .select("id")
+                    .single();
+                  if (error) throw error;
+                  b.dataset.contentId = insSC.id;
+                  keepContentIds.add(insSC.id);
+                }
+
+                // Questions diff
+                // Fetch current DB questions (by quiz) to know deletes later (cheap per quiz)
+                const { data: dbQs, error: dbQsErr } = await supabase
+                  .from("quiz_question")
+                  .select("id")
+                  .eq("quiz_id", quizId);
+                if (dbQsErr) throw dbQsErr;
+                const keepQIds = new Set();
+                keepQuestionIdsByQuiz.set(quizId, keepQIds);
+
+                const qWrap = b.querySelector(".quiz-qs");
+                const qEls = Array.from(qWrap.querySelectorAll(".quiz-q"));
+                for (let qIdx = 0; qIdx < qEls.length; qIdx++) {
+                  const qEl = qEls[qIdx];
+                  const qId = qEl.dataset.questionId || null;
+                  const question = qEl.querySelector(".qq").value.trim();
+                  const options = {
+                    A: qEl.querySelector(".qa").value.trim(),
+                    B: qEl.querySelector(".qb").value.trim(),
+                    C: qEl.querySelector(".qc").value.trim(),
+                    D: qEl.querySelector(".qd").value.trim(),
+                  };
+                  const correct_answer = qEl.querySelector(".correct").value;
+                  const points = Number(
+                    qEl.querySelector(".points").value || 1
+                  );
+
+                  if (qId) {
+                    const { error } = await supabase
+                      .from("quiz_question")
+                      .update({
+                        question,
+                        options,
+                        correct_answer,
+                        points,
+                        position: qIdx + 1,
+                      })
+                      .eq("id", qId);
+                    if (error) throw error;
+                    keepQIds.add(qId);
+                  } else {
+                    const { data: ins, error } = await supabase
+                      .from("quiz_question")
+                      .insert({
+                        quiz_id: quizId,
+                        question,
+                        options,
+                        correct_answer,
+                        points,
+                        position: qIdx + 1,
+                      })
+                      .select("id")
+                      .single();
+                    if (error) throw error;
+                    qEl.dataset.questionId = ins.id;
+                    keepQIds.add(ins.id);
+                  }
+                }
+
+                // Delete removed questions
+                const dbQIds = new Set((dbQs || []).map((r) => r.id));
+                const toDeleteQs = [...dbQIds].filter(
+                  (id) => !keepQIds.has(id)
+                );
+                if (toDeleteQs.length) {
+                  const { error } = await supabase
+                    .from("quiz_question")
+                    .delete()
+                    .in("id", toDeleteQs);
+                  if (error) throw error;
                 }
               }
+            }
 
-              // Delete removed questions
-              const dbQIds = new Set((dbQs || []).map((r) => r.id));
-              const toDeleteQs = [...dbQIds].filter(
-                (id) => !keepQIds.has(id)
-              );
-              if (toDeleteQs.length) {
-                const { error } = await supabase
-                  .from("quiz_question")
-                  .delete()
-                  .in("id", toDeleteQs);
-                if (error) throw error;
-              }
+            // Delete removed section_content rows for this section
+            const { data: dbContents, error: dbContErr } = await supabase
+              .from("section_content")
+              .select("id")
+              .eq("section_id", sectionId);
+            if (dbContErr) throw dbContErr;
+
+            const dbContentIds = new Set((dbContents || []).map((r) => r.id));
+            const toDeleteContent = [...dbContentIds].filter(
+              (id) => !keepContentIds.has(id)
+            );
+            if (toDeleteContent.length) {
+              const { error } = await supabase
+                .from("section_content")
+                .delete()
+                .in("id", toDeleteContent);
+              if (error) throw error;
             }
           }
 
-          // Delete removed section_content rows for this section
-          const { data: dbContents, error: dbContErr } = await supabase
-            .from("section_content")
-            .select("id")
-            .eq("section_id", sectionId);
-          if (dbContErr) throw dbContErr;
-
-          const dbContentIds = new Set((dbContents || []).map((r) => r.id));
-          const toDeleteContent = [...dbContentIds].filter(
-            (id) => !keepContentIds.has(id)
+          // Delete removed sections (cascade removes their content & linked quizzes if FKs set)
+          const dbSectionIds = new Set((dbSections || []).map((r) => r.id));
+          const toDeleteSections = [...dbSectionIds].filter(
+            (id) => !keepSectionIds.has(id)
           );
-          if (toDeleteContent.length) {
+          if (toDeleteSections.length) {
             const { error } = await supabase
-              .from("section_content")
+              .from("section")
               .delete()
-              .in("id", toDeleteContent);
+              .in("id", toDeleteSections);
             if (error) throw error;
           }
+
+          await Notify.success(
+            "Course saved",
+            "Your changes have been saved successfully."
+          );
+          window.location.href = "courses.html";
+        } catch (e) {
+          console.error(e);
+          Notify.error(
+            "Save failed",
+            e && e.message
+              ? String(e.message)
+              : "An unexpected error occurred while saving."
+          );
+        }
+      });
+    </script>
+
+    <!-- Skeleton control helpers (ADDED, non-intrusive) -->
+    <script>
+      (function () {
+        const skId = "courseSkeleton";
+        function hideSkeleton() {
+          const el = document.getElementById(skId);
+          if (el) el.style.display = "none";
         }
 
-        // Delete removed sections (cascade removes their content & linked quizzes if FKs set)
-        const dbSectionIds = new Set((dbSections || []).map((r) => r.id));
-        const toDeleteSections = [...dbSectionIds].filter(
-          (id) => !keepSectionIds.has(id)
-        );
-        if (toDeleteSections.length) {
-          const { error } = await supabase
-            .from("section")
-            .delete()
-            .in("id", toDeleteSections);
-          if (error) throw error;
-        }
+        // If we're NOT editing (creating new), hide skeleton on DOM ready.
+        document.addEventListener("DOMContentLoaded", function () {
+          const params = new URLSearchParams(window.location.search);
+          const editingCourseId = params.get("course") || null;
 
-        await Notify.success("Course saved", "Your changes have been saved successfully.");
-        window.location.href = "courses.html";
-      } catch (e) {
-        console.error(e);
-        Notify.error("Save failed", (e && e.message) ? String(e.message) : "An unexpected error occurred while saving.");
-      }
-    });
-  </script>
-
-  <!-- Skeleton control helpers (ADDED, non-intrusive) -->
-  <script>
-    (function () {
-      const skId = "courseSkeleton";
-      function hideSkeleton() {
-        const el = document.getElementById(skId);
-        if (el) el.style.display = "none";
-      }
-
-      // If we're NOT editing (creating new), hide skeleton on DOM ready.
-      document.addEventListener("DOMContentLoaded", function () {
-        const params = new URLSearchParams(window.location.search);
-        const editingCourseId = params.get("course") || null;
-
-        if (!editingCourseId) {
-          // New course: no async fetch needed
-          requestAnimationFrame(hideSkeleton);
-        } else {
-          // Editing: wait until sections get populated, then hide.
-          const sections = document.getElementById("sections");
-          if (sections) {
-            const mo = new MutationObserver(() => {
-              if (sections.children.length > 0) {
-                hideSkeleton();
-                mo.disconnect();
-              }
-            });
-            mo.observe(sections, { childList: true });
+          if (!editingCourseId) {
+            // New course: no async fetch needed
+            requestAnimationFrame(hideSkeleton);
+          } else {
+            // Editing: wait until sections get populated, then hide.
+            const sections = document.getElementById("sections");
+            if (sections) {
+              const mo = new MutationObserver(() => {
+                if (sections.children.length > 0) {
+                  hideSkeleton();
+                  mo.disconnect();
+                }
+              });
+              mo.observe(sections, { childList: true });
+            }
+            // Fallback: hide after a short while even if empty (e.g., error paths)
+            setTimeout(hideSkeleton, 4000);
           }
-          // Fallback: hide after a short while even if empty (e.g., error paths)
-          setTimeout(hideSkeleton, 4000);
-        }
-      });
+        });
 
-      // Extra safety: hide once window fully loaded.
-      window.addEventListener("load", () => {
-        const el = document.getElementById(skId);
-        if (el && el.style.display !== "none") hideSkeleton();
-      });
-    })();
-  </script>
-</body>
-
+        // Extra safety: hide once window fully loaded.
+        window.addEventListener("load", () => {
+          const el = document.getElementById(skId);
+          if (el && el.style.display !== "none") hideSkeleton();
+        });
+      })();
+    </script>
+  </body>
 </html>
