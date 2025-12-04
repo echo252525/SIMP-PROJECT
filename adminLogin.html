@@ -261,19 +261,39 @@
               <h3>Create Account</h3>
 
               <div class="row">
-                <div><label>Full Name
-                    <input id="suName" type="text" required /></label></div>
-                <div><label>Phone (optional)
-                    <input id="suPhone" type="tel" /></label></div>
+                <div>
+                  <label>Full Name
+                    <input id="suName" type="text" required />
+                  </label>
+                </div>
+                <div>
+                  <label>Phone (optional)
+                    <input id="suPhone" type="tel" />
+                  </label>
+                </div>
               </div>
               <div class="row-1">
                 <label>Email
-                  <input id="suEmail" type="email" required /></label>
+                  <input id="suEmail" type="email" required />
+                </label>
               </div>
               <div class="row-1">
                 <label>Password
-                  <input id="suPassword" type="password" minlength="6" required /></label>
-                <div class="hint">Minimum 6 characters. New sign-ups are <b>pending</b> until admin approval.</div>
+                  <input id="suPassword" type="password" minlength="6" required />
+                </label>
+              </div>
+
+              <!-- NEW: Confirm Password field -->
+              <div class="row-1">
+                <label>Confirm Password
+                  <input id="suPasswordConfirm" type="password" minlength="6" required />
+                </label>
+              </div>
+
+              <div class="row-1">
+                <div class="hint">
+                  Minimum 6 characters. New sign-ups are <b>pending</b> until admin approval.
+                </div>
               </div>
               <div class="actions">
                 <button id="signUpBtn" class="btn btn-primary">SIGN UP</button>
@@ -536,7 +556,27 @@
       if (error) throw error;
     }
 
-    // Email provider prompt via SweetAlert (replaces old modal)
+    // ===== NEW: Check if email already exists in admin / customer / installer =====
+    async function isEmailAlreadyRegistered(email) {
+      const normalized = email.trim().toLowerCase();
+      const tables = ["admin", "customer", "installer"];
+
+      for (const table of tables) {
+        const { data, error } = await supabase
+          .from(table)
+          .select("id")
+          .eq("email", normalized)
+          .maybeSingle();
+
+        if (error) throw error;
+        if (data) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    // Email provider prompt via SweetAlert (NEW only for *fresh* accounts)
     async function openEmailProvider(email) {
       const emailProvider = email.split("@")[1]?.toLowerCase() || "";
       let providerUrl = "https://mail.google.com";
@@ -554,19 +594,34 @@
       }).then(res => { if (res.isConfirmed) window.open(providerUrl, "_blank"); });
     }
 
-    // ===== SIGN UP (kept; messages refined) =====
+    // ===== SIGN UP (with confirm password + table check + auth duplicate handling) =====
     document.getElementById("signUpBtn").addEventListener("click", async () => {
       hideNotice();
       const name = document.getElementById("suName").value.trim();
       const phone = document.getElementById("suPhone").value.trim();
       const email = document.getElementById("suEmail").value.trim();
       const password = document.getElementById("suPassword").value;
+      const confirmPassword = document.getElementById("suPasswordConfirm").value;
 
       if (!name || !email || !password || password.length < 6) {
         showNotice("Please complete all required fields. Password must be at least 6 characters.", "warning");
         return;
       }
+
+      if (password !== confirmPassword) {
+        showNotice("Passwords do not match. Please re-enter them.", "warning");
+        return;
+      }
+
       try {
+        // 1) Check if email exists in your own tables
+        const emailTaken = await isEmailAlreadyRegistered(email);
+        if (emailTaken) {
+          await showNotice("This email is already registered. Please choose a new one.", "warning");
+          return;
+        }
+
+        // 2) Try to sign up in Supabase Auth
         const { data: authData, error: authError } =
           await supabase.auth.signUp({
             email,
@@ -576,13 +631,26 @@
               emailRedirectTo: "https://simp-project-tan.vercel.app/adminLogin.html",
             },
           });
-        if (authError) throw authError;
 
+        // If Supabase Auth says the user already exists (even if unconfirmed) => show “email already used”
+        if (authError) {
+          const rawMsg = (authError.message || "").toLowerCase();
+          if (rawMsg.includes("already registered") || rawMsg.includes("already exists")) {
+            await showNotice("This email is already registered. Please choose a new one.", "warning");
+            return;
+          }
+          // Other errors -> normal error handling
+          throw authError;
+        }
+
+        // New, fresh registration (no error from auth)
         if (authData.session && authData.user) {
+          // Email confirmation disabled or auto-confirmed
           await ensureAdminRowNow(authData.user, { name, phone });
           await showNotice("Account created! Your admin profile is now set to <b>Pending</b> for approval.", "success");
           switchTab("login");
         } else {
+          // Confirmation email sent
           await openEmailProvider(email);
           await showNotice("Sign up successful. Please verify your email, then sign in. Your admin profile will be set to <b>Pending</b> automatically.", "success");
           switchTab("login");

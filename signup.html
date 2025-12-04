@@ -681,6 +681,11 @@
             <label>Password
               <input id="password" type="password" minlength="6" required /></label>
           </div>
+          <!-- NEW: Confirm Password -->
+          <div class="row-1">
+            <label>Confirm Password
+              <input id="confirmPassword" type="password" minlength="6" required /></label>
+          </div>
 
           <div class="actions">
             <button id="next1" class="btn-primary">Next</button>
@@ -938,6 +943,17 @@
           notify.hint("Password too short", "Use at least 6 characters.", "error");
           return false;
         }
+        const confirmEl = document.getElementById("confirmPassword");
+        const cpw = confirmEl.value.trim();
+        if (pw !== cpw) {
+          notify.hint(
+            "Passwords don’t match",
+            "Make sure Password and Confirm Password are exactly the same.",
+            "error"
+          );
+          confirmEl.focus();
+          return false;
+        }
         const email = document.getElementById("email").value.trim();
         if (!/^\S+@\S+\.\S+$/.test(email)) {
           notify.hint("Invalid email", "Please enter a valid email address.", "error");
@@ -987,6 +1003,11 @@
         .getElementById("accountHolder")
         .value.trim();
 
+      // 🔗 Build confirmation redirect URL (installer gets ?installer)
+      const redirectBase = "https://simp-project-tan.vercel.app/login.html";
+      const emailRedirectUrl =
+        selectedRole === "installer" ? `${redirectBase}?installer` : redirectBase;
+
       try {
         const { data: authData, error: authError } =
           await supabase.auth.signUp({
@@ -994,7 +1015,7 @@
             password,
             options: {
               data: { role: selectedRole, name, phone },
-              emailRedirectTo: "https://simp-project-tan.vercel.app/login.html",
+              emailRedirectTo: emailRedirectUrl,
             },
           });
 
@@ -1030,16 +1051,91 @@
           .insert([payload]);
         if (insertError) throw insertError;
 
+        const confirmRedirectUrl =
+          selectedRole === "installer" ? "login.html?installer" : "login.html";
+
         await notify.confirmEmail(
           "We’ve sent a confirmation link to your email. Confirm first, then log in.",
-          "login.html"
+          confirmRedirectUrl
         );
       } catch (err) {
         console.error(err);
-        const msg =
-          (err?.message || "Something went wrong during sign up.")
-            .replace("Database error saving new user", "Couldn’t save your account to the database")
-            .replace("User already registered", "This email is already registered");
+
+        let raw = err?.message || "Something went wrong during sign up.";
+        let msg = "";
+        const lower = raw.toLowerCase();
+
+        const isFkError =
+          lower.includes("customer_id_fkey") ||
+          lower.includes("installer_id_fkey") ||
+          lower.includes('violates foreign key constraint "customer_id_fkey"') ||
+          lower.includes('violates foreign key constraint "installer_id_fkey"');
+
+        const isExistingUserError =
+          lower.includes("user already registered") ||
+          lower.includes("duplicate key value violates unique constraint");
+
+        let existingRoleMessage = "";
+
+        // 🔍 Check customer and installer tables when it looks like a duplicate / FK issue
+        if (isFkError || isExistingUserError) {
+          try {
+            const { data: customerRow } = await supabase
+              .from("customer")
+              .select("id")
+              .eq("email", email)
+              .maybeSingle();
+
+            const { data: installerRow } = await supabase
+              .from("installer")
+              .select("id")
+              .eq("email", email)
+              .maybeSingle();
+
+            if (customerRow && installerRow) {
+              existingRoleMessage =
+                "This email is already used for both a Customer and an Installer account. Please log in instead.";
+            } else if (customerRow) {
+              existingRoleMessage =
+                "This email is already used for a Customer account. Please log in instead.";
+            } else if (installerRow) {
+              existingRoleMessage =
+                "This email is already used for an Installer account. Please log in instead.";
+            } else {
+              // No row found but DB said FK/duplicate ⇒ keep it generic but friendly
+              existingRoleMessage =
+                "This email is already used for an existing account. Please log in instead.";
+            }
+          } catch (lookupErr) {
+            console.error(
+              "Error checking existing customer/installer by email:",
+              lookupErr
+            );
+            existingRoleMessage =
+              "This email is already used for an existing account. Please log in instead.";
+          }
+        }
+
+        if (existingRoleMessage) {
+          msg = existingRoleMessage;
+        } else {
+          // Generic friendly cleanup
+          msg = raw
+            .replace(
+              "Database error saving new user",
+              "Couldn’t save your account to the database"
+            )
+            .replace(
+              "User already registered",
+              "This email is already registered. Please try logging in instead."
+            );
+
+          if (isFkError && !existingRoleMessage) {
+            msg =
+              "This email is already used for an existing account (customer or installer). Please log in instead.";
+          }
+        }
+
         notify.err("Sign-up failed", msg);
       }
     }

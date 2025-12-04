@@ -582,6 +582,8 @@
     }
 
     // --- Role switching (no dropdown) ---
+    let initialRoleSet = false; // 🔹 track if URL already decided the role
+
     const roleSelect = document.getElementById("role"); // kept for compatibility
     const shell = document.documentElement; // we'll toggle a class on <html> for transforms
     const roleLabel = () => document.getElementById("activeRoleText");
@@ -607,15 +609,24 @@
             ? "You are now logging in as Installer"
             : "You are now logging in as Customer";
 
-      // ❌ Removed the "mode selected" toast/modal as requested.
+      // ❌ No toast/modal here (as you requested before)
     }
 
     // Expose for inline buttons
     window.chooseInstaller = () => setRole("installer");
     window.chooseCustomer = () => setRole("customer");
 
-    // Default view
-    setRole("customer");
+    // 🔹 Decide initial role based on URL (?installer)
+    const params = new URLSearchParams(window.location.search);
+    if (params.has("installer")) {
+      setRole("installer");
+      initialRoleSet = true;
+    }
+
+    // Default view (only if URL did NOT specify installer)
+    if (!initialRoleSet) {
+      setRole("customer");
+    }
 
     // --- Your original login() kept intact, only reads role from hidden select ---
     window.login = async () => {
@@ -628,7 +639,7 @@
         notifyModal({
           icon: "warning",
           title: "Almost there",
-          text: "Please enter your email, password, and choose a role.",
+          text: "Please enter your email, password.",
         });
         return;
       }

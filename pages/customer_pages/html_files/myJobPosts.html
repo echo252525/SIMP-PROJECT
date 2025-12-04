@@ -350,6 +350,31 @@
         );
         pointer-events: none;
       }
+
+      /* NEW: hero content overlay for job title & location */
+      .modal-hero-content {
+        position: absolute;
+        left: 16px;
+        right: 80px;
+        bottom: 16px;
+        z-index: 1;
+        color: #ffffff;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .modal-hero-content h2 {
+        margin: 0;
+        font-size: 1.2rem;
+        font-weight: 800;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+      }
+      .modal-hero-location {
+        margin: 0;
+        font-size: 0.85rem;
+        opacity: 0.9;
+      }
+
       .modal-header {
         position: absolute;
         top: 12px;
@@ -359,6 +384,7 @@
         justify-content: space-between;
         align-items: center;
         color: #fff;
+        z-index: 2; /* ensure badge/close is above hero content */
       }
       .modal-header .badge {
         background: rgba(255, 255, 255, 0.18);
@@ -926,6 +952,15 @@
               <span class="material-icons-sharp">close</span>
             </button>
           </div>
+
+          <!-- NEW: hero overlay for job title & location -->
+          <div class="modal-hero-content">
+            <h2 id="jobModalTitleHero">Job Title</h2>
+            <p
+              id="jobModalLocationHero"
+              class="modal-hero-location"
+            ></p>
+          </div>
         </div>
         <div class="modal-body">
           <h2 id="jobModalTitle" class="modal-title">Job Title</h2>
@@ -1397,6 +1432,12 @@
       const jobStatusText = document.getElementById("jobStatusText");
       const jobCloseBtn = document.getElementById("jobCloseBtn");
       const jobTitleEl = document.getElementById("jobModalTitle");
+
+      // NEW: hero title + location in modal hero overlay
+      const jobTitleHeroEl = document.getElementById("jobModalTitleHero");
+      const jobLocationHeroEl =
+        document.getElementById("jobModalLocationHero");
+
       const mCategory = document.getElementById("mCategory");
       const mDiff = document.getElementById("mDiff");
       const mPay = document.getElementById("mPay");
@@ -1875,6 +1916,14 @@
         setBadge(status);
 
         await setJobHeroImage(job);
+
+        // NEW: fill hero overlay with job title + location
+        if (jobTitleHeroEl) {
+          jobTitleHeroEl.textContent = job.job_title || "—";
+        }
+        if (jobLocationHeroEl) {
+          jobLocationHeroEl.textContent = job.job_location || "";
+        }
 
         mCategory.textContent = job.job_category || "—";
         mDiff.textContent = difficultyToText(job.job_difficulty);
