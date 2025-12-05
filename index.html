@@ -385,8 +385,8 @@
             SCROLL
           </a>
         </div>
-        <!-- Added 'admin-fab' class to reuse existing element as a floating FAB -->
-        <div class="socials admin-fab">
+        <!-- Added 'fab-out' so it's hidden by default -->
+        <div class="socials admin-fab fab-out">
           <a href="adminLogin.html" aria-label="Admin"
             ><i class="ri-user-settings-line"></i
           ></a>
@@ -892,7 +892,7 @@
       loadRecentJobs();
     </script>
 
-    <!-- Scroll direction detector for FAB slide (down -> hide, up -> show) -->
+    <!-- Scroll direction detector for FAB slide (down -> hide, up -> show) + keyboard unlock -->
     <script>
       (function () {
         const fab = document.querySelector(".socials.admin-fab");
@@ -901,7 +901,16 @@
         let lastY = window.scrollY || window.pageYOffset;
         let ticking = false;
 
+        // NEW: only allow scroll behavior after keyboard shortcut unlocks the FAB
+        let fabUnlocked = false;
+
+        // Start hidden (fab-out is already on the element in HTML)
+        fab.classList.add("fab-out");
+
         function onScroll() {
+          // If not unlocked yet, ignore scroll events
+          if (!fabUnlocked) return;
+
           const y = window.scrollY || window.pageYOffset;
           const goingDown = y > lastY;
           lastY = y;
@@ -926,8 +935,18 @@
           { passive: true }
         );
 
-        // Ensure visible on load
-        fab.classList.remove("fab-out");
+        // NEW: keyboard shortcut to show/unlock the FAB
+        // Using Alt + A (Alt + Tab cannot be captured in browser)
+        document.addEventListener("keydown", (e) => {
+          if (
+            e.altKey &&
+            !e.shiftKey &&
+            (e.key === "a" || e.key === "A")
+          ) {
+            fabUnlocked = true;
+            fab.classList.remove("fab-out");
+          }
+        });
       })();
     </script>
   </body>

@@ -667,7 +667,7 @@
             <input
               id="searchInput"
               type="text"
-              placeholder="Search courses (title/description/tags)"
+              placeholder="Search courses by title/description"
             />
           </div>
 
@@ -915,33 +915,79 @@
 
       // —————————————————————————————————————————————
       // Fetch courses from courses.course (title, slug, etc.)
+      // UPDATED: q now also searches tags (exact tag match)
       // —————————————————————————————————————————————
       async function fetchCourses({ q = "", tag = "" } = {}) {
-        let query = supabase
+        const selectColumns =
+          "id, title, slug, description, level, tags, thumbnail_url, created_at";
+
+        // Base query (shared)
+        let baseQuery = supabase
           .schema("courses")
           .from("course")
-          .select(
-            "id, title, slug, description, level, tags, thumbnail_url, created_at"
-          )
-          // NEW: only show published courses
+          .select(selectColumns)
           .eq("is_published", true)
           .order("created_at", { ascending: false })
           .limit(PAGE_SIZE);
 
-        if (q) {
-          // search in title or description (case-insensitive)
-          query = query.or(`title.ilike.%${q}%,description.ilike.%${q}%`);
+        // If skill/tag filter is set (from dropdown)
+        if (tag) {
+          baseQuery = baseQuery.contains("tags", [tag]);
         }
+
+        // No search string -> keep your original behavior
+        if (!q) {
+          const { data, error } = await baseQuery;
+          if (error) throw error;
+          return data || [];
+        }
+
+        // WITH search string:
+        // 1) text matches (title/description)
+        const { data: textMatches, error: textErr } = await baseQuery.or(
+          `title.ilike.%${q}%,description.ilike.%${q}%`
+        );
+        if (textErr) throw textErr;
+
+        // 2) tag matches (tags array contains the searched text as a tag)
+        let tagQuery = supabase
+          .schema("courses")
+          .from("course")
+          .select(selectColumns)
+          .eq("is_published", true)
+          .order("created_at", { ascending: false })
+          .limit(PAGE_SIZE);
 
         if (tag) {
-          // filter if tag is inside tags array
-          query = query.contains("tags", [tag]);
+          tagQuery = tagQuery.contains("tags", [tag]);
         }
 
-        const { data, error } = await query;
+        // Search tags array for exact tag match with q
+        const { data: tagMatches, error: tagErr } = await tagQuery.contains(
+          "tags",
+          [q]
+        );
+        if (tagErr) throw tagErr;
 
-        if (error) throw error;
-        return data || [];
+        // 3) merge & dedupe by id
+        const merged = [];
+        const seen = new Set();
+
+        (textMatches || []).forEach((c) => {
+          if (!seen.has(c.id)) {
+            seen.add(c.id);
+            merged.push(c);
+          }
+        });
+
+        (tagMatches || []).forEach((c) => {
+          if (!seen.has(c.id)) {
+            seen.add(c.id);
+            merged.push(c);
+          }
+        });
+
+        return merged;
       }
 
       // —————————————————————————————————————————————
@@ -1176,10 +1222,7 @@
           coursesListEl.innerHTML = "";
           const q = searchInput.value.trim();
 
-          // Optional: brief loading (non-blocking)
-          // notifyLoading("Loading courses", "Fetching the latest list for you...");
           const courses = await fetchCourses({ q, tag: currentTag });
-          // closeLoading();
 
           // Pre-load completion map & total points BEFORE rendering decorations
           const courseIds = courses.map((c) => c.id);
