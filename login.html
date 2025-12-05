@@ -475,6 +475,77 @@
   <!-- SweetAlert2 (external) -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+  
+</head>
+
+<body>
+  <div class="auth-shell">
+    <!-- Sliding gradient panels (choose role) -->
+    <div class="side">
+      <div class="pane left-grad">
+        <div>
+          <img src="img/simpHappyMascotLogo.png" style="max-width: 100px; width: 95%" alt="SIMP Mascot" />
+          <h1>Welcome Back, Simpsters!</h1>
+          <p>Click the button below to <strong>log in as installer.</strong></p>
+          <button class="ghost-btn" onclick="chooseInstaller()">
+            LOG IN AS INSTALLER
+          </button>
+        </div>
+      </div>
+      <div class="pane right-grad">
+        <div>
+          <img src="img/simpHappyMascotLogo.png" style="max-width: 100px; width: 95%" alt="SIMP Mascot" />
+          <h1>Welcome Back, Simpsters!</h1>
+          <p>Click the button below to <strong>log in as customer.</strong></p>
+          <button class="ghost-btn" onclick="chooseCustomer()">
+            LOG IN AS CUSTOMER
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Your original login card (kept, lightly enhanced) -->
+    <div class="loginDiv">
+      <button class="backBtn" onclick="window.location.href='index.html'">
+        <span class="material-icons-sharp">arrow_back</span>
+      </button>
+      <div class="loginDivHeader">
+        <h2>Login</h2>
+        <div class="role-pill">
+          <span class="material-icons-sharp" style="font-size: 16px">person</span>
+          <span id="activeRoleText"></span>
+        </div>
+      </div>
+
+      <!-- Compact segmented toggle (only visible on mobile) -->
+      <div class="role-toggle">
+        <button class="btn-customer" type="button" onclick="chooseCustomer()">
+          Customer
+        </button>
+        <button class="btn-installer" type="button" onclick="chooseInstaller()">
+          Installer
+        </button>
+      </div>
+
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="password" id="password" placeholder="Password" required />
+
+      <!-- Role selector kept for JS compatibility but hidden -->
+      <select id="role" required>
+        <option value="" disabled>Select Role</option>
+        <option value="customer">Customer</option>
+        <option value="installer">Installer</option>
+      </select>
+      <div onclick="window.location.href='forgotPassword.html'" class="hint">
+        Forgot your password?
+      </div>
+      <button onclick="login()">Login</button>
+      <p class="footer-note">
+        Don't have an account? <a href="signup.html">Sign Up</a>
+      </p>
+    </div>
+  </div>
+
   <script type="module">
     import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
     import { SUPABASE_URL, SUPABASE_ANON_KEY } from "/supabase.js";
@@ -798,75 +869,6 @@
       }
     };
   </script>
-</head>
-
-<body>
-  <div class="auth-shell">
-    <!-- Sliding gradient panels (choose role) -->
-    <div class="side">
-      <div class="pane left-grad">
-        <div>
-          <img src="img/simpHappyMascotLogo.png" style="max-width: 100px; width: 95%" alt="SIMP Mascot" />
-          <h1>Welcome Back, Simpsters!</h1>
-          <p>Click the button below to <strong>log in as installer.</strong></p>
-          <button class="ghost-btn" onclick="chooseInstaller()">
-            LOG IN AS INSTALLER
-          </button>
-        </div>
-      </div>
-      <div class="pane right-grad">
-        <div>
-          <img src="img/simpHappyMascotLogo.png" style="max-width: 100px; width: 95%" alt="SIMP Mascot" />
-          <h1>Welcome Back, Simpsters!</h1>
-          <p>Click the button below to <strong>log in as customer.</strong></p>
-          <button class="ghost-btn" onclick="chooseCustomer()">
-            LOG IN AS CUSTOMER
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Your original login card (kept, lightly enhanced) -->
-    <div class="loginDiv">
-      <button class="backBtn" onclick="window.location.href='index.html'">
-        <span class="material-icons-sharp">arrow_back</span>
-      </button>
-      <div class="loginDivHeader">
-        <h2>Login</h2>
-        <div class="role-pill">
-          <span class="material-icons-sharp" style="font-size: 16px">person</span>
-          <span id="activeRoleText"></span>
-        </div>
-      </div>
-
-      <!-- Compact segmented toggle (only visible on mobile) -->
-      <div class="role-toggle">
-        <button class="btn-customer" type="button" onclick="chooseCustomer()">
-          Customer
-        </button>
-        <button class="btn-installer" type="button" onclick="chooseInstaller()">
-          Installer
-        </button>
-      </div>
-
-      <input type="email" id="email" placeholder="Email" required />
-      <input type="password" id="password" placeholder="Password" required />
-
-      <!-- Role selector kept for JS compatibility but hidden -->
-      <select id="role" required>
-        <option value="" disabled>Select Role</option>
-        <option value="customer">Customer</option>
-        <option value="installer">Installer</option>
-      </select>
-      <div onclick="window.location.href='forgotPassword.html'" class="hint">
-        Forgot your password?
-      </div>
-      <button onclick="login()">Login</button>
-      <p class="footer-note">
-        Don't have an account? <a href="signup.html">Sign Up</a>
-      </p>
-    </div>
-  </div>
 </body>
 
 </html>
