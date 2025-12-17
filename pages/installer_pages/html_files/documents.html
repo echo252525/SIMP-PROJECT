@@ -542,6 +542,84 @@
       }
 
       /* =======================
+         FULL VIEW MODAL (added)
+         ======================= */
+      .fullview-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.65);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 20000;
+        padding: 16px;
+      }
+
+      .fullview-overlay.show {
+        display: flex;
+      }
+
+      .fullview-sheet {
+        width: min(1200px, 100%);
+        height: min(92vh, 900px);
+        background: #fff;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
+        display: grid;
+        grid-template-rows: auto 1fr;
+      }
+
+      .fullview-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 10px 12px;
+        border-bottom: 1px solid #e5e7eb;
+        background: #f8fafc;
+      }
+
+      .fullview-title {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 700;
+        color: #0f172a;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .fullview-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex: 0 0 auto;
+      }
+
+      .fullview-body {
+        padding: 10px;
+        overflow: hidden;
+        background: #fff;
+      }
+
+      .fullview-body iframe,
+      .fullview-body embed,
+      .fullview-body img,
+      .fullview-body object {
+        width: 100%;
+        height: 100%;
+        border: 0;
+        border-radius: 10px;
+      }
+
+      /* Lock page scroll when full view open */
+      html.fullview-open,
+      body.fullview-open {
+        overflow: hidden !important;
+      }
+
+      /* =======================
          SKELETON (added)
          ======================= */
       :root {
@@ -943,6 +1021,18 @@
                 >
                   <span class="material-icons-sharp">close</span>
                 </button>
+
+                <!-- FULL VIEW button (added) -->
+                <button
+                  id="previewFullView"
+                  class="icon-btn"
+                  title="Full view"
+                  style="display: none"
+                  type="button"
+                >
+                  <span class="material-icons-sharp">fullscreen</span>
+                </button>
+
                 <a
                   id="previewOpen"
                   class="icon-btn"
@@ -978,6 +1068,50 @@
 
     <!-- Backdrop for mobile preview (non-intrusive on desktop) -->
     <div id="previewBackdrop" class="preview-backdrop" aria-hidden="true"></div>
+
+    <!-- FULL VIEW MODAL (added) -->
+    <div
+      id="fullViewModal"
+      class="fullview-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="fullViewTitle"
+    >
+      <div class="fullview-sheet">
+        <div class="fullview-head">
+          <h3 id="fullViewTitle" class="fullview-title">Full view</h3>
+          <div class="fullview-actions">
+            <a
+              id="fullViewOpen"
+              class="icon-btn"
+              href="#"
+              target="_blank"
+              rel="noopener"
+              style="display: none"
+              title="Open in new tab"
+            >
+              <span class="material-icons-sharp">open_in_new</span>
+            </a>
+            <a
+              id="fullViewDownload"
+              class="icon-btn"
+              href="#"
+              download
+              style="display: none"
+              title="Download"
+            >
+              <span class="material-icons-sharp">download</span>
+            </a>
+            <button id="fullViewClose" class="icon-btn" title="Close">
+              <span class="material-icons-sharp">close</span>
+            </button>
+          </div>
+        </div>
+        <div class="fullview-body" id="fullViewBody">
+          <div class="preview-placeholder"><span>No file selected.</span></div>
+        </div>
+      </div>
+    </div>
 
     <!-- Approval Hold Modal (kept; no removal) -->
     <div
@@ -1031,6 +1165,15 @@
       const previewBodyEl = document.getElementById("previewBody");
       const previewOpenEl = document.getElementById("previewOpen");
       const previewDownloadEl = document.getElementById("previewDownload");
+
+      // Full view refs (added)
+      const previewFullViewBtn = document.getElementById("previewFullView");
+      const fullViewModal = document.getElementById("fullViewModal");
+      const fullViewTitleEl = document.getElementById("fullViewTitle");
+      const fullViewBodyEl = document.getElementById("fullViewBody");
+      const fullViewCloseBtn = document.getElementById("fullViewClose");
+      const fullViewOpenEl = document.getElementById("fullViewOpen");
+      const fullViewDownloadEl = document.getElementById("fullViewDownload");
 
       const modalEl = document.getElementById("reviewModal");
       const modalCloseEl = document.getElementById("modalClose");
@@ -1234,6 +1377,15 @@
         return "pending";
       }
 
+      // Track last preview so Full View knows what to render (added)
+      let lastPreview = {
+        label: "Preview",
+        viewUrl: "",
+        openHref: "",
+        downloadHref: "",
+        filename: "",
+      };
+
       function clearPreview() {
         previewTitleEl.textContent = "Preview";
         previewBodyEl.classList.remove("with-toolbar");
@@ -1244,6 +1396,18 @@
         previewOpenEl.removeAttribute("href");
         previewDownloadEl.removeAttribute("href");
         previewDownloadEl.removeAttribute("download");
+
+        // Full view button reset (added)
+        previewFullViewBtn.style.display = "none";
+
+        // Reset lastPreview (added)
+        lastPreview = {
+          label: "Preview",
+          viewUrl: "",
+          openHref: "",
+          downloadHref: "",
+          filename: "",
+        };
       }
 
       // ---------- UPDATED: robust cross-device preview ----------
@@ -1256,6 +1420,18 @@
             '<div class="preview-placeholder"><span>No file uploaded.</span></div>';
           previewOpenEl.style.display = "none";
           previewDownloadEl.style.display = "none";
+
+          // Full view button hidden (added)
+          previewFullViewBtn.style.display = "none";
+
+          // lastPreview (added)
+          lastPreview = {
+            label,
+            viewUrl: "",
+            openHref: "",
+            downloadHref: "",
+            filename: "",
+          };
           return;
         }
 
@@ -1303,7 +1479,104 @@
         previewDownloadEl.href = safeUrl;
         previewDownloadEl.setAttribute("download", filename || "file");
         previewDownloadEl.style.display = "inline-grid";
+
+        // Full view button show (added)
+        previewFullViewBtn.style.display = "inline-grid";
+
+        // lastPreview snapshot (added)
+        lastPreview = {
+          label,
+          viewUrl: safeUrl,
+          openHref,
+          downloadHref: safeUrl,
+          filename: filename || "file",
+        };
       }
+
+      // ===== Full view modal logic (added) =====
+      function openFullView() {
+        if (!lastPreview?.viewUrl) return;
+
+        fullViewTitleEl.textContent = lastPreview.label || "Full view";
+
+        // Render same type logic, but inside full view body
+        const url = lastPreview.viewUrl;
+        const filename = lastPreview.filename || friendlyName(url);
+        const ext = extOf(url);
+        const safeUrl = encodeURI(url);
+
+        const isImage = [
+          "png",
+          "jpg",
+          "jpeg",
+          "gif",
+          "webp",
+          "bmp",
+          "svg",
+        ].includes(ext);
+        const isPdf = ext === "pdf";
+        const isOffice = ["doc", "docx", "xls", "xlsx", "ppt", "pptx"].includes(
+          ext
+        );
+
+        let openHref = lastPreview.openHref || safeUrl;
+
+        if (isImage) {
+          fullViewBodyEl.innerHTML = `<img src="${safeUrl}" alt="${filename}">`;
+        } else if (isPdf) {
+          fullViewBodyEl.innerHTML = `<embed src="${safeUrl}#toolbar=1&navpanes=0&scrollbar=1" type="application/pdf">`;
+        } else if (isOffice) {
+          // use same office viewer
+          const office = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(
+            safeUrl
+          )}`;
+          openHref = office;
+          fullViewBodyEl.innerHTML = `<iframe src="${office}" allowfullscreen></iframe>`;
+        } else {
+          fullViewBodyEl.innerHTML = `
+            <div class="preview-placeholder">
+              <p style="margin:0 0 8px 0;">Cannot preview this file type.</p>
+              <a href="${safeUrl}" target="_blank" rel="noopener">Open in new tab</a>
+            </div>`;
+        }
+
+        fullViewOpenEl.href = openHref;
+        fullViewOpenEl.style.display = "inline-grid";
+
+        fullViewDownloadEl.href = lastPreview.downloadHref || safeUrl;
+        fullViewDownloadEl.setAttribute("download", filename || "file");
+        fullViewDownloadEl.style.display = "inline-grid";
+
+        // show modal + lock page scroll
+        fullViewModal.classList.add("show");
+        document.documentElement.classList.add("fullview-open");
+        document.body.classList.add("fullview-open");
+      }
+
+      function closeFullView() {
+        fullViewModal.classList.remove("show");
+        fullViewBodyEl.innerHTML =
+          '<div class="preview-placeholder"><span>No file selected.</span></div>';
+        fullViewOpenEl.style.display = "none";
+        fullViewDownloadEl.style.display = "none";
+        fullViewOpenEl.removeAttribute("href");
+        fullViewDownloadEl.removeAttribute("href");
+        fullViewDownloadEl.removeAttribute("download");
+
+        document.documentElement.classList.remove("fullview-open");
+        document.body.classList.remove("fullview-open");
+      }
+
+      previewFullViewBtn.addEventListener("click", openFullView);
+      fullViewCloseBtn.addEventListener("click", closeFullView);
+      fullViewModal.addEventListener("click", (e) => {
+        if (e.target === fullViewModal) closeFullView();
+      });
+      window.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && fullViewModal.classList.contains("show")) {
+          closeFullView();
+        }
+      });
 
       // === UPDATED: keep function name; internally do async resolution for private bucket
       function setPreview({ label, value, installerId }) {
@@ -1334,6 +1607,16 @@
             previewDownloadEl.href = signedDownloadUrl;
             previewDownloadEl.setAttribute("download", filename);
             previewDownloadEl.style.display = "inline-grid";
+
+            // Keep lastPreview download as signed download (added)
+            lastPreview = {
+              label,
+              viewUrl: signedViewUrl,
+              openHref: signedViewUrl,
+              downloadHref: signedDownloadUrl,
+              filename: filename || "file",
+            };
+            previewFullViewBtn.style.display = "inline-grid";
 
             renderPreviewFromUrl(label, signedViewUrl);
           } catch (e) {
@@ -1488,6 +1771,9 @@
         previewOpenEl.style.display = "none";
         previewDownloadEl.style.display = "none";
 
+        // Full view hidden until a specific cert is opened (added)
+        previewFullViewBtn.style.display = "none";
+
         previewBodyEl.classList.remove("with-toolbar");
 
         const container = document.createElement("div");
@@ -1560,6 +1846,16 @@
         previewDownloadEl.href = dlUrl;
         previewDownloadEl.setAttribute("download", name || "file");
         previewDownloadEl.style.display = "inline-grid";
+
+        // lastPreview download = cert download (added)
+        lastPreview = {
+          label: name,
+          viewUrl: encodeURI(viewUrl),
+          openHref: previewOpenEl.href,
+          downloadHref: dlUrl,
+          filename: name || "file",
+        };
+        previewFullViewBtn.style.display = "inline-grid";
 
         const currentEmbed = previewBodyEl.innerHTML;
         const canPrev = index > 0;
@@ -1811,6 +2107,7 @@
               previewBodyEl.innerHTML = `<div class="preview-placeholder"><span>No file uploaded.</span></div>`;
               previewOpenEl.style.display = "none";
               previewDownloadEl.style.display = "none";
+              previewFullViewBtn.style.display = "none";
               openMobilePreview();
               return;
             }

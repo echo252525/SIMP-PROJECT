@@ -484,6 +484,43 @@
       html {
         overflow-y: scroll;
       }
+
+      /* ====== REQUIRED FIELD INDICATORS (added) ====== */
+      .req-star {
+        color: #ef4444;
+        font-weight: 900;
+        margin-left: 4px;
+      }
+
+      .required-hint {
+        margin: 0.35rem 0 1rem;
+        color: #64748b;
+        font-size: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .field-error {
+        display: none;
+        margin-top: 6px;
+        font-size: 0.85rem;
+        color: #b91c1c;
+      }
+
+      .field.invalid label {
+        color: #b91c1c;
+      }
+
+      .ctrl.invalid {
+        border-color: #ef4444 !important;
+        background: #fff !important;
+        box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.12) !important;
+      }
+
+      .field.invalid .field-error {
+        display: block;
+      }
     </style>
   </head>
 
@@ -587,12 +624,22 @@
         <p class="sub" id="form-sub">
           Keep it short, clear, and accurate—workers decide fast.
         </p>
+
+        <!-- REQUIRED HINT (added) -->
+        <p class="required-hint">
+          <span class="req-star" aria-hidden="true">*</span> Required fields
+        </p>
+
         <section class="card" id="create-post">
           <form id="jobForm" novalidate>
             <div class="form-grid">
               <!-- Title -->
               <div class="field row-2">
-                <label for="job_title">Job Title</label>
+                <label for="job_title"
+                  >Job Title<span class="req-star" aria-hidden="true"
+                    >*</span
+                  ></label
+                >
                 <div class="ctrl">
                   <input
                     type="text"
@@ -601,6 +648,7 @@
                     required
                   />
                 </div>
+                <div class="field-error" aria-live="polite"></div>
               </div>
 
               <!-- Category -->
@@ -642,7 +690,9 @@
 
               <!-- Pay -->
               <div class="field">
-                <label for="job_pay">Pay</label>
+                <label for="job_pay"
+                  >Pay<span class="req-star" aria-hidden="true">*</span></label
+                >
                 <div class="ctrl">
                   <span class="affix left">₱</span>
                   <input
@@ -655,19 +705,27 @@
                   />
                 </div>
                 <div class="hint">Set a fair, competitive rate.</div>
+                <div class="field-error" aria-live="polite"></div>
               </div>
 
               <!-- Date -->
               <div class="field">
-                <label for="job_date">Date</label>
+                <label for="job_date"
+                  >Date<span class="req-star" aria-hidden="true">*</span></label
+                >
                 <div class="ctrl">
                   <input type="date" id="job_date" required />
                 </div>
+                <div class="field-error" aria-live="polite"></div>
               </div>
 
               <!-- Time -->
               <div class="field">
-                <label for="job_time">Start Time</label>
+                <label for="job_time"
+                  >Start Time<span class="req-star" aria-hidden="true"
+                    >*</span
+                  ></label
+                >
                 <div class="ctrl">
                   <span
                     class="affix left material-icons-sharp"
@@ -676,11 +734,16 @@
                   >
                   <input type="time" id="job_time" required />
                 </div>
+                <div class="field-error" aria-live="polite"></div>
               </div>
 
               <!-- Duration (Hours) -->
               <div class="field">
-                <label for="job_duration">Estimated Duration</label>
+                <label for="job_duration"
+                  >Estimated Duration<span class="req-star" aria-hidden="true"
+                    >*</span
+                  ></label
+                >
                 <div class="ctrl">
                   <input
                     type="number"
@@ -692,6 +755,7 @@
                   />
                   <span class="affix right">hours</span>
                 </div>
+                <div class="field-error" aria-live="polite"></div>
               </div>
 
               <!-- Picture / Dropzone -->
@@ -733,7 +797,9 @@
 
               <!-- Location -->
               <div class="field row-2">
-                <label for="job_location">Location</label>
+                <label for="job_location"
+                  >Location<span class="req-star" aria-hidden="true">*</span></label
+                >
                 <div class="ctrl">
                   <input
                     type="text"
@@ -742,6 +808,7 @@
                     required
                   />
                 </div>
+                <div class="field-error" aria-live="polite"></div>
                 <div class="loc-row">
                   <button type="button" class="btn ghost" id="btnLocate">
                     <span
@@ -1079,6 +1146,109 @@
       const formSub = document.getElementById("form-sub");
       const submitBtn = document.getElementById("submitBtn");
 
+      /* ====== REQUIRED FIELD HIGHLIGHTING (added) ====== */
+      const REQUIRED_FIELDS = [
+        { input: inputTitle, name: "Job Title" },
+        { input: inputPay, name: "Pay" },
+        { input: inputDate, name: "Date" },
+        { input: inputTime, name: "Start Time" },
+        { input: inputDuration, name: "Estimated Duration" },
+        { input: inputLocation, name: "Location" },
+      ];
+
+      function getFieldEl(input) {
+        return input?.closest?.(".field") || null;
+      }
+      function getCtrlEl(input) {
+        return input?.closest?.(".ctrl") || null;
+      }
+      function getErrorEl(fieldEl) {
+        if (!fieldEl) return null;
+        let el = fieldEl.querySelector(".field-error");
+        if (!el) {
+          el = document.createElement("div");
+          el.className = "field-error";
+          el.setAttribute("aria-live", "polite");
+          fieldEl.appendChild(el);
+        }
+        return el;
+      }
+      function clearInvalid(input) {
+        const field = getFieldEl(input);
+        const ctrl = getCtrlEl(input);
+        if (field) field.classList.remove("invalid");
+        if (ctrl) ctrl.classList.remove("invalid");
+        const err = field ? field.querySelector(".field-error") : null;
+        if (err) err.textContent = "";
+      }
+      function setInvalid(input, message = "This field is required.") {
+        const field = getFieldEl(input);
+        const ctrl = getCtrlEl(input);
+        if (field) field.classList.add("invalid");
+        if (ctrl) ctrl.classList.add("invalid");
+        const err = getErrorEl(field);
+        if (err) err.textContent = message;
+      }
+      function clearAllInvalid() {
+        REQUIRED_FIELDS.forEach(({ input }) => clearInvalid(input));
+      }
+      function validMoney(v) {
+        const n = parseFloat(v);
+        return Number.isFinite(n) && n > 0;
+      }
+      function validHours(v) {
+        const n = parseInt(v, 10);
+        return Number.isFinite(n) && n >= 1;
+      }
+      function validateRequiredUIOnly() {
+        clearAllInvalid();
+        const missing = [];
+
+        if (!inputTitle.value.trim()) {
+          setInvalid(inputTitle, "Please enter a job title.");
+          missing.push("Job Title");
+        }
+        if (!validMoney(inputPay.value)) {
+          setInvalid(inputPay, "Please enter a valid amount.");
+          missing.push("Pay");
+        }
+        if (!inputDate.value) {
+          setInvalid(inputDate, "Please choose a date.");
+          missing.push("Date");
+        }
+        if (!inputTime.value) {
+          setInvalid(inputTime, "Please choose a start time.");
+          missing.push("Start Time");
+        }
+        if (!validHours(inputDuration.value)) {
+          setInvalid(inputDuration, "Please enter hours (minimum 1).");
+          missing.push("Estimated Duration");
+        }
+        if (!inputLocation.value.trim()) {
+          setInvalid(inputLocation, "Please enter a location.");
+          missing.push("Location");
+        }
+
+        return missing;
+      }
+
+      // Clear red state as user fixes inputs
+      REQUIRED_FIELDS.forEach(({ input }) => {
+        ["input", "change", "blur"].forEach((evt) => {
+          input.addEventListener(evt, () => {
+            // Only clear if the field becomes valid
+            if (input === inputPay && validMoney(input.value)) clearInvalid(input);
+            else if (input === inputDuration && validHours(input.value)) clearInvalid(input);
+            else if (
+              input !== inputPay &&
+              input !== inputDuration &&
+              String(input.value || "").trim()
+            )
+              clearInvalid(input);
+          });
+        });
+      });
+
       // ========= UX bits =========
       diffRange.addEventListener("input", () => {
         diffBadge.textContent = `${diffRange.value}/10`;
@@ -1280,6 +1450,7 @@
         diffHidden.value = "3";
         inputDate.setAttribute("min", TODAY_STR);
         setFromCoords(DEFAULT_CENTER[0], DEFAULT_CENTER[1], DEFAULT_ZOOM);
+        clearAllInvalid(); // (added)
         toast.fire({ icon: "info", title: "Form cleared" });
       });
 
@@ -1297,6 +1468,9 @@
 
         const picked = inputDate.value;
         if (!picked || picked < TODAY_STR) {
+          // (added) also highlight Date field if invalid/missing
+          if (!picked) setInvalid(inputDate, "Please choose a date.");
+          else setInvalid(inputDate, "Please choose today or a future date.");
           showNotice("Please choose today or a future date.", "warning");
           return;
         }
@@ -1346,6 +1520,23 @@
           job_picture_url: pictureRef,
         };
 
+        /* ====== REQUIRED FIELDS: show exactly which inputs are required (added) ====== */
+        const missing = validateRequiredUIOnly();
+        if (missing.length) {
+          await showNotice(
+            `Please complete the required fields: <b>${missing.join(
+              ", "
+            )}</b>.`,
+            "warning"
+          );
+          // Scroll to the first invalid field for convenience
+          const firstInvalid = document.querySelector(".field.invalid");
+          if (firstInvalid) {
+            firstInvalid.scrollIntoView({ behavior: "smooth", block: "center" });
+          }
+          return;
+        }
+
         if (
           !payload.job_title ||
           !payload.job_location ||
@@ -1387,6 +1578,7 @@
           diffHidden.value = "3";
           inputDate.setAttribute("min", TODAY_STR);
           setFromCoords(DEFAULT_CENTER[0], DEFAULT_CENTER[1], DEFAULT_ZOOM);
+          clearAllInvalid(); // (added)
         } else {
           const { error } = await supabase
             .schema("jobs")

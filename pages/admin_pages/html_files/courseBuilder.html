@@ -344,6 +344,25 @@
         padding: 0.5rem 1rem !important;
         box-shadow: none !important;
       }
+
+      .opt-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.opt-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.opt-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6c757d; /* muted */
+}
+
     </style>
   </head>
 
@@ -740,19 +759,43 @@
             initial.question || ""
           }</textarea>
           <div class="opt-grid">
-            <input class="qa" placeholder="Option A" value="${
-              initial.options?.A || ""
-            }" />
-            <input class="qb" placeholder="Option B" value="${
-              initial.options?.B || ""
-            }" />
-            <input class="qc" placeholder="Option C" value="${
-              initial.options?.C || ""
-            }" />
-            <input class="qd" placeholder="Option D" value="${
-              initial.options?.D || ""
-            }" />
-          </div>
+  <label class="opt-item">
+    <span class="opt-label">Option A</span>
+    <input
+      class="qa"
+      placeholder="type here"
+      value="${initial.options?.A || ''}"
+    />
+  </label>
+
+  <label class="opt-item">
+    <span class="opt-label">Option B</span>
+    <input
+      class="qb"
+      placeholder="type here"
+      value="${initial.options?.B || ''}"
+    />
+  </label>
+
+  <label class="opt-item">
+    <span class="opt-label">Option C</span>
+    <input
+      class="qc"
+      placeholder="type here"
+      value="${initial.options?.C || ''}"
+    />
+  </label>
+
+  <label class="opt-item">
+    <span class="opt-label">Option D</span>
+    <input
+      class="qd"
+      placeholder="type here"
+      value="${initial.options?.D || ''}"
+    />
+  </label>
+</div>
+
           <div class="inline">
             <label class="muted">Correct</label>
             <select class="correct">
