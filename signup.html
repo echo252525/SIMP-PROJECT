@@ -130,10 +130,10 @@
       bottom: 0;
       margin: auto;
       width: 100%;
-      max-width: 500px;
+      max-width: 491px;
       display: grid;
       grid-template-rows: auto auto minmax(0, 1fr) auto;
-      gap: 8px;
+      gap: 3px;
       padding: 3rem 2.5rem;
       background-color: white;
       z-index: 2;
@@ -173,7 +173,7 @@
     .signupDivHeader {
       display: grid;
       place-items: center;
-      gap: 0.5rem;
+      gap: 0.2rem;
       margin-bottom: 4px;
     }
 
@@ -198,7 +198,6 @@
     h2,
     h3 {
       color: black;
-      margin-bottom: 8px;
     }
 
     /* Stepper */
@@ -295,7 +294,7 @@
     /* Scroll area */
     .form-scroll {
       min-height: 0;
-      padding: 8px 4px 6px;
+      margin-top: 24px;
     }
 
     .form-scroll::-webkit-scrollbar {
@@ -327,7 +326,7 @@
       font-size: 14px;
       color: #333;
       display: block;
-      margin-top: 6px;
+      margin-top: 4px;
     }
 
     input,
@@ -343,7 +342,7 @@
     .actions {
       display: flex;
       gap: 10px;
-      margin-top: 14px;
+      margin-top: 6px;
     }
 
     button {
@@ -378,10 +377,8 @@
 
     .auth-footer {
       text-align: center;
-      padding-top: 0.6rem;
-      margin-top: 0.4rem;
       font-size: 0.9rem;
-      border-top: 1px solid #e6e8ee;
+      margin-top: 4px;
     }
 
     .auth-footer a {
@@ -410,6 +407,7 @@
 
     .form-step.active {
       display: block;
+      flex: start;
     }
 
     /* Modal */
